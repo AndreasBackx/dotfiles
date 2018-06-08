@@ -1,0 +1,383 @@
+#!/usr/bin/env python
+
+import subprocess
+from enum import Enum
+from typing import List
+
+import click
+
+FEATURES = {
+    'input_source': {
+        'value': '60',
+        'choices': {
+            'dp1': '0x0f',
+            'dp2': '0x10',
+            'hdmi1': '0x11',
+            'hdmi2': '0x12',
+        },
+    },
+    'display_mode': {
+        'value': 'DC',
+        'type': hex,
+        'choices': {
+            'default': '00',
+            'multimedia': '02',
+            'movie': '03',
+            'games': '05',
+        },
+    },
+    'power_mode': {
+        'value': 'D6',
+        'choices': {
+            'on': '01',
+            'standby': '04',
+            'off': '05',
+        },
+    },
+    'brightness': {
+        'value': '10',
+        'min': 0,
+        'max': 100,
+    },
+}
+
+
+class Display(Enum):
+    LEFT = '6'
+    RIGHT = '9'
+
+
+class EnumType(click.Choice):
+
+    def __init__(self, enum):
+        self.__enum = enum
+        choices = (member.lower() for member in enum.__members__)
+        super().__init__(choices)
+
+    def convert(self, value, param, ctx):
+        if isinstance(value, self.__enum):
+            return value
+        return next(
+            enum for enum in self._EnumType__enum
+            if enum.name.lower() == value.lower()
+        )
+
+
+class Brightness:
+
+    def __init__(self, value: int, relative=False, toggle=False):
+        """Brightness can hold a value or a relative value.
+
+        [description]
+
+        Args:
+            value: int: Value of brightness kept.
+            relative: Whether to be relative to the current brightness value. (default: {False})
+        """
+        self.value = value
+        self.relative = relative or toggle
+        self.toggle = toggle
+
+    def resolve(self, brightness: int = None):
+        """Resolve the value relatively or absolutely.
+
+        If `relative` is set to True, then the brightness argument is
+        required. If it is set to True, it'll add the `value` to the given
+        brightness level. Otherwise it will return `value`.
+
+        Args:
+            brightness: int: The current brightness level.
+        """
+
+        result = self.value
+        if self.relative:
+            result = brightness + self.value
+        if self.toggle:
+            result = 0 if brightness == 100 else 100
+
+        return max(0, min(100, result))
+
+
+class BrightnessType(click.ParamType):
+
+    name = 'brightness'
+
+    STEP = 25
+
+    def convert(self, value, param, ctx):
+        if value == 'up':
+            return Brightness(value=self.STEP, relative=True)
+        elif value == 'down':
+            return Brightness(value=-self.STEP, relative=True)
+        elif value == 'toggle':
+            return Brightness(value=0, toggle=True)
+        elif isinstance(value, int):
+            return Brightness(value=value)
+
+        try:
+            return Brightness(value=int(value))
+        except ValueError:
+            self.fail(
+                f'Value is not a valid integer or \'up\'/\'down\'.'
+            )
+
+
+def ddcutil(command: str, display: Display, *args):
+    completed_process = subprocess.run(
+        [
+            'ddcutil',
+            command,
+            '--bus',
+            display.value,
+            '--nodetect',
+            '--async',
+            '--noverify',
+            '--force-slave-address',
+            '--brief',
+            *args
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        universal_newlines=True
+    )
+    completed_process.check_returncode()
+    return completed_process
+
+
+def set_vcp(displays, feature: str, value):
+    if isinstance(displays, Display):
+        displays = [displays]
+    elif not isinstance(displays, list) and not isinstance(displays, tuple):
+        print(
+            f'Displays need to be a list of Displays or a single Display, '
+            'not {type(displays)}.'
+        )
+
+    feature_options = FEATURES[feature]
+    feature_choices = feature_options.get('choices')
+    feature_min = feature_options.get('min')
+    feature_max = feature_options.get('max')
+
+    if feature_choices is not None:
+        for key, val in feature_choices.items():
+            if value == key:
+                value = val
+                break
+        else:
+            print(
+                f'Invalid choice "{value}", valid choices are: '
+                f'{", ".join(feature_choices.values())}'
+            )
+            return
+
+    if (feature_min is not None or feature_max is not None) and not isinstance(value, int):
+        print(f'Value type needs to be an int, not {type(value).__name__}.')
+        return
+
+    if feature_min is not None and value < feature_min:
+        print(f'Minimum value is {feature_min}.')
+        return
+
+    if feature_max is not None and value > feature_max:
+        print(f'Maximum value is {feature_max}.')
+        return
+
+    for display in displays:
+        ddcutil(
+            'setvcp',
+            display,
+            feature_options['value'],
+            str(value),
+        )
+
+
+def get_vcp(display: Display, feature: str):
+    value = ddcutil(
+        'getvcp',
+        display,
+        FEATURES[feature]['value'],
+    ).stdout.split(' ')[3].strip()
+
+    feature_options = FEATURES[feature]
+    feature_type = feature_options.get('type')
+    feature_choices = feature_options.get('choices')
+
+    if feature_type is hex:
+        # Convert 'x00' to '00'.
+        value = value[1:]
+
+    if feature_choices is not None:
+        for key, val in feature_choices.items():
+            if value == val:
+                value = key
+                break
+        else:
+            print(
+                f'Received invalid choice "{value}", valid choices are: '
+                f'{", ".join(feature_choices.values())}'
+            )
+            return
+
+    return value
+
+
+@click.group()
+def cli():
+    """Script for managing the monitors of my setup."""
+    pass
+
+
+@cli.command()
+def default():
+    """Enable all monitors."""
+    set_vcp(list(Display), 'display_mode', 'default')
+    set_vcp(list(Display), 'power_mode', 'on')
+
+
+@cli.command()
+@click.option('--toggle', is_flag=True)
+@click.option('--get', is_flag=True)
+def movie(toggle, get):
+    """Left: movie preset, right: standy."""
+
+    enabled = False
+
+    if toggle or get:
+        display_mode = get_vcp(Display.LEFT, 'display_mode')
+        enabled = display_mode == 'movie'
+
+        if get:
+            if enabled:
+                print('%{F#CECECE}%{F-}')
+            else:
+                print('%{F#6E6E6E}%{F-}')
+
+    if toggle:
+        set_vcp([Display.LEFT], 'display_mode', 'default')
+        set_vcp([Display.RIGHT], 'power_mode', 'on')
+
+        subprocess.run(
+            [
+                'xset',
+                's',
+                'on',
+                '+dpms'
+            ]
+        )
+    if (not toggle and not get) or (toggle and not enabled):
+        set_vcp([Display.LEFT], 'display_mode', 'movie')
+        set_vcp([Display.RIGHT], 'power_mode', 'standby')
+
+        subprocess.run(
+            [
+                'xset',
+                's',
+                'off',
+                '-dpms'
+            ]
+        )
+
+
+@cli.command()
+def desktop():
+    """Change input to desktop machine."""
+    set_vcp([Display.LEFT], 'input_source', 'hdmi1')
+    set_vcp([Display.RIGHT], 'input_source', 'dp2')
+
+
+@cli.command()
+def laptop():
+    """Change input to laptop machine."""
+    set_vcp(list(Display), 'input_source', 'dp1')
+
+
+def period_changed(old_period: str, new_period: str):
+    """Redshift period-changed event hook.
+
+    Possible periods: night, daytime, transition, none (only for old period).
+
+    Args:
+        old_period: str: The old period transitioning from.
+        new_period: str: The new period transitioning to.
+    """
+
+    PERIOD_BRIGHTNESS = {
+        'night': 25,
+        'daytime': 100,
+    }
+
+    target_brightness = PERIOD_BRIGHTNESS.get(new_period)
+    if target_brightness is None:
+        return
+
+    # Only update the displays not already at the target brightness.
+    displays = list(Display)
+    for display in list(Display):
+        brightness = int(get_vcp(display, 'brightness'))
+
+        if brightness == target_brightness:
+            displays.remove(display)
+
+    set_vcp(displays, 'brightness', target_brightness)
+
+
+@cli.command()
+@click.argument('event')
+@click.argument('details', nargs=-1)
+def redshift(event: str, details: List[str]):
+    """Redshift event brightness hook.
+
+    Executables (e.g. scripts) placed in folder ~/.config/redshift/hooks
+    will be run when a certain event happens. The first parameter to the
+    script indicates the event and further parameters may indicate
+    more details about the event. The event period-changed is indicated
+    when the period changes (night, daytime, transition). The second
+    parameter is the old period and the third is the new period. The event
+    is also signaled when Redshift starts up with the old period set to
+    none. Any dotfiles in the folder are skipped.
+    """
+
+    if event == 'period-changed':
+        period_changed(details[0], details[1])
+
+
+@cli.command()
+@click.option(
+    '--display',
+    'displays',
+    default=list(Display),
+    multiple=True,
+    type=EnumType(Display),
+    help='Specify which displays, default is all.',
+)
+@click.argument(
+    'brightness',
+    type=BrightnessType(),
+    required=False,
+)
+def brightness(displays, brightness):
+    """Get or set the brightness of displays."""
+
+    if brightness is None:
+        for display in displays:
+            brightness = get_vcp(display, 'brightness')
+            print(f'{brightness}%')
+        return
+
+    if not brightness.relative:
+        set_vcp(displays, 'brightness', brightness.resolve())
+        return
+
+    display_brightnesses = {}
+
+    for display in displays:
+        display_brightnesses[display] = int(get_vcp(display, 'brightness'))
+
+    # Execute the set operations after each other so there's less of a delay
+    # between them.
+    for display, target_brightness in display_brightnesses.items():
+        set_vcp([display], 'brightness', brightness.resolve(target_brightness))
+
+
+if __name__ == '__main__':
+    cli()

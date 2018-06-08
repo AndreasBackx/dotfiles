@@ -1,0 +1,54 @@
+#!/bin/bash
+
+abs_path=$(readlink -f "$1");
+if [[ ! -r "$abs_path" ]]
+then
+    echo "The file at $1 either does not exist or you don't have read permissions for it."
+    exit 1
+fi
+echo "Getting gfycat key and name..."
+gfycat_name=$(curl -s -XPOST https://api.gfycat.com/v1/gfycats | grep -oP 'name":"[a-zA-Z]+"' | cut -d '"' -f 3)
+cp "$abs_path" "/tmp/$gfycat_name"
+echo "About to upload. This might take a while."
+upload_res=$(curl https://filedrop.gfycat.com --upload-file "/tmp/$gfycat_name")
+echo "Upload complete. Waiting for remote encoding to complete..."
+echo '(this might take a while)'
+sleep 2
+error=''
+completed=''
+response=''
+while [[ -z "$completed" && -z "$error" ]]
+do
+    echo -n "."
+    response=$(curl -s https://api.gfycat.com/v1/gfycats/fetch/status/$gfycat_name)
+    error=$(grep -o 'error' <<< "$response")
+    completed=$(grep -o 'complete' <<< "$response")
+    sleep 5
+done
+if [[ ! -z "$error" ]]; then
+    echo "An error occurred: $response"
+    exit 1
+else
+    echo 'Encoding complete.'
+    grep -F '"md5Found":1' <<< "$response" > /dev/null
+    if [[ $? == 0 ]]
+    then
+        echo 'It looks like somebody else has uploaded this gif/video before!'
+        echo 'The given link will be to the already uploaded one.'
+    fi
+    gfy_name_from_fetch=$(grep -oP 'gfyname":"[a-zA-Z]+"' <<< "$response" | cut -d '"' -f 3)
+    gfy_url="https://gfycat.com/$gfy_name_from_fetch"
+    echo "Your gif/video should be at $gfy_url"
+
+    if [ $DISPLAY ]; then
+        { type xsel >/dev/null 2>/dev/null && echo -n $gfy_url | xsel; } \
+            || { type xclip >/dev/null 2>/dev/null && echo -n $gfy_url | xclip; } \
+            || { type pbcopy >/dev/null 2>/dev/null && echo -n $gfy_url | pbcopy; } \
+            || echo "Haven't copied to the clipboard: no xsel, xclip, or pbcopy." >&2
+    else
+        echo "Haven't copied to the clipboard: no \$DISPLAY" >&2
+    fi
+
+    echo 'Have a nice day!'
+    exit
+fi

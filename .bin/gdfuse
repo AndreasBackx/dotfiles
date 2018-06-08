@@ -1,0 +1,4 @@
+#!/bin/bash
+
+su $USERNAME -l -c "google-drive-ocamlfuse -label $1 $*"
+exit 0

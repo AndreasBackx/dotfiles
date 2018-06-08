@@ -1,0 +1,2 @@
+#!/bin/sh
+feh --bg-scale '/home/andreas/.config/wallpapers/landscape.png' '/home/andreas/.config/wallpapers/portrait.png' 

@@ -1,0 +1,4 @@
+#!/usr/bin/env zsh
+
+pulseaudio-ctl $@
+polybar-msg hook volume 1

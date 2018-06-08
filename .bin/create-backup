@@ -1,0 +1,42 @@
+#!/usr/bin/bash
+set -e
+
+source /home/andreas/.secrets
+
+REPOSITORY=/mnt/server/storage/Backups
+
+# Setting this, so you won't be asked for your repository passphrase:
+# or this to ask an external program to supply the passphrase:
+# export BORG_PASSCOMMAND='pass show backup'
+
+# Backup all of /home and /var/www except a few
+# excluded directories
+/usr/bin/borg create -v --stats                         \
+    $REPOSITORY::'{hostname}-{now:%Y-%m-%dT%H:%M:%S}'   \
+    /home/andreas                                       \
+    /etc                                                \
+    /var                                                \
+    /Users                                              \
+    /usr/local                                          \
+    --exclude '/mnt'                                    \
+    --exclude '/home/*/.cache'                          \
+    --exclude '/var/cache'                              \
+    --exclude '/var/log'                                \
+    --exclude '/var/tmp'                                \
+    --exclude '/var/lock'                               \
+    --exclude '/var/run'                                \
+    --exclude '/var/spool'                              \
+    --exclude '*.pyc'                                   \
+    --exclude '*.log'                                   \
+    --exclude '/home/andreas/Movies'                    \
+    --exclude '/home/andreas/.gradle'                   \
+    --exclude '/home/andreas/.local'                    \
+    --exclude '/home/andreas/Downloads'                 \
+    --progress
+
+# Use the `prune` subcommand to maintain 7 daily, 4 weekly and 6 monthly
+# archives of THIS machine. The '{hostname}-' prefix is very important to
+# limit prune's operation to this machine's archives and not apply to
+# other machine's archives also.
+/usr/bin/borg prune -v --list $REPOSITORY --prefix '{hostname}-'    \
+    --keep-daily=7 --keep-weekly=4 --keep-monthly=6

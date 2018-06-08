@@ -1,0 +1,38 @@
+#!/usr/bin/env zsh
+
+# This does not work (yet)
+android-screenrecord() {
+    file_name=android-screenrecord-temp.mp4
+    if [ $# -ge 1 ]; then
+       file_name=$1
+    fi
+
+    file_name_on_device="/sdcard/$file_name"
+
+    echo "Recording the screen, press ENTER to stop recording..."
+    #process=`adb shell 'cd /sdcard; nohup screenrecord /sdcard/android-screenrecord-temp.mp4 & echo "$!"'`
+    # adb shell 'nohup sleep 10 2>/dev/null 1>/dev/null &'
+    trap "exit" INT
+    adb shell screenrecord $file_name_on_device
+    trap - INT
+    echo "Got here"
+
+    echo "Stopping recording..."
+    echo $process
+    adb shell kill $process
+    # kill -SIGKILL $process
+    # wait $process
+
+    echo "Pulling file from device..."
+    adb pull $file_name_on_device
+
+    return
+
+    echo "Removing file file from device..."
+    adb shell rm $file_name_on_device
+
+    if [ $# -lt 1 ]; then
+        gfycat $file_name
+        rm $file_name
+    fi
+}

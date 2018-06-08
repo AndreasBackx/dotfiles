@@ -1,0 +1,441 @@
+;=====================================================
+;
+;   To learn more about how to configure Polybar
+;   go to https://github.com/jaagr/polybar
+;
+;   The README contains alot of information
+;
+;=====================================================
+
+;=====================================================
+; CONFIGURATION
+;=====================================================
+
+[config]
+; button click background
+black = #141414
+; background
+black-grey = #1C1C1C
+; lighter background
+darker-grey = #242424
+; highlight line
+dark-grey = #404040
+; gutter foreground
+grey = #6E6E6E
+; foreground
+light-grey = #CECECE
+
+yellow = #CCC47A
+yellow-transparent = #CCCCC47A
+pink = #E52E71
+pink-transparent = #CCE52E71
+green = #9CCC3D
+green-transparent = #CC9CCC3D
+blue = #6CC7D9
+blue-transparent = #CC6CC7D9
+orange = #D9882B
+orange-transparent = #CCD9882B
+purple = #A082D9
+purple-transparent = #CCA082D9
+
+background = ${self.darker-grey}
+background-transparent = #CC1C1C1C
+foreground = ${self.light-grey}
+foreground-inactive = ${self.grey}
+
+padding = 1
+line-height = 2
+
+[settings]
+screenchange-reload = true
+;compositing-background = xor
+;compositing-background = screen
+;compositing-foreground = source
+;compositing-border = over
+
+[global/wm]
+margin-top = 5
+margin-bottom = 5
+
+; vim:ft=dosini
+
+;=====================================================
+; BARS
+;=====================================================
+
+[bar/landscape]
+monitor = ${env:MONITOR:HDMI-1}
+bottom = true
+width = 100%
+height = 40
+radius = 0
+fixed-center = true
+
+background = ${config.background}
+
+foreground = ${config.foreground}
+
+underline-size = ${config.line-height}
+underline-color = ${config.foreground}
+
+padding-left = 0
+; Padding for tray.
+padding-right = 2
+
+module-margin-left = 1
+module-margin-right = 1
+
+# font-0 = Roboto Regular:pixelsize=10;3
+font-0 = xos4 Terminus:antialias=false:pixelsize=14;2
+font-1 = Material Icons:pixelsize=11;3
+font-2 = FontAwesome:pixelsize=11;3
+
+modules-left = i3 xwindow
+modules-center = spotify
+modules-right = mobile-vikings check-backup shairport headphones movie brightness-left volume updates memory cpu date powermenu
+
+tray-position = right
+tray-padding = ${config.padding}
+tray-background = ${config.background}
+
+scroll-up = i3wm-wsnext
+scroll-down = i3wm-wsprev
+
+enable-ipc = true
+
+[bar/portrait]
+inherit = bar/landscape
+tray-position = none
+
+modules-left = i3 xwindow
+modules-center =
+modules-right = check-backup shairport headphones brightness-right volume memory cpu date
+
+;=====================================================
+; LEFT
+;=====================================================
+
+[module/i3]
+type = internal/i3
+format = <label-state> <label-mode>
+index-sort = true
+enable-scroll = false
+fuzzy-match = false
+
+# ws-icon-0 = "10;10"
+# ws-icon-1 = "1;1"
+# ws-icon-2 = "2;2"
+# ws-icon-3 = "3;3"
+# ws-icon-4 = "4;4"
+# ws-icon-5 = "5;5"
+# ws-icon-6 = "6;6"
+# ws-icon-7 = "7;7"
+# ws-icon-8 = "8;8"
+# ws-icon-9 = "9;9"
+
+; Only show workspaces on the same output as the bar
+pin-workspaces = true
+
+label-mode-padding = ${config.padding}
+label-mode-foreground = ${config.foreground}
+# label-mode-background = ${config.background}
+
+; focused = Active workspace on focused monitor
+label-focused = %index%
+# label-focused-background = ${config.background}
+label-focused-underline = ${config.foreground}
+label-focused-overline = ${config.foreground}
+label-focused-padding = ${config.padding}
+
+; unfocused = Inactive workspace on any monitor
+label-unfocused = %index%
+label-unfocused-padding = ${config.padding}
+
+; visible = Active workspace on unfocused monitor
+label-visible = %index%
+# label-visible-background = ${self.label-focused-background}
+label-visible-underline = ${self.label-focused-underline}
+label-visible-overline = ${self.label-focused-underline}
+label-visible-padding = ${config.padding}
+
+; urgent = Workspace with urgency hint set
+label-urgent = %index%
+label-urgent-background = ${config.pink-transparent}
+label-urgent-padding = ${config.padding}
+
+[module/xwindow]
+type = internal/xwindow
+label = "%title:0:80:...%   "
+label-foreground = ${config.foreground-inactive}
+# label-background = ${config.background}
+
+;=====================================================
+; CENTRE
+;=====================================================
+
+[module/spotify]
+type = custom/script
+exec = spotify-status
+tail = true
+format-foreground = ${config.foreground-inactive}
+
+click-right = xte 'key XF86AudioPlay'
+click-left = xte 'key XF86AudioPlay'
+scroll-up = xte 'key XF86AudioNext'
+scroll-down = xte 'key XF86AudioPrev'
+
+
+# [module/spotify]
+# type = custom/ipc
+# format-foreground = ${config.foreground-inactive}
+
+# ; Define the command to be executed when the hook is triggered
+# ; Available tokens:
+# ;   %pid% (id of the parent polybar process)
+# hook-0 = ~/.bin/spotify-song
+# tail = true
+# click-right = xte 'key XF86AudioPlay'
+# click-left = xte 'key XF86AudioPlay'
+# scroll-up = xte 'key XF86AudioNext'
+# scroll-down = xte 'key XF86AudioPrev'
+
+# ; Hook to execute on launch. The index is 1-based.
+# ; Default: 0
+# initial = 1
+
+;=====================================================
+; RIGHT
+;=====================================================
+
+[module/movie]
+type = custom/ipc
+hook-0 = sudo ~/.bin/monitors movie --get
+initial = 1
+click-left = sudo ~/.bin/monitors movie --toggle; polybar-msg -p %pid% hook movie 1
+label = %output%
+
+[module/check-backup]
+type = custom/script
+interval = 60
+exec = check-backup status
+click-left = sudo check-backup activate
+
+[module/updates]
+type = custom/script
+interval = 900
+exec = yay -Pu | wc -l
+click-left = termite -e "zsh -c 'yay -Syu; zsh'" &
+label = %output%
+
+format-prefix = " "
+format-prefix-foreground = ${config.foreground-inactive}
+
+[module/shairport]
+type = custom/script
+interval = 5
+
+exec = shairport-simple status
+click-left = shairport-simple toggle
+
+[module/headphones]
+type = custom/script
+interval = 5
+
+; Define the command to be executed when the hook is triggered
+; Available tokens:
+;   %pid% (id of the parent polybar process)
+exec = headphones status
+click-left = headphones toggle
+scroll-up = headphones noise-cancellation high
+click-middle = headphones noise-cancellation low
+scroll-down = headphones noise-cancellation off
+
+[module/delijn]
+type = custom/script
+interval = 60
+exec = delijn
+format-prefix = " "
+format-prefix-foreground = ${config.foreground-inactive}
+
+[module/mobile-vikings]
+type = custom/script
+interval = 3600
+exec = mobile-vikings
+format-prefix = " "
+format-prefix-foreground = ${config.foreground-inactive}
+
+[module/brightness-right]
+type = custom/ipc
+
+; Define the command to be executed when the hook is triggered
+; Available tokens:
+;   %pid% (id of the parent polybar process)
+hook-0 = sudo ~/.bin/monitors brightness --display right 2> /dev/null
+click-left = xte 'key XF86Display' &
+format-prefix = " "
+format-prefix-foreground = ${config.foreground-inactive}
+scroll-up = xte 'key XF86MonBrightnessUp' &
+scroll-down = xte 'key XF86MonBrightnessDown' &
+
+; Hook to execute on launch. The index is 1-based.
+; Default: 0
+initial = 1
+
+[module/brightness-left]
+type = custom/ipc
+
+; Define the command to be executed when the hook is triggered
+; Available tokens:
+;   %pid% (id of the parent polybar process)
+hook-0 = sudo ~/.bin/monitors brightness --display left 2> /dev/null
+click-left = xte 'key XF86Display' &
+format-prefix = " "
+format-prefix-foreground = ${config.foreground-inactive}
+scroll-up = xte 'key XF86MonBrightnessUp' &
+scroll-down = xte 'key XF86MonBrightnessDown' &
+
+; Hook to execute on launch. The index is 1-based.
+; Default: 0
+initial = 1
+
+[module/volume]
+type = custom/ipc
+
+; Define the command to be executed when the hook is triggered
+; Available tokens:
+;   %pid% (id of the parent polybar process)
+hook-0 = pavolume
+click-right = exec pavucontrol
+click-left = xte 'key XF86AudioMute'
+scroll-up = xte 'key XF86AudioRaiseVolume'
+scroll-down = xte 'key XF86AudioLowerVolume'
+
+; Hook to execute on launch. The index is 1-based.
+; Default: 0
+initial = 1
+
+[module/memory]
+type = internal/memory
+interval = 2
+format-prefix = " "
+format-prefix-foreground = ${config.foreground-inactive}
+label = %percentage_used%%
+
+[module/cpu]
+type = internal/cpu
+interval = 2
+format-prefix = " "
+format-prefix-foreground = ${config.foreground-inactive}
+format-underline =
+label = %percentage%%
+
+[module/eth]
+type = internal/network
+interface = eth0
+interval = 5
+
+label-background = ${config.foreground}
+label-connected = "%{F#6E6E6E}%{F-} %local_ip%"
+
+label-disconnected = "%{F#6E6E6E}%{F-} Disconnected"
+format-disconnected = <label-disconnected>
+
+[module/date]
+type = internal/date
+interval = 5
+
+date = "%a %d %B"
+date-alt = "%a %d %B"
+
+time = %H:%M
+time-alt = %H:%M
+
+label = %date% %time%
+
+format-prefix = " "
+format-prefix-foreground = ${config.foreground-inactive}
+
+[module/powermenu]
+type = custom/menu
+
+expand-right = true
+
+label-open = ""
+label-close = " "
+label-separator =
+label-separator-foreground = ${config.foreground-inactive}
+
+format-foreground = ${config.foreground}
+
+menu-0-0 = "  "
+menu-0-0-exec = sudo poweroff
+menu-0-1 = "  "
+menu-0-1-exec = sudo reboot
+menu-0-2 = "  "
+menu-0-2-exec = lock hibernate
+menu-0-3 = " "
+menu-0-3-exec = lock
+
+;=====================================================
+; OTHER/UNUSED
+;=====================================================
+
+[module/arrow-left-light-long]
+type = custom/text
+content = ""
+content-foreground = ${config.foreground}
+content-background = ${config.background}
+
+[module/arrow-left-dark]
+type = custom/text
+content = " "
+content-foreground = ${config.background}
+content-background = ${config.foreground}
+
+[module/arrow-left-light]
+type = custom/text
+content = " "
+content-foreground = ${config.foreground}
+content-background = ${config.background}
+
+[module/arrow-right-light-long]
+type = custom/text
+content = ""
+content-foreground = ${config.foreground}
+content-background = ${config.background}
+
+[module/filesystem]
+type = internal/fs
+interval = 25
+
+mount-0 = /
+mount-1 = /home
+
+label-mounted = %mountpoint% %percentage_used%%
+label-unmounted = %mountpoint%
+label-unmounted-foreground = ${config.foreground-inactive}
+
+label-mounted-foreground = ${config.background}
+label-mounted-background = ${config.foreground}
+
+[module/xbacklight]
+type = internal/xbacklight
+
+format = <label> <bar>
+label = BL
+
+bar-width = 10
+bar-indicator = |
+bar-indicator-foreground = #ff
+bar-indicator-font = 2
+bar-fill = ─
+bar-fill-font = 2
+bar-fill-foreground = #9f78e1
+bar-empty = ─
+bar-empty-font = 2
+bar-empty-foreground = ${config.foreground-inactive}
+
+[module/backlight-acpi]
+inherit = module/xbacklight
+type = internal/backlight
+card = intel_backlight

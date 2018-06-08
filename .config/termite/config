@@ -1,0 +1,66 @@
+[options]
+resize_grip = false
+scroll_on_output = false
+scroll_on_keystroke = true
+audible_bell = false
+visible_bell = false
+mouse_autohide = false
+allow_bold = true
+dynamic_title = true
+urgent_on_bell = true
+clickable_url = true
+font = Meslo LG M 10
+scrollback_lines = 10000
+search_wrap = true
+#icon_name = terminal
+#geometry = 640x480
+
+# 0.0: opaque, 1.0: transparent
+transparency = 0.8
+pseudo_transparency = false
+
+# "system", "on" or "off"
+cursor_blink = on
+
+# "block", "underline" or "ibeam"
+cursor_shape = ibeam
+
+# $BROWSER is used by default
+# browser = firefox
+
+# word characters used for word selection
+# (default if unset: all graphic non-punctuation/space characters)
+#word_chars = -A-Za-z0-9,./?%&#:_=+@~
+
+[colors]
+background = rgba(28, 28, 28, 0.8)
+foreground = #e5e5e5
+foreground_dim = #e5e5e5
+#fading:                20
+#fadeColor:             #002b36
+
+# black dark/light
+color0 = #272822
+color8 = #272822
+
+# red dark/light
+color1 = #e52e71
+color9 = #e52e71
+# green dark/light
+color2 = #9ccc3d
+color10 = #9ccc3d
+# yellow dark/light
+color3 = #ccc47a
+color11 = #ccc47a
+# blue dark/light
+color4 = #D9882B
+color12 = #D9882B
+# magenta dark/light
+color5 = #a082d9
+color13 = #a082d9
+# cyan dark/light
+color6 = #6cc7d9
+color14 = #6cc7d9
+# white dark/light
+color7 = #e5e5e5
+color15 = #e5e5e5

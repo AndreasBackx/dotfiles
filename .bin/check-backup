@@ -1,0 +1,50 @@
+#!/usr/bin/env zsh
+
+set -e
+
+function is_timer_active() {
+    if systemctl is-active --quiet create-backup.timer; then
+        true
+    else
+        false
+    fi
+}
+
+function is_service_active() {
+    if systemctl is-active --quiet create-backup.service; then
+        true
+    else
+        false
+    fi
+}
+
+function status() {
+    if is_timer_active; then
+        if is_service_active; then
+            echo "%{F#CECECE}%{F-}"
+        else
+            echo "%{F#6E6E6E}%{F-}"
+        fi
+    else
+        echo "%{F#6E6E6E}%{F-}"
+    fi
+}
+
+case "$1" in
+    status)
+        status
+        ;;
+    activate)
+        if is_timer_active; then
+            status
+            exit 1
+        fi
+
+        sudo systemctl start create-backup.timer
+        status
+        ;;
+    *)
+        echo "Usage: $0 {status|activate}"
+        exit 1
+        ;;
+esac

@@ -1,0 +1,29 @@
+#!/usr/bin/env zsh
+
+# # Set brightness for DDC/CI enabled monitors
+
+# # brightness values
+# night=25
+# transition=50
+# daytime=100
+
+
+# deref() {
+#   eval "echo \$$1"
+# }
+
+# fade_to() {
+#   current=$(ddcutil get 10 | cut -d, -f1 | cut -d= -f2)
+#   [ "$current" -gt "$1" ] && step=-1 || step=1
+#   for i in $(seq "$current" "$step" "$1"); do
+#     ddcutil set 10 $i
+#     sleep 1
+#   done
+# }
+
+
+# if [ "$1" = "period-changed" ]; then
+#   fade_to "$(deref "$3")"
+# fi
+
+/home/andreas/.bin/monitors redshift $@

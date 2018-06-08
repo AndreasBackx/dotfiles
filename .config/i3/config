@@ -1,0 +1,211 @@
+set $mod Mod4
+
+# Variables
+set $bg-color            #242424
+set $inactive-bg-color   #1c1c1c
+set $text-color          #e5e5e5
+set $inactive-text-color #6E6E6E
+set $urgent-bg-color     #e52e71
+
+set $workspace1 "1"
+set $workspace2 "2"
+set $workspace3 "3 "
+set $workspace4 "4"
+set $workspace5 "5"
+set $workspace6 "6"
+set $workspace7 "7"
+set $workspace8 "8"
+set $workspace9 "9"
+set $workspace10 "10"
+
+# Font
+font pango:Roboto Regular 10.5
+
+# Use Mouse+$mod to drag floating windows to their wanted position
+floating_modifier $mod
+
+# Application shortcuts
+bindsym Print exec imgur-screenshot --auto-delete 604800 --keep-file false --open false
+bindsym $mod+Return exec termite -d "$(xcwd)"
+bindsym $mod+d exec "rofi -separator-style none -hide-scrollbar -width 25 -padding 20 -line-margin 10 -lines 7 -font 'Roboto Regular 14' -color-window 'argb:e61c1c1c, argb:e6242424, argb:001c1c1c' -color-normal 'argb:001c1c1c, argb:e6cecece, argb:001c1c1c, argb:e6ccc47a, argb:e61c1c1c' -color-active 'argb:e69ccc3d, argb:e61c1c1c, argb:e69ccc3d, argb:e6ccc47a, argb:e61c1c1c' -color-urgent 'argb:e6e52e71, argb:e61c1c1c, argb:e6e52e71, argb:e6ccc47a, argb:e61c1c1c' -show run"
+bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'Do you really want to exit i3?' -b 'Yes, exit i3' 'i3-msg exit'"
+
+# Assign apps to workspaces
+assign [class="Subl3"] $workspace1
+assign [class="Code"] $workspace1
+assign [class="Slack"] $workspace6
+assign [class="discord"] $workspace6
+assign [class="Irssi"] $workspace6
+assign [class="Messenger for Desktop"] $workspace6
+assign [class="Transmission-gtk"] $workspace9
+# Bug see https://github.com/i3/i3/issues/2060
+for_window [class="Spotify"] move to workspace $workspace7
+assign [class="Thunderbird"] $workspace8
+
+# Startup applications
+exec_always zsh ~/.screenlayout/default.sh
+exec_always feh --bg-scale ~/.config/wallpapers/landscape.png --bg-scale ~/.config/wallpapers/portrait.png
+exec_always ~/.bin/custom-polybar
+
+exec xbindkeys
+exec --no-startup-id i3-msg 'workspace $workspace5; exec chromium'
+exec messengerfordesktop
+exec slack
+exec spotify
+exec thunderbird
+exec redshift-gtk
+exec allow_rgb10_configs=false compton
+exec_always setxkbmap -option compose:ralt
+exec_always solaar config "MX Master" dpi 1200
+
+# controls
+bindsym XF86Sleep exec lock
+
+# Media controls
+bindsym XF86AudioRaiseVolume exec pulseaudio-ctl-polybar up 5
+bindsym XF86AudioLowerVolume exec pulseaudio-ctl-polybar down 5
+bindsym XF86AudioMute exec pulseaudio-ctl-polybar mute
+
+bindsym XF86AudioPlay exec playerctl play-pause && polybar-msg hook spotify 1
+bindsym XF86AudioPause exec playerctl pause && polybar-msg hook spotify 1
+bindsym XF86AudioNext exec playerctl next && polybar-msg hook spotify 1
+bindsym XF86AudioPrev exec playerctl previous && polybar-msg hook spotify 1
+
+# Sreen brightness controls
+bindsym XF86Display exec sudo monitors brightness toggle && polybar-msg hook brightness-left 1 && polybar-msg hook brightness-right 1
+bindsym XF86MonBrightnessUp exec sudo monitors brightness up && polybar-msg hook brightness-left 1 && polybar-msg hook brightness-right 1
+bindsym XF86MonBrightnessDown exec sudo monitors brightness down && polybar-msg hook brightness-left 1 && polybar-msg hook brightness-right 1
+
+# Lock screen
+bindsym $mod+p exec lock
+
+# Kill focused window
+bindsym $mod+q kill
+
+# Changing focus
+bindsym $mod+j focus left
+bindsym $mod+k focus down
+bindsym $mod+l focus up
+bindsym $mod+semicolon focus right
+
+bindsym $mod+Control+Left focus left
+bindsym $mod+Control+Down focus down
+bindsym $mod+Control+Up focus up
+bindsym $mod+Control+Right focus right
+
+# Moving windows
+bindsym $mod+Shift+j move left
+bindsym $mod+Shift+k move down
+bindsym $mod+Shift+l move up
+bindsym $mod+Shift+semicolon move right
+
+bindsym $mod+Control+Mod1+Left move left
+bindsym $mod+Control+Mod1+Down move down
+bindsym $mod+Control+Mod1+Up move up
+bindsym $mod+Control+Mod1+Right move right
+
+# Splitting windows
+bindsym $mod+h split h
+bindsym $mod+v split v
+
+# Fullscreen
+bindsym $mod+f fullscreen toggle
+
+# Changing container layout
+bindsym $mod+s layout toggle split
+#bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+
+# toggle tiling / floating
+#bindsym $mod+Shift+space floating toggle
+
+# change focus between tiling / floating windows
+#bindsym $mod+space focus mode_toggle
+
+# Workspace outputs
+set $monitor-landscape "HDMI-1"
+set $monitor-portrait "DP-3"
+
+workspace $workspace1 output $monitor-landscape
+workspace $workspace2 output $monitor-landscape
+workspace $workspace3 output $monitor-landscape
+workspace $workspace4 output $monitor-portrait
+workspace $workspace5 output $monitor-portrait
+workspace $workspace6 output $monitor-portrait
+workspace $workspace7 output $monitor-portrait
+workspace $workspace8 output $monitor-portrait
+workspace $workspace9 output $monitor-portrait
+workspace $workspace10 output $monitor-portrait
+
+# Switching workspaces to workspace
+bindsym $mod+1 workspace $workspace1
+bindsym $mod+2 workspace $workspace2
+bindsym $mod+3 workspace $workspace3
+bindsym $mod+4 workspace $workspace4
+bindsym $mod+5 workspace $workspace5
+bindsym $mod+6 workspace $workspace6
+bindsym $mod+7 workspace $workspace7
+bindsym $mod+8 workspace $workspace8
+bindsym $mod+9 workspace $workspace9
+bindsym $mod+0 workspace $workspace10
+
+# Moving windows to a different workspace
+bindsym $mod+Shift+1 move container to workspace $workspace1
+bindsym $mod+Shift+2 move container to workspace $workspace2
+bindsym $mod+Shift+3 move container to workspace $workspace3
+bindsym $mod+Shift+4 move container to workspace $workspace4
+bindsym $mod+Shift+5 move container to workspace $workspace5
+bindsym $mod+Shift+6 move container to workspace $workspace6
+bindsym $mod+Shift+7 move container to workspace $workspace7
+bindsym $mod+Shift+8 move container to workspace $workspace8
+bindsym $mod+Shift+9 move container to workspace $workspace9
+bindsym $mod+Shift+0 move container to workspace $workspace10
+
+bindsym $mod+Left workspace prev_on_output
+bindsym $mod+Right workspace next_on_output
+
+bindsym $mod+Tab workspace back_and_forth
+
+# Workspace focusing
+focus_on_window_activation focus
+
+# reload the configuration file
+bindsym $mod+Shift+c reload
+# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
+bindsym $mod+Shift+r restart
+
+# Remove the border everywhere
+for_window [class="^.*"] border pixel 0
+
+bindsym $mod+r mode "resize"
+
+# resize window (you can also use the mouse for that)
+mode "resize" {
+    # These bindings trigger as soon as you enter the resize mode
+
+    # Pressing left will shrink the window’s width.
+    # Pressing right will grow the window’s width.
+    # Pressing up will shrink the window’s height.
+    # Pressing down will grow the window’s height.
+    bindsym j resize shrink width 10 px or 10 ppt
+    bindsym k resize grow height 10 px or 10 ppt
+    bindsym l resize shrink height 10 px or 10 ppt
+    bindsym semicolon resize grow width 10 px or 10 ppt
+
+    # same bindings, but for the arrow keys
+    bindsym Left resize shrink width 10 px or 10 ppt
+    bindsym Down resize grow height 10 px or 10 ppt
+    bindsym Up resize shrink height 10 px or 10 ppt
+    bindsym Right resize grow width 10 px or 10 ppt
+
+    # back to normal: Enter or Escape
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+# window colors
+#                       border              background         text                 indicator
+client.focused          $bg-color           $bg-color          $text-color          #00ff00
+client.unfocused        $bg-color           $bg-color          $inactive-text-color #00ff00
+client.focused_inactive $bg-color           $bg-color          $inactive-text-color #00ff00
+client.urgent           $urgent-bg-color    $urgent-bg-color   $text-color          #00ff00

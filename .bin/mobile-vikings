@@ -1,0 +1,199 @@
+#!/usr/bin/env python
+
+import os
+import sys
+from datetime import datetime
+from getpass import getpass
+from json import JSONDecodeError
+
+import pytz
+import requests
+
+TIMEZONE = pytz.timezone('CET')
+
+
+class VikingClient:
+
+    BASE_URL = 'https://api.unleashed.be/mv'
+
+    ENV_CLIENT_ID = 'MV_CLIENT_ID'
+    ENV_CLIENT_SECRET = 'MV_CLIENT_SECRET'
+    ENV_ACCESS_TOKEN = 'MV_ACCESS_TOKEN'
+
+    def __init__(self, client_id=None, client_secret=None, access_token=None):
+        if client_id is None:
+            client_id = os.environ.get(self.ENV_CLIENT_ID)
+        if client_secret is None:
+            client_secret = os.environ.get(self.ENV_CLIENT_SECRET)
+        if access_token is None:
+            access_token = os.environ.get(self.ENV_ACCESS_TOKEN)
+
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.access_token = access_token
+
+    def request(self, path, method='GET', auth=True, **kwargs):
+        if auth:
+            headers = kwargs.get('headers', {})
+            headers['Authorization'] = f'Bearer {self.access_token}'
+            kwargs['headers'] = headers
+
+        try:
+            return requests.request(
+                url=f'{VikingClient.BASE_URL}{path}',
+                method=method,
+                **kwargs
+            )
+        except Exception:
+            return None
+
+    def login(self, username=None, password=None, user_input=False):
+        """Login to the Mobile Vikings API and return an access token.
+
+        Also sets the client's access token to the one received.
+
+        Args:
+            username: Username (default: {None})
+            password: Password (default: {None})
+            user_input: Ask the user for the username and password (default: {False})
+
+        Returns:
+            Bearer access token or None.
+            string
+        """
+        if user_input:
+            username = input('Username: ')
+            password = getpass()
+        response = self.request(
+            path='/oauth2/token/',
+            method='POST',
+            auth=False,
+            data={
+                'client_id': self.client_id,
+                'client_secret': self.client_secret,
+                'grant_type': 'password',
+                'username': username,
+                'password': password
+            }
+        )
+
+        if not response:
+            return None
+
+        self.access_token = response.json().get('access_token')
+        return self.access_token
+
+    def subscriptions(self):
+        response = client.request(
+            path='/subscriptions'
+        )
+
+        if response is None:
+            return []
+
+        return response.json()
+
+    def subscription_balance(self, id):
+        response = client.request(
+            path=f'/subscriptions/{id}/balance'
+        )
+
+        if response is None:
+            return None
+
+        try:
+            return Balance(
+                response.json()
+            )
+        except JSONDecodeError:
+            return None
+
+
+class Balance:
+
+    def __init__(self, data):
+        self.data = data
+
+    def bundles(self, type=None):
+        """Get the active bundles.
+
+        Args:
+            type: Type of bundle to filter.
+        """
+
+        for bundle in self.data['bundles']:
+            if type is not None and bundle['type'] != type:
+                continue
+
+            yield bundle
+
+    def data_remaining(self):
+        """Returns amount of GiB/MiB left in data plan."""
+        bundles = self.bundles(type='data')
+        remaining = 0
+        for bundle in bundles:
+            remaining += bundle['remaining']
+
+        if remaining > 1024 ** 3:
+            gib = 1024 ** 3
+            return f'{remaining/gib:.2f}GiB'
+
+        mib = 1024 ** 2
+
+        return f'{remaining/mib:.2f}MiB'
+
+    def valid_until(self, **kwargs):
+        """Return the latest valid until value for a specific type.
+
+        Args:
+            **kwargs: Values passed onto self.bundles.
+        """
+
+        last_valid_until = None
+
+        for bundle in self.bundles(**kwargs):
+            # Ignore bundles with no remaining usage.
+            if bundle['remaining'] <= 0:
+                continue
+            valid_until = datetime.strptime(bundle['valid_until'], '%Y-%m-%dT%H:%M:%S%z')
+            if last_valid_until is None or valid_until > last_valid_until:
+                last_valid_until = valid_until
+
+        today = datetime.now(tz=TIMEZONE)
+        if last_valid_until is None or today >= last_valid_until:
+            return today
+        return last_valid_until
+
+    def valid_until_repr(self, **kwargs):
+        valid_until = self.valid_until(**kwargs)
+        today = datetime.now(tz=TIMEZONE)
+
+        difference = valid_until - today
+        days = difference.days
+
+        # hours difference on top of the amount of days.
+        hours = (difference.seconds) // 3600
+        # minutes = (difference.seconds // 60) % 60
+        # round the amount of days.
+        if hours > 12:
+            days += 1
+
+        if days > 1:
+            return f'{days}D'
+        return f'{hours}H'
+
+
+client = VikingClient()
+subscriptions = client.subscriptions()
+
+if not subscriptions:
+    sys.exit()
+
+subscription_id = subscriptions[0]['id']
+balance = client.subscription_balance(id=subscription_id)
+
+if not balance:
+    sys.exit()
+
+print(
+    f'€{balance.data["credit"]} {balance.data_remaining()} {balance.valid_until_repr(type="data")}')
