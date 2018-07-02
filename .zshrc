@@ -19,6 +19,10 @@ machine=`uname -s`
 if [[ $machine == "Linux" ]]; then
   # Linux specific commands.
 
+  # Make Electron use gio for trash.
+  # Used for VS Code.
+  # export ELECTRON_TRASH="/usr/bin/gio"
+
 elif [[ $machine == "Darwin" ]]; then
   # MacOS specific commands.
 
