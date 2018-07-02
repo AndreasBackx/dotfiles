@@ -115,6 +115,7 @@ bindsym $mod+Shift+f fullscreen toggle
 bindsym $mod+w layout toggle Splitting
 bindsym $mod+t layout tabbed
 bindsym $mod+f floating toggle
+bindsym $mod+g sticky toggle
 # bindsym $mod+s layout stacking
 
 # toggle tiling / floating
@@ -123,8 +124,13 @@ bindsym $mod+f floating toggle
 #bindsym $mod+space focus mode_toggle
 
 # Workspace outputs
-set $monitor-landscape "HDMI-1"
-set $monitor-portrait "DP-3"
+# Nouveau
+# set $monitor-landscape "HDMI-1"
+# set $monitor-portrait "DP-3"
+
+# Nvidia proprietary drivers
+set $monitor-landscape "HDMI-0"
+set $monitor-portrait "DP-0"
 
 workspace $workspace1 output $monitor-landscape
 workspace $workspace2 output $monitor-landscape
