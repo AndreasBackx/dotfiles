@@ -41,8 +41,8 @@ fi
 export GROOVY_HOME="/usr/local/opt/groovy/libexec"
 
 # Pyenv
-if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
-if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
+if which pyenv > /dev/null; then eval "$(pyenv init - --no-rehash)"; fi
+if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init - --no-rehash)"; fi
 export PYENV_VIRTUALENV_DISABLE_PROMPT=1
 
 alias workon="pyenv activate"
@@ -50,6 +50,6 @@ alias deactivate="pyenv deactivate"
 alias mkvirtualenv="pyenv virtualenv"
 
 # Other aliases
-alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
+alias config='git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 alias startServer="browser-sync start --files='*.html, *.css, css/*.css, js/*.js, img/*' --server --no-ghost-mode --no-notify --no-open"
 alias sudo="sudo env PATH=$PATH"
