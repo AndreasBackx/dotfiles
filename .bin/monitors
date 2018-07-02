@@ -140,7 +140,10 @@ def ddcutil(command: str, display: Display, *args):
         stderr=subprocess.PIPE,
         universal_newlines=True
     )
-    completed_process.check_returncode()
+    try:
+        completed_process.check_returncode()
+    except Exception:
+        return None
     return completed_process
 
 
@@ -192,11 +195,16 @@ def set_vcp(displays, feature: str, value):
 
 
 def get_vcp(display: Display, feature: str):
-    value = ddcutil(
+    response = ddcutil(
         'getvcp',
         display,
         FEATURES[feature]['value'],
-    ).stdout.split(' ')[3].strip()
+    )
+
+    if response is None:
+        return None
+
+    value = response.stdout.split(' ')[3].strip()
 
     feature_options = FEATURES[feature]
     feature_type = feature_options.get('type')
@@ -216,7 +224,7 @@ def get_vcp(display: Display, feature: str):
                 f'Received invalid choice "{value}", valid choices are: '
                 f'{", ".join(feature_choices.values())}'
             )
-            return
+            return None
 
     return value
 
@@ -313,7 +321,10 @@ def period_changed(old_period: str, new_period: str):
     # Only update the displays not already at the target brightness.
     displays = list(Display)
     for display in list(Display):
-        brightness = int(get_vcp(display, 'brightness'))
+        response = get_vcp(display, 'brightness')
+        if response is None:
+            return
+        brightness = int(response)
 
         if brightness == target_brightness:
             displays.remove(display)
@@ -361,6 +372,9 @@ def brightness(displays, brightness):
     if brightness is None:
         for display in displays:
             brightness = get_vcp(display, 'brightness')
+            if brightness is None:
+                print('…%')
+                return
             print(f'{brightness}%')
         return
 
