@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 
 import os
+import socket
+import sys
 import time
 import traceback
+from concurrent.futures import ThreadPoolExecutor
 
 import click
 import dbus
@@ -17,6 +20,8 @@ inactive_color = '%{F#6E6E6E}'
 active_color = '%{F#CECECE}'
 default_color = '%{F-}'
 
+server_address = '/tmp/spotifycl-socket'
+
 
 class Spotify:
 
@@ -25,6 +30,8 @@ class Spotify:
 
     PLAYER_INTERFACE = 'org.mpris.MediaPlayer2.Player'
     PROPERTIES_INTERFACE = 'org.freedesktop.DBus.Properties'
+
+    SAVE_REMOVE = b'save'
 
     def __init__(self):
         DBusGMainLoop(set_as_default=True)
@@ -36,6 +43,8 @@ class Spotify:
         self.last_title = None
         # Whether the current song is added to the library
         self.saved_track = False
+        # Whether to ignore the update
+        self.ignore = False
 
         self.setup_spotipy()
 
@@ -51,8 +60,50 @@ class Spotify:
             arg0="org.mpris.MediaPlayer2.spotify"
         )
 
+        executor = ThreadPoolExecutor(max_workers=2)
+        executor.submit(self._start_glib_loop)
+        executor.submit(self._start_server)
+
+    def _start_glib_loop(self):
         loop = GLib.MainLoop()
         loop.run()
+
+    def _start_server(self):
+        try:
+            os.unlink(server_address)
+        except OSError:
+            if os.path.exists(server_address):
+                raise
+        sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        sock.bind(server_address)
+        sock.listen(5)
+
+        while True:
+            connection, client_address = sock.accept()
+            try:
+                command = connection.recv(16)
+
+                if command == Spotify.SAVE_REMOVE:
+                    self.save_remove()
+            except Exception as e:
+                print(e)
+            finally:
+                connection.close()
+
+    def stop_server(self):
+        self.server_loop.close()
+
+    def send_to_server(self, command: bytes):
+        sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        try:
+            sock.connect(server_address)
+        except socket.error:
+            raise
+
+        try:
+            sock.sendall(command)
+        finally:
+            sock.close()
 
     @property
     def metadata_status(self):
@@ -77,17 +128,22 @@ class Spotify:
         )
         self.spotipy = spotipy.Spotify(auth=auth)
 
-    def save(self):
+    def save_remove(self):
         try:
-            self.setup_spotify()
             metadata, playback_status = self.metadata_status
             trackid = metadata['mpris:trackid']
-            self.output(trackid)
 
-            # self.output(sp.current_user())
-            self.spotipy.current_user_saved_tracks_add(tracks=[trackid])
-            self.output('Saved to library!')
-            time.sleep(1)
+            self.ignore = True
+            remove = self.saved_track
+            self.saved_track = not self.saved_track
+            if remove:
+                self.spotipy.current_user_saved_tracks_delete(tracks=[trackid])
+                self.output(f'{active_color}Removed from library!{default_color}')
+            else:
+                self.spotipy.current_user_saved_tracks_add(tracks=[trackid])
+                self.output(f'{active_color}Saved to library!{default_color}')
+            time.sleep(2)
+            self.ignore = False
             self.output_playback_status(
                 data={
                     'Metadata': metadata,
@@ -132,6 +188,9 @@ class Spotify:
             self.output('')
 
     def output_playback_status(self, data):
+        if self.ignore:
+            return
+
         metadata = data['Metadata']
         artists = metadata['xesam:artist']
         artist = artists[0] if artists else None
@@ -184,10 +243,10 @@ def status():
 
 
 @cli.command()
-def save():
-    """Save the currently playing song to your library."""
+def save_remove():
+    """Save/remove the currently playing song to/from your library."""
     spotify = Spotify()
-    spotify.save()
+    spotify.send_to_server(Spotify.SAVE_REMOVE)
 
 
 if __name__ == '__main__':

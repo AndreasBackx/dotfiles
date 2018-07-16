@@ -181,7 +181,7 @@ format-foreground = ${config.foreground-inactive}
 
 click-right = xte 'key XF86AudioPlay'
 click-left = xte 'key XF86AudioPlay'
-click-middle = "source ~/.secrets; spotifycl save"
+click-middle = "source ~/.secrets; spotifycl save_remove"
 scroll-up = xte 'key XF86AudioNext'
 scroll-down = xte 'key XF86AudioPrev'
 
