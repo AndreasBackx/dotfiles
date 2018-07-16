@@ -16,12 +16,13 @@ application/x-extension-xhtml=firefox-developer-edition.desktop
 application/x-extension-xht=firefox-developer-edition.desktop
 application/zip=nautilus.desktop
 inode/directory=org.gnome.Nautilus.desktop
+image/png=eog.desktop
 
 [Added Associations]
 x-scheme-handler/mailto=thunderbird.desktop;
 message/rfc822=thunderbird.desktop;
 application/vnd.openxmlformats-officedocument.spreadsheetml.sheet=libreoffice-calc.desktop;chromium.desktop;
-image/jpeg=qiv.desktop;feh.desktop;
+image/jpeg=eog.desktop;qimgv.desktop;qiv.desktop;feh.desktop;
 x-scheme-handler/http=firefox-beta-bin.desktop;firefox.desktop;firefox-developer-edition.desktop;
 x-scheme-handler/https=firefox-beta-bin.desktop;firefox.desktop;firefox-developer-edition.desktop;
 x-scheme-handler/ftp=firefox-beta-bin.desktop;firefox.desktop;firefox-developer-edition.desktop;
@@ -33,7 +34,7 @@ application/x-extension-shtml=firefox-beta-bin.desktop;firefox.desktop;firefox-d
 application/xhtml+xml=firefox-beta-bin.desktop;firefox.desktop;firefox-developer-edition.desktop;
 application/x-extension-xhtml=firefox-beta-bin.desktop;firefox.desktop;firefox-developer-edition.desktop;
 application/x-extension-xht=firefox-beta-bin.desktop;firefox.desktop;firefox-developer-edition.desktop;
-image/png=chromium.desktop;
+image/png=chromium.desktop;eog.desktop;
 text/x-csrc=sublime_text.desktop;
 text/plain=sublime_text.desktop;
 application/pdf=chromium.desktop;firefox-developer-edition.desktop;

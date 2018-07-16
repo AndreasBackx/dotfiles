@@ -175,12 +175,13 @@ label-foreground = ${config.foreground-inactive}
 
 [module/spotify]
 type = custom/script
-exec = spotify-status
+exec = spotifycl status
 tail = true
 format-foreground = ${config.foreground-inactive}
 
 click-right = xte 'key XF86AudioPlay'
 click-left = xte 'key XF86AudioPlay'
+click-middle = "source ~/.secrets; spotifycl save"
 scroll-up = xte 'key XF86AudioNext'
 scroll-down = xte 'key XF86AudioPrev'
 
@@ -223,9 +224,10 @@ click-left = sudo check-backup activate
 [module/updates]
 type = custom/script
 interval = 900
-exec = yay -Pu | wc -l
+exec = "yay -Pu | wc -l; yay -Syy > /dev/null; yay -Pu | wc -l"
 click-left = termite -e "zsh -c 'yay -Syu; zsh'" &
 label = %output%
+tail = true
 
 format-prefix = " "
 format-prefix-foreground = ${config.foreground-inactive}
