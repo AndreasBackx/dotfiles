@@ -144,6 +144,8 @@ class Spotify:
                 self.output(f'{active_color}Saved to library!{default_color}')
             time.sleep(2)
             self.ignore = False
+
+            metadata, playback_status = self.metadata_status
             self.output_playback_status(
                 data={
                     'Metadata': metadata,
