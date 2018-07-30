@@ -14,6 +14,7 @@ import spotipy
 import spotipy.util as util
 from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository import GLib
+from spotipy import SpotifyException
 from spotipy.oauth2 import SpotifyClientCredentials
 
 inactive_color = '%{F#6E6E6E}'
@@ -128,7 +129,7 @@ class Spotify:
         )
         self.spotipy = spotipy.Spotify(auth=auth)
 
-    def save_remove(self):
+    def save_remove(self, retry=False):
         try:
             metadata, playback_status = self.metadata_status
             trackid = metadata['mpris:trackid']
@@ -136,12 +137,21 @@ class Spotify:
             self.ignore = True
             remove = self.saved_track
             self.saved_track = not self.saved_track
-            if remove:
-                self.spotipy.current_user_saved_tracks_delete(tracks=[trackid])
-                self.output(f'{active_color}Removed from library!{default_color}')
-            else:
-                self.spotipy.current_user_saved_tracks_add(tracks=[trackid])
-                self.output(f'{active_color}Saved to library!{default_color}')
+            try:
+                if remove:
+                    self.spotipy.current_user_saved_tracks_delete(tracks=[trackid])
+                    self.output(f'{active_color}Removed from library!{default_color}')
+                else:
+                    self.spotipy.current_user_saved_tracks_add(tracks=[trackid])
+                    self.output(f'{active_color}Saved to library!{default_color}')
+            except SpotifyException:
+                if not retry:
+                    # Refresh access token
+                    self.setup_spotipy()
+                    self.save_remove(retry=True)
+                    return
+                else:
+                    raise
             time.sleep(2)
             self.ignore = False
 
@@ -189,7 +199,7 @@ class Spotify:
         except dbus.DBusException:
             self.output('')
 
-    def output_playback_status(self, data):
+    def output_playback_status(self, data, retry=False):
         if self.ignore:
             return
 
@@ -212,10 +222,21 @@ class Spotify:
         if not same_song:
             self.last_title = title
             trackid = metadata['mpris:trackid']
-            self.saved_track = self.spotipy.current_user_saved_tracks_contains(tracks=[trackid])[0]
+
+            try:
+                self.update_saved_track(trackid=trackid)
+            except SpotifyException:
+                # Refresh access token
+                self.setup_spotipy()
+                self.update_saved_track(trackid=trackid)
             if self.saved_track:
                 divider = '+'
                 self.output(f'{color}{artist} {divider} {title}{default_color}')
+
+    def update_saved_track(self, trackid: str):
+        self.saved_track = self.spotipy.current_user_saved_tracks_contains(
+            tracks=[trackid]
+        )[0]
 
     def on_properties_changed(self, interface, data, *args, **kwargs):
         self.output_playback_status(data)

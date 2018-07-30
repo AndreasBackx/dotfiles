@@ -5,7 +5,7 @@ if [[ $machine == "Linux" ]]; then
 
   # Make Electron use gio for trash.
   # Used for VS Code.
-  export ELECTRON_TRASH="/usr/bin/gio"
+  export ELECTRON_TRASH="gio"
 
 elif [[ $machine == "Darwin" ]]; then
   # MacOS specific commands.
