@@ -31,5 +31,3 @@
     path = /home/andreas/.gitconfig-linux
     # Only exists on MacOS
     path = /Users/Andreas/.gitconfig-macos
-[gpg]
-	program = gpg2
