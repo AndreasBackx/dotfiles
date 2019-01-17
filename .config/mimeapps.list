@@ -17,6 +17,7 @@ application/x-extension-xht=firefox-developer-edition.desktop
 application/zip=nautilus.desktop
 inode/directory=org.gnome.Nautilus.desktop
 image/png=eog.desktop
+x-scheme-handler/discord-409416265891971072=discord-409416265891971072.desktop
 
 [Added Associations]
 x-scheme-handler/mailto=thunderbird.desktop;

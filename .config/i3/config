@@ -9,7 +9,7 @@ set $urgent-bg-color     #e52e71
 
 set $workspace1 "1"
 set $workspace2 "2"
-set $workspace3 "3 "
+set $workspace3 "3"
 set $workspace4 "4"
 set $workspace5 "5"
 set $workspace6 "6"
@@ -17,12 +17,14 @@ set $workspace7 "7"
 set $workspace8 "8"
 set $workspace9 "9"
 set $workspace10 "10"
+set $workspace11 "11"
 
 # Font
 font pango:Roboto Regular 10.5
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
+mouse_warping none
 
 # Application shortcuts
 bindsym Print exec imgur-screenshot --auto-delete 604800 --keep-file false --open false
@@ -35,11 +37,15 @@ assign [class="Subl3"] $workspace1
 assign [class="Code"] $workspace1
 assign [class="Slack"] $workspace6
 assign [class="discord"] $workspace6
+assign [class="Caprine"] $workspace6
 assign [class="Irssi"] $workspace6
-assign [class="Messenger for Desktop"] $workspace6
 assign [class="Transmission-gtk"] $workspace9
+# Move Android Studio design preview
+assign [class="jetbrains-studio" title="Preview - "] $workspace10
+assign [class="jetbrains-*"] $workspace2
+for_window [title="Android Emulator"] move to workspace $workspace10
 # Bug see https://github.com/i3/i3/issues/2060
-for_window [class="Spotify"] move to workspace $workspace7
+for_window [class="Spotify"] move to workspace $workspace11
 assign [class="Thunderbird"] $workspace8
 
 # Startup applications
@@ -49,7 +55,7 @@ exec_always ~/.bin/custom-polybar
 
 exec xbindkeys
 exec --no-startup-id i3-msg 'workspace $workspace5; exec chromium'
-exec messengerfordesktop
+exec caprine
 exec slack
 exec spotify
 exec thunderbird
@@ -66,10 +72,10 @@ bindsym XF86AudioRaiseVolume exec pulseaudio-ctl-polybar up 5
 bindsym XF86AudioLowerVolume exec pulseaudio-ctl-polybar down 5
 bindsym XF86AudioMute exec pulseaudio-ctl-polybar mute
 
-bindsym XF86AudioPlay exec playerctl play-pause && polybar-msg hook spotify 1
-bindsym XF86AudioPause exec playerctl pause && polybar-msg hook spotify 1
-bindsym XF86AudioNext exec playerctl next && polybar-msg hook spotify 1
-bindsym XF86AudioPrev exec playerctl previous && polybar-msg hook spotify 1
+bindsym XF86AudioPlay exec playerctl play-pause
+bindsym XF86AudioPause exec playerctl pause
+bindsym XF86AudioNext exec playerctl next
+bindsym XF86AudioPrev exec playerctl previous
 
 # Sreen brightness controls
 bindsym XF86Display exec sudo monitors brightness toggle && polybar-msg hook brightness-left 1 && polybar-msg hook brightness-right 1
@@ -124,24 +130,21 @@ bindsym $mod+g sticky toggle
 #bindsym $mod+space focus mode_toggle
 
 # Workspace outputs
-# Nouveau
-# set $monitor-landscape "HDMI-1"
-# set $monitor-portrait "DP-3"
+set $monitor-center "DisplayPort-0"
+set $monitor-right "DisplayPort-4"
+set $monitor-left "DisplayPort-3"
 
-# Nvidia proprietary drivers
-set $monitor-landscape "HDMI-0"
-set $monitor-portrait "DP-0"
-
-workspace $workspace1 output $monitor-landscape
-workspace $workspace2 output $monitor-landscape
-workspace $workspace3 output $monitor-landscape
-workspace $workspace4 output $monitor-portrait
-workspace $workspace5 output $monitor-portrait
-workspace $workspace6 output $monitor-portrait
-workspace $workspace7 output $monitor-portrait
-workspace $workspace8 output $monitor-portrait
-workspace $workspace9 output $monitor-portrait
-workspace $workspace10 output $monitor-portrait
+workspace $workspace1 output $monitor-center
+workspace $workspace2 output $monitor-center
+workspace $workspace3 output $monitor-center
+workspace $workspace4 output $monitor-right
+workspace $workspace5 output $monitor-right
+workspace $workspace6 output $monitor-right
+workspace $workspace7 output $monitor-right
+workspace $workspace8 output $monitor-left
+workspace $workspace9 output $monitor-left
+workspace $workspace10 output $monitor-left
+workspace $workspace11 output $monitor-left
 
 # Switching workspaces to workspace
 bindsym $mod+1 workspace $workspace1
@@ -154,6 +157,7 @@ bindsym $mod+7 workspace $workspace7
 bindsym $mod+8 workspace $workspace8
 bindsym $mod+9 workspace $workspace9
 bindsym $mod+0 workspace $workspace10
+bindsym $mod+minus workspace $workspace11
 
 # Moving windows to a different workspace
 bindsym $mod+Shift+1 move container to workspace $workspace1
@@ -166,6 +170,7 @@ bindsym $mod+Shift+7 move container to workspace $workspace7
 bindsym $mod+Shift+8 move container to workspace $workspace8
 bindsym $mod+Shift+9 move container to workspace $workspace9
 bindsym $mod+Shift+0 move container to workspace $workspace10
+bindsym $mod+Shift+minus move container to workspace $workspace11
 
 bindsym $mod+Left workspace prev_on_output
 bindsym $mod+Right workspace next_on_output

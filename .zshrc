@@ -40,6 +40,9 @@ fi
 # Groovy
 export GROOVY_HOME="/usr/local/opt/groovy/libexec"
 
+# Rbenv
+if which rbenv > /dev/null; then eval "$(rbenv init - --no-rehash)"; fi
+
 # Pyenv
 if which pyenv > /dev/null; then eval "$(pyenv init - --no-rehash)"; fi
 if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init - --no-rehash)"; fi
@@ -52,4 +55,4 @@ alias mkvirtualenv="pyenv virtualenv"
 # Other aliases
 alias config='git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 alias startServer="browser-sync start --files='*.html, *.css, css/*.css, js/*.js, img/*' --server --no-ghost-mode --no-notify --no-open"
-alias sudo="sudo env PATH=$PATH"
+alias sudo="sudo -E"

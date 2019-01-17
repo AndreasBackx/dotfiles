@@ -14,5 +14,6 @@ while pgrep -x polybar >/dev/null; do sleep 1; done
 # MONITOR=DP-3 polybar portrait &
 
 # Nvidia proprietary drivers
-MONITOR=HDMI-0 polybar landscape &
-MONITOR=DP-0 polybar portrait &
+MONITOR=DisplayPort-0 polybar center &
+MONITOR=DisplayPort-4 polybar right &
+MONITOR=DisplayPort-3 polybar left &

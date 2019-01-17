@@ -63,7 +63,7 @@ margin-bottom = 5
 ; BARS
 ;=====================================================
 
-[bar/landscape]
+[bar/center]
 monitor = ${env:MONITOR:HDMI-1}
 bottom = true
 width = 100%
@@ -103,8 +103,16 @@ scroll-down = i3wm-wsprev
 
 enable-ipc = true
 
-[bar/portrait]
-inherit = bar/landscape
+[bar/right]
+inherit = bar/center
+tray-position = none
+
+modules-left = i3 xwindow
+modules-center =
+modules-right = check-backup shairport headphones brightness-right volume memory cpu date
+
+[bar/left]
+inherit = bar/center
 tray-position = none
 
 modules-left = i3 xwindow

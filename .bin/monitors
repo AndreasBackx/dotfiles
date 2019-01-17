@@ -65,8 +65,9 @@ FEATURES = {
 
 
 class Display(Enum):
-    LEFT = '6'
-    RIGHT = '9'
+    LEFT = '3'
+    CENTER = '1'
+    RIGHT = '3'
 
 
 class EnumType(click.Choice):
