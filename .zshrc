@@ -31,7 +31,15 @@ elif [[ $machine == "Darwin" ]]; then
   MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
 
   alias flushdns="sudo dscacheutil -flushcache;sudo killall -HUP mDNSResponder"
+
+  alias imgur-screenshot="imgur-screenshot.sh"
 fi
+
+# Ruby
+eval "$(rbenv init -)"
+
+# SSH forwarding
+# eval $(ssh-agent -s)
 
 # Groovy
 export GROOVY_HOME="/usr/local/opt/groovy/libexec"

@@ -5,7 +5,12 @@ if [[ $machine == "Darwin" ]]; then
 
   # Use GNU utils.
   PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
+
+  export GLASSFISH_HOME=/usr/local/opt/glassfish/libexec
 fi
+
+# Ruby
+export PATH="$HOME/.rbenv/bin:$PATH"
 
 # Go
 export GOPATH=$HOME/Development/Go
