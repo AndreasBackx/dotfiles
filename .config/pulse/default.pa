@@ -138,9 +138,9 @@ load-module module-filter-heuristics
 load-module module-filter-apply
 
 ### Make some devices default
-set-card-profile alsa_card.usb-FiiO_DigiHug_USB_Audio-01 output:analog-stereo
-set-default-sink alsa_output.usb-FiiO_DigiHug_USB_Audio-01.analog-stereo
-set-card-profile alsa_card.usb-BLUE_MICROPHONE_Blue_Snowball_201305-00 input:analog-stereo
-set-default-source alsa_input.usb-BLUE_MICROPHONE_Blue_Snowball_201305-00.analog-stereo
+# set-card-profile alsa_card.usb-FiiO_DigiHug_USB_Audio-01 output:analog-stereo
+# set-default-sink alsa_output.usb-FiiO_DigiHug_USB_Audio-01.analog-stereo
+# set-card-profile alsa_card.usb-BLUE_MICROPHONE_Blue_Snowball_201305-00 input:analog-stereo
+# set-default-source alsa_input.usb-BLUE_MICROPHONE_Blue_Snowball_201305-00.analog-stereo
 
 load-module module-switch-on-connect

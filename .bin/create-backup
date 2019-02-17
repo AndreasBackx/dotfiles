@@ -11,7 +11,8 @@ REPOSITORY=/mnt/server/storage/Backups
 
 # Backup all of /home and /var/www except a few
 # excluded directories
-/usr/bin/borg create -v --stats                         \
+echo "Creating borg backup..."
+/usr/bin/borg create --debug --stats                         \
     $REPOSITORY::'{hostname}-{now:%Y-%m-%dT%H:%M:%S}'   \
     /home/andreas                                       \
     /etc                                                \
@@ -31,12 +32,18 @@ REPOSITORY=/mnt/server/storage/Backups
     --exclude '/home/andreas/Movies'                    \
     --exclude '/home/andreas/.gradle'                   \
     --exclude '/home/andreas/.local'                    \
+    --exclude '/home/andreas/.pyenv'                    \
+    --exclude '/home/andreas/.npm-global'               \
     --exclude '/home/andreas/Downloads'                 \
+    --exclude-caches                                    \
+    --show-rc                                           \
+    --debug                                             \
     --progress
 
 # Use the `prune` subcommand to maintain 7 daily, 4 weekly and 6 monthly
 # archives of THIS machine. The '{hostname}-' prefix is very important to
 # limit prune's operation to this machine's archives and not apply to
 # other machine's archives also.
+echo "Pruning borg backups..."
 /usr/bin/borg prune -v --list $REPOSITORY --prefix '{hostname}-'    \
     --keep-daily=7 --keep-weekly=4 --keep-monthly=6

@@ -63,7 +63,7 @@ margin-bottom = 5
 ; BARS
 ;=====================================================
 
-[bar/landscape]
+[bar/center]
 monitor = ${env:MONITOR:HDMI-1}
 bottom = true
 width = 100%
@@ -103,8 +103,16 @@ scroll-down = i3wm-wsprev
 
 enable-ipc = true
 
-[bar/portrait]
-inherit = bar/landscape
+[bar/right]
+inherit = bar/center
+tray-position = none
+
+modules-left = i3 xwindow
+modules-center =
+modules-right = check-backup shairport headphones brightness-right volume memory cpu date
+
+[bar/left]
+inherit = bar/center
 tray-position = none
 
 modules-left = i3 xwindow
@@ -175,12 +183,13 @@ label-foreground = ${config.foreground-inactive}
 
 [module/spotify]
 type = custom/script
-exec = spotify-status
+exec = spotifycl status
 tail = true
 format-foreground = ${config.foreground-inactive}
 
 click-right = xte 'key XF86AudioPlay'
 click-left = xte 'key XF86AudioPlay'
+click-middle = "source ~/.secrets; spotifycl save_remove"
 scroll-up = xte 'key XF86AudioNext'
 scroll-down = xte 'key XF86AudioPrev'
 
@@ -223,9 +232,10 @@ click-left = sudo check-backup activate
 [module/updates]
 type = custom/script
 interval = 900
-exec = yay -Pu | wc -l
+exec = "yay -Pu | wc -l; yay -Syy > /dev/null; yay -Pu | wc -l"
 click-left = termite -e "zsh -c 'yay -Syu; zsh'" &
 label = %output%
+tail = true
 
 format-prefix = " "
 format-prefix-foreground = ${config.foreground-inactive}

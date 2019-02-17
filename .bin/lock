@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 file_location=/tmp/lockscreen.png
-scrot $file_location
+maim --hidecursor $file_location
 convert $file_location -scale 10% -scale 1000% $file_location
 [[ -f $1 ]] && convert $file_location $1 -gravity center -composite -matte $file_location
 

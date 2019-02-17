@@ -9,5 +9,11 @@ killall -q polybar
 while pgrep -x polybar >/dev/null; do sleep 1; done
 
 # Launch polybar
-MONITOR=HDMI-1 polybar landscape &
-MONITOR=DP-3 polybar portrait &
+# Nouveau
+# MONITOR=HDMI-1 polybar landscape &
+# MONITOR=DP-3 polybar portrait &
+
+# Nvidia proprietary drivers
+MONITOR=DisplayPort-0 polybar center &
+MONITOR=DisplayPort-4 polybar right &
+MONITOR=DisplayPort-3 polybar left &
