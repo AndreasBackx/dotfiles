@@ -7,6 +7,7 @@ if [[ $machine == "Linux" ]]; then
   # Used for VS Code.
   export ELECTRON_TRASH="gio"
 
+  export BROWSER="/usr/bin/chromium"
 elif [[ $machine == "Darwin" ]]; then
   # MacOS specific commands.
 
@@ -41,3 +42,11 @@ PATH=$HOME/.bin:$PATH
 PATH=$HOME/.pyenv/shims:$PATH
 PATH=$PATH:./node_modules/.bin
 export PATH
+
+if which rbenv > /dev/null; then eval "$(rbenv init - zsh --no-rehash)"; fi
+ 
+# Pyenv
+if which pyenv > /dev/null; then eval "$(pyenv init - zsh --no-rehash)"; fi
+if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init - zsh --no-rehash)"; fi
+export PYENV_VIRTUALENV_DISABLE_PROMPT=1
+

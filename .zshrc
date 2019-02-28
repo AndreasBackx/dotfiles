@@ -1,4 +1,3 @@
-source ~/.profile
 source ~/.secrets
 
 # Zsh
@@ -12,17 +11,13 @@ export LS_COLORS="di=34:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30
 export VISUAL=vim
 export EDITOR="$VISUAL"
 source $ZSH/oh-my-zsh.sh
-export BROWSER="/usr/bin/chromium"
 
 # OS-specific
 machine=`uname -s`
 if [[ $machine == "Linux" ]]; then
   # Linux specific commands.
 
-  # Make Electron use gio for trash.
-  # Used for VS Code.
-  # export ELECTRON_TRASH="/usr/bin/gio"
-
+  export BROWSER="/usr/bin/chromium"
 elif [[ $machine == "Darwin" ]]; then
   # MacOS specific commands.
 
@@ -39,9 +34,6 @@ elif [[ $machine == "Darwin" ]]; then
   alias imgur-screenshot="imgur-screenshot.sh"
 fi
 
-# Ruby
-eval "$(rbenv init -)"
-
 # SSH forwarding
 # eval $(ssh-agent -s)
 
@@ -49,12 +41,12 @@ eval "$(rbenv init -)"
 export GROOVY_HOME="/usr/local/opt/groovy/libexec"
 
 # Rbenv
-if which rbenv > /dev/null; then eval "$(rbenv init - --no-rehash)"; fi
+#if which rbenv > /dev/null; then eval "$(rbenv init - zsh --no-rehash)"; fi
 
 # Pyenv
-if which pyenv > /dev/null; then eval "$(pyenv init - --no-rehash)"; fi
-if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init - --no-rehash)"; fi
-export PYENV_VIRTUALENV_DISABLE_PROMPT=1
+#if which pyenv > /dev/null; then eval "$(pyenv init - zsh --no-rehash)"; fi
+#if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init - zsh --no-rehash)"; fi
+#export PYENV_VIRTUALENV_DISABLE_PROMPT=1
 
 alias workon="pyenv activate"
 alias deactivate="pyenv deactivate"
