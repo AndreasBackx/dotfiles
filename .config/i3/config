@@ -50,7 +50,7 @@ assign [class="Thunderbird"] $workspace8
 
 # Startup applications
 exec_always zsh ~/.screenlayout/default.sh
-exec_always feh --bg-scale ~/.config/wallpapers/landscape.png --bg-scale ~/.config/wallpapers/portrait.png
+exec_always feh --bg-fill ~/.config/wallpapers/Jaime\ Lannister\ -\ Field\ of\ Fire.jpg --bg-fill ~/.config/wallpapers/portrait.png
 exec_always ~/.bin/custom-polybar
 
 exec xbindkeys

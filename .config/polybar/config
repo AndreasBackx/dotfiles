@@ -92,7 +92,7 @@ font-2 = FontAwesome:pixelsize=11;3
 
 modules-left = i3 xwindow
 modules-center = spotify
-modules-right = mobile-vikings check-backup shairport headphones movie brightness-left volume updates memory cpu date powermenu
+modules-right = check-backup shairport headphones movie brightness-left volume updates memory cpu date powermenu
 
 tray-position = right
 tray-padding = ${config.padding}

@@ -1,2 +1,2 @@
 #!/bin/sh
-feh --bg-scale '/home/andreas/.config/wallpapers/landscape.png' '/home/andreas/.config/wallpapers/portrait.png' 
+feh --bg-fill '/home/andreas/.config/wallpapers/Jaime Lannister - Field of Fire.jpg' '/home/andreas/.config/wallpapers/portrait.png' 

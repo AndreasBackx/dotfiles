@@ -37,7 +37,6 @@ echo "Creating borg backup..."
     --exclude '/home/andreas/Downloads'                 \
     --exclude-caches                                    \
     --show-rc                                           \
-    --debug                                             \
     --progress
 
 # Use the `prune` subcommand to maintain 7 daily, 4 weekly and 6 monthly
