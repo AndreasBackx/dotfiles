@@ -12,13 +12,15 @@ REPOSITORY=/mnt/server/storage/Backups
 # Backup all of /home and /var/www except a few
 # excluded directories
 echo "Creating borg backup..."
-/usr/bin/borg create --debug --stats                         \
+/usr/bin/borg create					\
     $REPOSITORY::'{hostname}-{now:%Y-%m-%dT%H:%M:%S}'   \
     /home/andreas                                       \
     /etc                                                \
     /var                                                \
     /Users                                              \
     /usr/local                                          \
+    --debug						\
+    --stats						\
     --exclude '/mnt'                                    \
     --exclude '/home/*/.cache'                          \
     --exclude '/var/cache'                              \

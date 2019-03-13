@@ -30,6 +30,7 @@ mouse_warping none
 bindsym Print exec imgur-screenshot --auto-delete 604800 --keep-file false --open false
 bindsym $mod+Return exec termite -d "$(xcwd)"
 bindsym $mod+d exec "rofi -separator-style none -hide-scrollbar -width 25 -padding 20 -line-margin 10 -lines 7 -font 'Roboto Regular 14' -color-window 'argb:e61c1c1c, argb:e6242424, argb:001c1c1c' -color-normal 'argb:001c1c1c, argb:e6cecece, argb:001c1c1c, argb:e6ccc47a, argb:e61c1c1c' -color-active 'argb:e69ccc3d, argb:e61c1c1c, argb:e69ccc3d, argb:e6ccc47a, argb:e61c1c1c' -color-urgent 'argb:e6e52e71, argb:e61c1c1c, argb:e6e52e71, argb:e6ccc47a, argb:e61c1c1c' -show run"
+bindsym $mod+Shift+d exec "rofi -separator-style none -hide-scrollbar -width 25 -padding 20 -line-margin 10 -lines 7 -font 'Roboto Regular 14' -color-window 'argb:e61c1c1c, argb:e6242424, argb:001c1c1c' -color-normal 'argb:001c1c1c, argb:e6cecece, argb:001c1c1c, argb:e6ccc47a, argb:e61c1c1c' -color-active 'argb:e69ccc3d, argb:e61c1c1c, argb:e69ccc3d, argb:e6ccc47a, argb:e61c1c1c' -color-urgent 'argb:e6e52e71, argb:e61c1c1c, argb:e6e52e71, argb:e6ccc47a, argb:e61c1c1c' -show run -display-run sudo -run-command 'sudo {cmd}'"
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'Do you really want to exit i3?' -b 'Yes, exit i3' 'i3-msg exit'"
 
 # Assign apps to workspaces
@@ -186,7 +187,7 @@ bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
 
 # Remove the border everywhere
-for_window [class="^.*"] border pixel 0
+for_window [class="^.*"] border none
 
 bindsym $mod+r mode "resize"
 

@@ -98,8 +98,8 @@ tray-position = right
 tray-padding = ${config.padding}
 tray-background = ${config.background}
 
-scroll-up = i3wm-wsnext
-scroll-down = i3wm-wsprev
+scroll-up = i3wm-wsprev
+scroll-down = i3wm-wsnext
 
 enable-ipc = true
 
