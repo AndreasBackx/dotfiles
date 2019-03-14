@@ -34,7 +34,6 @@ bindsym $mod+Shift+d exec "rofi -separator-style none -hide-scrollbar -width 25 
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'Do you really want to exit i3?' -b 'Yes, exit i3' 'i3-msg exit'"
 
 # Assign apps to workspaces
-assign [class="Subl3"] $workspace1
 assign [class="Code"] $workspace1
 assign [class="Slack"] $workspace6
 assign [class="discord"] $workspace6

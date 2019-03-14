@@ -224,10 +224,10 @@ click-left = sudo ~/.bin/monitors movie --toggle; polybar-msg -p %pid% hook movi
 label = %output%
 
 [module/check-backup]
-type = custom/script
-interval = 60
-exec = check-backup status
-click-left = sudo check-backup activate
+type = custom/ipc
+hook-0 = check-backup status
+initial = 1
+click-left = sudo check-backup start
 
 [module/updates]
 type = custom/script

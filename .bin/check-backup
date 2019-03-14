@@ -18,12 +18,33 @@ function is_service_active() {
     fi
 }
 
+function is_service_failed() {
+    if systemctl is-failed --quiet create-backup.service; then
+        true
+    else
+        false
+    fi
+}
+
+function is_timer_waiting() {
+    timer_status=`systemctl status --quiet create-backup.timer`
+    if  [[ $timer_status == *"Active: active (waiting)"* ]]; then
+        true
+    else
+        false
+    fi
+}
+
 function status() {
     if is_timer_active; then
         if is_service_active; then
             echo "%{F#CECECE}%{F-}"
         else
-            echo "%{F#6E6E6E}%{F-}"
+            if is_service_failed; then
+                echo "%{F#6E6E6E}%{F-}"
+            else
+                echo "%{F#6E6E6E}%{F-}"
+            fi
         fi
     else
         echo "%{F#6E6E6E}%{F-}"
@@ -34,14 +55,14 @@ case "$1" in
     status)
         status
         ;;
-    activate)
-        if is_timer_active; then
-            status
-            exit 1
+    update)
+        polybar-msg hook check-backup 1 &> /dev/null
+        ;;
+    start)
+        if ! [[ is_timer_active ]]; then
+            sudo systemctl start create-backup.timer
         fi
-
-        sudo systemctl start create-backup.timer
-        status
+        sudo systemctl start create-backup.service
         ;;
     *)
         echo "Usage: $0 {status|activate}"

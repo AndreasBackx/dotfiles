@@ -1,0 +1,2 @@
+#!/usr/bin/env zsh
+XDG_CURRENT_DESKTOP=X-Generic LD_LIBRARY_PATH=/opt/qt5-pmp/usr/lib:$LD_LIBRARY_PATH plexmediaplayer --terminal

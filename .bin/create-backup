@@ -12,15 +12,14 @@ REPOSITORY=/mnt/server/storage/Backups
 # Backup all of /home and /var/www except a few
 # excluded directories
 echo "Creating borg backup..."
-/usr/bin/borg create					\
+/usr/bin/borg create					                \
     $REPOSITORY::'{hostname}-{now:%Y-%m-%dT%H:%M:%S}'   \
     /home/andreas                                       \
     /etc                                                \
     /var                                                \
-    /Users                                              \
     /usr/local                                          \
-    --debug						\
-    --stats						\
+    --debug						                        \
+    --stats						                        \
     --exclude '/mnt'                                    \
     --exclude '/home/*/.cache'                          \
     --exclude '/var/cache'                              \
@@ -35,11 +34,22 @@ echo "Creating borg backup..."
     --exclude '/home/andreas/.gradle'                   \
     --exclude '/home/andreas/.local'                    \
     --exclude '/home/andreas/.pyenv'                    \
+    --exclude '/home/andreas/.rbenv'                    \
     --exclude '/home/andreas/.npm-global'               \
     --exclude '/home/andreas/Downloads'                 \
+    --exclude '/home/andreas/.npm/_cacache'             \
+    --exclude 'node_modules'                            \
+    --exclude '__pycache__'                             \
+    --exclude '*Cache*'                                 \
+    --exclude '*cache*'                                 \
+    --exclude '*logs*'                                  \
+    --exclude '.AndroidStudio*'                         \
+    --exclude '.IntelliJ*'                              \
+    --exclude '.CLion*'                                 \
     --exclude-caches                                    \
     --show-rc                                           \
-    --progress
+    --list                                              \
+    --filter AME
 
 # Use the `prune` subcommand to maintain 7 daily, 4 weekly and 6 monthly
 # archives of THIS machine. The '{hostname}-' prefix is very important to
