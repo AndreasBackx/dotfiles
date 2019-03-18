@@ -89,10 +89,11 @@ module-margin-right = 1
 font-0 = xos4 Terminus:antialias=false:pixelsize=14;2
 font-1 = Material Icons:pixelsize=11;3
 font-2 = FontAwesome:pixelsize=11;3
+font-3 = font\-mfizz:pixelsize=11;3
 
 modules-left = i3 xwindow
 modules-center = spotify
-modules-right = check-backup shairport headphones movie brightness-left volume updates memory cpu date powermenu
+modules-right = running-services check-backup shairport headphones movie brightness-left volume updates memory cpu date powermenu
 
 tray-position = right
 tray-padding = ${config.padding}
@@ -222,6 +223,13 @@ hook-0 = sudo ~/.bin/monitors movie --get
 initial = 1
 click-left = sudo ~/.bin/monitors movie --toggle; polybar-msg -p %pid% hook movie 1
 label = %output%
+
+[module/running-services]
+type = custom/script
+interval = 5
+exec = running-services
+label-font = 4
+label-foreground = ${config.foreground-inactive}
 
 [module/check-backup]
 type = custom/ipc

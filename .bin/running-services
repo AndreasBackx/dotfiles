@@ -1,0 +1,21 @@
+#!/bin/env python
+import subprocess
+
+service_icons = {
+    # 'name': 'icon',
+    'docker': '\uf11e',
+    'postgresql': '\uf16a',
+    'mariadb': '\uf14c',
+    'redis': '\uf170',
+}
+
+output = ''
+
+for service, icon in service_icons.items():
+    process = subprocess.run(['systemctl', 'is-active', '--quiet', f'{service}.service'])
+    is_active = process.returncode == 0
+
+    if is_active:
+        output += f'{icon}  '
+
+print(output.rstrip())
