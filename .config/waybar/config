@@ -1,0 +1,118 @@
+[
+    {
+        "layer": "top",
+        "position": "bottom",
+        "output": "DP-1",
+        "height": 40,
+        "modules-left": [
+            "sway/workspaces",
+            "sway/mode",
+            "sway/window"
+        ],
+        "modules-center": [
+            "custom/spotify"
+        ],
+        "modules-right": [
+            "custom/brightness",
+            "idle_inhibitor",
+            "pulseaudio",
+            "cpu",
+            "memory",
+            "clock",
+            "tray"
+        ],
+        "sway/mode": {
+            "format": "<span style=\"italic\">{}</span>"
+        },
+        "sway/window": {
+            "max-length": 50
+        },
+        "idle_inhibitor": {
+            "format": "{icon}",
+            "format-icons": {
+                "activated": "",
+                "deactivated": ""
+            }
+        },
+        "tray": {
+            "spacing": 12
+        },
+        "clock": {
+            "tooltip-format": "{:%Y-%m-%d | %H:%M}",
+            "format": "{:%a %d %B %H:%M}"
+        },
+        "cpu": {
+            "format": "{usage}% "
+        },
+        "memory": {
+            "format": "{}% "
+        },
+        "pulseaudio": {
+            "scroll-step": 5,
+            "format": "{volume}% {icon}",
+            "format-bluetooth": "{volume}% {icon}",
+            "format-muted": "",
+            "format-icons": {
+                "headphones": "",
+                "handsfree": "",
+                "headset": "",
+                "phone": "",
+                "portable": "",
+                "car": "",
+                "default": [
+                    "",
+                    ""
+                ]
+            },
+            "on-click-right": "pavucontrol"
+        },
+        "custom/brightness": {
+            "format": "{}",
+            "format-icon": "",
+            "interval": 2,
+            // "return-type": "json",
+            "on-click": "sudo monitors brightness toggle",
+            "on-scroll-up": "sudo monitors brightness up",
+            "on-scroll-down": "sudo monitors brightness down",
+            "exec": "sudo monitors brightness --display center"
+            /*
+            bindsym XF86Display exec sudo monitors brightness toggle && polybar-msg hook brightness-left 1 && polybar-msg hook brightness-right 1
+bindsym XF86MonBrightnessUp exec sudo monitors brightness up && polybar-msg hook brightness-left 1 && polybar-msg hook brightness-right 1
+bindsym XF86MonBrightnessDown exec sudo monitors brightness down && polybar-msg hook brightness-left 1 && polybar-msg hook brightness-right 1*/
+        },
+        "custom/spotify": {
+            "format": "{}",
+            "return-type": "json",
+            "on-click-right": "$HOME/.bin/spotifycl save-remove",
+            "exec": "$HOME/.bin/spotifycl status"
+        }
+    },
+    {
+        "layer": "top",
+        "position": "bottom",
+        "output": [
+            "DP-4",
+            "DP-5"
+        ],
+        "height": 40,
+        "modules-left": [
+            "sway/workspaces",
+            "sway/mode",
+            "sway/window"
+        ],
+        "modules-center": [],
+        "modules-right": [
+            "clock"
+        ],
+        "clock": {
+            "tooltip-format": "{:%Y-%m-%d | %H:%M}",
+            "format": "{:%a %d %B %H:%M}"
+        },
+        "sway/mode": {
+            "format": "<span style=\"italic\">{}</span>"
+        },
+        "sway/window": {
+            "max-length": 50
+        }
+    }
+]

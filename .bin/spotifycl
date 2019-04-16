@@ -23,22 +23,18 @@
 # SOFTWARE.
 
 
+import json
 import os
 import socket
-import sys
 import time
-import traceback
 from concurrent.futures import ThreadPoolExecutor
 
 import click
 import dbus
 import dbus.mainloop.glib
-import spotipy
-import spotipy.util as util
 from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository import GLib
-from spotipy import SpotifyException
-from spotipy.oauth2 import SpotifyClientCredentials
+from spotipy import Spotify, SpotifyException, util
 
 inactive_color = '%{F#6E6E6E}'
 active_color = '%{F#CECECE}'
@@ -47,7 +43,7 @@ default_color = '%{F-}'
 server_address = '/tmp/spotifycl-socket'
 
 
-class Spotify:
+class Spotifycl:
 
     SPOTIFY_BUS = 'org.mpris.MediaPlayer2.spotify'
     SPOTIFY_OBJECT_PATH = '/org/mpris/MediaPlayer2'
@@ -56,6 +52,10 @@ class Spotify:
     PROPERTIES_INTERFACE = 'org.freedesktop.DBus.Properties'
 
     SAVE_REMOVE = b'save'
+
+    CLASS_PLAYING = 'playing'
+    CLASS_PAUSED = 'paused'
+    CLASS_SAVED = 'saved'
 
     def __init__(self):
         DBusGMainLoop(set_as_default=True)
@@ -107,7 +107,7 @@ class Spotify:
             try:
                 command = connection.recv(16)
 
-                if command == Spotify.SAVE_REMOVE:
+                if command == Spotifycl.SAVE_REMOVE:
                     self.save_remove()
             except Exception as e:
                 print(e)
@@ -132,15 +132,15 @@ class Spotify:
     @property
     def metadata_status(self):
         spotify_properties = dbus.Interface(
-            self.spotify,
-            dbus_interface=Spotify.PROPERTIES_INTERFACE
+            self.spotify_dbus,
+            dbus_interface=Spotifycl.PROPERTIES_INTERFACE
         )
         metadata = spotify_properties.Get(
-            Spotify.PLAYER_INTERFACE,
+            Spotifycl.PLAYER_INTERFACE,
             'Metadata'
         )
         playback_status = spotify_properties.Get(
-            Spotify.PLAYER_INTERFACE,
+            Spotifycl.PLAYER_INTERFACE,
             'PlaybackStatus'
         )
         return metadata, playback_status
@@ -150,7 +150,8 @@ class Spotify:
             username=os.environ.get('SPOTIFY_USERNAME'),
             scope='user-library-read,user-library-modify'
         )
-        self.spotipy = spotipy.Spotify(auth=auth)
+        print(auth)
+        self.spotify = Spotify(auth=auth)
 
     def save_remove(self, retry=False):
         try:
@@ -162,11 +163,11 @@ class Spotify:
             self.saved_track = not self.saved_track
             try:
                 if remove:
-                    self.spotipy.current_user_saved_tracks_delete(tracks=[trackid])
-                    self.output(f'{active_color}Removed from library!{default_color}')
+                    self.spotify.current_user_saved_tracks_delete(tracks=[trackid])
+                    self.output('Removed from library!')
                 else:
-                    self.spotipy.current_user_saved_tracks_add(tracks=[trackid])
-                    self.output(f'{active_color}Saved to library!{default_color}')
+                    self.spotify.current_user_saved_tracks_add(tracks=[trackid])
+                    self.output('Saved to library!')
             except SpotifyException:
                 if not retry:
                     # Refresh access token
@@ -189,23 +190,35 @@ class Spotify:
         except dbus.DBusException:
             self.output('Could not connect to spotify.')
 
-    def output(self, line):
-        if not line:
+    def output(self, text, tooltip=None, css_class=None):
+        text = '' if text is None else text
+
+        output = {
+            'text': text,
+        }
+
+        if tooltip:
+            output['tooltip'] = tooltip
+        if css_class and isinstance(css_class, (str, list)):
+            output['class'] = css_class
+
+        if not text:
             self.empty_output = True
-        if line != self.last_output:
-            print(line, flush=True)
-            self.last_output = line
+        if output != self.last_output:
+            serialized = json.dumps(output)
+            print(serialized, flush=True)
+            self.last_output = output
 
     def setup_spotify(self):
-        self.spotify = self.session_bus.get_object(
-            Spotify.SPOTIFY_BUS,
-            Spotify.SPOTIFY_OBJECT_PATH
+        self.spotify_dbus = self.session_bus.get_object(
+            Spotifycl.SPOTIFY_BUS,
+            Spotifycl.SPOTIFY_OBJECT_PATH
         )
 
     def setup_properties_changed(self):
         try:
             self.setup_spotify()
-            self.spotify.connect_to_signal(
+            self.spotify_dbus.connect_to_signal(
                 'PropertiesChanged',
                 self.on_properties_changed
             )
@@ -222,29 +235,62 @@ class Spotify:
         except dbus.DBusException:
             self.output('')
 
+    def _song_info(self, data):
+        """Return song info from passed data.
+
+        Args:
+            data (dict): Metadata and PlaybackStatus.
+
+        Returns:
+            tuple: arist, title, playing, album, trackid
+        """
+
+        metadata = data['Metadata']
+
+        artists = metadata['xesam:artist']
+        artist = artists[0] if artists else None
+
+        title = metadata['xesam:title']
+        playback_status = data['PlaybackStatus']
+        # playback_status can be 'Playing', 'Paused', or 'Stopped'
+        # 'Stopped' is not used here.
+        playing = playback_status == 'Playing'
+
+        album = metadata['xesam:album']
+        trackid = metadata['mpris:trackid']
+
+        return artist, title, playing, album, trackid
+
     def output_playback_status(self, data, retry=False):
         if self.ignore:
             return
 
-        metadata = data['Metadata']
-        artists = metadata['xesam:artist']
-        artist = artists[0] if artists else None
+        artist, title, playing, album, trackid = self._song_info(data)
 
         if not artist:
             self.output('')
             return
 
-        title = metadata['xesam:title']
-        playback_status = data['PlaybackStatus']
         same_song = title == self.last_title
+        saved = same_song and self.saved_track
+        divider = '+' if saved else '-'
+        css_class = [
+            Spotifycl.CLASS_PLAYING if playing else Spotifycl.CLASS_PAUSED,
+        ]
+        if saved:
+            css_class.append(Spotifycl.CLASS_SAVED)
+        output = {
+            'text': f'{artist} {divider} {title}',
+            'css_class': css_class,
+        }
 
-        color = active_color if playback_status == 'Playing' else inactive_color
-        divider = '+' if same_song and self.saved_track else '-'
-        self.output(f'{color}{artist} {divider} {title}{default_color}')
+        if album:
+            output['tooltip'] = album
+
+        self.output(**output)
 
         if not same_song:
             self.last_title = title
-            trackid = metadata['mpris:trackid']
 
             try:
                 self.update_saved_track(trackid=trackid)
@@ -253,11 +299,11 @@ class Spotify:
                 self.setup_spotipy()
                 self.update_saved_track(trackid=trackid)
             if self.saved_track:
-                divider = '+'
-                self.output(f'{color}{artist} {divider} {title}{default_color}')
+                output['text'] = f'{artist} + {title}'
+                self.output(**output)
 
     def update_saved_track(self, trackid: str):
-        self.saved_track = self.spotipy.current_user_saved_tracks_contains(
+        self.saved_track = self.spotify.current_user_saved_tracks_contains(
             tracks=[trackid]
         )[0]
 
@@ -271,7 +317,7 @@ class Spotify:
                 self.setup_properties_changed()
             else:
                 # Spotify was closed.
-                self.spotify = None
+                self.spotify_dbus = None
                 self.output('')
 
 
@@ -284,15 +330,15 @@ def cli():
 @cli.command()
 def status():
     """Follow the status of the currently playing song on Spotify."""
-    spotify = Spotify()
+    spotify = Spotifycl()
     spotify.monitor()
 
 
 @cli.command()
 def save_remove():
     """Save/remove the currently playing song to/from your library."""
-    spotify = Spotify()
-    spotify.send_to_server(Spotify.SAVE_REMOVE)
+    spotify = Spotifycl()
+    spotify.send_to_server(Spotifycl.SAVE_REMOVE)
 
 
 if __name__ == '__main__':

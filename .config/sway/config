@@ -1,0 +1,295 @@
+# Default config for sway
+#
+# Copy this to ~/.config/sway/config and edit it to your liking.
+#
+# Read `man 5 sway` for a complete reference.
+
+### Variables
+#
+# Logo key. Use Mod1 for Alt.
+set $mod Mod4
+# Home row direction keys, like vim
+set $left h
+set $down j
+set $up k
+set $right l
+# Your preferred terminal emulator
+set $term termite
+# Your preferred application launcher
+# Note: it's recommended that you pass the final command to sway
+# set $menu dmenu_path | dmenu | xargs swaymsg exec
+# Monitors
+set $monitor-center "DP-1"
+set $monitor-right "DP-5"
+set $monitor-left "DP-4"
+# Colors
+set $color-bg            #242424
+set $color-inactive-bg   #1c1c1c
+set $color-text          #e5e5e5
+set $color-inactive-text #6E6E6E
+set $color-urgent-bg     #e52e71
+# Workspaces
+set $workspace1 "1"
+set $workspace2 "2"
+set $workspace3 "3"
+set $workspace4 "4"
+set $workspace5 "5"
+set $workspace6 "6"
+set $workspace7 "7"
+set $workspace8 "8"
+set $workspace9 "9"
+set $workspace10 "10"
+set $workspace11 "11"
+
+# TEMPORARY
+font pango:Noto Sans 10.5
+
+### Output configuration
+#
+# Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
+output $monitor-center pos 1440 592 res 2560x1440@143.856003Hz bg /home/andreas/.config/wallpapers/jaime-lannister.jpg fill
+output $monitor-left transform 270 pos 0 40 res 2560x1440@59.951000Hz bg /home/andreas/.config/wallpapers/tyrion-lannister.jpg fill
+output $monitor-right transform 90 pos 4000 40 res 2560x1440@59.951000Hz bg /home/andreas/.config/wallpapers/jon-snow.jpg fill
+
+
+#
+# Example configuration:
+#
+#   output HDMI-A-1 resolution 1920x1080 position 1920,0
+#
+# You can get the names of your outputs by running: swaymsg -t get_outputs
+
+### Idle configuration
+#
+# Example configuration:
+#
+# exec swayidle -w \
+#          timeout 300 'swaylock -f -c 000000' \
+#          timeout 600 'swaymsg "output * dpms off"' \
+#               resume 'swaymsg "output * dpms on"' \
+#          before-sleep 'swaylock -f -c 000000'
+#
+# This will lock your screen after 300 seconds of inactivity, then turn off
+# your displays after another 300 seconds, and turn your screens back on when
+# resumed. It will also lock your screen before your computer goes to sleep.
+
+### Design
+#
+#
+
+for_window [class="^.*"] border none
+default_border none
+
+### Applications
+#
+# Left:
+#
+exec chromium
+exec dunst
+exec caprine
+exec slack
+exec spotify
+exec mattermost-desktop
+exec thunderbird
+
+
+#
+# Center:
+#
+
+#
+# Right:
+#
+### Assignments
+#
+# Workspaces:
+#
+workspace $workspace1 output $monitor-center
+workspace $workspace2 output $monitor-center
+workspace $workspace3 output $monitor-center
+workspace $workspace4 output $monitor-right
+workspace $workspace5 output $monitor-right
+workspace $workspace6 output $monitor-right
+workspace $workspace7 output $monitor-right
+workspace $workspace8 output $monitor-left
+workspace $workspace9 output $monitor-left
+workspace $workspace10 output $monitor-left
+workspace $workspace11 output $monitor-left
+
+#
+# Applications
+#
+
+    # Left
+    assign [class="Transmission-gtk"] $workspace9
+    # Move Android Studio design preview
+    assign [class="jetbrains-studio" title="Preview - "] $workspace10
+    for_window [title="Android Emulator"] move to workspace $workspace10
+    # Bug see https://github.com/i3/i3/issues/2060
+    for_window [class="Spotify"] move to workspace $workspace11
+    assign [class="Thunderbird"] $workspace8
+
+    # Center
+    assign [class="Code"] $workspace1
+    assign [class="jetbrains-*"] $workspace2
+
+    # Right
+    assign [class="Slack"] $workspace6
+    assign [class="discord"] $workspace6
+    assign [class="Caprine"] $workspace6
+    assign [class="Irssi"] $workspace6
+    assign [class="Mattermost"] $workspace7
+
+
+### Key bindings
+#
+# Basics:
+#
+    # start a terminal
+    bindsym $mod+Return exec $term
+
+    # kill focused window
+    bindsym $mod+Shift+q kill
+
+    # start your launcher
+    bindsym $mod+d exec "rofi -separator-style none -hide-scrollbar -width 25 -padding 20 -line-margin 10 -lines 7 -font 'Roboto Regular 14' -color-window 'argb:e61c1c1c, argb:e6242424, argb:001c1c1c' -color-normal 'argb:001c1c1c, argb:e6cecece, argb:001c1c1c, argb:e6ccc47a, argb:e61c1c1c' -color-active 'argb:e69ccc3d, argb:e61c1c1c, argb:e69ccc3d, argb:e6ccc47a, argb:e61c1c1c' -color-urgent 'argb:e6e52e71, argb:e61c1c1c, argb:e6e52e71, argb:e6ccc47a, argb:e61c1c1c' -show run"
+    # sudo launcher version
+    bindsym $mod+Shift+d exec "rofi -separator-style none -hide-scrollbar -width 25 -padding 20 -line-margin 10 -lines 7 -font 'Roboto Regular 14' -color-window 'argb:e61c1c1c, argb:e6242424, argb:001c1c1c' -color-normal 'argb:001c1c1c, argb:e6cecece, argb:001c1c1c, argb:e6ccc47a, argb:e61c1c1c' -color-active 'argb:e69ccc3d, argb:e61c1c1c, argb:e69ccc3d, argb:e6ccc47a, argb:e61c1c1c' -color-urgent 'argb:e6e52e71, argb:e61c1c1c, argb:e6e52e71, argb:e6ccc47a, argb:e61c1c1c' -show run -display-run sudo -run-command 'sudo {cmd}'"
+
+    # Drag floating windows by holding down $mod and left mouse button.
+    # Resize them with right mouse button + $mod.
+    # Despite the name, also works for non-floating windows.
+    # Change normal to inverse to use left mouse button for resizing and right
+    # mouse button for dragging.
+    floating_modifier $mod normal
+
+    # reload the configuration file
+    bindsym $mod+Shift+c reload
+
+    # exit sway (logs you out of your Wayland session)
+    bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'swaymsg exit'
+
+    # kill the current window
+    bindsym $mod+q kill
+#
+# Media:
+#
+
+    # Volume
+    bindsym XF86AudioRaiseVolume exec pulseaudio-ctl up 5
+    bindsym XF86AudioLowerVolume exec pulseaudio-ctl down 5
+    bindsym XF86AudioMute exec pulseaudio-ctl mute
+
+    # Controls
+    bindsym Ctrl+Alt+Tab exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause"
+    bindsym XF86AudioPlay exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause"
+    bindsym XF86AudioStop exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Stop"
+    bindsym XF86AudioPrev exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous"
+    bindsym XF86AudioNext exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next"
+
+#
+# Moving around:
+#
+    # Move your focus around
+    bindsym $mod+Control+Left focus left
+    bindsym $mod+Control+Down focus down
+    bindsym $mod+Control+Up focus up
+    bindsym $mod+Control+Right focus right
+
+    # Move the focused window around
+    bindsym $mod+Control+Mod1+Left move left
+    bindsym $mod+Control+Mod1+Down move down
+    bindsym $mod+Control+Mod1+Up move up
+    bindsym $mod+Control+Mod1+Right move right
+
+#
+# Workspaces:
+#
+    # Switch to workspace
+    bindsym $mod+1 workspace $workspace1
+    bindsym $mod+2 workspace $workspace2
+    bindsym $mod+3 workspace $workspace3
+    bindsym $mod+4 workspace $workspace4
+    bindsym $mod+5 workspace $workspace5
+    bindsym $mod+6 workspace $workspace6
+    bindsym $mod+7 workspace $workspace7
+    bindsym $mod+8 workspace $workspace8
+    bindsym $mod+9 workspace $workspace9
+    bindsym $mod+0 workspace $workspace10
+    bindsym $mod+minus workspace $workspace11
+    # Move focused container to workspace
+    bindsym $mod+Shift+1 move container to workspace $workspace1
+    bindsym $mod+Shift+2 move container to workspace $workspace2
+    bindsym $mod+Shift+3 move container to workspace $workspace3
+    bindsym $mod+Shift+4 move container to workspace $workspace4
+    bindsym $mod+Shift+5 move container to workspace $workspace5
+    bindsym $mod+Shift+6 move container to workspace $workspace6
+    bindsym $mod+Shift+7 move container to workspace $workspace7
+    bindsym $mod+Shift+8 move container to workspace $workspace8
+    bindsym $mod+Shift+9 move container to workspace $workspace9
+    bindsym $mod+Shift+0 move container to workspace $workspace10
+    bindsym $mod+Shift+minus move container to workspace $workspace11
+    # Change workspace on current output
+    bindsym $mod+Left workspace prev_on_output
+    bindsym $mod+Right workspace next_on_output
+
+#
+# Layout stuff:
+#
+    # You can "split" the current object of your focus with
+    # $mod+b or $mod+v, for horizontal and vertical splits
+    # respectively.
+    bindsym $mod+b splith
+    bindsym $mod+v splitv
+
+    # Switch the current container between different layout styles
+    bindsym $mod+s layout stacking
+    bindsym $mod+w layout tabbed
+    bindsym $mod+e layout toggle split
+
+    # Make the current focus fullscreen
+    bindsym $mod+Shift+f fullscreen
+
+    # Toggle the current focus between tiling and floating mode
+    bindsym $mod+f floating toggle
+
+    # Swap focus between the tiling area and the floating area
+    bindsym $mod+space focus mode_toggle
+
+    # move focus to the parent container
+    bindsym $mod+a focus parent
+#
+# Resizing containers:
+#
+mode "resize" {
+    # left will shrink the containers width
+    # right will grow the containers width
+    # up will shrink the containers height
+    # down will grow the containers height
+    bindsym $left resize shrink width 10px
+    bindsym $down resize grow height 10px
+    bindsym $up resize shrink height 10px
+    bindsym $right resize grow width 10px
+
+    # ditto, with arrow keys
+    bindsym Left resize shrink width 10px
+    bindsym Down resize grow height 10px
+    bindsym Up resize shrink height 10px
+    bindsym Right resize grow width 10px
+
+    # return to default mode
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+r mode "resize"
+
+#
+# Status Bar:
+#
+# Read `man 5 sway-bar` for more information about this section.
+bar {
+    swaybar_command waybar
+    position bottom
+}
+
+include /etc/sway/config.d/*

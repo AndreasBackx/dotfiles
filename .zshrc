@@ -1,10 +1,8 @@
-source ~/.secrets
-
 # Zsh
 skip_global_compinit=1
 export ZSH=$HOME/.oh-my-zsh
-export LC_ALL=en_GB.UTF-8
-export LANG=en_GB.UTF-8
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
 export PROMPT_EOL_MARK=""
 ZSH_THEME="andreas"
 export LS_COLORS="di=34:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43"
@@ -40,14 +38,7 @@ fi
 # Groovy
 export GROOVY_HOME="/usr/local/opt/groovy/libexec"
 
-# Rbenv
-#if which rbenv > /dev/null; then eval "$(rbenv init - zsh --no-rehash)"; fi
-
 # Pyenv
-#if which pyenv > /dev/null; then eval "$(pyenv init - zsh --no-rehash)"; fi
-#if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init - zsh --no-rehash)"; fi
-#export PYENV_VIRTUALENV_DISABLE_PROMPT=1
-
 alias workon="pyenv activate"
 alias deactivate="pyenv deactivate"
 alias mkvirtualenv="pyenv virtualenv"

@@ -60,14 +60,14 @@ case "$1" in
         if [[ $volume -eq -144 ]]; then
             # Mute
             # Pulsaudio-ctl doesn't unmute automatically.
-            pulseaudio-ctl-polybar set 0
+            pulseaudio-ctl set 0
         else
             zmodload zsh/mathfunc
             (( volume_percentage=(int(($volume + 30) * 100 / 30)) ))
             volume_percentage=$(( $volume_percentage > 100 ? 100 : $volume_percentage ))
             volume_percentage=$(( $volume_percentage < 0 ? 0 : $volume_percentage ))
             volume_percentage=${volume_percentage%.*}
-            pulseaudio-ctl-polybar set $volume_percentage
+            pulseaudio-ctl set $volume_percentage
         fi
 
         ;;
