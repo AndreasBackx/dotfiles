@@ -1,5 +1,7 @@
 ignore-empty-password
 disable-caps-lock-text
+line-uses-ring
+
 scaling=center
 color=E52E71
 
@@ -14,8 +16,6 @@ inside-color=FFFFFF00
 inside-clear-color=FFFFFF00
 inside-ver-color=FFFFFF00
 inside-wrong-color=FFFFFF00
-
-line-uses-ring
 
 ring-color=6CC7D9FF
 ring-clear-color=ffffff00

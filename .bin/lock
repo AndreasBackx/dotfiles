@@ -9,7 +9,8 @@ parallel --link convert {} -scale 10% -scale 1000% {} ::: $file_location_left $f
 
 spotify_status=`spotifycl status`
 spotifycl pause &
-# pause notifications
+
+# Pause notifications
 killall -USR1 dunst
 
 if [[ $# -eq 1 ]] ; then
@@ -22,22 +23,9 @@ swaylock \
     --image "DP-1:$file_location_center" \
     --image "DP-5:$file_location_right" \
     --font="Roboto Regular"
-    # --timesize="32" \
-    # --timestr="%H:%M" \
-    # --timepos="85:h-70" \
-    # --datepos="95:h-45" \
-    # --date-font="Roboto Regular" \
-    # --datesize="14" \
-    # --clock --datestr "Enter Password" \
-    # --insidecolor="00000000" --ringcolor="ffffffff" --line-uses-inside \
-    # --keyhlcolor="E52E71FF" --bshlcolor="E52E71FF" --separatorcolor="00000000" \
-    # --insidevercolor="CCC47AFF" --insidewrongcolor="E52E71FF" \
-    # --ringvercolor=ffffffff --ringwrongcolor=ffffffff --indpos="x+280:h-70" \
-    # --radius=20 --ring-width=3 --veriftext="" --wrongtext="" \
-    # --layoutcolor="ffffffff" --timecolor="ffffffff" --datecolor="ffffffff"
 
 
-# resume notifications
+# Resume notifications
 killall -USR2 dunst
 if [[ "$spotify_status" == "playing" ]]; then
     spotifycl play &
