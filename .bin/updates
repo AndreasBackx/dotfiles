@@ -1,0 +1,9 @@
+#!/usr/bin/env zsh
+
+amount=`yay -Pu | wc -l`
+
+echo "{\"text\": \"$amount\", \"alt\": \"default\"}"
+
+amount=`yay -Syy > /dev/null; yay -Pu | wc -l`
+
+echo "{\"text\": \"$amount\", \"alt\": \"default\"}"

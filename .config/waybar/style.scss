@@ -30,25 +30,32 @@ $inactiveForeground: $gray;
 * {
     border: none;
     border-radius: 0;
-    font-family: "Meslo LG M", "Material Icons";
+    font-family: monospace;
     font-size: 14px;
 }
 
 
 window#waybar {
-    background: rgba($background, 0.9);
+    background: rgba($background, 0.8);
     color: $foreground;
 }
 
 /* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
+#workspaces button:hover {
+    background: transparent;
+    border: transparent;
+    box-shadow: inherit;
+    text-shadow: inherit;
+    border-bottom: 3px solid transparent;
+  }
+
 #workspaces button {
     padding: 0 6px;
     color: white;
-    // background: transparent;
     border-bottom: 3px solid transparent;
 }
 
-#workspaces button.focused {
+#workspaces button.visible {
     border-bottom: 3px solid $foreground;
 }
 
@@ -57,7 +64,6 @@ window#waybar {
 }
 
 #mode {
-    background: #64727D;
     border-bottom: 3px solid $foreground;
 }
 
@@ -65,14 +71,9 @@ window#waybar {
     padding-left: 16px;
 }
 
-#clock, #battery, #cpu, #memory, #temperature, #backlight, #network, #pulseaudio, #custom-media, #tray, #mode, #idle_inhibitor {
-    padding: 0 10px;
-    margin: 0 5px;
+#clock, #cpu, #memory, #pulseaudio, #custom-headphones, #tray, #mode, #custom-brightness, #idle_inhibitor, #custom-updates, #custom-backup {
+    padding: 0 12px;
 }
-
-#clock {
-}
-
 
 @keyframes blink {
     to {
@@ -81,42 +82,23 @@ window#waybar {
     }
 }
 
-
-#cpu {
-}
-
-#memory {
-}
-
-#backlight {
-    background: #90b1b1;
-}
-
-#network {
-}
-
-#network.disconnected {
-}
-
-#pulseaudio {
-}
-
-#pulseaudio.muted {
-}
-
-#custom-spotify {
-}
-
-#custom-spotify.paused {
+#custom-backup {
     color: $inactiveForeground;
 }
 
-#tray {
+#custom-backup.running {
+    color: $foreground;
 }
 
-#idle_inhibitor {
-}
-
-#idle_inhibitor.deactivated {
+#custom-spotify.paused, #idle_inhibitor.deactivated {
     color: $inactiveForeground;
+}
+
+
+#custom-headphones {
+    color: $inactiveForeground;
+}
+
+#custom-headphones.connected {
+    color: $foreground;
 }

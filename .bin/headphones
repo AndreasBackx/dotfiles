@@ -1,6 +1,9 @@
 #!/usr/bin/env zsh
 
+source ~/.bin/utils.sh
+
 MAC_ADDRESS="04:52:C7:7A:D9:C8"
+HEADPHONES_ICON="\uf025"
 
 function bluetooth() {
     cmd="$1"
@@ -18,10 +21,20 @@ function is_connected() {
     fi
 }
 
+function battery() {
+    based-connect --battery-level $MAC_ADDRESS
+}
+
 case "$1" in
     connect)
         echo "Connecting..."
         bluetooth connect
+        ;;
+    pair)
+        echo "Pairing..."
+        bluetooth remove
+        bluetooth pair
+        bluetooth trust
         ;;
     disconnect)
         echo "Disconnecting..."
@@ -35,16 +48,17 @@ case "$1" in
         fi
         ;;
     battery)
-        based-connect --battery-level $MAC_ADDRESS
+        battery
         ;;
     noise-cancellation)
         based-connect --noise-cancelling $2 $MAC_ADDRESS
         ;;
     status)
         if is_connected; then
-            echo "%{F#CECECE}%{F-}"
+            battery_percentage=`battery`
+            waybar-json $HEADPHONES_ICON "Connected ($battery_percentage%)" connected
         else
-            echo "%{F#6E6E6E}%{F-}"
+            waybar-json $HEADPHONES_ICON "Disconnected" disconnected
         fi
         ;;
     *)

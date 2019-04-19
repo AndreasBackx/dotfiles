@@ -13,8 +13,11 @@
             "custom/spotify"
         ],
         "modules-right": [
+            "custom/updates",
+            "custom/backup",
             "custom/brightness",
             "idle_inhibitor",
+            "custom/headphones",
             "pulseaudio",
             "cpu",
             "memory",
@@ -30,27 +33,34 @@
         "idle_inhibitor": {
             "format": "{icon}",
             "format-icons": {
-                "activated": "",
-                "deactivated": ""
+                "activated": "\uf06e",
+                "deactivated": "\uf070"
             }
         },
         "tray": {
             "spacing": 12
         },
         "clock": {
-            "tooltip-format": "{:%Y-%m-%d | %H:%M}",
             "format": "{:%a %d %B %H:%M}"
         },
         "cpu": {
-            "format": "{usage}% "
+            "format": "<span color=\"#6E6E6E\">\uf2db</span>  {usage}%"
         },
         "memory": {
-            "format": "{}% "
+            "format": "<span color=\"#6E6E6E\">\uf538</span>  {}%"
+        },
+        "custom/headphones": {
+            "format": "{}",
+            "interval": 2,
+            "return-type": "json",
+            "on-click": "headphones toggle",
+            "on-click-right": "headphones pair",
+            "exec": "headphones status"
         },
         "pulseaudio": {
             "scroll-step": 5,
-            "format": "{volume}% {icon}",
-            "format-bluetooth": "{volume}% {icon}",
+            "format": "<span color=\"#6E6E6E\">{icon}</span>  {volume}%",
+            "format-bluetooth": "<span color=\"#6E6E6E\">{icon}</span>  {volume}%",
             "format-muted": "",
             "format-icons": {
                 "headphones": "",
@@ -60,31 +70,43 @@
                 "portable": "",
                 "car": "",
                 "default": [
-                    "",
+                    "\uf027",
                     ""
                 ]
             },
             "on-click-right": "pavucontrol"
         },
         "custom/brightness": {
-            "format": "{}",
-            "format-icon": "",
+            "format": "<span color=\"#6E6E6E\">\uf042</span>  {}",
+            "tooltip": false,
             "interval": 2,
-            // "return-type": "json",
-            "on-click": "sudo monitors brightness toggle",
-            "on-scroll-up": "sudo monitors brightness up",
-            "on-scroll-down": "sudo monitors brightness down",
-            "exec": "sudo monitors brightness --display center"
-            /*
-            bindsym XF86Display exec sudo monitors brightness toggle && polybar-msg hook brightness-left 1 && polybar-msg hook brightness-right 1
-bindsym XF86MonBrightnessUp exec sudo monitors brightness up && polybar-msg hook brightness-left 1 && polybar-msg hook brightness-right 1
-bindsym XF86MonBrightnessDown exec sudo monitors brightness down && polybar-msg hook brightness-left 1 && polybar-msg hook brightness-right 1*/
+            "on-click": "monitors brightness toggle",
+            "on-scroll-up": "monitors brightness up",
+            "on-scroll-down": "monitors brightness down",
+            "exec": "monitors brightness --display center"
+        },
+        "custom/updates": {
+            "format": "<span color=\"#6E6E6E\">{icon}</span>  {}",
+            "format-icons": {
+                "default": ""
+            },
+            "return-type": "json",
+            "on-click": "termite -e \"zsh -c 'yay -Syu; zsh'\" &",
+            "exec": "~/.bin/updates"
+        },
+        "custom/backup": {
+            "format": "{}",
+            "interval": "once",
+            "return-type": "json",
+            "on-click": "sudo check-backup start",
+            "exec": "~/.bin/check-backup status",
+            "signal": 8
         },
         "custom/spotify": {
             "format": "{}",
             "return-type": "json",
-            "on-click-right": "$HOME/.bin/spotifycl save-remove",
-            "exec": "$HOME/.bin/spotifycl status"
+            "on-click-right": "~/.bin/spotifycl save-remove",
+            "exec": "~/.bin/spotifycl status"
         }
     },
     {
@@ -105,7 +127,6 @@ bindsym XF86MonBrightnessDown exec sudo monitors brightness down && polybar-msg 
             "clock"
         ],
         "clock": {
-            "tooltip-format": "{:%Y-%m-%d | %H:%M}",
             "format": "{:%a %d %B %H:%M}"
         },
         "sway/mode": {

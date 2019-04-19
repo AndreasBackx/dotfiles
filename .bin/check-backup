@@ -2,6 +2,8 @@
 
 set -e
 
+source ~/.bin/utils.sh
+
 function is_timer_active() {
     if systemctl is-active --quiet create-backup.timer; then
         true
@@ -38,16 +40,16 @@ function is_timer_waiting() {
 function status() {
     if is_timer_active; then
         if is_service_active; then
-            echo "%{F#CECECE}%{F-}"
+            waybar-json "\uf382" "Backing up..." running
         else
             if is_service_failed; then
-                echo "%{F#6E6E6E}%{F-}"
+                waybar-json "\uf7e4" "Backup has failed." failed
             else
-                echo "%{F#6E6E6E}%{F-}"
+                waybar-json "\uf0c2" "Backup timer is waiting for the next backup." waiting
             fi
         fi
     else
-        echo "%{F#6E6E6E}%{F-}"
+        waybar-json "\uf740" "Backup not active." inactive
     fi
 }
 
@@ -56,7 +58,7 @@ case "$1" in
         status
         ;;
     update)
-        polybar-msg hook check-backup 1 &> /dev/null
+        pkill -RTMIN+8 waybar
         ;;
     start)
         if ! [[ is_timer_active ]]; then

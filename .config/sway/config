@@ -126,7 +126,7 @@ workspace $workspace11 output $monitor-left
     assign [class="jetbrains-studio" title="Preview - "] $workspace10
     for_window [title="Android Emulator"] move to workspace $workspace10
     # Bug see https://github.com/i3/i3/issues/2060
-    for_window [class="Spotify"] move to workspace $workspace11
+    for_window [class="Spotify"] move window to workspace $workspace11
     assign [class="Thunderbird"] $workspace8
 
     # Center
@@ -266,16 +266,16 @@ mode "resize" {
     # right will grow the containers width
     # up will shrink the containers height
     # down will grow the containers height
-    bindsym $left resize shrink width 10px
-    bindsym $down resize grow height 10px
-    bindsym $up resize shrink height 10px
-    bindsym $right resize grow width 10px
+    bindsym $left resize shrink width 50px
+    bindsym $down resize grow height 50px
+    bindsym $up resize shrink height 50px
+    bindsym $right resize grow width 50px
 
     # ditto, with arrow keys
-    bindsym Left resize shrink width 10px
-    bindsym Down resize grow height 10px
-    bindsym Up resize shrink height 10px
-    bindsym Right resize grow width 10px
+    bindsym Left resize shrink width 50px
+    bindsym Down resize grow height 50px
+    bindsym Up resize shrink height 50px
+    bindsym Right resize grow width 50px
 
     # return to default mode
     bindsym Return mode "default"

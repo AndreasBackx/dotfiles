@@ -3,7 +3,8 @@ set -e
 
 source /home/andreas/.secrets
 
-REPOSITORY=/mnt/server/storage/Backups
+export HOME=/home/andreas
+BORG_REPOSITORY=/mnt/server/storage/Backups
 
 # Setting this, so you won't be asked for your repository passphrase:
 # or this to ask an external program to supply the passphrase:
@@ -13,7 +14,7 @@ REPOSITORY=/mnt/server/storage/Backups
 # excluded directories
 echo "Creating borg backup..."
 /usr/bin/borg create					                \
-    $REPOSITORY::'{hostname}-{now:%Y-%m-%dT%H:%M:%S}'   \
+    $BORG_REPOSITORY::'{hostname}-{now:%Y-%m-%dT%H:%M:%S}'   \
     /home/andreas                                       \
     /etc                                                \
     /var                                                \
@@ -56,5 +57,5 @@ echo "Creating borg backup..."
 # limit prune's operation to this machine's archives and not apply to
 # other machine's archives also.
 echo "Pruning borg backups..."
-/usr/bin/borg prune -v --list $REPOSITORY --prefix '{hostname}-'    \
+/usr/bin/borg prune -v --list $BORG_REPOSITORY --prefix '{hostname}-'    \
     --keep-daily=7 --keep-weekly=4 --keep-monthly=6
