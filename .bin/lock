@@ -23,7 +23,6 @@ swaylock \
     --image "DP-5:$file_location_right" \
     --font="Roboto Regular"
 
-
 # Resume notifications
 killall -USR2 dunst
 if [[ "$spotify_status" == "playing" ]]; then

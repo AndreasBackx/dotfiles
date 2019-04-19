@@ -177,6 +177,7 @@ class Spotifycl:
             f'.spotipy-{username}'
         )
         # If you get an error here, you have to install the git version of spotipy:
+        # pip uninstall spotipy
         # pip install git+https://github.com/plamere/spotipy.git@master#spotipy
         auth = util.prompt_for_user_token(
             username=username,

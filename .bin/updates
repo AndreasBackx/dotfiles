@@ -2,6 +2,7 @@
 
 amount=`yay -Pu | wc -l`
 
+# Return as fast as possible, then update the repos and update.
 echo "{\"text\": \"$amount\", \"alt\": \"default\"}"
 
 amount=`yay -Syy > /dev/null; yay -Pu | wc -l`

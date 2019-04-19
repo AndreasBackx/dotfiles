@@ -152,9 +152,12 @@ workspace $workspace11 output $monitor-left
     bindsym $mod+Shift+q kill
 
     # start your launcher
-    bindsym $mod+d exec "rofi -separator-style none -hide-scrollbar -width 25 -padding 20 -line-margin 10 -lines 7 -font 'Roboto Regular 14' -color-window 'argb:e61c1c1c, argb:e6242424, argb:001c1c1c' -color-normal 'argb:001c1c1c, argb:e6cecece, argb:001c1c1c, argb:e6ccc47a, argb:e61c1c1c' -color-active 'argb:e69ccc3d, argb:e61c1c1c, argb:e69ccc3d, argb:e6ccc47a, argb:e61c1c1c' -color-urgent 'argb:e6e52e71, argb:e61c1c1c, argb:e6e52e71, argb:e6ccc47a, argb:e61c1c1c' -show run"
+    bindsym $mod+d exec "rofi -monitor -1 -show run"
     # sudo launcher version
-    bindsym $mod+Shift+d exec "rofi -separator-style none -hide-scrollbar -width 25 -padding 20 -line-margin 10 -lines 7 -font 'Roboto Regular 14' -color-window 'argb:e61c1c1c, argb:e6242424, argb:001c1c1c' -color-normal 'argb:001c1c1c, argb:e6cecece, argb:001c1c1c, argb:e6ccc47a, argb:e61c1c1c' -color-active 'argb:e69ccc3d, argb:e61c1c1c, argb:e69ccc3d, argb:e6ccc47a, argb:e61c1c1c' -color-urgent 'argb:e6e52e71, argb:e61c1c1c, argb:e6e52e71, argb:e6ccc47a, argb:e61c1c1c' -show run -display-run sudo -run-command 'sudo {cmd}'"
+    bindsym $mod+Shift+d exec "rofi -monitor -1 -show run -display-run sudo -run-command 'sudo {cmd}'"
+    # Bitwarden rofi
+    # https://github.com/mattydebie/bitwarden-rofi/pull/11
+    bindsym $mod+Alt+d exec "~/Development/Personal/bitwarden-rofi/bwmenu -- -monitor -1"
 
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
