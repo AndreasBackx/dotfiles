@@ -79,6 +79,7 @@ class Spotifycl:
         self.ignore = False
 
         self.setup_spotipy()
+        self.setup_spotify()
 
     @classmethod
     def dbus_command(cls, command):
@@ -170,9 +171,17 @@ class Spotifycl:
         return metadata, playback_status.lower()
 
     def setup_spotipy(self):
+        username = os.environ.get('SPOTIFY_USERNAME')
+        cache_path = os.path.join(
+            os.environ.get('HOME', '~'),
+            f'.spotipy-{username}'
+        )
+        # If you get an error here, you have to install the git version of spotipy:
+        # pip install git+https://github.com/plamere/spotipy.git@master#spotipy
         auth = util.prompt_for_user_token(
-            username=os.environ.get('SPOTIFY_USERNAME'),
-            scope='user-library-read,user-library-modify'
+            username=username,
+            scope='user-library-read,user-library-modify',
+            cache_path=cache_path
         )
         self.spotify = Spotify(auth=auth)
 
@@ -240,7 +249,6 @@ class Spotifycl:
 
     def setup_properties_changed(self):
         try:
-            self.setup_spotify()
             self.spotify_dbus.connect_to_signal(
                 'PropertiesChanged',
                 self.on_properties_changed

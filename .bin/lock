@@ -4,8 +4,7 @@ file_location_left=/tmp/lockscreen_left.png
 file_location_center=/tmp/lockscreen_center.png
 file_location_right=/tmp/lockscreen_right.png
 
-parallel --link grim -o {} ::: DP-4 DP-1 DP-5 ::: $file_location_left $file_location_center $file_location_right
-parallel --link convert {} -scale 10% -scale 1000% {} ::: $file_location_left $file_location_center $file_location_right
+parallel --verbose --link 'grim -o {1} - | convert - -encoding png -scale 10% -scale 1000% {2}' ::: DP-4 DP-1 DP-5 ::: $file_location_left $file_location_center $file_location_right
 
 spotify_status=`spotifycl status`
 spotifycl pause &
