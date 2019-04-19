@@ -41,8 +41,7 @@ set $workspace9 "9"
 set $workspace10 "10"
 set $workspace11 "11"
 
-# TEMPORARY
-font pango:Noto Sans 10.5
+font pango:Roboto Regular 10.5
 
 ### Output configuration
 #
@@ -156,8 +155,7 @@ workspace $workspace11 output $monitor-left
     # sudo launcher version
     bindsym $mod+Shift+d exec "rofi -monitor -1 -show run -display-run sudo -run-command 'sudo {cmd}'"
     # Bitwarden rofi
-    # https://github.com/mattydebie/bitwarden-rofi/pull/11
-    bindsym $mod+Alt+d exec "~/Development/Personal/bitwarden-rofi/bwmenu -- -monitor -1"
+    bindsym $mod+Alt+d exec "bwmenu -- -monitor -1"
 
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
