@@ -78,7 +78,7 @@ class Spotifycl:
         # Whether to ignore the update
         self.ignore = False
 
-        self.setup_spotify()
+        self.setup_spotipy()
 
     @classmethod
     def dbus_command(cls, command):
