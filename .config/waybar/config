@@ -106,7 +106,7 @@
             "format": "{}",
             "return-type": "json",
             "on-click-right": "~/.bin/spotifycl save-remove",
-            "exec": "~/.bin/spotifycl status"
+            "exec": "~/.bin/spotifycl monitor"
         }
     },
     {

@@ -1,43 +1,22 @@
-#!/usr/bin/env bash
-#
+#!/usr/bin/env zsh
+
 file_location_left=/tmp/lockscreen_left.png
 file_location_center=/tmp/lockscreen_center.png
 file_location_right=/tmp/lockscreen_right.png
 
-grim $file_location_left -o DP-4
-grim $file_location_center -o DP-1
-grim $file_location_right -o DP-5
+parallel --link grim -o {} ::: DP-4 DP-1 DP-5 ::: $file_location_left $file_location_center $file_location_right
+parallel --link convert {} -scale 10% -scale 1000% {} ::: $file_location_left $file_location_center $file_location_right
 
-convert $file_location_left -scale 10% -scale 1000% $file_location_left
-convert $file_location_center -scale 10% -scale 1000% $file_location_center
-convert $file_location_right -scale 10% -scale 1000% $file_location_right
-
-
-# [[ -f $1 ]] && convert $file_location $1 -gravity center -composite -matte $file_location
-
-# ratio for rectangle to be drawn for time background on lockscreen
-# rectangles=" "
-# SR=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]*x[0-9][0-9]*[^ ]*')
-# for RES in $SR; do
-#   SRA=(${RES//[x+]/ })
-#   CX=$((${SRA[2]} + 25))
-#   CY=$((${SRA[1]} - 110))
-#   rectangles+="roundRectangle $CX,$CY $((CX+300)),$((CY-80)) 1,1"
-# done
-# convert "$file_location" -draw "fill black fill-opacity 0.4 $rectangles" "$file_location"
-
-# player_status=`playerctl status`
-# playerctl pause &
+spotify_status=`spotifycl status`
+spotifycl pause &
 # pause notifications
-# killall -USR1 dunst
+killall -USR1 dunst
 
 if [[ $# -eq 1 ]] ; then
     sudo systemctl $1
 fi
 
 # Lock
-# i3lock -nei $file_location
-# betterlock -l dimblur
 swaylock \
     --image "DP-4:$file_location_left" \
     --image "DP-1:$file_location_center" \
@@ -57,9 +36,11 @@ swaylock \
     # --radius=20 --ring-width=3 --veriftext="" --wrongtext="" \
     # --layoutcolor="ffffffff" --timecolor="ffffffff" --datecolor="ffffffff"
 
-# rm $file_location &
+
 # resume notifications
-# killall -USR2 dunst
-# if [[ "$player_status" == "Playing" ]]; then
-#     playerctl play &
-# fi
+killall -USR2 dunst
+if [[ "$spotify_status" == "playing" ]]; then
+    spotifycl play &
+fi
+
+parallel --link rm {} ::: $file_location_left $file_location_center $file_location_right

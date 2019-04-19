@@ -26,6 +26,7 @@
 import json
 import os
 import socket
+import subprocess
 import time
 from concurrent.futures import ThreadPoolExecutor
 
@@ -57,6 +58,13 @@ class Spotifycl:
     CLASS_PAUSED = 'paused'
     CLASS_SAVED = 'saved'
 
+    PLAY = 'org.mpris.MediaPlayer2.Player.Play'
+    PAUSE = 'org.mpris.MediaPlayer2.Player.Pause'
+    PLAY_PAUSE = 'org.mpris.MediaPlayer2.Player.PlayPause'
+    STOP = 'org.mpris.MediaPlayer2.Player.Stop'
+    PREVIOUS = 'org.mpris.MediaPlayer2.Player.Previous'
+    NEXT = 'org.mpris.MediaPlayer2.Player.Next'
+
     def __init__(self):
         DBusGMainLoop(set_as_default=True)
         self.session_bus = dbus.SessionBus()
@@ -70,23 +78,39 @@ class Spotifycl:
         # Whether to ignore the update
         self.ignore = False
 
-        self.setup_spotipy()
+        self.setup_spotify()
+
+    @classmethod
+    def dbus_command(cls, command):
+        subprocess.run(
+            [
+                'dbus-send',
+                '--print-reply',
+                f'--dest={cls.SPOTIFY_BUS}',
+                cls.SPOTIFY_OBJECT_PATH,
+                command,
+            ],
+            stdout=subprocess.DEVNULL
+        )
 
     def monitor(self):
         self.setup_properties_changed()
         self.freedesktop = self.session_bus.get_object(
-            "org.freedesktop.DBus",
-            "/org/freedesktop/DBus"
+            'org.freedesktop.DBus',
+            '/org/freedesktop/DBus'
         )
         self.freedesktop.connect_to_signal(
-            "NameOwnerChanged",
+            'NameOwnerChanged',
             self.on_name_owner_changed,
-            arg0="org.mpris.MediaPlayer2.spotify"
+            arg0='org.mpris.MediaPlayer2.spotify'
         )
 
         executor = ThreadPoolExecutor(max_workers=2)
         executor.submit(self._start_glib_loop)
         executor.submit(self._start_server)
+
+    def status(self):
+        print(self.metadata_status[1])
 
     def _start_glib_loop(self):
         loop = GLib.MainLoop()
@@ -143,14 +167,13 @@ class Spotifycl:
             Spotifycl.PLAYER_INTERFACE,
             'PlaybackStatus'
         )
-        return metadata, playback_status
+        return metadata, playback_status.lower()
 
     def setup_spotipy(self):
         auth = util.prompt_for_user_token(
             username=os.environ.get('SPOTIFY_USERNAME'),
             scope='user-library-read,user-library-modify'
         )
-        print(auth)
         self.spotify = Spotify(auth=auth)
 
     def save_remove(self, retry=False):
@@ -254,7 +277,7 @@ class Spotifycl:
         playback_status = data['PlaybackStatus']
         # playback_status can be 'Playing', 'Paused', or 'Stopped'
         # 'Stopped' is not used here.
-        playing = playback_status == 'Playing'
+        playing = playback_status == 'playing'
 
         album = metadata['xesam:album']
         trackid = metadata['mpris:trackid']
@@ -311,7 +334,7 @@ class Spotifycl:
         self.output_playback_status(data)
 
     def on_name_owner_changed(self, name, old_owner, new_owner):
-        if name == 'org.mpris.MediaPlayer2.spotify':
+        if name == Spotifycl.SPOTIFY_BUS:
             if new_owner:
                 # Spotify was opened.
                 self.setup_properties_changed()
@@ -331,6 +354,13 @@ def cli():
 def status():
     """Follow the status of the currently playing song on Spotify."""
     spotify = Spotifycl()
+    spotify.status()
+
+
+@cli.command()
+def monitor():
+    """Follow the status of the currently playing song on Spotify."""
+    spotify = Spotifycl()
     spotify.monitor()
 
 
@@ -339,6 +369,42 @@ def save_remove():
     """Save/remove the currently playing song to/from your library."""
     spotify = Spotifycl()
     spotify.send_to_server(Spotifycl.SAVE_REMOVE)
+
+
+@cli.command()
+def play():
+    """Play."""
+    Spotifycl.dbus_command(Spotifycl.PLAY)
+
+
+@cli.command()
+def pause():
+    """Pause."""
+    Spotifycl.dbus_command(Spotifycl.PAUSE)
+
+
+@cli.command()
+def play_pause():
+    """Play/pause."""
+    Spotifycl.dbus_command(Spotifycl.PLAY_PAUSE)
+
+
+@cli.command()
+def stop():
+    """Stop."""
+    Spotifycl.dbus_command(Spotifycl.STOP)
+
+
+@cli.command('next')
+def next_song():
+    """Next song."""
+    Spotifycl.dbus_command(Spotifycl.NEXT)
+
+
+@cli.command('song')
+def previous_song():
+    """Previous song."""
+    Spotifycl.dbus_command(Spotifycl.PREVIOUS)
 
 
 if __name__ == '__main__':

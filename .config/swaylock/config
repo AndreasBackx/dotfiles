@@ -1,0 +1,33 @@
+ignore-empty-password
+disable-caps-lock-text
+scaling=center
+color=E52E71
+
+key-hl-color=57a3b2
+bs-hl-color=E52E71
+
+indicator-radius=65
+indicator-thickness=16
+
+# Hide inside.
+inside-color=FFFFFF00
+inside-clear-color=FFFFFF00
+inside-ver-color=FFFFFF00
+inside-wrong-color=FFFFFF00
+
+line-uses-ring
+
+ring-color=6CC7D9FF
+ring-clear-color=ffffff00
+ring-ver-color=A082D9
+ring-wrong-color=E52E71
+
+# Hide segment highlight separator when typing
+separator-color=FFFFFF00
+
+# Hide text
+text-color=FFFFFF00
+text-clear-color=FFFFFF00
+text-caps-lock-color=FFFFFF00
+text-ver-color=FFFFFF00
+text-wrong-color=FFFFFF00

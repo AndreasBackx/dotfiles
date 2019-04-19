@@ -167,10 +167,13 @@ workspace $workspace11 output $monitor-left
     bindsym $mod+Shift+c reload
 
     # exit sway (logs you out of your Wayland session)
-    bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'swaymsg exit'
+    bindsym $mod+Shift+e exec swaynag -t warning -m 'Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'swaymsg exit'
 
     # kill the current window
     bindsym $mod+q kill
+
+    # Lock
+    bindsym $mod+P exec lock
 #
 # Media:
 #

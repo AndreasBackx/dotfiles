@@ -1,0 +1,18 @@
+[warning]
+background=1C1C1C
+button-background=141414
+font=Roboto Regular
+text=CECECE
+border=141414
+border-bottom=1C1C1C
+
+border-bottom-size=1
+button-border-size=1
+
+dismiss-button=Cancel
+
+button-gap=4
+button-dismiss-gap=4
+button-margin-right=16
+button-padding=16
+message-padding=16
