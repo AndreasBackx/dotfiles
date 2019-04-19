@@ -2,7 +2,7 @@
 
 set -e
 
-source ~/.bin/utils.sh
+source /home/andreas/.bin/utils.sh
 
 function is_timer_active() {
     if systemctl is-active --quiet create-backup.timer; then

@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-source ~/.bin/utils.sh
+source /home/andreas/.bin/utils.sh
 
 MAC_ADDRESS="04:52:C7:7A:D9:C8"
 HEADPHONES_ICON="\uf025"

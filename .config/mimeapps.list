@@ -6,6 +6,7 @@ x-scheme-handler/snews=userapp-Thunderbird-M38P0Z.desktop
 x-scheme-handler/nntp=userapp-Thunderbird-M38P0Z.desktop
 inode/directory=nemo.desktop
 x-scheme-handler/discord-409416265891971072=discord-409416265891971072.desktop
+application/x-gnome-saved-search=nemo.desktop
 
 [Added Associations]
 x-scheme-handler/mailto=userapp-Thunderbird-7RUP0Z.desktop;

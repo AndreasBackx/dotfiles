@@ -121,7 +121,7 @@ workspace $workspace11 output $monitor-left
 #
 
     # Left
-    assign [class="Transmission-gtk"] $workspace9
+    assign [app_id="transmission-gtk"] $workspace9
     # Move Android Studio design preview
     assign [class="jetbrains-studio" title="Preview - "] $workspace10
     for_window [title="Android Emulator"] move to workspace $workspace10
