@@ -237,6 +237,7 @@ class Spotifycl:
 
         if not text:
             self.empty_output = True
+
         if output != self.last_output:
             serialized = json.dumps(output)
             print(serialized, flush=True)
@@ -283,7 +284,7 @@ class Spotifycl:
         artist = artists[0] if artists else None
 
         title = metadata['xesam:title']
-        playback_status = data['PlaybackStatus']
+        playback_status = data['PlaybackStatus'].lower()
         # playback_status can be 'Playing', 'Paused', or 'Stopped'
         # 'Stopped' is not used here.
         playing = playback_status == 'playing'
