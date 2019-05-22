@@ -20,8 +20,8 @@ set $term termite
 # set $menu dmenu_path | dmenu | xargs swaymsg exec
 # Monitors
 set $monitor-center "DP-1"
-set $monitor-right "DP-5"
-set $monitor-left "DP-4"
+set $monitor-right "DP-4"
+set $monitor-left "DP-5"
 # Colors
 set $color-bg            #242424
 set $color-inactive-bg   #1c1c1c

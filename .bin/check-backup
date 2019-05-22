@@ -61,13 +61,13 @@ case "$1" in
         pkill -RTMIN+8 waybar
         ;;
     start)
-        if ! [[ is_timer_active ]]; then
+        if ! is_timer_active; then
             sudo systemctl start create-backup.timer
         fi
         sudo systemctl start create-backup.service
         ;;
     *)
-        echo "Usage: $0 {status|activate}"
+        echo "Usage: $0 {status|update|activate}"
         exit 1
         ;;
 esac

@@ -2,5 +2,5 @@
 
 url=`grim -g "$(slurp)" - | imgur.sh`
 
-echo "$url" | wl-copy
+echo -n "$url" | wl-copy
 notify-send -u low "Screenshot uploaded!" --expire-time 1500

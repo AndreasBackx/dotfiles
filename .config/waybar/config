@@ -55,6 +55,9 @@
             "return-type": "json",
             "on-click": "headphones toggle",
             "on-click-right": "headphones pair",
+            "on-scroll-up": "headphones noise-cancellation high",
+            "on-click-middle": "headphones noise-cancellation low",
+            "on-scroll-down": "headphones noise-cancellation off",
             "exec": "headphones status"
         },
         "pulseaudio": {
@@ -91,6 +94,7 @@
                 "default": ""
             },
             "return-type": "json",
+            "interval": "60",
             "on-click": "termite -e \"zsh -c 'yay -Syu; zsh'\" &",
             "exec": "~/.bin/updates"
         },

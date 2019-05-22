@@ -45,6 +45,11 @@ PATH=$PATH:./node_modules/.bin
 #if which rbenv > /dev/null; then eval "$(rbenv init - zsh --no-rehash)"; fi
 
 # Pyenv
-if which pyenv > /dev/null; then eval "$(pyenv init - zsh --no-rehash)"; fi
+if which pyenv > /dev/null; then eval "$(pyenv init - --no-rehash zsh)"; fi
 if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
 export PYENV_VIRTUALENV_DISABLE_PROMPT=1
+
+# Otherwise IntelliJ won't run on Sway.
+# https://youtrack.jetbrains.com/issue/IDEA-153134
+export _JAVA_AWT_WM_NONREPARENTING=1
+

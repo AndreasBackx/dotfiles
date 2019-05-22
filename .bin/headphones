@@ -62,7 +62,7 @@ case "$1" in
         fi
         ;;
     *)
-        echo "Usage: $0 {status|connect|disconnect|toggle}"
+        echo "Usage: $0 {connect|pair|disconnect|toggle|battery|noise-cancellation|status}"
         exit 1
         ;;
 esac

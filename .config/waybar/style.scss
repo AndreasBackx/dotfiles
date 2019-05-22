@@ -41,27 +41,36 @@ window#waybar {
 }
 
 /* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
-#workspaces button:hover {
-    background: transparent;
-    border: transparent;
-    box-shadow: inherit;
-    text-shadow: inherit;
-    border-bottom: 3px solid transparent;
-  }
+#workspaces {
+    button {
+        padding: 0 6px;
+        color: white;
+        border-bottom: 3px solid transparent;
 
-#workspaces button {
-    padding: 0 6px;
-    color: white;
-    border-bottom: 3px solid transparent;
+        &.visible {
+            border-bottom: 3px solid $foreground;
+        }
+
+        &.urgent {
+            background-color: $pink;
+        }
+
+        &:hover {
+            background: transparent;
+            border: transparent;
+            box-shadow: inherit;
+            text-shadow: inherit;
+            border-bottom: 3px solid transparent;
+
+            &.visible {
+                border-bottom: 3px solid $foreground;
+            }
+        }
+    }
 }
 
-#workspaces button.visible {
-    border-bottom: 3px solid $foreground;
-}
 
-#workspaces button.urgent {
-    background-color: $pink;
-}
+
 
 #mode {
     border-bottom: 3px solid $foreground;
@@ -71,7 +80,17 @@ window#waybar {
     padding-left: 16px;
 }
 
-#clock, #cpu, #memory, #pulseaudio, #custom-headphones, #tray, #mode, #custom-brightness, #idle_inhibitor, #custom-updates, #custom-backup {
+#clock,
+#cpu,
+#memory,
+#pulseaudio,
+#custom-headphones,
+#tray,
+#mode,
+#custom-brightness,
+#idle_inhibitor,
+#custom-updates,
+#custom-backup {
     padding: 0 12px;
 }
 
@@ -84,17 +103,14 @@ window#waybar {
 
 #custom-backup {
     color: $inactiveForeground;
+
+    &.running {
+        color: $foreground;
+    }
 }
 
-#custom-backup.running {
-    color: $foreground;
-}
-
-#custom-spotify.paused, #idle_inhibitor.deactivated {
-    color: $inactiveForeground;
-}
-
-
+#custom-spotify.paused,
+#idle_inhibitor.deactivated,
 #custom-headphones {
     color: $inactiveForeground;
 }
