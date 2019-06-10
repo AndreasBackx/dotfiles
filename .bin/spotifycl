@@ -79,7 +79,7 @@ class Spotifycl:
         self.ignore = False
 
         self.setup_spotipy()
-        self.setup_spotify()
+        self.spotify_dbus = None
 
     @classmethod
     def dbus_command(cls, command):
@@ -243,14 +243,14 @@ class Spotifycl:
             print(serialized, flush=True)
             self.last_output = output
 
-    def setup_spotify(self):
-        self.spotify_dbus = self.session_bus.get_object(
-            Spotifycl.SPOTIFY_BUS,
-            Spotifycl.SPOTIFY_OBJECT_PATH
-        )
-
     def setup_properties_changed(self):
         try:
+            if self.spotify_dbus is None:
+                self.spotify_dbus = self.session_bus.get_object(
+                    Spotifycl.SPOTIFY_BUS,
+                    Spotifycl.SPOTIFY_OBJECT_PATH
+                )
+
             self.spotify_dbus.connect_to_signal(
                 'PropertiesChanged',
                 self.on_properties_changed
