@@ -1,10 +1,16 @@
 #!/usr/bin/env zsh
 
-file_location_left=/tmp/lockscreen_left.png
-file_location_center=/tmp/lockscreen_center.png
-file_location_right=/tmp/lockscreen_right.png
+extension="ppm"
 
-parallel --verbose --link 'grim -o {1} - | convert - -encoding png -scale 10% -scale 1000% {2}' ::: DP-4 DP-1 DP-5 ::: $file_location_left $file_location_center $file_location_right
+file_location_left=/tmp/lockscreen_left.$extension
+file_location_center=/tmp/lockscreen_center.$extension
+file_location_right=/tmp/lockscreen_right.$extension
+
+# time ((grim -t $extension -o DP-4 - | convert - -encoding $extension -scale 10% -scale 1000% $file_location_left) && \
+# (grim -t $extension -o DP-1 - | convert - -encoding $extension -scale 10% -scale 1000% $file_location_center) && \
+# (grim -t $extension -o DP-5 - | convert - -encoding $extension -scale 10% -scale 1000% $file_location_right))
+
+parallel --link -X "grim -t $extension -o {1} - | convert - -encoding $extension -scale 10% -scale 1000% {2}" ::: DP-4 DP-1 DP-5 ::: $file_location_left $file_location_center $file_location_right
 
 spotify_status=`spotifycl status`
 spotifycl pause &

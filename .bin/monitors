@@ -333,7 +333,7 @@ def period_changed(old_period: str, new_period: str):
     """
 
     PERIOD_BRIGHTNESS = {
-        'night': 25,
+        'night': 0,
         'daytime': 100,
     }
 

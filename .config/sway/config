@@ -83,7 +83,7 @@ default_border none
 #
 # Left:
 #
-exec chromium
+exec firefox
 exec dunst
 exec caprine
 exec slack

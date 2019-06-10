@@ -21,6 +21,7 @@
             "pulseaudio",
             "cpu",
             "memory",
+            "custom/power",
             "clock",
             "tray"
         ],
@@ -111,6 +112,11 @@
             "return-type": "json",
             "on-click-right": "~/.bin/spotifycl save-remove",
             "exec": "~/.bin/spotifycl monitor"
+        },
+        "custom/power": {
+            "format": "<span color=\"#6E6E6E\">\uf1e6</span>",
+            "tooltip": false,
+            "on-click": "swaynag -t warning -m 'Would you like to hibernate or shutdown?' -B 'Shutdown' 'systemctl poweroff' -B 'Hibernate' 'systemctl hibernate'"
         }
     },
     {
