@@ -14,14 +14,14 @@ set $down j
 set $up k
 set $right l
 # Your preferred terminal emulator
-set $term termite
+set $term kitty-cwd
 # Your preferred application launcher
 # Note: it's recommended that you pass the final command to sway
 # set $menu dmenu_path | dmenu | xargs swaymsg exec
 # Monitors
 set $monitor-center "DP-1"
-set $monitor-right "DP-4"
-set $monitor-left "DP-5"
+set $monitor-right "DP-5"
+set $monitor-left "DP-4"
 # Colors
 set $color-bg            #242424
 set $color-inactive-bg   #1c1c1c
@@ -88,7 +88,6 @@ exec dunst
 exec caprine
 exec slack
 exec spotify
-exec mattermost-desktop
 exec thunderbird
 
 
@@ -243,7 +242,7 @@ workspace $workspace11 output $monitor-left
     # You can "split" the current object of your focus with
     # $mod+b or $mod+v, for horizontal and vertical splits
     # respectively.
-    bindsym $mod+b splith
+    bindsym $mod+h splith
     bindsym $mod+v splitv
 
     # Switch the current container between different layout styles
@@ -294,6 +293,11 @@ bindsym $mod+r mode "resize"
 bar {
     swaybar_command waybar
     position bottom
+}
+
+input * {
+    xkb_layout us
+    xkb_options compose:rctrl
 }
 
 include /etc/sway/config.d/*
