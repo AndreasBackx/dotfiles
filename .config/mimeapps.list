@@ -20,6 +20,7 @@ application/xhtml+xml=firefox.desktop
 application/x-extension-xhtml=firefox.desktop
 application/x-extension-xht=firefox.desktop
 application/pdf=firefox.desktop
+text/csv=visual-studio-code.desktop
 
 [Added Associations]
 x-scheme-handler/mailto=userapp-Thunderbird-7RUP0Z.desktop;
@@ -41,3 +42,6 @@ application/x-extension-xhtml=firefox.desktop;
 application/x-extension-xht=firefox.desktop;
 image/gif=eog.desktop;
 application/pdf=firefox.desktop;
+text/x-tex=visual-studio-code.desktop;
+application/vnd.openxmlformats-officedocument.spreadsheetml.sheet=libreoffice-calc.desktop;
+text/csv=visual-studio-code.desktop;

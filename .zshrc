@@ -10,12 +10,15 @@ export VISUAL=vim
 export EDITOR="$VISUAL"
 source $ZSH/oh-my-zsh.sh
 
+# source /usr/share/fzf/key-bindings.zsh
+# source /usr/share/fzf/completion.zsh
+
 # OS-specific
 machine=`uname -s`
 if [[ $machine == "Linux" ]]; then
   # Linux specific commands.
 
-  export BROWSER="/usr/bin/chromium"
+  export BROWSER="/usr/bin/firefox"
 elif [[ $machine == "Darwin" ]]; then
   # MacOS specific commands.
 

@@ -64,7 +64,7 @@
         "pulseaudio": {
             "scroll-step": 5,
             "format": "<span color=\"#6E6E6E\">{icon}</span>  {volume}%",
-            "format-bluetooth": "<span color=\"#6E6E6E\">{icon}</span>  {volume}%",
+            "format-bluetooth": "<span color=\"#6E6E6E\"></span>  {volume}%",
             "format-muted": "",
             "format-icons": {
                 "headphones": "",
@@ -78,7 +78,9 @@
                     ""
                 ]
             },
-            "on-click-right": "pavucontrol"
+            "on-click-right": "pavucontrol",
+            "on-scroll-up": "pulseaudio-ctl up 5",
+            "on-scroll-down": "pulseaudio-ctl down 5"
         },
         "custom/brightness": {
             "format": "<span color=\"#6E6E6E\">\uf042</span>  {}",
@@ -95,8 +97,8 @@
                 "default": ""
             },
             "return-type": "json",
-            "interval": "60",
-            "on-click": "termite -e \"zsh -c 'yay -Syu; zsh'\" &",
+            "interval": 60,
+            "on-click": "kitty zsh -c 'yay -Syu; zsh' &",
             "exec": "~/.bin/updates"
         },
         "custom/backup": {
@@ -116,7 +118,7 @@
         "custom/power": {
             "format": "<span color=\"#6E6E6E\">\uf1e6</span>",
             "tooltip": false,
-            "on-click": "swaynag -t warning -m 'Would you like to hibernate or shutdown?' -B 'Shutdown' 'systemctl poweroff' -B 'Hibernate' 'systemctl hibernate'"
+            "on-click": "swaynag -t warning -m 'Would you like to hibernate or shutdown?' -B 'Shutdown' 'systemctl poweroff' -B 'Restart' 'systemctl reboot' -B 'Hibernate' 'systemctl hibernate'"
         }
     },
     {

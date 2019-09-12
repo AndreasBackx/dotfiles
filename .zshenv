@@ -39,8 +39,8 @@ PATH=$PATH:$ANDROID_HOME/tools
 PATH=/usr/local/sbin:$PATH
 PATH=/usr/local/bin:$PATH
 PATH=$HOME/.bin:$PATH
-PATH=$PATH:/home/andreas/.yarn/bin
 PATH=$PATH:./node_modules/.bin
+PATH=$PATH:~/.npm-global/bin
 
 #if which rbenv > /dev/null; then eval "$(rbenv init - zsh --no-rehash)"; fi
 

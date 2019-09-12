@@ -1,6 +1,10 @@
 #!/usr/bin/env zsh
 
+set -
+
 url=`grim -g "$(slurp)" - | imgur.sh`
+
+echo "URL: $url"
 
 echo -n "$url" | wl-copy
 notify-send -u low "Screenshot uploaded!" --expire-time 1500

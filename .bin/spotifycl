@@ -22,7 +22,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-
+import html
 import json
 import os
 import socket
@@ -111,6 +111,7 @@ class Spotifycl:
         executor.submit(self._start_server)
 
     def status(self):
+        self.connect_spotify_dbus()
         print(self.metadata_status[1])
 
     def _start_glib_loop(self):
@@ -227,7 +228,7 @@ class Spotifycl:
         text = '' if text is None else text
 
         output = {
-            'text': text,
+            'text': html.escape(text),
         }
 
         if tooltip:
@@ -243,13 +244,16 @@ class Spotifycl:
             print(serialized, flush=True)
             self.last_output = output
 
+    def connect_spotify_dbus(self):
+        if self.spotify_dbus is None:
+            self.spotify_dbus = self.session_bus.get_object(
+                Spotifycl.SPOTIFY_BUS,
+                Spotifycl.SPOTIFY_OBJECT_PATH
+            )
+
     def setup_properties_changed(self):
         try:
-            if self.spotify_dbus is None:
-                self.spotify_dbus = self.session_bus.get_object(
-                    Spotifycl.SPOTIFY_BUS,
-                    Spotifycl.SPOTIFY_OBJECT_PATH
-                )
+            self.connect_spotify_dbus()
 
             self.spotify_dbus.connect_to_signal(
                 'PropertiesChanged',
