@@ -47,7 +47,9 @@ def get_cwd():
                 if not tab_window['is_focused']:
                     continue
 
-                return tab_window['foreground_processes'][0]['cwd']
+                for foreground_process in tab_window['foreground_processes']:
+                    if 'cwd' in foreground_process:
+                        return foreground_process['cwd']
 
 
 def is_running():
