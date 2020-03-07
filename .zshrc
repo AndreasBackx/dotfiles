@@ -1,17 +1,54 @@
 # Zsh
 skip_global_compinit=1
 export ZSH=$HOME/.oh-my-zsh
-export LC_ALL=en_US.UTF-8
-export LANG=en_US.UTF-8
+export LC_ALL=en_GB.UTF-8
+export LANG=en_GB.UTF-8
 export PROMPT_EOL_MARK=""
-ZSH_THEME="andreas"
+ZSH_THEME="spaceship"
+SPACESHIP_TIME_SHOW="true"
+SPACESHIP_TIME_FORMAT="[%T]"
+SPACESHIP_PROMPT_ORDER=(
+  # user          # Username section
+  dir           # Current directory section
+  # host          # Hostname section
+  git           # Git section (git_branch + git_status)
+  # hg            # Mercurial section (hg_branch  + hg_status)
+  # package       # Package version
+  # node          # Node.js section
+  # ruby          # Ruby section
+  # elixir        # Elixir section
+  # xcode         # Xcode section
+  # swift         # Swift section
+  golang        # Go section
+  # php           # PHP section
+  # rust          # Rust section
+  # haskell       # Haskell Stack section
+  # julia         # Julia section
+  docker        # Docker section
+  # aws           # Amazon Web Services section
+  # venv          # virtualenv section
+  # conda         # conda virtualenv section
+  # pyenv         # Pyenv section
+  # dotnet        # .NET section
+  # ember         # Ember.js section
+  kubecontext   # Kubectl context section
+  # terraform     # Terraform workspace section
+  exec_time     # Execution time
+  line_sep      # Line break
+  # battery       # Battery level and status
+  # vi_mode       # Vi-mode indicator
+  jobs          # Background jobs indicator
+  exit_code     # Exit code section
+  char          # Prompt character
+)
+SPACESHIP_RPROMPT_ORDER=(
+  time          # Time stamps section
+)
 export LS_COLORS="di=34:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43"
 export VISUAL=vim
 export EDITOR="$VISUAL"
+plugins=(dotenv)
 source $ZSH/oh-my-zsh.sh
-
-# source /usr/share/fzf/key-bindings.zsh
-# source /usr/share/fzf/completion.zsh
 
 # OS-specific
 machine=`uname -s`
@@ -34,9 +71,6 @@ elif [[ $machine == "Darwin" ]]; then
 
   alias imgur-screenshot="imgur-screenshot.sh"
 fi
-
-# SSH forwarding
-# eval $(ssh-agent -s)
 
 # Groovy
 export GROOVY_HOME="/usr/local/opt/groovy/libexec"

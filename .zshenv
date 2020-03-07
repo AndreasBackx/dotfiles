@@ -21,28 +21,18 @@ elif [[ $machine == "Darwin" ]]; then
   export GLASSFISH_HOME=/usr/local/opt/glassfish/libexec
 fi
 
-# Ruby
-export PATH="$HOME/.rbenv/bin:$PATH"
-
 # Go
 export GOPATH=$HOME/Development/Go
 unset GOROOT
 PATH=$GOPATH/bin:$PATH
 
-
-# Android
-export ANDROID_HOME=$HOME/Development/Android/SDK
-PATH=$PATH:$ANDROID_HOME/platform-tools
-PATH=$PATH:$ANDROID_HOME/tools
-
 # More PATH
 PATH=/usr/local/sbin:$PATH
 PATH=/usr/local/bin:$PATH
 PATH=$HOME/.bin:$PATH
-PATH=$PATH:./node_modules/.bin
+# PATH=$PATH:./node_modules/.bin
 PATH=$PATH:~/.npm-global/bin
 
-#if which rbenv > /dev/null; then eval "$(rbenv init - zsh --no-rehash)"; fi
 
 # Pyenv
 if which pyenv > /dev/null; then eval "$(pyenv init - --no-rehash zsh)"; fi
