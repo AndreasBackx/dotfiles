@@ -22,6 +22,7 @@ set $term kitty-cwd
 set $monitor-center "DP-1"
 set $monitor-right "DP-5"
 set $monitor-left "DP-4"
+set $tv "HDMI-A-1"
 # Colors
 set $color-bg            #242424
 set $color-inactive-bg   #1c1c1c
@@ -49,6 +50,7 @@ font pango:Roboto Regular 10.5
 output $monitor-center pos 1440 592 res 2560x1440@143.856003Hz bg /home/andreas/.config/wallpapers/jaime-lannister.jpg fill
 output $monitor-left transform 270 pos 0 40 res 2560x1440@59.951000Hz bg /home/andreas/.config/wallpapers/tyrion-lannister.jpg fill
 output $monitor-right transform 90 pos 4000 40 res 2560x1440@59.951000Hz bg /home/andreas/.config/wallpapers/jon-snow.jpg fill
+output $tv disable
 
 
 #
@@ -59,18 +61,16 @@ output $monitor-right transform 90 pos 4000 40 res 2560x1440@59.951000Hz bg /hom
 # You can get the names of your outputs by running: swaymsg -t get_outputs
 
 ### Idle configuration
-#
-# Example configuration:
-#
-# exec swayidle -w \
-#          timeout 300 'swaylock -f -c 000000' \
-#          timeout 600 'swaymsg "output * dpms off"' \
-#               resume 'swaymsg "output * dpms on"' \
-#          before-sleep 'swaylock -f -c 000000'
-#
-# This will lock your screen after 300 seconds of inactivity, then turn off
-# your displays after another 300 seconds, and turn your screens back on when
-# resumed. It will also lock your screen before your computer goes to sleep.
+exec swayidle  \
+    timeout 10 'if pgrep swaylock; then swaymsg "output * dpms off"; fi'\
+        resume 'swaymsg "output * dpms on"' \
+    timeout 900 'lock' \
+    timeout 902 'swaymsg "output * dpms off"' \
+        resume 'swaymsg "output * dpms on"' \
+    before-sleep 'lock'
+# Lock
+bindsym --release $mod+P exec lock
+
 
 ### Design
 #
@@ -83,6 +83,7 @@ default_border none
 #
 # Left:
 #
+exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 exec firefox
 exec dunst
 exec caprine
@@ -171,9 +172,6 @@ workspace $workspace11 output $monitor-left
 
     # kill the current window
     bindsym $mod+q kill
-
-    # Lock
-    bindsym $mod+P exec lock
 #
 # Media:
 #
