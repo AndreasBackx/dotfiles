@@ -54,8 +54,6 @@ source $ZSH/oh-my-zsh.sh
 machine=`uname -s`
 if [[ $machine == "Linux" ]]; then
   # Linux specific commands.
-
-  export BROWSER="/usr/bin/firefox"
 elif [[ $machine == "Darwin" ]]; then
   # MacOS specific commands.
 

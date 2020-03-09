@@ -11,7 +11,7 @@ if [[ $machine == "Linux" ]]; then
   # Used for VS Code.
   export ELECTRON_TRASH="gio"
 
-  export BROWSER="/usr/bin/chromium"
+  export BROWSER="/usr/bin/firefox"
 elif [[ $machine == "Darwin" ]]; then
   # MacOS specific commands.
 
