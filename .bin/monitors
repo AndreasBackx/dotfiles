@@ -23,6 +23,7 @@
 # SOFTWARE.
 
 import subprocess
+import time
 from enum import Enum
 from typing import List
 
@@ -65,8 +66,8 @@ FEATURES = {
 
 
 class Display(Enum):
-    LEFT = '3'
-    CENTER = '1'
+    LEFT = '1'
+    CENTER = '3'
     RIGHT = '5'
 
 
@@ -146,28 +147,36 @@ class BrightnessType(click.ParamType):
 
 
 def ddcutil(command: str, display: Display, *args):
-    completed_process = subprocess.run(
-        [
-            'ddcutil',
-            command,
-            '--bus',
-            display.value,
-            '--nodetect',
-            '--async',
-            '--noverify',
-            '--force-slave-address',
-            '--brief',
-            *args
-        ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        universal_newlines=True
-    )
-    try:
-        completed_process.check_returncode()
-    except Exception:
-        return None
-    return completed_process
+    retries = 20
+    retry = 0
+    exception = None
+    while retry < retries:
+        completed_process = subprocess.run(
+            [
+                'ddcutil',
+                command,
+                '--bus',
+                display.value,
+                '--nodetect',
+                '--async',
+                '--noverify',
+                '--force-slave-address',
+                '--brief',
+                *args
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            universal_newlines=True
+        )
+        try:
+            completed_process.check_returncode()
+            time.sleep(0.1)
+        except Exception as e:
+            retry += 1
+            exception = e
+            continue
+        return completed_process
+    raise exception
 
 
 def set_vcp(displays, feature: str, value):
@@ -218,14 +227,13 @@ def set_vcp(displays, feature: str, value):
 
 
 def get_vcp(display: Display, feature: str):
-    response = ddcutil(
-        'getvcp',
-        display,
-        FEATURES[feature]['value'],
-    )
-
-    if response is None:
-        return None
+    response = None
+    while response is None:
+        response = ddcutil(
+            'getvcp',
+            display,
+            FEATURES[feature]['value'],
+        )
 
     value = response.stdout.split(' ')[3].strip()
 
@@ -405,15 +413,18 @@ def brightness(displays, brightness):
         set_vcp(displays, 'brightness', brightness.resolve())
         return
 
-    display_brightnesses = {}
+    # display_brightnesses = {}
 
-    for display in displays:
-        display_brightnesses[display] = int(get_vcp(display, 'brightness'))
+    # for display in displays:
+    #     display_brightnesses[display] = int(get_vcp(display, 'brightness'))
+
+    target_brightness = int(get_vcp(Display.CENTER, 'brightness'))
+    set_vcp(displays, 'brightness', brightness.resolve(target_brightness))
 
     # Execute the set operations after each other so there's less of a delay
     # between them.
-    for display, target_brightness in display_brightnesses.items():
-        set_vcp([display], 'brightness', brightness.resolve(target_brightness))
+    # for display, target_brightness in display_brightnesses.items():
+    #     set_vcp([display], 'brightness', brightness.resolve(target_brightness))
 
 
 if __name__ == '__main__':

@@ -80,25 +80,29 @@ for_window [class="^.*"] border none
 default_border none
 
 ### Applications
+exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+exec dunst
+
 #
 # Left:
 #
-exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
-exec firefox
-exec dunst
-exec caprine
-exec slack
 exec spotify
 exec thunderbird
 
-
 #
 # Center:
-#
 
 #
 # Right:
 #
+exec firefox
+
+exec slack
+exec caprine
+exec whatsapp-nativefier-dark
+exec telegram-desktop
+exec discord
+
 ### Assignments
 #
 # Workspaces:
@@ -133,11 +137,14 @@ workspace $workspace11 output $monitor-left
     assign [class="jetbrains-*"] $workspace2
 
     # Right
+    # Workspace 6
     assign [class="Slack"] $workspace6
-    assign [class="discord"] $workspace6
     assign [class="Caprine"] $workspace6
     assign [class="Irssi"] $workspace6
-    assign [class="Mattermost"] $workspace7
+    # Workspace 7
+    assign [class="discord"] $workspace7
+    assign [title="WhatsApp"] $workspace7
+    assign [class="TelegramDesktop"] $workspace7
 
 
 ### Key bindings
