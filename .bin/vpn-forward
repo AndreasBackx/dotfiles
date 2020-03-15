@@ -1,0 +1,86 @@
+#!/usr/bin/env python3
+
+import json
+import subprocess
+
+import click
+
+ROUTE = "0.0.0.0/1"
+INTERFACE = "wg0"
+
+
+def output(text: str, tooltip: str, cls: str) -> None:
+    line = json.dumps({
+        "text": text,
+        "tooltip": tooltip,
+        "class": cls,
+    })
+    print(line, flush=True)
+
+
+def is_enabled() -> bool:
+    process = subprocess.run(
+        ["ip", "route"],
+        capture_output=True,
+    )
+    default_route = f"{ROUTE} dev {INTERFACE} scope link"
+    return default_route in process.stdout.decode()
+
+
+def enable_forwarding() -> None:
+    subprocess.run(
+        ["ip", "link", "set", INTERFACE, "up"]
+    )
+    subprocess.run(
+        ["ip", "route", "add", ROUTE, "dev", INTERFACE]
+    )
+
+
+def disable_forwarding() -> None:
+    subprocess.run(
+        ["ip", "link", "set", INTERFACE, "down"]
+    )
+
+
+@click.group()
+def cli():
+    """Script for enabling and disabling of traffic forwarding through Wireguard VPN.."""
+    pass
+
+
+@cli.command()
+def toggle():
+    """Toggle traffic forwarding."""
+    if is_enabled():
+        disable_forwarding()
+    else:
+        enable_forwarding()
+
+
+@cli.command()
+def enable():
+    """Enable traffic forwarding."""
+    if not is_enabled():
+        enable_forwarding()
+
+
+@cli.command()
+def disable():
+    """Disable traffic forwarding."""
+    if is_enabled():
+        disable_forwarding()
+
+
+@cli.command()
+def status():
+    """Return the status for usage in Waybar."""
+    enabled = is_enabled()
+    output(
+        text="\uf4d7",
+        tooltip="Enabled" if enabled else "Disabled",
+        cls="enabled" if enabled else "disabled"
+    )
+
+
+if __name__ == '__main__':
+    cli()

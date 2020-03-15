@@ -15,6 +15,7 @@
         "modules-right": [
             "custom/updates",
             "custom/backup",
+            "custom/vpn-forward",
             "custom/brightness",
             "idle_inhibitor",
             "custom/headphones",
@@ -91,13 +92,18 @@
             "on-scroll-down": "monitors brightness down",
             "exec": "monitors brightness --display center"
         },
+        "custom/services": {
+            "format": "<span color=\"#6E6E6E\">{}</span>",
+            "interval": 15,
+            "exec": "~/.bin/running-services"
+        },
         "custom/updates": {
             "format": "<span color=\"#6E6E6E\">{icon}</span>  {}",
             "format-icons": {
                 "default": ""
             },
             "return-type": "json",
-            "interval": 60,
+            "interval": 900,
             "on-click": "kitty zsh -c 'yay -Syu; zsh' &",
             "exec": "~/.bin/updates"
         },
@@ -119,14 +125,22 @@
             "format": "<span color=\"#6E6E6E\">\uf1e6</span>",
             "tooltip": false,
             "on-click": "swaynag -t warning -m 'Would you like to hibernate or shutdown?' -B 'Shutdown' 'systemctl poweroff' -B 'Restart' 'systemctl reboot' -B 'Hibernate' 'systemctl hibernate'"
+        },
+        "custom/vpn-forward": {
+            "format": "{}",
+            "tooltip": false,
+            "interval": 2,
+            "return-type": "json",
+            "on-click": "sudo vpn-forward toggle",
+            "exec": "sudo vpn-forward status"
         }
     },
     {
         "layer": "top",
         "position": "bottom",
         "output": [
-            "DP-4",
-            "DP-5"
+            "DP-5",
+            "DP-4"
         ],
         "height": 40,
         "modules-left": [

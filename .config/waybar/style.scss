@@ -91,7 +91,8 @@ window#waybar {
 #idle_inhibitor,
 #custom-updates,
 #custom-power,
-#custom-backup {
+#custom-backup,
+#custom-vpn-forward {
     padding: 0 12px;
 }
 
@@ -99,6 +100,15 @@ window#waybar {
     to {
         background-color: $foreground;
         color: #000000;
+    }
+}
+
+
+#custom-vpn-forward {
+    color: $inactiveForeground;
+
+    &.enabled {
+        color: $foreground;
     }
 }
 
