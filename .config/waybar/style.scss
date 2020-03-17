@@ -52,19 +52,7 @@ window#waybar {
         }
 
         &.urgent {
-            background-color: $pink;
-        }
-
-        &:hover {
-            background: transparent;
-            border: transparent;
-            box-shadow: inherit;
-            text-shadow: inherit;
-            border-bottom: 3px solid transparent;
-
-            &.visible {
-                border-bottom: 3px solid $foreground;
-            }
+            background: rgba($pink, 0.6);
         }
     }
 }
