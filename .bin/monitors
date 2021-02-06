@@ -66,9 +66,9 @@ FEATURES = {
 
 
 class Display(Enum):
-    LEFT = '1'
-    CENTER = '3'
-    RIGHT = '5'
+    LEFT = '9'
+    CENTER = '7'
+    RIGHT = '8'
 
 
 class EnumType(click.Choice):
@@ -157,7 +157,6 @@ def ddcutil(command: str, display: Display, *args):
                 command,
                 '--bus',
                 display.value,
-                '--nodetect',
                 '--async',
                 '--noverify',
                 '--force-slave-address',
