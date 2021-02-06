@@ -45,3 +45,9 @@ export PYENV_VIRTUALENV_DISABLE_PROMPT=1
 # https://youtrack.jetbrains.com/issue/IDEA-153134
 export _JAVA_AWT_WM_NONREPARENTING=1
 
+ZSHENV_WORK="$HOME/.zshenv-work"
+
+if [[ -f "$ZSHENV_WORK" ]]; then
+    source "$ZSHENV_WORK"
+fi
+
