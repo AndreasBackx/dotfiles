@@ -2,9 +2,14 @@
 
 set -
 
-url=`grim -g "$(slurp)" - | imgur.sh`
+if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
+    url=`grim -g "$(slurp)" - | imgur.sh`
+else
+
+fi
+
 
 echo "URL: $url"
 
 echo -n "$url" | wl-copy
-notify-send -u low "Screenshot uploaded!" --expire-time 1500
+notify-send -u low "Screenshot uploaded!" --expire-time 5
