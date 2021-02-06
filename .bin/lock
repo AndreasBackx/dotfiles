@@ -2,39 +2,86 @@
 
 set -e
 
-extension="ppm"
+if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
+    extension="ppm"
+else
+
+fi
 
 file_location_left=/tmp/lockscreen_left.$extension
 file_location_center=/tmp/lockscreen_center.$extension
 file_location_right=/tmp/lockscreen_right.$extension
 
-# time ((grim -t $extension -o DP-4 - | convert - -encoding $extension -scale 10% -scale 1000% $file_location_left) && \
-# (grim -t $extension -o DP-1 - | convert - -encoding $extension -scale 10% -scale 1000% $file_location_center) && \
-# (grim -t $extension -o DP-5 - | convert - -encoding $extension -scale 10% -scale 1000% $file_location_right))
+monitor_left_serial="9X2VY4B101CL"
+monitor_center_serial="T78EE0048521"
+monitor_right_serial="9X2VY4B101BL"
 
-parallel --link -X "grim -t $extension -o {1} - | convert - -encoding $extension -scale 10% -scale 1000% {2}" ::: DP-5 DP-1 DP-4 ::: $file_location_left $file_location_center $file_location_right
+if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
+    function get_output_name() {
+        outputs=$1
+        serial=$2
+        echo "$outputs" | jq -r ".[] | select(.serial == \"$serial\") | .name"
+    }
+
+    outputs=$(swaymsg -t get_outputs)
+    monitor_left=$(get_output_name "$outputs" "$monitor_left_serial")
+    monitor_center=$(get_output_name "$outputs" "$monitor_center_serial")
+    monitor_right=$(get_output_name "$outputs" "$monitor_right_serial")
+
+    echo "$monitor_left"
+    echo "$monitor_center"
+    echo "$monitor_right"
+
+    parallel --link -X "grim -t $extension -o {1} - | convert - -encoding $extension -scale 10% -scale 1000% {2}" ::: $monitor_left $monitor_center $monitor_right ::: $file_location_left $file_location_center $file_location_right
+else
+
+fi
 
 spotify_status=`spotifycl status`
 spotifycl pause &
 
+is_muted=`pulseaudio-ctl full-status | tr -s ' ' | cut -d ' ' -f 2`
+if [[ "$is_muted" == "no" ]]; then
+    echo "Muting"
+    pulseaudio-ctl mute &
+fi
+
 # Pause notifications
-killall -USR1 dunst
+if command -v mako &> /dev/null; then
+    killall -USR1 mako || echo "Could not pause Mako."
+else
+    killall -USR1 dunst || echo "Could not pause Dunst."
+fi
+
 
 if [[ $# -eq 1 ]] ; then
     sudo systemctl $1
 fi
 
 # Lock
-swaylock \
-    --image "DP-5:$file_location_left" \
-    --image "DP-1:$file_location_center" \
-    --image "DP-4:$file_location_right" \
-    --font="Roboto Regular"
+if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
+    swaylock \
+        --image "$monitor_left:$file_location_left" \
+        --image "$monitor_center:$file_location_center" \
+        --image "$monitor_right:$file_location_right" \
+        --font="Roboto Regular"
+else
+fi
 
 # Resume notifications
-killall -USR2 dunst
+if command -v mako &> /dev/null; then
+    killall -USR2 mako || echo "Could not resume Mako."
+else
+    killall -USR2 dunst || echo "Could not resume Dunst."
+fi
+
 if [[ "$spotify_status" == "playing" ]]; then
     spotifycl play &
+fi
+
+if [[ "$is_muted" == "no" ]]; then
+    echo "Unmuting"
+    pulseaudio-ctl mute &
 fi
 
 parallel --link rm {} ::: $file_location_left $file_location_center $file_location_right
