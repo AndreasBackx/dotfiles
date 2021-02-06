@@ -415,7 +415,7 @@ def next_song():
     Spotifycl.dbus_command(Spotifycl.NEXT)
 
 
-@cli.command('song')
+@cli.command('previous')
 def previous_song():
     """Previous song."""
     Spotifycl.dbus_command(Spotifycl.PREVIOUS)
