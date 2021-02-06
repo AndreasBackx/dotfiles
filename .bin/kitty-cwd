@@ -30,9 +30,12 @@ KITTY_SOCKET = '/tmp/kitty'
 
 
 def get_cwd():
-    kitty_windows = subprocess.check_output([
-        'kitty', '@', '--to', f'unix:{KITTY_SOCKET}', 'ls',
-    ])
+    try:
+        kitty_windows = subprocess.check_output([
+            'kitty', '@', '--to', f'unix:{KITTY_SOCKET}', 'ls',
+        ])
+    except subprocess.CalledProcessError:
+        return None
     windows = json.loads(kitty_windows)
 
     for window in windows:
@@ -63,7 +66,10 @@ if is_running():
     if cwd is not None:
         directory = cwd
 
-subprocess.run([
-    'kitty', '--single-instance', '--listen-on',
-    f'unix:{KITTY_SOCKET}', '--directory', directory,
-])
+try:
+    subprocess.run([
+        'kitty', '--single-instance', '--listen-on',
+        f'unix:{KITTY_SOCKET}', '--directory', directory,
+    ])
+except Exception:
+    subprocess.run(["kitty"])
