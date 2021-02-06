@@ -22,15 +22,17 @@ elif [[ $machine == "Darwin" ]]; then
 fi
 
 # Go
-export GOPATH=$HOME/Development/Go
+export GOPATH=$HOME/dev/go
 unset GOROOT
 PATH=$GOPATH/bin:$PATH
+
+# Rust
+PATH=$HOME/.cargo/bin:$PATH
 
 # More PATH
 PATH=/usr/local/sbin:$PATH
 PATH=/usr/local/bin:$PATH
 PATH=$HOME/.bin:$PATH
-# PATH=$PATH:./node_modules/.bin
 PATH=$PATH:~/.npm-global/bin
 
 
