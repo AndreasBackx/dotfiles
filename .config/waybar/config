@@ -2,7 +2,7 @@
     {
         "layer": "top",
         "position": "bottom",
-        "output": "DP-1",
+        "output": "Acer Technologies XF270HU T78EE0048521",
         "height": 40,
         "modules-left": [
             "sway/workspaces",
@@ -65,8 +65,7 @@
         "pulseaudio": {
             "scroll-step": 5,
             "format": "<span color=\"#6E6E6E\">{icon}</span>  {volume}%",
-            "format-bluetooth": "<span color=\"#6E6E6E\"></span>  {volume}%",
-            "format-muted": "",
+            "format-muted": "<span color=\"#6E6E6E\">{icon}  {volume}%</span>",
             "format-icons": {
                 "headphones": "",
                 "handsfree": "",
@@ -74,11 +73,13 @@
                 "phone": "",
                 "portable": "",
                 "car": "",
+                "muted":  "\ue04f",
                 "default": [
                     "\uf027",
                     ""
                 ]
             },
+            "on-click": "pulseaudio-ctl mute",
             "on-click-right": "pavucontrol",
             "on-scroll-up": "pulseaudio-ctl up 5",
             "on-scroll-down": "pulseaudio-ctl down 5"
@@ -111,7 +112,7 @@
             "format": "{}",
             "interval": "once",
             "return-type": "json",
-            "on-click": "sudo check-backup start",
+            "on-click": "sudo -E check-backup start",
             "exec": "~/.bin/check-backup status",
             "signal": 8
         },
@@ -131,16 +132,15 @@
             "tooltip": false,
             "interval": 2,
             "return-type": "json",
-            "on-click": "sudo vpn-forward toggle",
-            "exec": "sudo vpn-forward status"
+            "on-click": "sudo -E vpn-forward toggle",
+            "exec": "sudo -E vpn-forward status"
         }
     },
     {
         "layer": "top",
         "position": "bottom",
         "output": [
-            "DP-5",
-            "DP-4"
+            "Dell Inc. DELL U2515H 9X2VY4B101CL"
         ],
         "height": 40,
         "modules-left": [
@@ -150,6 +150,7 @@
         ],
         "modules-center": [],
         "modules-right": [
+            "custom/brightness",
             "clock"
         ],
         "clock": {
@@ -160,6 +161,51 @@
         },
         "sway/window": {
             "max-length": 50
+        },
+        "custom/brightness": {
+            "format": "<span color=\"#6E6E6E\">\uf042</span>  {}",
+            "tooltip": false,
+            "interval": 2,
+            "on-click": "monitors brightness toggle",
+            "on-scroll-up": "monitors brightness up",
+            "on-scroll-down": "monitors brightness down",
+            "exec": "monitors brightness --display left"
+        }
+    },
+    {
+        "layer": "top",
+        "position": "bottom",
+        "output": [
+            "Dell Inc. DELL U2515H 9X2VY4B101BL"
+        ],
+        "height": 40,
+        "modules-left": [
+            "sway/workspaces",
+            "sway/mode",
+            "sway/window"
+        ],
+        "modules-center": [],
+        "modules-right": [
+            "custom/brightness",
+            "clock"
+        ],
+        "clock": {
+            "format": "{:%a %d %B %H:%M}"
+        },
+        "sway/mode": {
+            "format": "<span style=\"italic\">{}</span>"
+        },
+        "sway/window": {
+            "max-length": 50
+        },
+        "custom/brightness": {
+            "format": "<span color=\"#6E6E6E\">\uf042</span>  {}",
+            "tooltip": false,
+            "interval": 2,
+            "on-click": "monitors brightness toggle",
+            "on-scroll-up": "monitors brightness up",
+            "on-scroll-down": "monitors brightness down",
+            "exec": "monitors brightness --display right"
         }
     }
 ]

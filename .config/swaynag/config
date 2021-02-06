@@ -3,11 +3,12 @@ background=1C1C1C
 button-background=141414
 font=Roboto Regular
 text=CECECE
+button-text=CECECE
 border=141414
 border-bottom=1C1C1C
 
-border-bottom-size=1
-button-border-size=1
+border-bottom-size=0
+button-border-size=0
 
 dismiss-button=Cancel
 
