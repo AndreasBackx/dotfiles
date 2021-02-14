@@ -81,7 +81,15 @@ function display() {
     # Create an array so we can only select the left emoji char.
     line=($line)
 
-    echo -n "${line[0]}" | wl-copy
+    emoji_char="${line[0]}"
+
+    
+    if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
+        echo -n "$emoji_char" | wl-copy
+    else
+        echo -n "$emoji_char" | xclip -selection clipboard
+    fi
+
 }
 
 
