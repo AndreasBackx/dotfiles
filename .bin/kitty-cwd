@@ -25,6 +25,7 @@
 import json
 import subprocess
 from os import path
+import sys
 
 KITTY_SOCKET = '/tmp/kitty'
 
@@ -70,6 +71,7 @@ try:
     subprocess.run([
         'kitty', '--single-instance', '--listen-on',
         f'unix:{KITTY_SOCKET}', '--directory', directory,
+        *sys.argv[1:],
     ])
 except Exception:
-    subprocess.run(["kitty"])
+    subprocess.run(["kitty", *sys.argv[1:]])
