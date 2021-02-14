@@ -38,11 +38,11 @@ from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository import GLib
 from spotipy import Spotify, SpotifyException, util
 
-inactive_color = '%{F#6E6E6E}'
-active_color = '%{F#CECECE}'
-default_color = '%{F-}'
+inactive_color = "%{F#6E6E6E}"
+active_color = "%{F#CECECE}"
+default_color = "%{F-}"
 
-server_address = '/tmp/spotifycl-socket'
+server_address = "/tmp/spotifycl-socket"
 
 
 class ChoiceEnum(click.Choice):
@@ -53,9 +53,7 @@ class ChoiceEnum(click.Choice):
     def convert(self, value, param, ctx):
         value = super().convert(value, param, ctx)
         return next(
-            option
-            for option in self.enum
-            if str(option).lower() == value.lower()
+            option for option in self.enum if str(option).lower() == value.lower()
         )
 
 
@@ -69,31 +67,31 @@ class OutputType(str, Enum):
 
 class Spotifycl:
 
-    SPOTIFY_BUS = 'org.mpris.MediaPlayer2.spotify'
-    SPOTIFY_OBJECT_PATH = '/org/mpris/MediaPlayer2'
+    SPOTIFY_BUS = "org.mpris.MediaPlayer2.spotify"
+    SPOTIFY_OBJECT_PATH = "/org/mpris/MediaPlayer2"
 
-    PLAYER_INTERFACE = 'org.mpris.MediaPlayer2.Player'
-    PROPERTIES_INTERFACE = 'org.freedesktop.DBus.Properties'
+    PLAYER_INTERFACE = "org.mpris.MediaPlayer2.Player"
+    PROPERTIES_INTERFACE = "org.freedesktop.DBus.Properties"
 
-    SAVE_REMOVE = b'save'
+    SAVE_REMOVE = b"save"
 
-    CLASS_PLAYING = 'playing'
-    CLASS_PAUSED = 'paused'
-    CLASS_SAVED = 'saved'
+    CLASS_PLAYING = "playing"
+    CLASS_PAUSED = "paused"
+    CLASS_SAVED = "saved"
 
-    PLAY = 'org.mpris.MediaPlayer2.Player.Play'
-    PAUSE = 'org.mpris.MediaPlayer2.Player.Pause'
-    PLAY_PAUSE = 'org.mpris.MediaPlayer2.Player.PlayPause'
-    STOP = 'org.mpris.MediaPlayer2.Player.Stop'
-    PREVIOUS = 'org.mpris.MediaPlayer2.Player.Previous'
-    NEXT = 'org.mpris.MediaPlayer2.Player.Next'
+    PLAY = "org.mpris.MediaPlayer2.Player.Play"
+    PAUSE = "org.mpris.MediaPlayer2.Player.Pause"
+    PLAY_PAUSE = "org.mpris.MediaPlayer2.Player.PlayPause"
+    STOP = "org.mpris.MediaPlayer2.Player.Stop"
+    PREVIOUS = "org.mpris.MediaPlayer2.Player.Previous"
+    NEXT = "org.mpris.MediaPlayer2.Player.Next"
 
     def __init__(self, output_type, class_to_color=None):
         self.output_type = output_type
         self.class_to_color = json.loads(class_to_color) or {}
         DBusGMainLoop(set_as_default=True)
         self.session_bus = dbus.SessionBus()
-        self.last_output = ''
+        self.last_output = ""
         self.empty_output = True
 
         # Last shown metadata
@@ -110,25 +108,24 @@ class Spotifycl:
     def dbus_command(cls, command):
         subprocess.run(
             [
-                'dbus-send',
-                '--print-reply',
-                f'--dest={cls.SPOTIFY_BUS}',
+                "dbus-send",
+                "--print-reply",
+                f"--dest={cls.SPOTIFY_BUS}",
                 cls.SPOTIFY_OBJECT_PATH,
                 command,
             ],
-            stdout=subprocess.DEVNULL
+            stdout=subprocess.DEVNULL,
         )
 
     def monitor(self):
         self.setup_properties_changed()
         self.freedesktop = self.session_bus.get_object(
-            'org.freedesktop.DBus',
-            '/org/freedesktop/DBus'
+            "org.freedesktop.DBus", "/org/freedesktop/DBus"
         )
         self.freedesktop.connect_to_signal(
-            'NameOwnerChanged',
+            "NameOwnerChanged",
             self.on_name_owner_changed,
-            arg0='org.mpris.MediaPlayer2.spotify'
+            arg0="org.mpris.MediaPlayer2.spotify",
         )
 
         executor = ThreadPoolExecutor(max_workers=2)
@@ -183,39 +180,31 @@ class Spotifycl:
     @property
     def metadata_status(self):
         spotify_properties = dbus.Interface(
-            self.spotify_dbus,
-            dbus_interface=Spotifycl.PROPERTIES_INTERFACE
+            self.spotify_dbus, dbus_interface=Spotifycl.PROPERTIES_INTERFACE
         )
-        metadata = spotify_properties.Get(
-            Spotifycl.PLAYER_INTERFACE,
-            'Metadata'
-        )
+        metadata = spotify_properties.Get(Spotifycl.PLAYER_INTERFACE, "Metadata")
         playback_status = spotify_properties.Get(
-            Spotifycl.PLAYER_INTERFACE,
-            'PlaybackStatus'
+            Spotifycl.PLAYER_INTERFACE, "PlaybackStatus"
         )
         return metadata, playback_status.lower()
 
     def setup_spotipy(self):
-        username = os.environ.get('SPOTIFY_USERNAME')
-        cache_path = os.path.join(
-            os.environ.get('HOME', '~'),
-            f'.spotipy-{username}'
-        )
+        username = os.environ.get("SPOTIFY_USERNAME")
+        cache_path = os.path.join(os.environ.get("HOME", "~"), f".spotipy-{username}")
         # If you get an error here, you have to install the git version of spotipy:
         # pip uninstall spotipy
         # pip install git+https://github.com/plamere/spotipy.git@master#spotipy
         auth = util.prompt_for_user_token(
             username=username,
-            scope='user-library-read,user-library-modify',
-            cache_path=cache_path
+            scope="user-library-read,user-library-modify",
+            cache_path=cache_path,
         )
         self.spotify = Spotify(auth=auth)
 
     def save_remove(self, retry=False):
         try:
             metadata, playback_status = self.metadata_status
-            trackid = metadata['mpris:trackid']
+            trackid = metadata["mpris:trackid"]
 
             self.ignore = True
             remove = self.saved_track
@@ -223,10 +212,10 @@ class Spotifycl:
             try:
                 if remove:
                     self.spotify.current_user_saved_tracks_delete(tracks=[trackid])
-                    self.output('Removed from library!')
+                    self.output("Removed from library!")
                 else:
                     self.spotify.current_user_saved_tracks_add(tracks=[trackid])
-                    self.output('Saved to library!')
+                    self.output("Saved to library!")
             except SpotifyException:
                 if not retry:
                     # Refresh access token
@@ -241,27 +230,27 @@ class Spotifycl:
             metadata, playback_status = self.metadata_status
             self.output_playback_status(
                 data={
-                    'Metadata': metadata,
-                    'PlaybackStatus': playback_status,
+                    "Metadata": metadata,
+                    "PlaybackStatus": playback_status,
                 }
             )
 
         except dbus.DBusException:
-            self.output('Could not connect to spotify.')
+            self.output("Could not connect to spotify.")
 
     def output(self, text, tooltip=None, css_class=None):
-        text = '' if text is None else text
+        text = "" if text is None else text
 
         output = {
-            'text': text,
+            "text": text,
         }
 
         if tooltip:
-            output['tooltip'] = tooltip
+            output["tooltip"] = tooltip
 
         css_class = css_class or []
         css_class = [css_class] if not isinstance(css_class, list) else css_class
-        output['class'] = css_class
+        output["class"] = css_class
 
         if not text:
             self.empty_output = True
@@ -271,7 +260,7 @@ class Spotifycl:
                 serialized = json.dumps(output)
             else:
                 color = ""
-                for cls in output['class']:
+                for cls in output["class"]:
                     if cls in self.class_to_color:
                         color = self.class_to_color[cls]
                         break
@@ -283,8 +272,7 @@ class Spotifycl:
     def connect_spotify_dbus(self):
         if self.spotify_dbus is None:
             self.spotify_dbus = self.session_bus.get_object(
-                Spotifycl.SPOTIFY_BUS,
-                Spotifycl.SPOTIFY_OBJECT_PATH
+                Spotifycl.SPOTIFY_BUS, Spotifycl.SPOTIFY_OBJECT_PATH
             )
 
     def setup_properties_changed(self):
@@ -292,21 +280,20 @@ class Spotifycl:
             self.connect_spotify_dbus()
 
             self.spotify_dbus.connect_to_signal(
-                'PropertiesChanged',
-                self.on_properties_changed
+                "PropertiesChanged", self.on_properties_changed
             )
 
             if self.empty_output:
                 metadata, playback_status = self.metadata_status
                 self.output_playback_status(
                     data={
-                        'Metadata': metadata,
-                        'PlaybackStatus': playback_status,
+                        "Metadata": metadata,
+                        "PlaybackStatus": playback_status,
                     }
                 )
 
         except dbus.DBusException:
-            self.output('')
+            self.output("")
 
     def _song_info(self, data):
         """Return song info from passed data.
@@ -318,19 +305,19 @@ class Spotifycl:
             tuple: arist, title, playing, album, trackid
         """
 
-        metadata = data['Metadata']
+        metadata = data["Metadata"]
 
-        artists = metadata['xesam:artist']
+        artists = metadata["xesam:artist"]
         artist = artists[0] if artists else None
 
-        title = metadata['xesam:title']
-        playback_status = data['PlaybackStatus'].lower()
+        title = metadata["xesam:title"]
+        playback_status = data["PlaybackStatus"].lower()
         # playback_status can be 'Playing', 'Paused', or 'Stopped'
         # 'Stopped' is not used here.
-        playing = playback_status == 'playing'
+        playing = playback_status == "playing"
 
-        album = metadata['xesam:album']
-        trackid = metadata['mpris:trackid']
+        album = metadata["xesam:album"]
+        trackid = metadata["mpris:trackid"]
 
         return artist, title, playing, album, trackid
 
@@ -341,12 +328,12 @@ class Spotifycl:
         artist, title, playing, album, trackid = self._song_info(data)
 
         if not artist and not album:
-            self.output('')
+            self.output("")
             return
 
         same_song = title == self.last_title
         saved = same_song and self.saved_track
-        divider = '+' if saved else '-'
+        divider = "+" if saved else "-"
         css_class = [
             Spotifycl.CLASS_PLAYING if playing else Spotifycl.CLASS_PAUSED,
         ]
@@ -354,12 +341,12 @@ class Spotifycl:
             css_class.append(Spotifycl.CLASS_SAVED)
 
         output = {
-            'text': f'{artist if artist else album} {divider} {title}',
-            'css_class': css_class,
+            "text": f"{artist if artist else album} {divider} {title}",
+            "css_class": css_class,
         }
 
         if album:
-            output['tooltip'] = album
+            output["tooltip"] = album
 
         self.output(**output)
 
@@ -373,7 +360,7 @@ class Spotifycl:
                 self.setup_spotipy()
                 self.update_saved_track(trackid=trackid)
             if self.saved_track:
-                output['text'] = f'{artist} + {title}'
+                output["text"] = f"{artist} + {title}"
                 self.output(**output)
 
     def update_saved_track(self, trackid: str):
@@ -396,7 +383,7 @@ class Spotifycl:
             else:
                 # Spotify was closed.
                 self.spotify_dbus = None
-                self.output('')
+                self.output("")
 
 
 def common_options(fn):
@@ -404,13 +391,13 @@ def common_options(fn):
         "--output-type",
         type=ChoiceEnum(OutputType),
         default=OutputType.WAYBAR,
-        help="Output type for specific bar."
+        help="Output type for specific bar.",
     )(fn)
     fn = click.option(
         "--class-to-color",
         type=str,
         default="{}",
-        help="JSON dictionary mapping classes to colors for the polybar output type."
+        help="JSON dictionary mapping classes to colors for the polybar output type.",
     )(fn)
     return fn
 
@@ -478,17 +465,17 @@ def stop():
     Spotifycl.dbus_command(Spotifycl.STOP)
 
 
-@cli.command('next')
+@cli.command("next")
 def next_song():
     """Next song."""
     Spotifycl.dbus_command(Spotifycl.NEXT)
 
 
-@cli.command('previous')
+@cli.command("previous")
 def previous_song():
     """Previous song."""
     Spotifycl.dbus_command(Spotifycl.PREVIOUS)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cli()

@@ -10,11 +10,13 @@ INTERFACE = "wg0"
 
 
 def output(text: str, tooltip: str, cls: str) -> None:
-    line = json.dumps({
-        "text": text,
-        "tooltip": tooltip,
-        "class": cls,
-    })
+    line = json.dumps(
+        {
+            "text": text,
+            "tooltip": tooltip,
+            "class": cls,
+        }
+    )
     print(line, flush=True)
 
 
@@ -28,18 +30,12 @@ def is_enabled() -> bool:
 
 
 def enable_forwarding() -> None:
-    subprocess.run(
-        ["ip", "link", "set", INTERFACE, "up"]
-    )
-    subprocess.run(
-        ["ip", "route", "add", ROUTE, "dev", INTERFACE]
-    )
+    subprocess.run(["ip", "link", "set", INTERFACE, "up"])
+    subprocess.run(["ip", "route", "add", ROUTE, "dev", INTERFACE])
 
 
 def disable_forwarding() -> None:
-    subprocess.run(
-        ["ip", "link", "set", INTERFACE, "down"]
-    )
+    subprocess.run(["ip", "link", "set", INTERFACE, "down"])
 
 
 @click.group()
@@ -78,9 +74,9 @@ def status():
     output(
         text="\uf4d7",
         tooltip="Enabled" if enabled else "Disabled",
-        cls="enabled" if enabled else "disabled"
+        cls="enabled" if enabled else "disabled",
     )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cli()

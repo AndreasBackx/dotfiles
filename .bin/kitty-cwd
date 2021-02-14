@@ -24,36 +24,42 @@
 
 import json
 import subprocess
-from os import path
 import sys
+from os import path
 
-KITTY_SOCKET = '/tmp/kitty'
+KITTY_SOCKET = "/tmp/kitty"
 
 
 def get_cwd():
     try:
-        kitty_windows = subprocess.check_output([
-            'kitty', '@', '--to', f'unix:{KITTY_SOCKET}', 'ls',
-        ])
+        kitty_windows = subprocess.check_output(
+            [
+                "kitty",
+                "@",
+                "--to",
+                f"unix:{KITTY_SOCKET}",
+                "ls",
+            ]
+        )
     except subprocess.CalledProcessError:
         return None
     windows = json.loads(kitty_windows)
 
     for window in windows:
-        if not window['is_focused']:
+        if not window["is_focused"]:
             continue
 
-        for tab in window['tabs']:
-            if not tab['is_focused']:
+        for tab in window["tabs"]:
+            if not tab["is_focused"]:
                 continue
 
-            for tab_window in tab['windows']:
-                if not tab_window['is_focused']:
+            for tab_window in tab["windows"]:
+                if not tab_window["is_focused"]:
                     continue
 
-                for foreground_process in tab_window['foreground_processes']:
-                    if 'cwd' in foreground_process:
-                        return foreground_process['cwd']
+                for foreground_process in tab_window["foreground_processes"]:
+                    if "cwd" in foreground_process:
+                        return foreground_process["cwd"]
 
 
 def is_running():
@@ -61,17 +67,23 @@ def is_running():
     return exists
 
 
-directory = '.'
+directory = "."
 if is_running():
     cwd = get_cwd()
     if cwd is not None:
         directory = cwd
 
 try:
-    subprocess.run([
-        'kitty', '--single-instance', '--listen-on',
-        f'unix:{KITTY_SOCKET}', '--directory', directory,
-        *sys.argv[1:],
-    ])
+    subprocess.run(
+        [
+            "kitty",
+            "--single-instance",
+            "--listen-on",
+            f"unix:{KITTY_SOCKET}",
+            "--directory",
+            directory,
+            *sys.argv[1:],
+        ]
+    )
 except Exception:
     subprocess.run(["kitty", *sys.argv[1:]])
