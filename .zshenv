@@ -1,4 +1,4 @@
-source ~/.secrets
+source ~/.config/.secrets
 
 # Do not add duplicates to PATH
 typeset -U PATH
@@ -34,6 +34,7 @@ PATH=/usr/local/sbin:$PATH
 PATH=/usr/local/bin:$PATH
 PATH=$HOME/.bin:$PATH
 PATH=$PATH:~/.npm-global/bin
+PATH=$PATH:~/.pyenv/bin
 
 
 # Pyenv

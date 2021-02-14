@@ -1,9 +1,9 @@
 #!/usr/bin/bash
 set -e
 
-source /home/andreas/.secrets
+source ~/.config/.secrets
 
-export HOME=/home/andreas
+export HOME=~
 BORG_REPOSITORY=/mnt/server/storage/Backups
 
 # Setting this, so you won't be asked for your repository passphrase:
@@ -15,7 +15,7 @@ BORG_REPOSITORY=/mnt/server/storage/Backups
 echo "Creating borg backup..."
 /usr/bin/borg create					                \
     $BORG_REPOSITORY::'{hostname}-{now:%Y-%m-%dT%H:%M:%S}'   \
-    /home/andreas                                       \
+    ~                                       \
     /etc                                                \
     /var                                                \
     /usr/local                                          \
@@ -31,14 +31,14 @@ echo "Creating borg backup..."
     --exclude '/var/spool'                              \
     --exclude '*.pyc'                                   \
     --exclude '*.log'                                   \
-    --exclude '/home/andreas/Movies'                    \
-    --exclude '/home/andreas/.gradle'                   \
-    --exclude '/home/andreas/.local'                    \
-    --exclude '/home/andreas/.pyenv'                    \
-    --exclude '/home/andreas/.rbenv'                    \
-    --exclude '/home/andreas/.npm-global'               \
-    --exclude '/home/andreas/Downloads'                 \
-    --exclude '/home/andreas/.npm/_cacache'             \
+    --exclude '~/Movies'                    \
+    --exclude '~/.gradle'                   \
+    --exclude '~/.local'                    \
+    --exclude '~/.pyenv'                    \
+    --exclude '~/.rbenv'                    \
+    --exclude '~/.npm-global'               \
+    --exclude '~/Downloads'                 \
+    --exclude '~/.npm/_cacache'             \
     --exclude 'node_modules'                            \
     --exclude '__pycache__'                             \
     --exclude '*Cache*'                                 \
