@@ -30,49 +30,48 @@ from typing import List
 import click
 
 FEATURES = {
-    'input_source': {
-        'value': '60',
-        'choices': {
-            'dp1': '0x0f',
-            'dp2': '0x10',
-            'hdmi1': '0x11',
-            'hdmi2': '0x12',
+    "input_source": {
+        "value": "60",
+        "choices": {
+            "dp1": "0x0f",
+            "dp2": "0x10",
+            "hdmi1": "0x11",
+            "hdmi2": "0x12",
         },
     },
-    'display_mode': {
-        'value': 'DC',
-        'type': hex,
-        'choices': {
-            'default': '00',
-            'multimedia': '02',
-            'movie': '03',
-            'games': '05',
+    "display_mode": {
+        "value": "DC",
+        "type": hex,
+        "choices": {
+            "default": "00",
+            "multimedia": "02",
+            "movie": "03",
+            "games": "05",
         },
     },
-    'power_mode': {
-        'value': 'D6',
-        'choices': {
-            'on': '01',
-            'standby': '04',
-            'off': '05',
+    "power_mode": {
+        "value": "D6",
+        "choices": {
+            "on": "01",
+            "standby": "04",
+            "off": "05",
         },
     },
-    'brightness': {
-        'value': '10',
-        'min': 0,
-        'max': 100,
+    "brightness": {
+        "value": "10",
+        "min": 0,
+        "max": 100,
     },
 }
 
 
 class Display(Enum):
-    LEFT = '9'
-    CENTER = '7'
-    RIGHT = '8'
+    LEFT = "7"
+    CENTER = "8"
+    RIGHT = "5"
 
 
 class EnumType(click.Choice):
-
     def __init__(self, enum):
         self.__enum = enum
         choices = (member.lower() for member in enum.__members__)
@@ -82,13 +81,11 @@ class EnumType(click.Choice):
         if isinstance(value, self.__enum):
             return value
         return next(
-            enum for enum in self._EnumType__enum
-            if enum.name.lower() == value.lower()
+            enum for enum in self._EnumType__enum if enum.name.lower() == value.lower()
         )
 
 
 class Brightness:
-
     def __init__(self, value: int, relative=False, toggle=False):
         """Brightness can hold a value or a relative value.
 
@@ -124,16 +121,16 @@ class Brightness:
 
 class BrightnessType(click.ParamType):
 
-    name = 'brightness'
+    name = "brightness"
 
     STEP = 25
 
     def convert(self, value, param, ctx):
-        if value == 'up':
+        if value == "up":
             return Brightness(value=self.STEP, relative=True)
-        elif value == 'down':
+        elif value == "down":
             return Brightness(value=-self.STEP, relative=True)
-        elif value == 'toggle':
+        elif value == "toggle":
             return Brightness(value=0, toggle=True)
         elif isinstance(value, int):
             return Brightness(value=value)
@@ -141,9 +138,7 @@ class BrightnessType(click.ParamType):
         try:
             return Brightness(value=int(value))
         except ValueError:
-            self.fail(
-                f'Value is not a valid integer or \'up\'/\'down\'.'
-            )
+            self.fail(f"Value is not a valid integer or 'up'/'down'.")
 
 
 def ddcutil(command: str, display: Display, *args):
@@ -153,19 +148,19 @@ def ddcutil(command: str, display: Display, *args):
     while retry < retries:
         completed_process = subprocess.run(
             [
-                'ddcutil',
+                "ddcutil",
                 command,
-                '--bus',
+                "--bus",
                 display.value,
-                '--async',
-                '--noverify',
-                '--force-slave-address',
-                '--brief',
-                *args
+                "--async",
+                "--noverify",
+                "--force-slave-address",
+                "--brief",
+                *args,
             ],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            universal_newlines=True
+            universal_newlines=True,
         )
         try:
             completed_process.check_returncode()
@@ -183,14 +178,14 @@ def set_vcp(displays, feature: str, value):
         displays = [displays]
     elif not isinstance(displays, list) and not isinstance(displays, tuple):
         print(
-            f'Displays need to be a list of Displays or a single Display, '
-            'not {type(displays)}.'
+            f"Displays need to be a list of Displays or a single Display, "
+            "not {type(displays)}."
         )
 
     feature_options = FEATURES[feature]
-    feature_choices = feature_options.get('choices')
-    feature_min = feature_options.get('min')
-    feature_max = feature_options.get('max')
+    feature_choices = feature_options.get("choices")
+    feature_min = feature_options.get("min")
+    feature_max = feature_options.get("max")
 
     if feature_choices is not None:
         for key, val in feature_choices.items():
@@ -204,23 +199,25 @@ def set_vcp(displays, feature: str, value):
             )
             return
 
-    if (feature_min is not None or feature_max is not None) and not isinstance(value, int):
-        print(f'Value type needs to be an int, not {type(value).__name__}.')
+    if (feature_min is not None or feature_max is not None) and not isinstance(
+        value, int
+    ):
+        print(f"Value type needs to be an int, not {type(value).__name__}.")
         return
 
     if feature_min is not None and value < feature_min:
-        print(f'Minimum value is {feature_min}.')
+        print(f"Minimum value is {feature_min}.")
         return
 
     if feature_max is not None and value > feature_max:
-        print(f'Maximum value is {feature_max}.')
+        print(f"Maximum value is {feature_max}.")
         return
 
     for display in displays:
         ddcutil(
-            'setvcp',
+            "setvcp",
             display,
-            feature_options['value'],
+            feature_options["value"],
             str(value),
         )
 
@@ -229,16 +226,16 @@ def get_vcp(display: Display, feature: str):
     response = None
     while response is None:
         response = ddcutil(
-            'getvcp',
+            "getvcp",
             display,
-            FEATURES[feature]['value'],
+            FEATURES[feature]["value"],
         )
 
-    value = response.stdout.split(' ')[3].strip()
+    value = response.stdout.split(" ")[3].strip()
 
     feature_options = FEATURES[feature]
-    feature_type = feature_options.get('type')
-    feature_choices = feature_options.get('choices')
+    feature_type = feature_options.get("type")
+    feature_choices = feature_options.get("choices")
 
     if feature_type is hex:
         # Convert 'x00' to '00'.
@@ -268,65 +265,51 @@ def cli():
 @cli.command()
 def default():
     """Enable all monitors."""
-    set_vcp(list(Display), 'display_mode', 'default')
-    set_vcp(list(Display), 'power_mode', 'on')
+    set_vcp(list(Display), "display_mode", "default")
+    set_vcp(list(Display), "power_mode", "on")
 
 
 @cli.command()
-@click.option('--toggle', is_flag=True)
-@click.option('--get', is_flag=True)
+@click.option("--toggle", is_flag=True)
+@click.option("--get", is_flag=True)
 def movie(toggle, get):
     """Left: movie preset, right: standy."""
 
     enabled = False
 
     if toggle or get:
-        display_mode = get_vcp(Display.LEFT, 'display_mode')
-        enabled = display_mode == 'movie'
+        display_mode = get_vcp(Display.LEFT, "display_mode")
+        enabled = display_mode == "movie"
 
         if get:
             if enabled:
-                print('%{F#CECECE}%{F-}')
+                print("%{F#CECECE}%{F-}")
             else:
-                print('%{F#6E6E6E}%{F-}')
+                print("%{F#6E6E6E}%{F-}")
 
     if toggle:
-        set_vcp([Display.LEFT], 'display_mode', 'default')
-        set_vcp([Display.RIGHT], 'power_mode', 'on')
+        set_vcp([Display.LEFT], "display_mode", "default")
+        set_vcp([Display.RIGHT], "power_mode", "on")
 
-        subprocess.run(
-            [
-                'xset',
-                's',
-                'on',
-                '+dpms'
-            ]
-        )
+        subprocess.run(["xset", "s", "on", "+dpms"])
     if (not toggle and not get) or (toggle and not enabled):
-        set_vcp([Display.LEFT], 'display_mode', 'movie')
-        set_vcp([Display.RIGHT], 'power_mode', 'standby')
+        set_vcp([Display.LEFT], "display_mode", "movie")
+        set_vcp([Display.RIGHT], "power_mode", "standby")
 
-        subprocess.run(
-            [
-                'xset',
-                's',
-                'off',
-                '-dpms'
-            ]
-        )
+        subprocess.run(["xset", "s", "off", "-dpms"])
 
 
 @cli.command()
 def desktop():
     """Change input to desktop machine."""
-    set_vcp([Display.LEFT], 'input_source', 'hdmi1')
-    set_vcp([Display.RIGHT], 'input_source', 'dp2')
+    set_vcp([Display.LEFT], "input_source", "hdmi1")
+    set_vcp([Display.RIGHT], "input_source", "dp2")
 
 
 @cli.command()
 def laptop():
     """Change input to laptop machine."""
-    set_vcp(list(Display), 'input_source', 'dp1')
+    set_vcp(list(Display), "input_source", "dp1")
 
 
 def period_changed(old_period: str, new_period: str):
@@ -340,9 +323,26 @@ def period_changed(old_period: str, new_period: str):
     """
 
     PERIOD_BRIGHTNESS = {
-        'night': 0,
-        'daytime': 100,
+        "night": 0,
+        "transition": 50,
+        "daytime": 100,
     }
+
+    gtk_theme = (
+        "Materia-dark"
+        if new_period == "night"
+        or (old_period == "daytime" and new_period == "transition")
+        else "Materia"
+    )
+    subprocess.run(
+        [
+            "gsettings",
+            "set",
+            "org.gnome.desktop.interface",
+            "gtk-theme",
+            f'"{gtk_theme}"',
+        ]
+    )
 
     target_brightness = PERIOD_BRIGHTNESS.get(new_period)
     if target_brightness is None:
@@ -351,7 +351,7 @@ def period_changed(old_period: str, new_period: str):
     # Only update the displays not already at the target brightness.
     displays = list(Display)
     for display in list(Display):
-        response = get_vcp(display, 'brightness')
+        response = get_vcp(display, "brightness")
         if response is None:
             return
         brightness = int(response)
@@ -359,12 +359,12 @@ def period_changed(old_period: str, new_period: str):
         if brightness == target_brightness:
             displays.remove(display)
 
-    set_vcp(displays, 'brightness', target_brightness)
+    set_vcp(displays, "brightness", target_brightness)
 
 
 @cli.command()
-@click.argument('event')
-@click.argument('details', nargs=-1)
+@click.argument("event")
+@click.argument("details", nargs=-1)
 def redshift(event: str, details: List[str]):
     """Redshift event brightness hook.
 
@@ -378,21 +378,21 @@ def redshift(event: str, details: List[str]):
     none. Any dotfiles in the folder are skipped.
     """
 
-    if event == 'period-changed':
+    if event == "period-changed":
         period_changed(details[0], details[1])
 
 
 @cli.command()
 @click.option(
-    '--display',
-    'displays',
+    "--display",
+    "displays",
     default=list(Display),
     multiple=True,
     type=EnumType(Display),
-    help='Specify which displays, default is all.',
+    help="Specify which displays, default is all.",
 )
 @click.argument(
-    'brightness',
+    "brightness",
     type=BrightnessType(),
     required=False,
 )
@@ -401,15 +401,15 @@ def brightness(displays, brightness):
 
     if brightness is None:
         for display in displays:
-            brightness = get_vcp(display, 'brightness')
+            brightness = get_vcp(display, "brightness")
             if brightness is None:
-                print('…%')
+                print("…%")
                 return
-            print(f'{brightness}%')
+            print(f"{brightness}%")
         return
 
     if not brightness.relative:
-        set_vcp(displays, 'brightness', brightness.resolve())
+        set_vcp(displays, "brightness", brightness.resolve())
         return
 
     # display_brightnesses = {}
@@ -417,8 +417,8 @@ def brightness(displays, brightness):
     # for display in displays:
     #     display_brightnesses[display] = int(get_vcp(display, 'brightness'))
 
-    target_brightness = int(get_vcp(Display.CENTER, 'brightness'))
-    set_vcp(displays, 'brightness', brightness.resolve(target_brightness))
+    target_brightness = int(get_vcp(Display.CENTER, "brightness"))
+    set_vcp(displays, "brightness", brightness.resolve(target_brightness))
 
     # Execute the set operations after each other so there's less of a delay
     # between them.
@@ -426,5 +426,5 @@ def brightness(displays, brightness):
     #     set_vcp([display], 'brightness', brightness.resolve(target_brightness))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cli()
