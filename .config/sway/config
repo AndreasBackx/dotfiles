@@ -1,73 +1,14 @@
-# Default config for sway
-#
-# Copy this to ~/.config/sway/config and edit it to your liking.
-#
-# Read `man 5 sway` for a complete reference.
-
-### Variables
-#
-# Logo key. Use Mod1 for Alt.
-set $mod Mod4
-# Home row direction keys, like vim
-set $left h
-set $down j
-set $up k
-set $right l
-# Your preferred terminal emulator
-set $term kitty-cwd
-# Your preferred application launcher
-# Note: it's recommended that you pass the final command to sway
-# set $menu dmenu_path | dmenu | xargs swaymsg exec
-# Monitors
-set $monitor-center "Acer Technologies XF270HU T78EE0048521"
-set $monitor-right "Dell Inc. DELL U2515H 9X2VY4B101BL"
-set $monitor-left "Dell Inc. DELL U2515H 9X2VY4B101CL"
-set $tv "HDMI-A-2"
-# Colors
-set $black               #141414
-set $blackGray           #1C1C1C
-set $darkerGray          #242424
-set $darkGray            #404040
-set $gray                #6E6E6E
-set $lightGray           #CECECE
-set $white               #E5E5E5
-
-set $yellow              #CCC47A
-set $pink                #E52E71
-set $green               #9CCC3D
-set $cyan                #6CC7D9
-set $orange              #D9882B
-set $purple              #A082D9
-
-# Workspaces
-set $workspace1 "1"
-set $workspace2 "2"
-set $workspace3 "3"
-set $workspace4 "4"
-set $workspace5 "5"
-set $workspace6 "6"
-set $workspace7 "7"
-set $workspace8 "8"
-set $workspace9 "9"
-set $workspace10 "10"
-set $workspace11 "11"
-
-font pango:Roboto Regular 10.5
+include ~/.config/sway/base
 
 ### Output configuration
+set $monitor-left "Dell Inc. DELL U2515H 9X2VY4B101CL"
+set $monitor-center "Acer Technologies XF270HU T78EE0048521"
+set $monitor-right "Dell Inc. DELL U2515H 9X2VY4B101BL"
 
-output $monitor-center pos 1440 570 res 2560x1440@144.006Hz bg /home/andreas/.config/wallpapers/jaime-lannister.jpg fill adaptive_sync on
 output $monitor-left transform 270 pos 0 30 res 2560x1440@59.951000Hz bg /home/andreas/.config/wallpapers/tyrion-lannister.jpg fill
+output $monitor-center pos 1440 570 res 2560x1440@144.006Hz bg /home/andreas/.config/wallpapers/jaime-lannister.jpg fill adaptive_sync on
 output $monitor-right transform 90 pos 4000 0 res 2560x1440@59.951000Hz bg /home/andreas/.config/wallpapers/jon-snow.jpg fill
-output $tv disable
 
-
-#
-# Example configuration:
-#
-#   output HDMI-A-1 resolution 1920x1080 position 1920,0
-#
-# You can get the names of your outputs by running: swaymsg -t get_outputs
 
 ### Idle configuration
 exec_always swayidle -d \
@@ -77,238 +18,20 @@ exec_always swayidle -d \
     timeout 902 'swaymsg "output * dpms off"' \
         resume 'swaymsg "output * dpms on"' \
     before-sleep 'lock' > /var/log/swayidle.log
-# Lock
-bindsym --release $mod+P exec lock
+
+bindsym --locked Ctrl+Alt+Tab exec "pulseaudio-ctl mute; dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause"
+bindsym --locked XF86AudioPlay exec "pulseaudio-ctl mute; dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause"
+bindsym --locked XF86AudioStop exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Stop"
+bindsym --locked XF86AudioPrev exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous"
+bindsym --locked XF86AudioNext exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next"
 
 
-### Design
-#
-#
+# reload the configuration file
+bindsym $mod+Shift+c reload
 
-# If it can run without border, run without a border.
-for_window [class="^.*"] border none
-default_border none
+# exit sway (logs you out of your Wayland session)
+bindsym $mod+Shift+e exec swaynag -t warning -m 'Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'swaymsg exit'
 
-# Sometimes it still uses a border, so use these settings.
-# class                 border          backgr.         text            indicator       child_border
-client.focused          $darkerGray     $blackGray      $lightGray      $yellow         $darkerGray
-client.focused_inactive $blackGray      $black          $gray           $yellow         $blackGray
-client.unfocused        $blackGray      $black          $gray           $yellow         $blackGray
-client.urgent           $pink           $black          $gray           $yellow         $pink
-client.placeholder      $blackGray      $black          $gray           $yellow         $blackGray
-
-client.background       $blackGray
-
-### Applications
-exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
-
-#
-# Left:
-#
-exec spotify
-
-#
-# Center:
-#
-
-#
-# Right:
-#
-
-### Assignments
-#
-# Workspaces:
-#
-workspace $workspace1 output $monitor-center
-workspace $workspace2 output $monitor-center
-workspace $workspace3 output $monitor-center
-workspace $workspace4 output $monitor-right
-workspace $workspace5 output $monitor-right
-workspace $workspace6 output $monitor-right
-workspace $workspace7 output $monitor-right
-workspace $workspace8 output $monitor-left
-workspace $workspace9 output $monitor-left
-workspace $workspace10 output $monitor-left
-workspace $workspace11 output $monitor-left
-
-#
-# Applications
-#
-
-    focus_on_window_activation focus
-
-    # Left
-    # Workspace 8
-    assign [class="Thunderbird"] $workspace8
-
-    # Workspace 9
-    assign [title="WhatsApp"] $workspace9
-    assign [app_id="telegramdesktop"] $workspace9
-
-    # Workspace 10
-    assign [class="Slack"] $workspace10
-
-    # Workspace 11
-    assign [app_id="transmission-gtk"] $workspace11
-    # Move Android Studio design preview
-    assign [class="jetbrains-studio" title="Preview - "] $workspace11
-    for_window [title="Android Emulator"] move to workspace $workspace11
-    # Bug see https://github.com/i3/i3/issues/2060
-    for_window [class="Spotify"] move window to workspace $workspace11
-
-    # Center
-    assign [class="Code"] $workspace1
-    assign [class="jetbrains-*"] $workspace2
-
-    # Right
-    # Workspace 6
-    assign [class="Caprine"] $workspace6
-    assign [class="discord"] $workspace6
-    for_window [class="discord"] move window to workspace $workspace6
-
-
-### Key bindings
-#
-# Basics:
-#
-    # start a terminal
-    bindsym $mod+Return exec $term
-
-    # start your launcher
-    bindsym $mod+space exec "rofi -monitor -1 -show run"
-    bindsym $mod+d exec "rofi -monitor -1 -show run"
-    # sudo launcher version
-    bindsym $mod+Shift+space exec "rofi -monitor -1 -show run -display-run sudo -run-command 'sudo {cmd}'"
-    # Emoji
-    bindsym $mod+Control+space exec "emoji"
-
-    # Drag floating windows by holding down $mod and left mouse button.
-    # Resize them with right mouse button + $mod.
-    # Despite the name, also works for non-floating windows.
-    # Change normal to inverse to use left mouse button for resizing and right
-    # mouse button for dragging.
-    floating_modifier $mod normal
-
-    # reload the configuration file
-    bindsym $mod+Shift+c reload
-
-    # exit sway (logs you out of your Wayland session)
-    bindsym $mod+Shift+e exec swaynag -t warning -m 'Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'swaymsg exit'
-
-    # kill the current window
-    bindsym $mod+q kill
-#
-# Media
-#
-
-    # Volume
-    bindsym XF86AudioRaiseVolume exec pulseaudio-ctl up 5
-    bindsym XF86AudioLowerVolume exec pulseaudio-ctl down 5
-    bindsym XF86AudioMute exec pulseaudio-ctl mute
-
-    # Controls
-    bindsym Ctrl+Alt+Tab exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause"
-    bindsym XF86AudioPlay exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause"
-    bindsym XF86AudioStop exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Stop"
-    bindsym XF86AudioPrev exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous"
-    bindsym XF86AudioNext exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next"
-
-    # Same controls for lock screen.
-    bindsym --locked Ctrl+Alt+Tab exec "pulseaudio-ctl mute; dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause"
-    bindsym --locked XF86AudioPlay exec "pulseaudio-ctl mute; dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause"
-    bindsym --locked XF86AudioStop exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Stop"
-    bindsym --locked XF86AudioPrev exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous"
-    bindsym --locked XF86AudioNext exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next"
-
-#
-# Moving around:
-#
-    # Move your focus around
-    bindsym $mod+Control+Left focus left
-    bindsym $mod+Control+Down focus down
-    bindsym $mod+Control+Up focus up
-    bindsym $mod+Control+Right focus right
-
-    # Move the focused window around
-    bindsym $mod+Control+Mod1+Left move left
-    bindsym $mod+Control+Mod1+Down move down
-    bindsym $mod+Control+Mod1+Up move up
-    bindsym $mod+Control+Mod1+Right move right
-
-#
-# Workspaces:
-#
-    # Switch to workspace
-    bindsym $mod+1 workspace $workspace1
-    bindsym $mod+2 workspace $workspace2
-    bindsym $mod+3 workspace $workspace3
-    bindsym $mod+4 workspace $workspace4
-    bindsym $mod+5 workspace $workspace5
-    bindsym $mod+6 workspace $workspace6
-    bindsym $mod+7 workspace $workspace7
-    bindsym $mod+8 workspace $workspace8
-    bindsym $mod+9 workspace $workspace9
-    bindsym $mod+0 workspace $workspace10
-    bindsym $mod+minus workspace $workspace11
-    # Move focused container to workspace
-    bindsym $mod+Shift+1 move container to workspace $workspace1
-    bindsym $mod+Shift+2 move container to workspace $workspace2
-    bindsym $mod+Shift+3 move container to workspace $workspace3
-    bindsym $mod+Shift+4 move container to workspace $workspace4
-    bindsym $mod+Shift+5 move container to workspace $workspace5
-    bindsym $mod+Shift+6 move container to workspace $workspace6
-    bindsym $mod+Shift+7 move container to workspace $workspace7
-    bindsym $mod+Shift+8 move container to workspace $workspace8
-    bindsym $mod+Shift+9 move container to workspace $workspace9
-    bindsym $mod+Shift+0 move container to workspace $workspace10
-    bindsym $mod+Shift+minus move container to workspace $workspace11
-    # Change workspace on current output
-    bindsym $mod+Left workspace prev_on_output
-    bindsym $mod+Right workspace next_on_output
-
-#
-# Layout stuff:
-#
-    # You can "split" the current object of your focus with
-    # $mod+b or $mod+v, for horizontal and vertical splits
-    # respectively.
-    bindsym $mod+h splith
-    bindsym $mod+v splitv
-
-    # Switch the current container between different layout styles
-    bindsym $mod+s layout stacking
-    bindsym $mod+w layout tabbed
-    bindsym $mod+e layout toggle split
-
-    # Make the current focus fullscreen
-    bindsym $mod+Shift+f fullscreen
-
-    # Toggle the current focus between tiling and floating mode
-    bindsym $mod+f floating toggle
-#
-# Resizing containers:
-#
-mode "resize" {
-    # left will shrink the containers width
-    # right will grow the containers width
-    # up will shrink the containers height
-    # down will grow the containers height
-    bindsym $left resize shrink width 50px
-    bindsym $down resize grow height 50px
-    bindsym $up resize shrink height 50px
-    bindsym $right resize grow width 50px
-
-    # ditto, with arrow keys
-    bindsym Left resize shrink width 50px
-    bindsym Down resize grow height 50px
-    bindsym Up resize shrink height 50px
-    bindsym Right resize grow width 50px
-
-    # return to default mode
-    bindsym Return mode "default"
-    bindsym Escape mode "default"
-}
-bindsym $mod+r mode "resize"
 
 #
 # Status Bar:

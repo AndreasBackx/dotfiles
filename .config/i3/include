@@ -1,0 +1,53 @@
+### Output configuration
+
+exec_always xrandr --output DP-4.8 --mode 2560x1440 --pos $MONITOR_LEFT_Xx$MONITOR_LEFT_Y --rotate left \
+    --output USB-C-0 --mode 2560x1440 --pos $MONITOR_CENTER_Xx$MONITOR_CENTER_Y --rotate normal --refresh 144.006 --primary \
+    --output HDMI-0 --mode 2560x1440 --pos $MONITOR_RIGHT_Xx$MONITOR_RIGHT_Y --rotate right \
+    && cp ~/.config/monitors.xml /var/lib/gdm/.config/
+
+exec_always --no-startup-id start-pulseaudio-x11
+exec_always custom-polybar
+exec /usr/libexec/gsd-xsettings
+
+exec nm-applet
+exec_always nitrogen --restore
+exec picom
+exec workchat
+new_window pixel
+
+### Idle configuration
+# exec_always swayidle -d \
+#     timeout 10 'if pgrep swaylock; then swaymsg "output * dpms off"; fi'\
+#         resume 'if pgrep swaylock; then swaymsg "output * dpms on"; fi' \
+#     timeout 900 'lock' \
+#     timeout 902 'swaymsg "output * dpms off"' \
+#         resume 'swaymsg "output * dpms on"' \
+#     before-sleep 'lock' > /var/log/swayidle.log
+
+
+# exit i3
+bindsym $mod+Shift+c exec notify-send "Restarting i3..." --urgency=low --expire-time=2500 && i3-config && i3-msg restart
+bindsym $mod+Shift+e exec i3-nagbar \
+    -t warning -m 'What would you like to do?' \
+    -B 'Suspend' 'systemctl suspend' \
+    -B 'Restart' 'systemctl reboot' \
+    -B 'Shutdown' 'systemctl poweroff' \
+    -B 'Logout' 'i3-msg exit'
+
+#
+# Status Bar:
+#
+# Read `man 5 sway-bar` for more information about this section.
+#bar {
+#    swaybar_command waybar
+#    position bottom
+#}
+
+#input * {
+#    xkb_layout us
+#    xkb_options compose:rctrl
+#
+#    accel_profile flat pointer_accel 1.7
+#
+#    scroll_factor 4
+#}

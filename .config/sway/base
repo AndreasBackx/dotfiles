@@ -1,0 +1,278 @@
+### Variables
+
+# Logo key. Use Mod1 for Alt.
+set $mod                Mod4
+
+# Home row direction keys, like vim
+set $LEFT               h
+set $DOWN               j
+set $UP                 k
+set $RIGHT              l
+
+# Terminal
+set $TERM               kitty-cwd
+
+# Monitors
+set $MONITOR_LEFT_X     "0"
+set $MONITOR_LEFT_Y     "30"
+set $MONITOR_CENTER_X   "1440"
+set $MONITOR_CENTER_Y   "570"
+set $MONITOR_RIGHT_X    "4000"
+set $MONITOR_RIGHT_Y    "0"
+
+# Colors
+set $BLACK              #141414
+set $BLACK_GRAY         #1C1C1C
+set $DARKER_GRAY        #242424
+set $DARK_GRAY          #404040
+set $GRAY               #6E6E6E
+set $LIGHT_GRAY         #CECECE
+set $WHITE              #E5E5E5
+
+set $YELLOW             #CCC47A
+set $PINK               #E52E71
+set $GREEN              #9CCC3D
+set $CYAN               #6CC7D9
+set $ORANGE             #D9882B
+set $PURPLE             #A082D9
+
+# Workspaces
+set $WORKSPACE1         "1"
+set $WORKSPACE2         "2"
+set $WORKSPACE3         "3"
+set $WORKSPACE4         "4"
+set $WORKSPACE5         "5"
+set $WORKSPACE6         "6"
+set $WORKSPACE7         "7"
+set $WORKSPACE8         "8"
+set $WORKSPACE9         "9"
+set $WORKSPACE10        "10"
+set $WORKSPACE11        "11"
+set $WORKSPACE12        "12"
+
+font pango:Roboto Regular 10.5
+
+# Lock
+bindsym --release $mod+P exec lock
+
+
+### Design
+# If it can run without border, run without a border.
+for_window [class="^.*"] border none
+default_border none
+
+# Sometimes it still uses a border, so use these settings.
+# class                 border          backgr.         text            indicator       child_border
+client.focused          $DARKER_GRAY    $BLACK_GRAY     $LIGHT_GRAY     $YELLOW         $DARKER_GRAY
+client.focused_inactive $BLACK_GRAY     $BLACK          $GRAY           $YELLOW         $BLACK_GRAY
+client.unfocused        $BLACK_GRAY     $BLACK          $GRAY           $YELLOW         $BLACK_GRAY
+client.urgent           $PINK           $BLACK          $GRAY           $YELLOW         $PINK
+client.placeholder      $BLACK_GRAY     $BLACK          $GRAY           $YELLOW         $BLACK_GRAY
+
+client.background       $BLACK_GRAY
+
+### Applications
+exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+exec redshift-gtk
+
+#
+# Left:
+#
+exec spotify
+
+#
+# Center:
+#
+
+#
+# Right:
+#
+
+### Assignments
+#
+# Workspaces:
+#
+workspace $WORKSPACE1 output $MONITOR_CENTER
+workspace $WORKSPACE2 output $MONITOR_CENTER
+workspace $WORKSPACE3 output $MONITOR_CENTER
+workspace $WORKSPACE4 output $MONITOR_RIGHT
+workspace $WORKSPACE5 output $MONITOR_RIGHT
+workspace $WORKSPACE6 output $MONITOR_RIGHT
+workspace $WORKSPACE7 output $MONITOR_RIGHT
+workspace $WORKSPACE8 output $MONITOR_LEFT
+workspace $WORKSPACE9 output $MONITOR_LEFT
+workspace $WORKSPACE10 output $MONITOR_LEFT
+workspace $WORKSPACE11 output $MONITOR_LEFT
+workspace $WORKSPACE12 output $MONITOR_LEFT
+
+#
+# Applications
+#
+
+    focus_on_window_activation focus
+
+    # Left
+    # Workspace 8
+    assign [class="Caprine"] $WORKSPACE8
+    assign [class="discord"] $WORKSPACE8
+    for_window [class="discord"] move window to workspace $WORKSPACE8
+
+    # Workspace 9
+    assign [class="Thunderbird"] $WORKSPACE9
+    assign [class="Firefox" instance="Firefox" title="fb.workplace.com" window_role="Toplevel"] $WORKSPACE9
+    for_window [class="Firefox" instance="Firefox" title="fb.workplace.com" window_role="Toplevel"] move window to workspace $WORKSPACE9
+
+    # Workspace 10
+    assign [title="WhatsApp"] $WORKSPACE10
+    assign [class="telegramdesktop"] $WORKSPACE10
+
+    # Workspace 11
+    assign [class="Slack"] $WORKSPACE11
+
+    # Workspace 12
+    assign [class="transmission-gtk"] $WORKSPACE12
+    # Move Android Studio design preview
+    assign [class="jetbrains-studio" title="Preview - "] $WORKSPACE12
+    for_window [title="Android Emulator"] move to workspace $WORKSPACE12
+    # Bug see https://github.com/i3/i3/issues/2060
+    for_window [class="Spotify"] move window to workspace $WORKSPACE12
+
+    # Center
+    # Workspace 1
+    assign [class="Code"] $WORKSPACE1
+
+    # Workspace 2
+    assign [class="jetbrains-*"] $WORKSPACE2
+
+    # Right
+
+
+### Key bindings
+#
+# Basics:
+#
+    # start a terminal
+    bindsym $mod+Return exec $TERM
+
+    # start your launcher
+    bindsym $mod+space exec "rofi -monitor -1 -show run"
+    bindsym $mod+d exec "rofi -monitor -1 -show run"
+    # sudo launcher version
+    bindsym $mod+Shift+space exec "rofi -monitor -1 -show run -display-run sudo -run-command 'sudo {cmd}'"
+    # Emoji
+    bindsym $mod+Control+space exec "emoji"
+
+    # Drag floating windows by holding down $mod and left mouse button.
+    # Resize them with right mouse button + $mod.
+    # Despite the name, also works for non-floating windows.
+    # Change normal to inverse to use left mouse button for resizing and right
+    # mouse button for dragging.
+    floating_modifier $mod
+
+    # kill the current window
+    bindsym $mod+q kill
+#
+# Media
+#
+
+    # Volume
+    bindsym XF86AudioRaiseVolume exec pulseaudio-ctl up 5
+    bindsym XF86AudioLowerVolume exec pulseaudio-ctl down 5
+    bindsym XF86AudioMute exec pulseaudio-ctl mute
+
+    # Controls
+    bindsym Ctrl+Alt+Tab exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause"
+    bindsym XF86AudioPlay exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause"
+    bindsym XF86AudioStop exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Stop"
+    bindsym XF86AudioPrev exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous"
+    bindsym XF86AudioNext exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next"
+
+#
+# Moving around:
+#
+    # Move your focus around
+    bindsym $mod+Control+Left focus left
+    bindsym $mod+Control+Down focus down
+    bindsym $mod+Control+Up focus up
+    bindsym $mod+Control+Right focus right
+
+    # Move the focused window around
+    bindsym $mod+Control+Mod1+Left move left
+    bindsym $mod+Control+Mod1+Down move down
+    bindsym $mod+Control+Mod1+Up move up
+    bindsym $mod+Control+Mod1+Right move right
+
+#
+# Workspaces:
+#
+    # Switch to workspace
+    bindsym $mod+1 workspace $WORKSPACE1
+    bindsym $mod+2 workspace $WORKSPACE2
+    bindsym $mod+3 workspace $WORKSPACE3
+    bindsym $mod+4 workspace $WORKSPACE4
+    bindsym $mod+5 workspace $WORKSPACE5
+    bindsym $mod+6 workspace $WORKSPACE6
+    bindsym $mod+7 workspace $WORKSPACE7
+    bindsym $mod+8 workspace $WORKSPACE8
+    bindsym $mod+9 workspace $WORKSPACE9
+    bindsym $mod+0 workspace $WORKSPACE10
+    bindsym $mod+minus workspace $WORKSPACE11
+    # Move focused container to workspace
+    bindsym $mod+Shift+1 move container to workspace $WORKSPACE1
+    bindsym $mod+Shift+2 move container to workspace $WORKSPACE2
+    bindsym $mod+Shift+3 move container to workspace $WORKSPACE3
+    bindsym $mod+Shift+4 move container to workspace $WORKSPACE4
+    bindsym $mod+Shift+5 move container to workspace $WORKSPACE5
+    bindsym $mod+Shift+6 move container to workspace $WORKSPACE6
+    bindsym $mod+Shift+7 move container to workspace $WORKSPACE7
+    bindsym $mod+Shift+8 move container to workspace $WORKSPACE8
+    bindsym $mod+Shift+9 move container to workspace $WORKSPACE9
+    bindsym $mod+Shift+0 move container to workspace $WORKSPACE10
+    bindsym $mod+Shift+minus move container to workspace $WORKSPACE11
+    # Change workspace on current output
+    bindsym $mod+Left workspace prev_on_output
+    bindsym $mod+Right workspace next_on_output
+
+#
+# Layout stuff:
+#
+    # You can "split" the current object of your focus with
+    # $mod+b or $mod+v, for horizontal and vertical splits
+    # respectively.
+    bindsym $mod+h splith
+    bindsym $mod+v splitv
+
+    # Switch the current container between different layout styles
+    bindsym $mod+s layout stacking
+    bindsym $mod+w layout tabbed
+    bindsym $mod+e layout toggle split
+
+    # Make the current focus fullscreen
+    bindsym $mod+Shift+f fullscreen
+
+    # Toggle the current focus between tiling and floating mode
+    bindsym $mod+f floating toggle
+#
+# Resizing containers:
+#
+mode "resize" {
+    # left will shrink the containers width
+    # right will grow the containers width
+    # up will shrink the containers height
+    # down will grow the containers height
+    bindsym $LEFT resize shrink width 50px
+    bindsym $DOWN resize grow height 50px
+    bindsym $UP resize shrink height 50px
+    bindsym $RIGHT resize grow width 50px
+
+    # ditto, with arrow keys
+    bindsym Left resize shrink width 50px
+    bindsym Down resize grow height 50px
+    bindsym Up resize shrink height 50px
+    bindsym Right resize grow width 50px
+
+    # return to default mode
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+r mode "resize"
