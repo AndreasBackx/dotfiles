@@ -29,8 +29,11 @@
     path = ~/.gitconfig-private
     # Only exists on Linux.
     path = /home/andreas/.gitconfig-linux
+    path = /home/andreasbackx/.gitconfig-linux
     # Only exists on MacOS
     path = /Users/Andreas/.gitconfig-macos
+    path = /Users/andreasbackx/.gitconfig-macos
+
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
