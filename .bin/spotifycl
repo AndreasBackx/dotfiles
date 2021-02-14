@@ -29,6 +29,7 @@ import socket
 import subprocess
 import time
 from concurrent.futures import ThreadPoolExecutor
+from enum import Enum
 
 import click
 import dbus
@@ -42,6 +43,28 @@ active_color = '%{F#CECECE}'
 default_color = '%{F-}'
 
 server_address = '/tmp/spotifycl-socket'
+
+
+class ChoiceEnum(click.Choice):
+    def __init__(self, enum):
+        super().__init__(map(str, enum))
+        self.enum = enum
+
+    def convert(self, value, param, ctx):
+        value = super().convert(value, param, ctx)
+        return next(
+            option
+            for option in self.enum
+            if str(option).lower() == value.lower()
+        )
+
+
+class OutputType(str, Enum):
+    def __str__(self):
+        return self.value
+
+    WAYBAR = "waybar"
+    POLYBAR = "polybar"
 
 
 class Spotifycl:
@@ -65,7 +88,9 @@ class Spotifycl:
     PREVIOUS = 'org.mpris.MediaPlayer2.Player.Previous'
     NEXT = 'org.mpris.MediaPlayer2.Player.Next'
 
-    def __init__(self):
+    def __init__(self, output_type, class_to_color=None):
+        self.output_type = output_type
+        self.class_to_color = json.loads(class_to_color) or {}
         DBusGMainLoop(set_as_default=True)
         self.session_bus = dbus.SessionBus()
         self.last_output = ''
@@ -228,19 +253,30 @@ class Spotifycl:
         text = '' if text is None else text
 
         output = {
-            'text': html.escape(text),
+            'text': text,
         }
 
         if tooltip:
             output['tooltip'] = tooltip
-        if css_class and isinstance(css_class, (str, list)):
-            output['class'] = css_class
+
+        css_class = css_class or []
+        css_class = [css_class] if not isinstance(css_class, list) else css_class
+        output['class'] = css_class
 
         if not text:
             self.empty_output = True
 
         if output != self.last_output:
-            serialized = json.dumps(output)
+            if self.output_type == OutputType.WAYBAR:
+                serialized = json.dumps(output)
+            else:
+                color = ""
+                for cls in output['class']:
+                    if cls in self.class_to_color:
+                        color = self.class_to_color[cls]
+                        break
+                serialized = f"%{{F{color}}}{output['text']}%{{F-}}"
+
             print(serialized, flush=True)
             self.last_output = output
 
@@ -304,7 +340,7 @@ class Spotifycl:
 
         artist, title, playing, album, trackid = self._song_info(data)
 
-        if not artist:
+        if not artist and not album:
             self.output('')
             return
 
@@ -316,8 +352,9 @@ class Spotifycl:
         ]
         if saved:
             css_class.append(Spotifycl.CLASS_SAVED)
+
         output = {
-            'text': f'{artist} {divider} {title}',
+            'text': f'{artist if artist else album} {divider} {title}',
             'css_class': css_class,
         }
 
@@ -340,6 +377,10 @@ class Spotifycl:
                 self.output(**output)
 
     def update_saved_track(self, trackid: str):
+        if "episode" in trackid:
+            self.saved_track = False
+            return
+
         self.saved_track = self.spotify.current_user_saved_tracks_contains(
             tracks=[trackid]
         )[0]
@@ -358,6 +399,22 @@ class Spotifycl:
                 self.output('')
 
 
+def common_options(fn):
+    fn = click.option(
+        "--output-type",
+        type=ChoiceEnum(OutputType),
+        default=OutputType.WAYBAR,
+        help="Output type for specific bar."
+    )(fn)
+    fn = click.option(
+        "--class-to-color",
+        type=str,
+        default="{}",
+        help="JSON dictionary mapping classes to colors for the polybar output type."
+    )(fn)
+    return fn
+
+
 @click.group()
 def cli():
     """Script for listening to Spotify over dbus and adding tracks to your library."""
@@ -365,23 +422,35 @@ def cli():
 
 
 @cli.command()
-def status():
+@common_options
+def status(output_type, class_to_color):
     """Follow the status of the currently playing song on Spotify."""
-    spotify = Spotifycl()
+    spotify = Spotifycl(
+        output_type=output_type,
+        class_to_color=class_to_color,
+    )
     spotify.status()
 
 
 @cli.command()
-def monitor():
+@common_options
+def monitor(output_type, class_to_color):
     """Follow the status of the currently playing song on Spotify."""
-    spotify = Spotifycl()
+    spotify = Spotifycl(
+        output_type=output_type,
+        class_to_color=class_to_color,
+    )
     spotify.monitor()
 
 
 @cli.command()
-def save_remove():
+@common_options
+def save_remove(output_type, class_to_color):
     """Save/remove the currently playing song to/from your library."""
-    spotify = Spotifycl()
+    spotify = Spotifycl(
+        output_type=output_type,
+        class_to_color=class_to_color,
+    )
     spotify.send_to_server(Spotifycl.SAVE_REMOVE)
 
 
