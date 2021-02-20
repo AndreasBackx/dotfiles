@@ -1,13 +1,13 @@
 include ~/.config/sway/base
 
 ### Output configuration
-set $monitor-left "Dell Inc. DELL U2515H 9X2VY4B101CL"
-set $monitor-center "Acer Technologies XF270HU T78EE0048521"
-set $monitor-right "Dell Inc. DELL U2515H 9X2VY4B101BL"
+set $MONITOR_LEFT "Dell Inc. DELL U2515H 9X2VY4B101CL"
+set $MONITOR_CENTER "Acer Technologies XF270HU T78EE0048521"
+set $MONITOR_RIGHT "Dell Inc. DELL U2515H 9X2VY4B101BL"
 
-output $monitor-left transform 270 pos 0 30 res 2560x1440@59.951000Hz bg /home/andreas/.config/wallpapers/tyrion-lannister.jpg fill
-output $monitor-center pos 1440 570 res 2560x1440@144.006Hz bg /home/andreas/.config/wallpapers/jaime-lannister.jpg fill adaptive_sync on
-output $monitor-right transform 90 pos 4000 0 res 2560x1440@59.951000Hz bg /home/andreas/.config/wallpapers/jon-snow.jpg fill
+output $MONITOR_LEFT transform 270 pos 0 30 res 2560x1440@59.951000Hz bg /home/andreas/.config/wallpapers/tyrion-lannister.jpg fill
+output $MONITOR_CENTER pos 1440 570 res 2560x1440@144.006Hz bg /home/andreas/.config/wallpapers/jaime-lannister.jpg fill adaptive_sync on
+output $MONITOR_RIGHT transform 90 pos 4000 0 res 2560x1440@59.951000Hz bg /home/andreas/.config/wallpapers/jon-snow.jpg fill
 
 
 ### Idle configuration
