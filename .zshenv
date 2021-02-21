@@ -1,3 +1,4 @@
+source ~/.config/.variables
 source ~/.config/.secrets
 
 # Do not add duplicates to PATH

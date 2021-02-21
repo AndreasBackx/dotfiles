@@ -10,6 +10,9 @@ This repository contains most if not all of the changes made to my machines that
 export MONITOR_LEFT=""
 export MONITOR_CENTER""
 export MONITOR_RIGHT=""
+
+# If you want to disable the monitors cli.
+# export DISABLE_MONITORS="yes"
 ```
 
 `.config/.secrets`
@@ -17,5 +20,5 @@ export MONITOR_RIGHT=""
 # spotifycl
 export SPOTIPY_CLIENT_ID=''
 export SPOTIPY_CLIENT_SECRET=''
-export SPOTIPY_REDIRECT_URI='http://localhost'	
+export SPOTIPY_REDIRECT_URI='http://localhost'
 ```
