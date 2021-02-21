@@ -1,5 +1,3 @@
-include ~/.config/sway/base
-
 ### Output configuration
 set $MONITOR_LEFT "Dell Inc. DELL U2515H 9X2VY4B101CL"
 set $MONITOR_CENTER "Acer Technologies XF270HU T78EE0048521"
@@ -18,6 +16,8 @@ exec_always swayidle -d \
     timeout 902 'swaymsg "output * dpms off"' \
         resume 'swaymsg "output * dpms on"' \
     before-sleep 'lock' > /var/log/swayidle.log
+
+include ~/.config/sway/base
 
 bindsym --locked Ctrl+Alt+Tab exec "pulseaudio-ctl mute; dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause"
 bindsym --locked XF86AudioPlay exec "pulseaudio-ctl mute; dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause"
