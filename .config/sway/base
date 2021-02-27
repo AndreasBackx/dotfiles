@@ -217,6 +217,7 @@ workspace $WORKSPACE12 output $MONITOR_LEFT
     bindsym $mod+9 workspace $WORKSPACE9
     bindsym $mod+0 workspace $WORKSPACE10
     bindsym $mod+minus workspace $WORKSPACE11
+    bindsym $mod+plus workspace $WORKSPACE11
     # Move focused container to workspace
     bindsym $mod+Shift+1 move container to workspace $WORKSPACE1
     bindsym $mod+Shift+2 move container to workspace $WORKSPACE2
@@ -229,6 +230,7 @@ workspace $WORKSPACE12 output $MONITOR_LEFT
     bindsym $mod+Shift+9 move container to workspace $WORKSPACE9
     bindsym $mod+Shift+0 move container to workspace $WORKSPACE10
     bindsym $mod+Shift+minus move container to workspace $WORKSPACE11
+    bindsym $mod+Shift+plus move container to workspace $WORKSPACE12
     # Change workspace on current output
     bindsym $mod+Left workspace prev_on_output
     bindsym $mod+Right workspace next_on_output

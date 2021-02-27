@@ -22,7 +22,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import os
 import subprocess
+import sys
 import time
 from enum import Enum
 from typing import List
@@ -66,9 +68,13 @@ FEATURES = {
 
 
 class Display(Enum):
-    LEFT = "7"
-    CENTER = "8"
-    RIGHT = "5"
+    LEFT = os.environ["MONITOR_LEFT"]
+    CENTER = os.environ["MONITOR_CENTER"]
+    RIGHT = os.environ["MONITOR_RIGHT"]
+
+    @property
+    def serial_number(self):
+        return self.value.split(" ")[-1]
 
 
 class EnumType(click.Choice):
@@ -138,7 +144,7 @@ class BrightnessType(click.ParamType):
         try:
             return Brightness(value=int(value))
         except ValueError:
-            self.fail(f"Value is not a valid integer or 'up'/'down'.")
+            self.fail("Value is not a valid integer or 'up'/'down'.")
 
 
 def ddcutil(command: str, display: Display, *args):
@@ -150,8 +156,8 @@ def ddcutil(command: str, display: Display, *args):
             [
                 "ddcutil",
                 command,
-                "--bus",
-                display.value,
+                "--sn",
+                display.serial_number,
                 "--async",
                 "--noverify",
                 "--force-slave-address",
@@ -259,7 +265,9 @@ def get_vcp(display: Display, feature: str):
 @click.group()
 def cli():
     """Script for managing the monitors of my setup."""
-    pass
+    if "DISABLE_MONITORS" in os.environ:
+        print("Monitors has been disabled.")
+        sys.exit(1)
 
 
 @cli.command()
