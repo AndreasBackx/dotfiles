@@ -1,6 +1,10 @@
 source ~/.config/.variables
 source ~/.config/.secrets
 
+export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=0"
+# export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=3"
+plugins=(zsh-autosuggestions)
+
 # Do not add duplicates to PATH
 typeset -U PATH
 
@@ -52,4 +56,5 @@ ZSHENV_WORK="$HOME/.zshenv-work"
 if [[ -f "$ZSHENV_WORK" ]]; then
     source "$ZSHENV_WORK"
 fi
+
 
