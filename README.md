@@ -22,3 +22,12 @@ export SPOTIPY_CLIENT_ID=''
 export SPOTIPY_CLIENT_SECRET=''
 export SPOTIPY_REDIRECT_URI='http://localhost'
 ```
+
+## Installation
+
+### zsh-autosuggestions
+
+```
+git clone git@github.com:zsh-users/zsh-autosuggestions.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+chmod 755 ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions -R
+```
