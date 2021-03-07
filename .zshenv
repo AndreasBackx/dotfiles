@@ -3,7 +3,10 @@ source ~/.config/.secrets
 
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=0"
 # export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=3"
-plugins=(zsh-autosuggestions)
+plugins=(
+  zsh-autosuggestions
+  zsh-syntax-highlighting
+)
 
 # Do not add duplicates to PATH
 typeset -U PATH

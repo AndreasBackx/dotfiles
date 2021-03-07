@@ -31,3 +31,10 @@ export SPOTIPY_REDIRECT_URI='http://localhost'
 git clone git@github.com:zsh-users/zsh-autosuggestions.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 chmod 755 ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions -R
 ```
+
+### zsh-syntax-highlighting
+
+```
+git clone git@github.com:zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+chmod 755 ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting -R
+```
