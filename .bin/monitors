@@ -148,6 +148,10 @@ class BrightnessType(click.ParamType):
 
 
 def ddcutil(command: str, display: Display, *args):
+    if "DISABLE_MONITORS" in os.environ:
+        print("Monitors has been disabled.")
+        return None
+
     retries = 20
     retry = 0
     exception = None
@@ -229,13 +233,11 @@ def set_vcp(displays, feature: str, value):
 
 
 def get_vcp(display: Display, feature: str):
-    response = None
-    while response is None:
-        response = ddcutil(
-            "getvcp",
-            display,
-            FEATURES[feature]["value"],
-        )
+    response = ddcutil(
+        "getvcp",
+        display,
+        FEATURES[feature]["value"],
+    )
 
     value = response.stdout.split(" ")[3].strip()
 
@@ -265,9 +267,7 @@ def get_vcp(display: Display, feature: str):
 @click.group()
 def cli():
     """Script for managing the monitors of my setup."""
-    if "DISABLE_MONITORS" in os.environ:
-        print("Monitors has been disabled.")
-        sys.exit(1)
+    pass
 
 
 @cli.command()
