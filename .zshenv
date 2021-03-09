@@ -1,8 +1,8 @@
 source ~/.config/.variables
 source ~/.config/.secrets
+source ~/.bin/hg_commit.zsh
 
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=0"
-# export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=3"
 plugins=(
   zsh-autosuggestions
   zsh-syntax-highlighting

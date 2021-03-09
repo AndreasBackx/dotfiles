@@ -4,12 +4,14 @@ export ZSH=$HOME/.oh-my-zsh
 export LC_ALL=en_GB.UTF-8
 export LANG=en_GB.UTF-8
 export PROMPT_EOL_MARK=""
+
 ZSH_THEME="spaceship"
 SPACESHIP_TIME_SHOW="true"
 SPACESHIP_TIME_FORMAT="[%T]"
 SPACESHIP_PROMPT_ORDER=(
   dir           # Current directory section
   git           # Git section (git_branch + git_status)
+  hg_commit
   golang        # Go section
   rust          # Rust section
   pyenv         # Pyenv section
@@ -19,9 +21,18 @@ SPACESHIP_PROMPT_ORDER=(
   exit_code     # Exit code section
   char          # Prompt character
 )
-SPACESHIP_RPROMPT_ORDER=(
+SPACESHIP_RPROMPT_ORDER=()
+
+if type "ldcli" > /dev/null; then
+  plugins+=(logdevice)
+  SPACESHIP_PROMPT_ORDER+=(logdevice)
+fi
+
+SPACESHIP_RPROMPT_ORDER+=(
   time          # Time stamps section
 )
+
+
 export LS_COLORS="di=34:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43"
 export VISUAL=vim
 export EDITOR="$VISUAL"
