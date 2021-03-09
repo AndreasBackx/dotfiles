@@ -197,4 +197,5 @@ dmypy.json
 .config/.secrets
 .config/.variables
 .config/waybar/style.css
-
+# This is generated
+.config/i3/config
