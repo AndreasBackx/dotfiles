@@ -1,8 +1,8 @@
 ### Output configuration
 
-exec_always xrandr --output DP-4.8 --mode 2560x1440 --pos $MONITOR_LEFT_Xx$MONITOR_LEFT_Y --rotate left \
-    --output USB-C-0 --mode 2560x1440 --pos $MONITOR_CENTER_Xx$MONITOR_CENTER_Y --rotate normal --refresh 144.006 --primary \
-    --output HDMI-0 --mode 2560x1440 --pos $MONITOR_RIGHT_Xx$MONITOR_RIGHT_Y --rotate right \
+exec_always xrandr --output $MONITOR_LEFT --mode 2560x1440 --pos $MONITOR_LEFT_Xx$MONITOR_LEFT_Y --rotate left \
+    --output $MONITOR_CENTER --mode 2560x1440 --pos $MONITOR_CENTER_Xx$MONITOR_CENTER_Y --rotate normal --refresh 144.006 --primary \
+    --output $MONITOR_RIGHT --mode 2560x1440 --pos $MONITOR_RIGHT_Xx$MONITOR_RIGHT_Y --rotate right \
     && cp ~/.config/monitors.xml /var/lib/gdm/.config/
 
 exec_always --no-startup-id start-pulseaudio-x11
