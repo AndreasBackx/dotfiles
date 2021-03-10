@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 set -e
 
-source ~/.config/.secrets
+source /home/andreas/.config/.secrets
 
 export HOME=~
 BORG_REPOSITORY=/mnt/server/storage/Backups
