@@ -114,21 +114,19 @@ workspace $WORKSPACE12 output $MONITOR_LEFT
 
     # Left
     # Workspace 8
-    assign [class="Caprine"] $WORKSPACE8
-    assign [class="discord"] $WORKSPACE8
-    for_window [class="discord"] move window to workspace $WORKSPACE8
-
-    # Workspace 9
-    assign [class="Thunderbird"] $WORKSPACE9
-    assign [class="Firefox" instance="Firefox" title="fb.workplace.com" window_role="Toplevel"] $WORKSPACE9
-    for_window [class="Firefox" instance="Firefox" title="fb.workplace.com" window_role="Toplevel"] move window to workspace $WORKSPACE9
+    assign [class="Thunderbird"] $WORKSPACE8
+    assign [class="Firefox" instance="Firefox" title="fb.workplace.com" window_role="Toplevel"] $WORKSPACE8
+    for_window [class="Firefox" instance="Firefox" title="fb.workplace.com" window_role="Toplevel"] move window to workspace $WORKSPACE8
 
     # Workspace 10
-    assign [title="WhatsApp"] $WORKSPACE10
-    assign [class="telegramdesktop"] $WORKSPACE10
+    assign [class="discord"] $WORKSPACE10
+    for_window [class="discord"] move window to workspace $WORKSPACE10
+    assign [class="Slack"] $WORKSPACE10
 
     # Workspace 11
-    assign [class="Slack"] $WORKSPACE11
+    assign [class="Caprine"] $WORKSPACE11
+    assign [title="WhatsApp"] $WORKSPACE11
+    assign [class="telegramdesktop"] $WORKSPACE11
 
     # Workspace 12
     assign [class="transmission-gtk"] $WORKSPACE12
@@ -141,9 +139,6 @@ workspace $WORKSPACE12 output $MONITOR_LEFT
     # Center
     # Workspace 1
     assign [class="Code"] $WORKSPACE1
-
-    # Workspace 2
-    assign [class="jetbrains-*"] $WORKSPACE2
 
     # Right
 
