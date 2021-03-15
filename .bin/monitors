@@ -188,8 +188,8 @@ def set_vcp(displays, feature: str, value):
         displays = [displays]
     elif not isinstance(displays, list) and not isinstance(displays, tuple):
         print(
-            f"Displays need to be a list of Displays or a single Display, "
-            "not {type(displays)}."
+            "Displays need to be a list of Displays or a single Display, "
+            f"not {type(displays)}."
         )
 
     feature_options = FEATURES[feature]
@@ -238,6 +238,9 @@ def get_vcp(display: Display, feature: str):
         display,
         FEATURES[feature]["value"],
     )
+
+    if response is None:
+        return None
 
     value = response.stdout.split(" ")[3].strip()
 
