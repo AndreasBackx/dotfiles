@@ -12,8 +12,8 @@ output $MONITOR_RIGHT transform 90 pos 4000 0 res 2560x1440@59.951000Hz bg /home
 exec_always swayidle -d \
     timeout 10 'if pgrep swaylock; then swaymsg "output * dpms off"; fi'\
         resume 'if pgrep swaylock; then swaymsg "output * dpms on"; fi' \
-    timeout 900 'lock' \
-    timeout 902 'swaymsg "output * dpms off"' \
+    timeout 3600 'lock' \
+    timeout 3602 'swaymsg "output * dpms off"' \
         resume 'swaymsg "output * dpms on"' \
     before-sleep 'lock' > /var/log/swayidle.log
 
