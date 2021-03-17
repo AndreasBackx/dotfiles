@@ -17,10 +17,14 @@ export MONITOR_RIGHT=""
 
 `.config/.secrets`
 ```
+# borg backup
+export BORG_PASSPHRASE=""
+
 # spotifycl
-export SPOTIPY_CLIENT_ID=''
-export SPOTIPY_CLIENT_SECRET=''
-export SPOTIPY_REDIRECT_URI='http://localhost'
+export SPOTIPY_CLIENT_ID=""
+export SPOTIPY_CLIENT_SECRET=""
+export SPOTIPY_REDIRECT_URI="http://localhost"
+
 ```
 
 ## Installation

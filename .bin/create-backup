@@ -3,59 +3,57 @@ set -e
 
 source /home/andreas/.config/.secrets
 
-export HOME=~
-BORG_REPOSITORY=/mnt/server/storage/Backups
+export BORG_REPO=/mnt/server/storage/Backups
+export BORG_BASE_DIR=/home/andreas
 
-# Setting this, so you won't be asked for your repository passphrase:
-# or this to ask an external program to supply the passphrase:
-# export BORG_PASSCOMMAND='pass show backup'
+echo "Creating backup..."
+/usr/bin/borg create					                        \
+    ::'{hostname}-{now:%Y-%m-%dT%H:%M:%S}'                      \
+    /home/andreas                                               \
+    /etc                                                        \
+    /var                                                        \
+    /usr/local                                                  \
+    --compression auto,lzma                                     \
+    --exclude-caches                                            \
+    --show-rc                                                   \
+    --list                                                      \
+    --filter AME                                                \
+    --one-file-system                                           \
+    --debug						                                \
+    --stats						                                \
+    --exclude '/mnt'                                            \
+    --exclude '/home/*/.cache'                                  \
+    --exclude '/tmp'                                            \
+    --exclude '/var/cache'                                      \
+    --exclude '/var/log'                                        \
+    --exclude '/var/tmp'                                        \
+    --exclude '/var/lock'                                       \
+    --exclude '/var/run'                                        \
+    --exclude '/var/spool'                                      \
+    --exclude '*.pyc'                                           \
+    --exclude '*.log'                                           \
+    --exclude 'Movies'                                          \
+    --exclude '.gradle'                                         \
+    --exclude '.local'                                          \
+    --exclude '.pyenv'                                          \
+    --exclude '.rbenv'                                          \
+    --exclude '.npm-global'                                     \
+    --exclude 'Downloads'                                       \
+    --exclude '.npm/_cacache'                                   \
+    --exclude 'node_modules'                                    \
+    --exclude '__pycache__'                                     \
+    --exclude '*Cache*'                                         \
+    --exclude '*cache*'                                         \
+    --exclude '*logs*'                                          \
+    --exclude '.AndroidStudio*'                                 \
+    --exclude '.IntelliJ*'                                      \
+    --exclude '.CLion*'
 
-# Backup all of /home and /var/www except a few
-# excluded directories
-echo "Creating borg backup..."
-/usr/bin/borg create					                \
-    $BORG_REPOSITORY::'{hostname}-{now:%Y-%m-%dT%H:%M:%S}'   \
-    ~                                       \
-    /etc                                                \
-    /var                                                \
-    /usr/local                                          \
-    --debug						                        \
-    --stats						                        \
-    --exclude '/mnt'                                    \
-    --exclude '/home/*/.cache'                          \
-    --exclude '/var/cache'                              \
-    --exclude '/var/log'                                \
-    --exclude '/var/tmp'                                \
-    --exclude '/var/lock'                               \
-    --exclude '/var/run'                                \
-    --exclude '/var/spool'                              \
-    --exclude '*.pyc'                                   \
-    --exclude '*.log'                                   \
-    --exclude '~/Movies'                    \
-    --exclude '~/.gradle'                   \
-    --exclude '~/.local'                    \
-    --exclude '~/.pyenv'                    \
-    --exclude '~/.rbenv'                    \
-    --exclude '~/.npm-global'               \
-    --exclude '~/Downloads'                 \
-    --exclude '~/.npm/_cacache'             \
-    --exclude 'node_modules'                            \
-    --exclude '__pycache__'                             \
-    --exclude '*Cache*'                                 \
-    --exclude '*cache*'                                 \
-    --exclude '*logs*'                                  \
-    --exclude '.AndroidStudio*'                         \
-    --exclude '.IntelliJ*'                              \
-    --exclude '.CLion*'                                 \
-    --exclude-caches                                    \
-    --show-rc                                           \
-    --list                                              \
-    --filter AME
-
-# Use the `prune` subcommand to maintain 7 daily, 4 weekly and 6 monthly
-# archives of THIS machine. The '{hostname}-' prefix is very important to
-# limit prune's operation to this machine's archives and not apply to
-# other machine's archives also.
-echo "Pruning borg backups..."
-/usr/bin/borg prune -v --list $BORG_REPOSITORY --prefix '{hostname}-'    \
-    --keep-daily=7 --keep-weekly=4 --keep-monthly=6
+echo "Pruning backup..."
+/usr/bin/borg prune \
+    -v \
+    --list \
+    --prefix '{hostname}-' \
+    --keep-daily=2 \
+    --keep-weekly=4 \
+    --keep-monthly=6
