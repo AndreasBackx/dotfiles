@@ -224,7 +224,7 @@ interval = 2
 
 exec = headphones status
 click-left = headphones toggle
-click-right = headphones pair
+click-right = headphones disconnect
 scroll-up = headphones noise-cancellation high
 click-middle = headphones noise-cancellation low
 scroll-down = headphones noise-cancellation off
