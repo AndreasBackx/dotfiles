@@ -29,6 +29,7 @@ if type "ldcli" > /dev/null; then
 fi
 
 SPACESHIP_RPROMPT_ORDER+=(
+  host
   time          # Time stamps section
 )
 

@@ -24,10 +24,36 @@ export BORG_PASSPHRASE=""
 export SPOTIPY_CLIENT_ID=""
 export SPOTIPY_CLIENT_SECRET=""
 export SPOTIPY_REDIRECT_URI="http://localhost"
-
 ```
 
 ## Installation
+
+```
+echo ".cfg" >> .gitignore
+git clone --bare git@github.com:AndreasBackx/dotfiles.git $HOME/.cfg
+alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
+mkdir -p .config-backup
+config checkout 2>&1 | egrep "\s+\." | awk {'print $1'} | xargs -I{} mv {} .config-backup/{}
+config checkout
+config config --local status.showUntrackedFiles no
+
+touch ~/.config/.secrets
+touch ~/.config/.variables
+```
+
+### oh-my-zsh
+
+```
+sh -c "$(wget https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
+```
+
+### spaceship-prompt
+
+```
+git clone https://github.com/denysdovhan/spaceship-prompt.git "$ZSH_CUSTOM/themes/spaceship-prompt" --depth=1
+ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme"
+```
+
 
 ### zsh-autosuggestions
 
