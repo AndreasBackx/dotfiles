@@ -2,7 +2,9 @@
 
 set -e
 
-if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
+source ~/.bin/utils.zsh
+
+if is_wayland; then
     extension="ppm"
 else
 
@@ -16,7 +18,7 @@ monitor_left_serial="9X2VY4B101CL"
 monitor_center_serial="T78EE0048521"
 monitor_right_serial="9X2VY4B101BL"
 
-if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
+if is_wayland; then
     function get_output_name() {
         outputs=$1
         serial=$2
@@ -59,7 +61,7 @@ if [[ $# -eq 1 ]] ; then
 fi
 
 # Lock
-if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
+if is_wayland; then
     swaylock \
         --image "$monitor_left:$file_location_left" \
         --image "$monitor_center:$file_location_center" \

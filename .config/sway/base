@@ -167,6 +167,9 @@ workspace $WORKSPACE12 output $MONITOR_LEFT
 
     # kill the current window
     bindsym $mod+q kill
+
+    # Power options
+    bindsym $mod+Shift+e exec power-options selection
 #
 # Media
 #

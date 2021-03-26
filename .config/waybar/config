@@ -125,7 +125,7 @@
         "custom/power": {
             "format": "<span color=\"#6E6E6E\">\uf1e6</span>",
             "tooltip": false,
-            "on-click": "swaynag -t warning -m 'Would you like to hibernate or shutdown?' -B 'Shutdown' 'systemctl poweroff' -B 'Restart' 'systemctl reboot' -B 'Hibernate' 'systemctl hibernate'"
+            "on-click": "power-options selection"
         },
         "custom/vpn-forward": {
             "format": "{}",

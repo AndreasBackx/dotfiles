@@ -15,39 +15,4 @@ exec picom
 exec workchat
 new_window pixel
 
-### Idle configuration
-# exec_always swayidle -d \
-#     timeout 10 'if pgrep swaylock; then swaymsg "output * dpms off"; fi'\
-#         resume 'if pgrep swaylock; then swaymsg "output * dpms on"; fi' \
-#     timeout 900 'lock' \
-#     timeout 902 'swaymsg "output * dpms off"' \
-#         resume 'swaymsg "output * dpms on"' \
-#     before-sleep 'lock' > /var/log/swayidle.log
-
-
-# exit i3
 bindsym $mod+Shift+c exec notify-send "Restarting i3..." --urgency=low --expire-time=2500 && i3-config && i3-msg restart
-bindsym $mod+Shift+e exec i3-nagbar \
-    -t warning -m 'What would you like to do?' \
-    -B 'Suspend' 'systemctl suspend' \
-    -B 'Restart' 'systemctl reboot' \
-    -B 'Shutdown' 'systemctl poweroff' \
-    -B 'Logout' 'i3-msg exit'
-
-#
-# Status Bar:
-#
-# Read `man 5 sway-bar` for more information about this section.
-#bar {
-#    swaybar_command waybar
-#    position bottom
-#}
-
-#input * {
-#    xkb_layout us
-#    xkb_options compose:rctrl
-#
-#    accel_profile flat pointer_accel 1.7
-#
-#    scroll_factor 4
-#}

@@ -24,6 +24,9 @@
 #     * Ctrl+C will copy it to your clipboard WITHOUT pasting it.
 #
 
+source ~/.bin/utils.zsh
+
+
 # Where to save the emojis file.
 EMOJI_FILE="$HOME/.cache/emojis.txt"
 
@@ -83,8 +86,8 @@ function display() {
 
     emoji_char="${line[0]}"
 
-    
-    if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
+
+    if is_wayland; then
         echo -n "$emoji_char" | wl-copy
     else
         echo -n "$emoji_char" | xclip -selection clipboard
