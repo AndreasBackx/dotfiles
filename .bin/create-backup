@@ -32,7 +32,7 @@ echo "Creating backup..."
     --exclude '/var/spool'                                      \
     --exclude '*.pyc'                                           \
     --exclude '*.log'                                           \
-    --exclude 'Movies'                                          \
+    --exclude 'movies'                                          \
     --exclude '.gradle'                                         \
     --exclude '.local'                                          \
     --exclude '.pyenv'                                          \
