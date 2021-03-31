@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-source /home/andreas/.bin/utils.sh
+source ~/.bin/utils.zsh
 
 MAC_ADDRESS="04:52:C7:7A:D9:C8"
 HEADPHONES_ICON="\uf025"
@@ -55,10 +55,18 @@ case "$1" in
         ;;
     status)
         if is_connected; then
-            battery_percentage=`battery`
-            waybar-json $HEADPHONES_ICON "Connected ($battery_percentage%)" connected
+            if is_wayland; then
+                battery_percentage=`battery`
+                waybar-json $HEADPHONES_ICON "Connected ($battery_percentage%)" connected
+            else
+                echo "%{F#CECECE}%{F-}"
+            fi
         else
-            waybar-json $HEADPHONES_ICON "Disconnected" disconnected
+            if is_wayland; then
+                waybar-json $HEADPHONES_ICON "Disconnected" disconnected
+            else
+                echo "%{F#6E6E6E}%{F-}"
+            fi
         fi
         ;;
     *)

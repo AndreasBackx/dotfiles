@@ -93,7 +93,7 @@ font-3 = font\-mfizz:pixelsize=11;3
 
 modules-left = i3 xwindow
 modules-center = spotify
-modules-right = running-services updates brightness-center pulseaudio cpu memory powermenu date
+modules-right = running-services updates brightness-center headphones pulseaudio cpu memory powermenu date
 
 tray-position = right
 tray-padding = ${config.PADDING}
