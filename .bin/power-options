@@ -1,0 +1,51 @@
+#!/usr/bin/env zsh
+
+source ~/.bin/utils.zsh
+
+case "$1" in
+    logout)
+        if is_wayland; then
+
+        else
+            i3-msg exit
+        fi
+        ;;
+    shutdown | poweroff)
+        systemctl poweroff
+        ;;
+    restart | reboot)
+        systemctl reboot
+        ;;
+    suspend)
+        systemctl suspend
+        ;;
+    hibernate)
+        systemctl hibernate
+        ;;
+    selection)
+        logout="Logout"
+        shutdown="Shutdown"
+        restart="Restart"
+        suspend="Suspend"
+        hibernate="Hibernate"
+
+        selection=$(echo -e "$logout\n$shutdown\n$restart\n$suspend\n$hibernate" | rofi -dmenu -i)
+
+        if [[ $selection = "$logout" ]]; then
+            power-options logout
+        elif [[ $selection = "$shutdown" ]]; then
+            power-options shutdown
+        elif [[ $selection = "$restart" ]]; then
+            power-options restart
+        elif [[ $selection = "$suspend" ]]; then
+            power-options suspend
+        elif [[ $selection = "$hibernate" ]]; then
+            power-options hibernate
+        fi
+        ;;
+    *)
+        echo "Usage: $0 {suspend|hibernate|restart|shutdown|logout|selection}"
+        exit 2
+esac
+
+exit 0
