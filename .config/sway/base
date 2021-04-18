@@ -73,8 +73,8 @@ client.background       $BLACK_GRAY
 
 ### Applications
 exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
-exec redshift-gtk
-exec cadmus
+exec_always pgrep -x "redshift-gtk" > /dev/null || redshift-gtk
+exec_always pgrep -x "cadmus" > /dev/null || cadmus
 
 #
 # Left:
