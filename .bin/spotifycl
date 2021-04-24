@@ -242,11 +242,11 @@ class Spotifycl:
         text = "" if text is None else text
 
         output = {
-            "text": text,
+            "text": html.escape(text),
         }
 
         if tooltip:
-            output["tooltip"] = tooltip
+            output["tooltip"] = html.escape(tooltip)
 
         css_class = css_class or []
         css_class = [css_class] if not isinstance(css_class, list) else css_class
