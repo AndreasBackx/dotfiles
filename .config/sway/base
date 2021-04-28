@@ -175,9 +175,9 @@ workspace $WORKSPACE12 output $MONITOR_LEFT
 #
 
     # Volume
-    bindsym XF86AudioRaiseVolume exec pulseaudio-ctl up 5
-    bindsym XF86AudioLowerVolume exec pulseaudio-ctl down 5
-    bindsym XF86AudioMute exec pulseaudio-ctl mute
+    bindsym XF86AudioRaiseVolume exec pamixer --increase 5
+    bindsym XF86AudioLowerVolume exec pamixer --decrease 5
+    bindsym XF86AudioMute exec pamixer --toggle-mute
 
     # Controls
     bindsym Ctrl+Alt+Tab exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause"

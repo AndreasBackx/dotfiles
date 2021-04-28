@@ -79,10 +79,10 @@
                     ""
                 ]
             },
-            "on-click": "pulseaudio-ctl mute",
+            "on-click": "pamixer --toggle-mute",
             "on-click-right": "pavucontrol",
-            "on-scroll-up": "pulseaudio-ctl up 5",
-            "on-scroll-down": "pulseaudio-ctl down 5"
+            "on-scroll-up": "pamixer --increase 5",
+            "on-scroll-down": "pamixer --decrease 5"
         },
         "custom/brightness": {
             "format": "<span color=\"#6E6E6E\">\uf042</span>  {}",
@@ -119,7 +119,7 @@
         "custom/spotify": {
             "format": "{}",
             "return-type": "json",
-            "on-click-right": "~/.bin/spotifycl save-remove",
+            "on-click-middle": "~/.bin/spotifycl save-remove",
             "exec": "~/.bin/spotifycl monitor"
         },
         "custom/power": {

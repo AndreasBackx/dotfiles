@@ -42,10 +42,10 @@ fi
 spotify_status=`spotifycl status`
 spotifycl pause &
 
-is_muted=`pulseaudio-ctl full-status | tr -s ' ' | cut -d ' ' -f 2`
-if [[ "$is_muted" == "no" ]]; then
+is_muted=`pamixer --get-mute`
+if [[ "$is_muted" == "false" ]]; then
     echo "Muting"
-    pulseaudio-ctl mute &
+    pamixer --mute &
 fi
 
 # Pause notifications
@@ -81,9 +81,9 @@ if [[ "$spotify_status" == "playing" ]]; then
     spotifycl play &
 fi
 
-if [[ "$is_muted" == "no" ]]; then
+if [[ "$is_muted" == "false" ]]; then
     echo "Unmuting"
-    pulseaudio-ctl mute &
+    pamixer --unmute &
 fi
 
 parallel --link rm {} ::: $file_location_left $file_location_center $file_location_right
