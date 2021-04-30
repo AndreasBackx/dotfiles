@@ -241,12 +241,17 @@ class Spotifycl:
     def output(self, text, tooltip=None, css_class=None):
         text = "" if text is None else text
 
+        def escape_html_waybar(value: str) -> str:
+            if self.output_type != OutputType.WAYBAR:
+                return value
+            return html.escape(value)
+
         output = {
-            "text": html.escape(text),
+            "text": escape_html_waybar(text),
         }
 
         if tooltip:
-            output["tooltip"] = html.escape(tooltip)
+            output["tooltip"] = escape_html_waybar(tooltip)
 
         css_class = css_class or []
         css_class = [css_class] if not isinstance(css_class, list) else css_class
