@@ -30,7 +30,12 @@
             "format": "<span style=\"italic\">{}</span>"
         },
         "sway/window": {
-            "max-length": 50
+            "rewrite": {
+                "^(.*) — Mozilla Firefox$": "$1",
+                "^(.*) - Mozilla Thunderbird$": "$1",
+                "^(.*) - Discord$": "$1",
+                "^Slack \\| (.*)$": "$1"
+            }
         },
         "idle_inhibitor": {
             "format": "{icon}",
@@ -160,7 +165,12 @@
             "format": "<span style=\"italic\">{}</span>"
         },
         "sway/window": {
-            "max-length": 50
+            "rewrite": {
+                "^(.*) — Mozilla Firefox$": "$1",
+                "^(.*) - Mozilla Thunderbird$": "$1",
+                "^(.*) - Discord$": "$1",
+                "^Slack \\| (.*)$": "$1"
+            }
         },
         "custom/brightness": {
             "format": "<span color=\"#6E6E6E\">\uf042</span>  {}",
@@ -196,7 +206,12 @@
             "format": "<span style=\"italic\">{}</span>"
         },
         "sway/window": {
-            "max-length": 50
+            "rewrite": {
+                "^(.*) — Mozilla Firefox$": "$1",
+                "^(.*) - Mozilla Thunderbird$": "$1",
+                "^(.*) - Discord$": "$1",
+                "^Slack \\| (.*)$": "$1"
+            }
         },
         "custom/brightness": {
             "format": "<span color=\"#6E6E6E\">\uf042</span>  {}",
