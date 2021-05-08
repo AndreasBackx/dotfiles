@@ -37,18 +37,44 @@ set $ORANGE             #D9882B
 set $PURPLE             #A082D9
 
 # Workspaces
-set $WORKSPACE1         "1"
-set $WORKSPACE2         "2"
-set $WORKSPACE3         "3"
-set $WORKSPACE4         "4"
-set $WORKSPACE5         "5"
-set $WORKSPACE6         "6"
-set $WORKSPACE7         "7"
-set $WORKSPACE8         "8"
-set $WORKSPACE9         "9"
-set $WORKSPACE10        "10"
-set $WORKSPACE11        "11"
-set $WORKSPACE12        "12"
+set $WORKSPACE_LEFT_1           "left:1"
+set $WORKSPACE_LEFT_2           "left:2"
+set $WORKSPACE_LEFT_3           "left:3"
+set $WORKSPACE_LEFT_4           "left:4"
+set $WORKSPACE_LEFT_5           "left:5"
+set $WORKSPACE_LEFT_6           "left:6"
+set $WORKSPACE_LEFT_7           "left:7"
+set $WORKSPACE_LEFT_8           "left:8"
+set $WORKSPACE_LEFT_9           "left:9"
+set $WORKSPACE_LEFT_10          "left:10"
+set $WORKSPACE_LEFT_11          "left:11"
+set $WORKSPACE_LEFT_12          "left:12"
+
+set $WORKSPACE_CENTER_1         "center:1"
+set $WORKSPACE_CENTER_2         "center:2"
+set $WORKSPACE_CENTER_3         "center:3"
+set $WORKSPACE_CENTER_4         "center:4"
+set $WORKSPACE_CENTER_5         "center:5"
+set $WORKSPACE_CENTER_6         "center:6"
+set $WORKSPACE_CENTER_7         "center:7"
+set $WORKSPACE_CENTER_8         "center:8"
+set $WORKSPACE_CENTER_9         "center:9"
+set $WORKSPACE_CENTER_10        "center:10"
+set $WORKSPACE_CENTER_11        "center:11"
+set $WORKSPACE_CENTER_12        "center:12"
+
+set $WORKSPACE_RIGHT_1          "right:1"
+set $WORKSPACE_RIGHT_2          "right:2"
+set $WORKSPACE_RIGHT_3          "right:3"
+set $WORKSPACE_RIGHT_4          "right:4"
+set $WORKSPACE_RIGHT_5          "right:5"
+set $WORKSPACE_RIGHT_6          "right:6"
+set $WORKSPACE_RIGHT_7          "right:7"
+set $WORKSPACE_RIGHT_8          "right:8"
+set $WORKSPACE_RIGHT_9          "right:9"
+set $WORKSPACE_RIGHT_10         "right:10"
+set $WORKSPACE_RIGHT_11         "right:11"
+set $WORKSPACE_RIGHT_12         "right:12"
 
 font pango:Roboto Regular 10.5
 
@@ -93,18 +119,57 @@ exec spotify
 #
 # Workspaces:
 #
-workspace $WORKSPACE1 output $MONITOR_CENTER
-workspace $WORKSPACE2 output $MONITOR_CENTER
-workspace $WORKSPACE3 output $MONITOR_CENTER
-workspace $WORKSPACE4 output $MONITOR_RIGHT
-workspace $WORKSPACE5 output $MONITOR_RIGHT
-workspace $WORKSPACE6 output $MONITOR_RIGHT
-workspace $WORKSPACE7 output $MONITOR_RIGHT
-workspace $WORKSPACE8 output $MONITOR_LEFT
-workspace $WORKSPACE9 output $MONITOR_LEFT
-workspace $WORKSPACE10 output $MONITOR_LEFT
-workspace $WORKSPACE11 output $MONITOR_LEFT
-workspace $WORKSPACE12 output $MONITOR_LEFT
+#workspace $WORKSPACE1 output $MONITOR_CENTER
+#workspace $WORKSPACE2 output $MONITOR_CENTER
+#workspace $WORKSPACE3 output $MONITOR_CENTER
+#workspace $WORKSPACE4 output $MONITOR_RIGHT
+#workspace $WORKSPACE5 output $MONITOR_RIGHT
+#workspace $WORKSPACE6 output $MONITOR_RIGHT
+#workspace $WORKSPACE7 output $MONITOR_RIGHT
+#workspace $WORKSPACE8 output $MONITOR_LEFT
+#workspace $WORKSPACE9 output $MONITOR_LEFT
+#workspace $WORKSPACE10 output $MONITOR_LEFT
+#workspace $WORKSPACE11 output $MONITOR_LEFT
+#workspace $WORKSPACE12 output $MONITOR_LEFT
+
+workspace $WORKSPACE_LEFT_1 output $MONITOR_LEFT
+workspace $WORKSPACE_LEFT_2 output $MONITOR_LEFT
+workspace $WORKSPACE_LEFT_3 output $MONITOR_LEFT
+workspace $WORKSPACE_LEFT_4 output $MONITOR_LEFT
+workspace $WORKSPACE_LEFT_5 output $MONITOR_LEFT
+workspace $WORKSPACE_LEFT_6 output $MONITOR_LEFT
+workspace $WORKSPACE_LEFT_7 output $MONITOR_LEFT
+workspace $WORKSPACE_LEFT_8 output $MONITOR_LEFT
+workspace $WORKSPACE_LEFT_9 output $MONITOR_LEFT
+workspace $WORKSPACE_LEFT_10 output $MONITOR_LEFT
+workspace $WORKSPACE_LEFT_11 output $MONITOR_LEFT
+workspace $WORKSPACE_LEFT_12 output $MONITOR_LEFT
+
+workspace $WORKSPACE_CENTER_1 output $MONITOR_CENTER
+workspace $WORKSPACE_CENTER_2 output $MONITOR_CENTER
+workspace $WORKSPACE_CENTER_3 output $MONITOR_CENTER
+workspace $WORKSPACE_CENTER_4 output $MONITOR_CENTER
+workspace $WORKSPACE_CENTER_5 output $MONITOR_CENTER
+workspace $WORKSPACE_CENTER_6 output $MONITOR_CENTER
+workspace $WORKSPACE_CENTER_7 output $MONITOR_CENTER
+workspace $WORKSPACE_CENTER_8 output $MONITOR_CENTER
+workspace $WORKSPACE_CENTER_9 output $MONITOR_CENTER
+workspace $WORKSPACE_CENTER_10 output $MONITOR_CENTER
+workspace $WORKSPACE_CENTER_11 output $MONITOR_CENTER
+workspace $WORKSPACE_CENTER_12 output $MONITOR_CENTER
+
+workspace $WORKSPACE_RIGHT_1 output $MONITOR_RIGHT
+workspace $WORKSPACE_RIGHT_2 output $MONITOR_RIGHT
+workspace $WORKSPACE_RIGHT_3 output $MONITOR_RIGHT
+workspace $WORKSPACE_RIGHT_4 output $MONITOR_RIGHT
+workspace $WORKSPACE_RIGHT_5 output $MONITOR_RIGHT
+workspace $WORKSPACE_RIGHT_6 output $MONITOR_RIGHT
+workspace $WORKSPACE_RIGHT_7 output $MONITOR_RIGHT
+workspace $WORKSPACE_RIGHT_8 output $MONITOR_RIGHT
+workspace $WORKSPACE_RIGHT_9 output $MONITOR_RIGHT
+workspace $WORKSPACE_RIGHT_10 output $MONITOR_RIGHT
+workspace $WORKSPACE_RIGHT_11 output $MONITOR_RIGHT
+workspace $WORKSPACE_RIGHT_12 output $MONITOR_RIGHT
 
 #
 # Applications
@@ -113,32 +178,33 @@ workspace $WORKSPACE12 output $MONITOR_LEFT
     focus_on_window_activation focus
 
     # Left
-    # Workspace 8
-    assign [class="Thunderbird"] $WORKSPACE8
-    assign [class="Firefox" instance="Firefox" title="fb.workplace.com" window_role="Toplevel"] $WORKSPACE8
-    for_window [class="Firefox" instance="Firefox" title="fb.workplace.com" window_role="Toplevel"] move window to workspace $WORKSPACE8
+    # Workspace 1
+    assign [class="Thunderbird"] $WORKSPACE_LEFT_1
+    assign [class="Firefox" instance="Firefox" title="fb.workplace.com" window_role="Toplevel"] $WORKSPACE_LEFT_1
+    for_window [class="Firefox" instance="Firefox" title="fb.workplace.com" window_role="Toplevel"] move window to workspace $WORKSPACE_LEFT_1
 
-    # Workspace 10
-    assign [class="discord"] $WORKSPACE10
-    for_window [class="discord"] move window to workspace $WORKSPACE10
-    assign [class="Slack"] $WORKSPACE10
+    # Workspace 2
+    assign [class="discord"] $WORKSPACE_LEFT_2
+    for_window [class="discord"] move window to workspace $WORKSPACE_LEFT_2
+    assign [class="Slack"] $WORKSPACE_LEFT_2
 
-    # Workspace 11
-    assign [class="Caprine"] $WORKSPACE11
-    assign [title="WhatsApp"] $WORKSPACE11
-    assign [class="telegramdesktop"] $WORKSPACE11
+    # Workspace 3
+    assign [class="Caprine"] $WORKSPACE_LEFT_3
+    assign [title="WhatsApp"] $WORKSPACE_LEFT_3
+    assign [class="telegramdesktop"] $WORKSPACE_LEFT_3
+
+    # Workspace 7
+    for_window [class="Spotify"] move window to workspace $WORKSPACE_LEFT_7
 
     # Workspace 12
-    assign [class="transmission-gtk"] $WORKSPACE12
+    assign [class="transmission-gtk"] $WORKSPACE_LEFT_12
     # Move Android Studio design preview
-    assign [class="jetbrains-studio" title="Preview - "] $WORKSPACE12
-    for_window [title="Android Emulator"] move to workspace $WORKSPACE12
+    assign [class="jetbrains-studio" title="Preview - "] $WORKSPACE_LEFT_12
+    for_window [title="Android Emulator"] move to workspace $WORKSPACE_LEFT_12
     # Bug see https://github.com/i3/i3/issues/2060
-    for_window [class="Spotify"] move window to workspace $WORKSPACE12
 
     # Center
-    # Workspace 1
-    assign [class="Code"] $WORKSPACE1
+    assign [class="Code"] output primary
 
     # Right
 
@@ -201,35 +267,92 @@ workspace $WORKSPACE12 output $MONITOR_LEFT
     bindsym $mod+Control+Mod1+Up move up
     bindsym $mod+Control+Mod1+Right move right
 
+    bindsym $mod+Shift+Right move container to workspace next_on_output, workspace next_on_output
+    bindsym $mod+Shift+Left move container to workspace prev_on_output, workspace prev_on_output
+
 #
 # Workspaces:
 #
     # Switch to workspace
-    bindsym $mod+1 workspace $WORKSPACE1
-    bindsym $mod+2 workspace $WORKSPACE2
-    bindsym $mod+3 workspace $WORKSPACE3
-    bindsym $mod+4 workspace $WORKSPACE4
-    bindsym $mod+5 workspace $WORKSPACE5
-    bindsym $mod+6 workspace $WORKSPACE6
-    bindsym $mod+7 workspace $WORKSPACE7
-    bindsym $mod+8 workspace $WORKSPACE8
-    bindsym $mod+9 workspace $WORKSPACE9
-    bindsym $mod+0 workspace $WORKSPACE10
-    bindsym $mod+minus workspace $WORKSPACE11
-    bindsym $mod+plus workspace $WORKSPACE11
+    bindsym $mod+Control+1 workspace $WORKSPACE_LEFT_1
+    bindsym $mod+Control+2 workspace $WORKSPACE_LEFT_2
+    bindsym $mod+Control+3 workspace $WORKSPACE_LEFT_3
+    bindsym $mod+Control+4 workspace $WORKSPACE_LEFT_4
+    bindsym $mod+Control+5 workspace $WORKSPACE_LEFT_5
+    bindsym $mod+Control+6 workspace $WORKSPACE_LEFT_6
+    bindsym $mod+Control+7 workspace $WORKSPACE_LEFT_7
+    bindsym $mod+Control+8 workspace $WORKSPACE_LEFT_8
+    bindsym $mod+Control+9 workspace $WORKSPACE_LEFT_9
+    bindsym $mod+Control+0 workspace $WORKSPACE_LEFT_10
+    bindsym $mod+Control+minus workspace $WORKSPACE_LEFT_11
+    bindsym $mod+Control+plus workspace $WORKSPACE_LEFT_12
+
+    bindsym $mod+1 workspace $WORKSPACE_CENTER_1
+    bindsym $mod+2 workspace $WORKSPACE_CENTER_2
+    bindsym $mod+3 workspace $WORKSPACE_CENTER_3
+    bindsym $mod+4 workspace $WORKSPACE_CENTER_4
+    bindsym $mod+5 workspace $WORKSPACE_CENTER_5
+    bindsym $mod+6 workspace $WORKSPACE_CENTER_6
+    bindsym $mod+7 workspace $WORKSPACE_CENTER_7
+    bindsym $mod+8 workspace $WORKSPACE_CENTER_8
+    bindsym $mod+9 workspace $WORKSPACE_CENTER_9
+    bindsym $mod+0 workspace $WORKSPACE_CENTER_10
+    bindsym $mod+minus workspace $WORKSPACE_CENTER_11
+    bindsym $mod+plus workspace $WORKSPACE_CENTER_12
+
+    bindsym $mod+Alt+1 workspace $WORKSPACE_RIGHT_1
+    bindsym $mod+Alt+2 workspace $WORKSPACE_RIGHT_2
+    bindsym $mod+Alt+3 workspace $WORKSPACE_RIGHT_3
+    bindsym $mod+Alt+4 workspace $WORKSPACE_RIGHT_4
+    bindsym $mod+Alt+5 workspace $WORKSPACE_RIGHT_5
+    bindsym $mod+Alt+6 workspace $WORKSPACE_RIGHT_6
+    bindsym $mod+Alt+7 workspace $WORKSPACE_RIGHT_7
+    bindsym $mod+Alt+8 workspace $WORKSPACE_RIGHT_8
+    bindsym $mod+Alt+9 workspace $WORKSPACE_RIGHT_9
+    bindsym $mod+Alt+0 workspace $WORKSPACE_RIGHT_10
+    bindsym $mod+Alt+minus workspace $WORKSPACE_RIGHT_11
+    bindsym $mod+Alt+plus workspace $WORKSPACE_RIGHT_12
+
     # Move focused container to workspace
-    bindsym $mod+Shift+1 move container to workspace $WORKSPACE1
-    bindsym $mod+Shift+2 move container to workspace $WORKSPACE2
-    bindsym $mod+Shift+3 move container to workspace $WORKSPACE3
-    bindsym $mod+Shift+4 move container to workspace $WORKSPACE4
-    bindsym $mod+Shift+5 move container to workspace $WORKSPACE5
-    bindsym $mod+Shift+6 move container to workspace $WORKSPACE6
-    bindsym $mod+Shift+7 move container to workspace $WORKSPACE7
-    bindsym $mod+Shift+8 move container to workspace $WORKSPACE8
-    bindsym $mod+Shift+9 move container to workspace $WORKSPACE9
-    bindsym $mod+Shift+0 move container to workspace $WORKSPACE10
-    bindsym $mod+Shift+minus move container to workspace $WORKSPACE11
-    bindsym $mod+Shift+plus move container to workspace $WORKSPACE12
+    bindsym $mod+Control+Shift+1 move container to workspace $WORKSPACE_LEFT_1
+    bindsym $mod+Control+Shift+2 move container to workspace $WORKSPACE_LEFT_2
+    bindsym $mod+Control+Shift+3 move container to workspace $WORKSPACE_LEFT_3
+    bindsym $mod+Control+Shift+4 move container to workspace $WORKSPACE_LEFT_4
+    bindsym $mod+Control+Shift+5 move container to workspace $WORKSPACE_LEFT_5
+    bindsym $mod+Control+Shift+6 move container to workspace $WORKSPACE_LEFT_6
+    bindsym $mod+Control+Shift+7 move container to workspace $WORKSPACE_LEFT_7
+    bindsym $mod+Control+Shift+8 move container to workspace $WORKSPACE_LEFT_8
+    bindsym $mod+Control+Shift+9 move container to workspace $WORKSPACE_LEFT_9
+    bindsym $mod+Control+Shift+0 move container to workspace $WORKSPACE_LEFT_10
+    bindsym $mod+Control+Shift+minus move container to workspace $WORKSPACE_LEFT_11
+    bindsym $mod+Control+Shift+plus move container to workspace $WORKSPACE_LEFT_12
+
+    bindsym $mod+Shift+1 move container to workspace $WORKSPACE_CENTER_1
+    bindsym $mod+Shift+2 move container to workspace $WORKSPACE_CENTER_2
+    bindsym $mod+Shift+3 move container to workspace $WORKSPACE_CENTER_3
+    bindsym $mod+Shift+4 move container to workspace $WORKSPACE_CENTER_4
+    bindsym $mod+Shift+5 move container to workspace $WORKSPACE_CENTER_5
+    bindsym $mod+Shift+6 move container to workspace $WORKSPACE_CENTER_6
+    bindsym $mod+Shift+7 move container to workspace $WORKSPACE_CENTER_7
+    bindsym $mod+Shift+8 move container to workspace $WORKSPACE_CENTER_8
+    bindsym $mod+Shift+9 move container to workspace $WORKSPACE_CENTER_9
+    bindsym $mod+Shift+0 move container to workspace $WORKSPACE_CENTER_10
+    bindsym $mod+Shift+minus move container to workspace $WORKSPACE_CENTER_11
+    bindsym $mod+Shift+plus move container to workspace $WORKSPACE_CENTER_12
+
+    bindsym $mod+Alt+Shift+1 move container to workspace $WORKSPACE_RIGHT_1
+    bindsym $mod+Alt+Shift+2 move container to workspace $WORKSPACE_RIGHT_2
+    bindsym $mod+Alt+Shift+3 move container to workspace $WORKSPACE_RIGHT_3
+    bindsym $mod+Alt+Shift+4 move container to workspace $WORKSPACE_RIGHT_4
+    bindsym $mod+Alt+Shift+5 move container to workspace $WORKSPACE_RIGHT_5
+    bindsym $mod+Alt+Shift+6 move container to workspace $WORKSPACE_RIGHT_6
+    bindsym $mod+Alt+Shift+7 move container to workspace $WORKSPACE_RIGHT_7
+    bindsym $mod+Alt+Shift+8 move container to workspace $WORKSPACE_RIGHT_8
+    bindsym $mod+Alt+Shift+9 move container to workspace $WORKSPACE_RIGHT_9
+    bindsym $mod+Alt+Shift+0 move container to workspace $WORKSPACE_RIGHT_10
+    bindsym $mod+Alt+Shift+minus move container to workspace $WORKSPACE_RIGHT_11
+    bindsym $mod+Alt+Shift+plus move container to workspace $WORKSPACE_RIGHT_12
+
     # Change workspace on current output
     bindsym $mod+Left workspace prev_on_output
     bindsym $mod+Right workspace next_on_output

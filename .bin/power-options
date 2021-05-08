@@ -5,7 +5,7 @@ source ~/.bin/utils.zsh
 case "$1" in
     logout)
         if is_wayland; then
-
+            swaymsg exit
         else
             i3-msg exit
         fi

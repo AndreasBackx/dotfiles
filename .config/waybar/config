@@ -26,6 +26,9 @@
             "clock",
             "tray"
         ],
+        "sway/workspaces": {
+            "format": "{name}"
+        },
         "sway/mode": {
             "format": "<span style=\"italic\">{}</span>"
         },
@@ -162,6 +165,9 @@
             "format": "{:%a %d %B %H:%M}",
             "tooltip": false
         },
+        "sway/workspaces": {
+            "format": "{name}"
+        },
         "sway/mode": {
             "format": "<span style=\"italic\">{}</span>"
         },
@@ -203,6 +209,9 @@
         "clock": {
             "format": "{:%a %d %B %H:%M}",
             "tooltip": false
+        },
+        "sway/workspaces": {
+            "format": "{name}"
         },
         "sway/mode": {
             "format": "<span style=\"italic\">{}</span>"
