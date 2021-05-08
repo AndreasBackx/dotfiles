@@ -1,10 +1,21 @@
 #!/usr/bin/env zsh
 
-amount=`yay -Pu | wc -l`
+source ~/.bin/utils.zsh
+# local amount
 
-# Return as fast as possible, then update the repos and update.
-echo "{\"text\": \"$amount\", \"alt\": \"default\"}"
+if type "yay" > /dev/null; then
+    amount=`yay -Pu | wc -l`
+else
+    amount=`dnf check-update --quiet --disablerepo="cpe-yum*" | wc -l`
+fi
 
-amount=`yay -Syy > /dev/null; yay -Pu | wc -l`
+if is_wayland; then
+    # Return as fast as possible, then update the repos and update.
+    waybar-json "$amount" "There are $amount updates available, click to update."
+    amount=`yay -Syy > /dev/null; yay -Pu | wc -l`
+    waybar-json "$amount" "There are $amount updates available, click to update."
+else
+    polybar-output "$amount"
+fi
+# echo "{\"text\": \"$amount\", \"alt\": \"default\"}"
 
-echo "{\"text\": \"$amount\", \"alt\": \"default\"}"

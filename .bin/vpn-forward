@@ -73,7 +73,7 @@ def status():
     enabled = is_enabled()
     output(
         text="\uf4d7",
-        tooltip="Enabled" if enabled else "Disabled",
+        tooltip=f"VPN forwarding is {'enabled' if enabled else 'disabled'}.",
         cls="enabled" if enabled else "disabled",
     )
 

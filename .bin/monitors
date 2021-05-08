@@ -24,7 +24,6 @@
 
 import os
 import subprocess
-import sys
 import time
 from enum import Enum
 from typing import List
@@ -149,7 +148,6 @@ class BrightnessType(click.ParamType):
 
 def ddcutil(command: str, display: Display, *args):
     if "DISABLE_MONITORS" in os.environ:
-        print("Monitors has been disabled.")
         return None
 
     retries = 20
@@ -341,8 +339,7 @@ def period_changed(old_period: str, new_period: str):
 
     gtk_theme = (
         "Materia-dark"
-        if new_period == "night"
-        or (old_period == "daytime" and new_period == "transition")
+        if new_period == "night" or (old_period == "daytime" and new_period == "transition")
         else "Materia"
     )
     subprocess.run(

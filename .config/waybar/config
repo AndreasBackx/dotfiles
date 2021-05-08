@@ -48,7 +48,8 @@
             "spacing": 12
         },
         "clock": {
-            "format": "{:%a %d %B %H:%M}"
+            "format": "{:%a %d %B %H:%M}",
+            "tooltip": false
         },
         "cpu": {
             "format": "<span color=\"#6E6E6E\">\uf2db</span>  {usage}%"
@@ -128,13 +129,12 @@
             "exec": "~/.bin/spotifycl monitor"
         },
         "custom/power": {
-            "format": "<span color=\"#6E6E6E\">\uf1e6</span>",
-            "tooltip": false,
+            "exec": "echo '{\"text\": \"<span color=\\\"#6E6E6E\\\">\uf1e6</span>\", \"tooltip\": \"Power options\"}'",
+            "return-type": "json",
             "on-click": "power-options selection"
         },
         "custom/vpn-forward": {
             "format": "{}",
-            "tooltip": false,
             "interval": 2,
             "return-type": "json",
             "on-click": "sudo -E vpn-forward toggle",
@@ -159,7 +159,8 @@
             "clock"
         ],
         "clock": {
-            "format": "{:%a %d %B %H:%M}"
+            "format": "{:%a %d %B %H:%M}",
+            "tooltip": false
         },
         "sway/mode": {
             "format": "<span style=\"italic\">{}</span>"
@@ -200,7 +201,8 @@
             "clock"
         ],
         "clock": {
-            "format": "{:%a %d %B %H:%M}"
+            "format": "{:%a %d %B %H:%M}",
+            "tooltip": false
         },
         "sway/mode": {
             "format": "<span style=\"italic\">{}</span>"
