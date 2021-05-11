@@ -1,7 +1,6 @@
 #!/usr/bin/env zsh
 
 source ~/.bin/utils.zsh
-# local amount
 
 if type "yay" > /dev/null; then
     amount=`yay -Qu | wc -l`
@@ -17,5 +16,4 @@ if is_wayland; then
 else
     polybar-output "$amount"
 fi
-# echo "{\"text\": \"$amount\", \"alt\": \"default\"}"
 

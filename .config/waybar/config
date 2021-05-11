@@ -113,7 +113,7 @@
                 "default": ""
             },
             "return-type": "json",
-            "interval": 900,
+            "restart-interval": 900,
             "on-click": "kitty zsh -c 'yay -Syu; zsh' &",
             "exec": "~/.bin/updates"
         },
