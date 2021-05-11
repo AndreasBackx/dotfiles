@@ -37,44 +37,44 @@ set $ORANGE             #D9882B
 set $PURPLE             #A082D9
 
 # Workspaces
-set $WORKSPACE_LEFT_1           "left:1"
-set $WORKSPACE_LEFT_2           "left:2"
-set $WORKSPACE_LEFT_3           "left:3"
-set $WORKSPACE_LEFT_4           "left:4"
-set $WORKSPACE_LEFT_5           "left:5"
-set $WORKSPACE_LEFT_6           "left:6"
-set $WORKSPACE_LEFT_7           "left:7"
-set $WORKSPACE_LEFT_8           "left:8"
-set $WORKSPACE_LEFT_9           "left:9"
-set $WORKSPACE_LEFT_10          "left:10"
-set $WORKSPACE_LEFT_11          "left:11"
-set $WORKSPACE_LEFT_12          "left:12"
+set $WORKSPACE_LEFT_1           "1:left"
+set $WORKSPACE_LEFT_2           "2:left"
+set $WORKSPACE_LEFT_3           "3:left"
+set $WORKSPACE_LEFT_4           "4:left"
+set $WORKSPACE_LEFT_5           "5:left"
+set $WORKSPACE_LEFT_6           "6:left"
+set $WORKSPACE_LEFT_7           "7:left"
+set $WORKSPACE_LEFT_8           "8:left"
+set $WORKSPACE_LEFT_9           "9:left"
+set $WORKSPACE_LEFT_10          "10:left"
+set $WORKSPACE_LEFT_11          "11:left"
+set $WORKSPACE_LEFT_12          "12:left"
 
-set $WORKSPACE_CENTER_1         "center:1"
-set $WORKSPACE_CENTER_2         "center:2"
-set $WORKSPACE_CENTER_3         "center:3"
-set $WORKSPACE_CENTER_4         "center:4"
-set $WORKSPACE_CENTER_5         "center:5"
-set $WORKSPACE_CENTER_6         "center:6"
-set $WORKSPACE_CENTER_7         "center:7"
-set $WORKSPACE_CENTER_8         "center:8"
-set $WORKSPACE_CENTER_9         "center:9"
-set $WORKSPACE_CENTER_10        "center:10"
-set $WORKSPACE_CENTER_11        "center:11"
-set $WORKSPACE_CENTER_12        "center:12"
+set $WORKSPACE_CENTER_1         "1:center"
+set $WORKSPACE_CENTER_2         "2:center"
+set $WORKSPACE_CENTER_3         "3:center"
+set $WORKSPACE_CENTER_4         "4:center"
+set $WORKSPACE_CENTER_5         "5:center"
+set $WORKSPACE_CENTER_6         "6:center"
+set $WORKSPACE_CENTER_7         "7:center"
+set $WORKSPACE_CENTER_8         "8:center"
+set $WORKSPACE_CENTER_9         "9:center"
+set $WORKSPACE_CENTER_10        "10:center"
+set $WORKSPACE_CENTER_11        "11:center"
+set $WORKSPACE_CENTER_12        "12:center"
 
-set $WORKSPACE_RIGHT_1          "right:1"
-set $WORKSPACE_RIGHT_2          "right:2"
-set $WORKSPACE_RIGHT_3          "right:3"
-set $WORKSPACE_RIGHT_4          "right:4"
-set $WORKSPACE_RIGHT_5          "right:5"
-set $WORKSPACE_RIGHT_6          "right:6"
-set $WORKSPACE_RIGHT_7          "right:7"
-set $WORKSPACE_RIGHT_8          "right:8"
-set $WORKSPACE_RIGHT_9          "right:9"
-set $WORKSPACE_RIGHT_10         "right:10"
-set $WORKSPACE_RIGHT_11         "right:11"
-set $WORKSPACE_RIGHT_12         "right:12"
+set $WORKSPACE_RIGHT_1          "1:right"
+set $WORKSPACE_RIGHT_2          "2:right"
+set $WORKSPACE_RIGHT_3          "3:right"
+set $WORKSPACE_RIGHT_4          "4:right"
+set $WORKSPACE_RIGHT_5          "5:right"
+set $WORKSPACE_RIGHT_6          "6:right"
+set $WORKSPACE_RIGHT_7          "7:right"
+set $WORKSPACE_RIGHT_8          "8:right"
+set $WORKSPACE_RIGHT_9          "9:right"
+set $WORKSPACE_RIGHT_10         "10:right"
+set $WORKSPACE_RIGHT_11         "11:right"
+set $WORKSPACE_RIGHT_12         "12:right"
 
 font pango:Roboto Regular 10.5
 
@@ -246,7 +246,7 @@ workspace $WORKSPACE_RIGHT_12 output $MONITOR_RIGHT
     bindsym XF86AudioMute exec pamixer --toggle-mute
 
     # Controls
-    bindsym Ctrl+Alt+Tab exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause"
+    bindsym Ctrl+Mod1+Tab exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause"
     bindsym XF86AudioPlay exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause"
     bindsym XF86AudioStop exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Stop"
     bindsym XF86AudioPrev exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous"
@@ -300,18 +300,18 @@ workspace $WORKSPACE_RIGHT_12 output $MONITOR_RIGHT
     bindsym $mod+minus workspace $WORKSPACE_CENTER_11
     bindsym $mod+plus workspace $WORKSPACE_CENTER_12
 
-    bindsym $mod+Alt+1 workspace $WORKSPACE_RIGHT_1
-    bindsym $mod+Alt+2 workspace $WORKSPACE_RIGHT_2
-    bindsym $mod+Alt+3 workspace $WORKSPACE_RIGHT_3
-    bindsym $mod+Alt+4 workspace $WORKSPACE_RIGHT_4
-    bindsym $mod+Alt+5 workspace $WORKSPACE_RIGHT_5
-    bindsym $mod+Alt+6 workspace $WORKSPACE_RIGHT_6
-    bindsym $mod+Alt+7 workspace $WORKSPACE_RIGHT_7
-    bindsym $mod+Alt+8 workspace $WORKSPACE_RIGHT_8
-    bindsym $mod+Alt+9 workspace $WORKSPACE_RIGHT_9
-    bindsym $mod+Alt+0 workspace $WORKSPACE_RIGHT_10
-    bindsym $mod+Alt+minus workspace $WORKSPACE_RIGHT_11
-    bindsym $mod+Alt+plus workspace $WORKSPACE_RIGHT_12
+    bindsym $mod+Mod1+1 workspace $WORKSPACE_RIGHT_1
+    bindsym $mod+Mod1+2 workspace $WORKSPACE_RIGHT_2
+    bindsym $mod+Mod1+3 workspace $WORKSPACE_RIGHT_3
+    bindsym $mod+Mod1+4 workspace $WORKSPACE_RIGHT_4
+    bindsym $mod+Mod1+5 workspace $WORKSPACE_RIGHT_5
+    bindsym $mod+Mod1+6 workspace $WORKSPACE_RIGHT_6
+    bindsym $mod+Mod1+7 workspace $WORKSPACE_RIGHT_7
+    bindsym $mod+Mod1+8 workspace $WORKSPACE_RIGHT_8
+    bindsym $mod+Mod1+9 workspace $WORKSPACE_RIGHT_9
+    bindsym $mod+Mod1+0 workspace $WORKSPACE_RIGHT_10
+    bindsym $mod+Mod1+minus workspace $WORKSPACE_RIGHT_11
+    bindsym $mod+Mod1+plus workspace $WORKSPACE_RIGHT_12
 
     # Move focused container to workspace
     bindsym $mod+Control+Shift+1 move container to workspace $WORKSPACE_LEFT_1
@@ -340,18 +340,18 @@ workspace $WORKSPACE_RIGHT_12 output $MONITOR_RIGHT
     bindsym $mod+Shift+minus move container to workspace $WORKSPACE_CENTER_11
     bindsym $mod+Shift+plus move container to workspace $WORKSPACE_CENTER_12
 
-    bindsym $mod+Alt+Shift+1 move container to workspace $WORKSPACE_RIGHT_1
-    bindsym $mod+Alt+Shift+2 move container to workspace $WORKSPACE_RIGHT_2
-    bindsym $mod+Alt+Shift+3 move container to workspace $WORKSPACE_RIGHT_3
-    bindsym $mod+Alt+Shift+4 move container to workspace $WORKSPACE_RIGHT_4
-    bindsym $mod+Alt+Shift+5 move container to workspace $WORKSPACE_RIGHT_5
-    bindsym $mod+Alt+Shift+6 move container to workspace $WORKSPACE_RIGHT_6
-    bindsym $mod+Alt+Shift+7 move container to workspace $WORKSPACE_RIGHT_7
-    bindsym $mod+Alt+Shift+8 move container to workspace $WORKSPACE_RIGHT_8
-    bindsym $mod+Alt+Shift+9 move container to workspace $WORKSPACE_RIGHT_9
-    bindsym $mod+Alt+Shift+0 move container to workspace $WORKSPACE_RIGHT_10
-    bindsym $mod+Alt+Shift+minus move container to workspace $WORKSPACE_RIGHT_11
-    bindsym $mod+Alt+Shift+plus move container to workspace $WORKSPACE_RIGHT_12
+    bindsym $mod+Mod1+Shift+1 move container to workspace $WORKSPACE_RIGHT_1
+    bindsym $mod+Mod1+Shift+2 move container to workspace $WORKSPACE_RIGHT_2
+    bindsym $mod+Mod1+Shift+3 move container to workspace $WORKSPACE_RIGHT_3
+    bindsym $mod+Mod1+Shift+4 move container to workspace $WORKSPACE_RIGHT_4
+    bindsym $mod+Mod1+Shift+5 move container to workspace $WORKSPACE_RIGHT_5
+    bindsym $mod+Mod1+Shift+6 move container to workspace $WORKSPACE_RIGHT_6
+    bindsym $mod+Mod1+Shift+7 move container to workspace $WORKSPACE_RIGHT_7
+    bindsym $mod+Mod1+Shift+8 move container to workspace $WORKSPACE_RIGHT_8
+    bindsym $mod+Mod1+Shift+9 move container to workspace $WORKSPACE_RIGHT_9
+    bindsym $mod+Mod1+Shift+0 move container to workspace $WORKSPACE_RIGHT_10
+    bindsym $mod+Mod1+Shift+minus move container to workspace $WORKSPACE_RIGHT_11
+    bindsym $mod+Mod1+Shift+plus move container to workspace $WORKSPACE_RIGHT_12
 
     # Change workspace on current output
     bindsym $mod+Left workspace prev_on_output
