@@ -2,7 +2,9 @@
 
 set -e
 
-source ~/.bin/utils.zsh
+# This needs to be able to run from root as well.
+SCRIPT_DIR=`dirname "$0"`
+source "$SCRIPT_DIR/utils.zsh"
 
 function is_timer_active() {
     if systemctl is-active --quiet create-backup.timer; then
@@ -43,9 +45,9 @@ function status() {
             waybar-json "\uf382" "Backing up..." running
         else
             if is_service_failed; then
-                waybar-json "\uf7e4" "Backup has failed." failed
+                waybar-json "\uf7e4" "Backup has failed, click to try again." failed
             else
-                waybar-json "\uf0c2" "Backup timer is waiting for the next backup." waiting
+                waybar-json "\uf0c2" "Backup timer is waiting for the next backup. Click to start now." waiting
             fi
         fi
     else
