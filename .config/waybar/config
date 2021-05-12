@@ -121,7 +121,7 @@
             "format": "{}",
             "interval": "once",
             "return-type": "json",
-            "on-click": "sudo -E check-backup start",
+            "on-click": "check-backup start",
             "exec": "~/.bin/check-backup status",
             "signal": 8
         },
