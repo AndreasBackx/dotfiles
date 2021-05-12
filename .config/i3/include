@@ -5,14 +5,12 @@ exec_always xrandr --output $MONITOR_LEFT --mode 2560x1440 --pos $MONITOR_LEFT_X
     --output $MONITOR_RIGHT --mode 2560x1440 --pos $MONITOR_RIGHT_Xx$MONITOR_RIGHT_Y --rotate right \
     && cp ~/.config/monitors.xml /var/lib/gdm/.config/
 
-exec_always --no-startup-id start-pulseaudio-x11
 exec_always custom-polybar
 exec /usr/libexec/gsd-xsettings
 
 exec nm-applet
 exec_always nitrogen --restore
 exec picom
-exec workchat
 new_window pixel
 
 bindsym $mod+Shift+c exec notify-send "Restarting i3..." --urgency=low --expire-time=2500 && i3-config && i3-msg restart
