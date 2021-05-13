@@ -6,7 +6,12 @@ This repository contains most if not all of the changes made to my machines that
 ## Unstaged File Templates
 
 `.config/.variables`
-```
+```zsh
+#!/usr/bin/env zsh
+
+# Optionally ame the location of your shell environment.
+export ENV_LOCATION=""
+
 export MONITOR_LEFT=""
 export MONITOR_CENTER""
 export MONITOR_RIGHT=""
@@ -20,7 +25,7 @@ export BORG_BASE_DIR=""
 ```
 
 `.config/.secrets`
-```
+```zsh
 # borg backup
 export BORG_PASSPHRASE=""
 
@@ -32,7 +37,7 @@ export SPOTIPY_REDIRECT_URI="http://localhost"
 
 ## Installation
 
-```
+```zsh
 echo ".cfg" >> .gitignore
 git clone --bare git@github.com:AndreasBackx/dotfiles.git $HOME/.cfg
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
@@ -47,13 +52,13 @@ touch ~/.config/.variables
 
 ### oh-my-zsh
 
-```
+```zsh
 sh -c "$(wget https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
 ```
 
 ### spaceship-prompt
 
-```
+```zsh
 git clone https://github.com/denysdovhan/spaceship-prompt.git "$ZSH_CUSTOM/themes/spaceship-prompt" --depth=1
 ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme"
 ```
@@ -61,14 +66,14 @@ ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH_CUSTOM/the
 
 ### zsh-autosuggestions
 
-```
+```zsh
 git clone git@github.com:zsh-users/zsh-autosuggestions.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 chmod 755 ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions -R
 ```
 
 ### zsh-syntax-highlighting
 
-```
+```zsh
 git clone git@github.com:zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 chmod 755 ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting -R
 ```

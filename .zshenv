@@ -51,6 +51,15 @@ if which pyenv > /dev/null; then eval "$(pyenv init - --no-rehash zsh)"; fi
 if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
 export PYENV_VIRTUALENV_DISABLE_PROMPT=1
 
+# $ENV_LOCATION should be set in .secrets.
+if [[ $ENV_LOCATION != "devserver" ]]; then
+  # Pyenv
+  if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
+  if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
+  export PYENV_VIRTUALENV_DISABLE_PROMPT=1
+fi
+
+
 # Otherwise IntelliJ won't run on Sway.
 # https://youtrack.jetbrains.com/issue/IDEA-153134
 export _JAVA_AWT_WM_NONREPARENTING=1
