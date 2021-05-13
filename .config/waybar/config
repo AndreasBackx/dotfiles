@@ -27,7 +27,7 @@
             "tray"
         ],
         "sway/workspaces": {
-            "format": "{name}"
+            "format": "{index}"
         },
         "sway/mode": {
             "format": "<span style=\"italic\">{}</span>"
@@ -121,8 +121,8 @@
             "format": "{}",
             "interval": "once",
             "return-type": "json",
-            "on-click": "check-backup start",
-            "exec": "~/.bin/check-backup status",
+            "on-click": "backup start --background",
+            "exec": "backup status",
             "signal": 8
         },
         "custom/spotify": {
@@ -166,7 +166,7 @@
             "tooltip": false
         },
         "sway/workspaces": {
-            "format": "{name}"
+            "format": "{index}"
         },
         "sway/mode": {
             "format": "<span style=\"italic\">{}</span>"
@@ -211,7 +211,7 @@
             "tooltip": false
         },
         "sway/workspaces": {
-            "format": "{name}"
+            "format": "{index}"
         },
         "sway/mode": {
             "format": "<span style=\"italic\">{}</span>"

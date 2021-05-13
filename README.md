@@ -13,6 +13,10 @@ export MONITOR_RIGHT=""
 
 # If you want to disable the monitors cli.
 # export DISABLE_MONITORS="yes"
+
+# Borg backup settings.
+export BORG_REPO=""
+export BORG_BASE_DIR=""
 ```
 
 `.config/.secrets`
