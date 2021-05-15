@@ -28,14 +28,14 @@
   git = !exec git
 
 [include]
-    # Includes private settings (e.g.: work).
-    path = ~/.gitconfig-private
     # Only exists on Linux.
     path = /home/andreas/.gitconfig-linux
     path = /home/andreasbackx/.gitconfig-linux
     # Only exists on MacOS
     path = /Users/Andreas/.gitconfig-macos
     path = /Users/andreasbackx/.gitconfig-macos
+    # Includes private settings (e.g.: work).
+    path = ~/.gitconfig-private
 
 [filter "lfs"]
 	clean = git-lfs clean -- %f
