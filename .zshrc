@@ -60,10 +60,15 @@ elif [[ $machine == "Darwin" ]]; then
   alias flushdns="sudo dscacheutil -flushcache;sudo killall -HUP mDNSResponder"
 fi
 
-
 # Other aliases
 alias config='git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 alias sudo="sudo -E"
+
+if [[ -n "$SSH_CONNECTION" ]]; then
+  # Enable GPG pin entry using curses only via SSH.
+  export GPG_TTY=$(tty)
+fi
+
 
 if [[ -n "$PS1" ]] && [[ -z "$TMUX" ]] && [[ -n "$SSH_CONNECTION" ]]; then
   if [[ $TERM == "xterm-kitty" ]]; then
