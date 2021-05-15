@@ -25,12 +25,16 @@ SPACESHIP_RPROMPT_ORDER=()
 
 if type "ldcli" > /dev/null; then
   plugins+=(logdevice)
-  SPACESHIP_PROMPT_ORDER+=(logdevice)
+  SPACESHIP_RPROMPT_ORDER+=(logdevice)
   eval $(ldcli :session init)
 fi
 
+if [[ -z "$TMUX" ]]; then
+  # Only show host if not running in tmux.
+  SPACESHIP_RPROMPT_ORDER+=(host)
+fi
+
 SPACESHIP_RPROMPT_ORDER+=(
-  host
   time          # Time stamps section
 )
 
@@ -56,6 +60,11 @@ elif [[ $machine == "Darwin" ]]; then
   alias flushdns="sudo dscacheutil -flushcache;sudo killall -HUP mDNSResponder"
 fi
 
+
+# Other aliases
+alias config='git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
+alias sudo="sudo -E"
+
 if [[ -n "$PS1" ]] && [[ -z "$TMUX" ]] && [[ -n "$SSH_CONNECTION" ]]; then
   if [[ $TERM == "xterm-kitty" ]]; then
     tmux attach-session -t ssh_tmux || tmux new-session -s ssh_tmux
@@ -63,8 +72,3 @@ if [[ -n "$PS1" ]] && [[ -z "$TMUX" ]] && [[ -n "$SSH_CONNECTION" ]]; then
     tmux -CC attach-session -t ssh_tmux || tmux -CC new-session -s ssh_tmux
   fi
 fi
-
-
-# Other aliases
-alias config='git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
-alias sudo="sudo -E"

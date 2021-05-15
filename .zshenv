@@ -45,13 +45,7 @@ PATH=$HOME/.local/bin:$PATH
 PATH=$PATH:~/.npm-global/bin
 PATH=$PATH:~/.pyenv/bin
 
-
-# Pyenv
-if which pyenv > /dev/null; then eval "$(pyenv init - --no-rehash zsh)"; fi
-if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
-export PYENV_VIRTUALENV_DISABLE_PROMPT=1
-
-# $ENV_LOCATION should be set in .secrets.
+# $ENV_LOCATION should be set in .variables.
 if [[ $ENV_LOCATION != "devserver" ]]; then
   # Pyenv
   if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
@@ -71,3 +65,7 @@ if [[ -f "$ZSHENV_WORK" ]]; then
 fi
 
 
+if [[ -n "$TMUX" ]]; then
+  # Use GPG curses based pin entry in tmux.
+  export GPG_TTY=$(tty)
+fi
