@@ -43,3 +43,23 @@ function polybar-output() {
         echo "%{F$color}$prefix{F-} $suffix"
     fi
 }
+
+function get-output-name() {
+    description=$1
+    outputs=$2
+
+    if [[ -z "$description" ]]; then
+        echo "Usage: get-output-name description [swaymsg -t get_outputs]"
+    fi
+
+    if ! is_wayland; then
+        echo "X11 is not supported by this function."
+        return 1
+    fi
+
+    if [[ -z "$outputs" ]]; then
+        outputs=`swaymsg -t get_outputs`
+    fi
+
+    echo "$outputs" | jq -r ".[] | . + {description: \"\(.make) \(.model) \(.serial)\"} | select(.description == \"$description\") | .name"
+}

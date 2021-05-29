@@ -3,6 +3,7 @@
 set -e
 
 source ~/.bin/utils.zsh
+source ~/.config/.variables
 
 if is_wayland; then
     extension="ppm"
@@ -14,25 +15,11 @@ file_location_left=/tmp/lockscreen_left.$extension
 file_location_center=/tmp/lockscreen_center.$extension
 file_location_right=/tmp/lockscreen_right.$extension
 
-monitor_left_serial="9X2VY4B101CL"
-monitor_center_serial="T78EE0048521"
-monitor_right_serial="9X2VY4B101BL"
-
 if is_wayland; then
-    function get_output_name() {
-        outputs=$1
-        serial=$2
-        echo "$outputs" | jq -r ".[] | select(.serial == \"$serial\") | .name"
-    }
-
     outputs=$(swaymsg -t get_outputs)
-    monitor_left=$(get_output_name "$outputs" "$monitor_left_serial")
-    monitor_center=$(get_output_name "$outputs" "$monitor_center_serial")
-    monitor_right=$(get_output_name "$outputs" "$monitor_right_serial")
-
-    echo "$monitor_left"
-    echo "$monitor_center"
-    echo "$monitor_right"
+    monitor_left=$(get-output-name "$MONITOR_LEFT" "$outputs")
+    monitor_center=$(get-output-name "$MONITOR_CENTER" "$outputs")
+    monitor_right=$(get-output-name "$MONITOR_RIGHT" "$outputs")
 
     parallel --link -X "grim -t $extension -o {1} - | convert - -encoding $extension -scale 10% -scale 1000% {2}" ::: $monitor_left $monitor_center $monitor_right ::: $file_location_left $file_location_center $file_location_right
 else
@@ -42,7 +29,7 @@ fi
 spotify_status=`spotifycl status`
 spotifycl pause &
 
-is_muted=`pamixer --get-mute`
+is_muted=`pamixer --get-mute || true`
 if [[ "$is_muted" == "false" ]]; then
     echo "Muting"
     pamixer --mute &
