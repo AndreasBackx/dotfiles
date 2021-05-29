@@ -23,8 +23,6 @@ SPACESHIP_PROMPT_ORDER=(
 )
 SPACESHIP_RPROMPT_ORDER=()
 
-plugins+=(fzf)
-
 if type "ldcli" > /dev/null; then
   plugins+=(logdevice)
   SPACESHIP_RPROMPT_ORDER+=(logdevice)

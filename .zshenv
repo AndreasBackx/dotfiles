@@ -6,6 +6,7 @@ export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=0"
 plugins=(
   zsh-autosuggestions
   zsh-syntax-highlighting
+  fzf
 )
 
 # Do not add duplicates to PATH
