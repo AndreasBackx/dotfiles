@@ -10,7 +10,7 @@ source "$SCRIPT_DIR/../.config/.variables"
 source "$SCRIPT_DIR/../.config/.secrets"
 
 function is_timer_active() {
-    if systemctl is-active --quiet create-backup.timer; then
+    if systemctl is-active --quiet backup.timer; then
         true
     else
         false
@@ -18,7 +18,7 @@ function is_timer_active() {
 }
 
 function is_service_active() {
-    if systemctl is-active --quiet create-backup.service; then
+    if systemctl is-active --quiet backup.service; then
         true
     else
         false
@@ -26,7 +26,7 @@ function is_service_active() {
 }
 
 function is_service_failed() {
-    if systemctl is-failed --quiet create-backup.service; then
+    if systemctl is-failed --quiet backup.service; then
         true
     else
         false
@@ -34,7 +34,7 @@ function is_service_failed() {
 }
 
 function is_timer_waiting() {
-    timer_status=`systemctl status --quiet create-backup.timer`
+    timer_status=`systemctl status --quiet backup.timer`
     if  [[ $timer_status == *"Active: active (waiting)"* ]]; then
         true
     else
