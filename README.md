@@ -33,6 +33,9 @@ export BORG_PASSPHRASE=""
 export SPOTIPY_CLIENT_ID=""
 export SPOTIPY_CLIENT_SECRET=""
 export SPOTIPY_REDIRECT_URI="http://localhost"
+
+# GitHub
+export GITHUB_TOKEN=""
 ```
 
 ## Installation
@@ -76,4 +79,18 @@ chmod 755 ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions -R
 ```zsh
 git clone git@github.com:zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 chmod 755 ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting -R
+```
+
+### fzf
+
+**Arch User Repository (AUR)**
+
+```
+yay -S fzf
+```
+
+**Fedora**
+
+```
+sudo dnf install fzf
 ```

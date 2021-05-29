@@ -43,7 +43,6 @@ PATH=/usr/local/bin:$PATH
 PATH=$HOME/.bin:$PATH
 PATH=$HOME/.local/bin:$PATH
 PATH=$PATH:~/.npm-global/bin
-PATH=$PATH:~/.pyenv/bin
 
 # $ENV_LOCATION should be set in .variables.
 if [[ $ENV_LOCATION != "devserver" ]]; then
@@ -52,7 +51,6 @@ if [[ $ENV_LOCATION != "devserver" ]]; then
   if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
   export PYENV_VIRTUALENV_DISABLE_PROMPT=1
 fi
-
 
 # Otherwise IntelliJ won't run on Sway.
 # https://youtrack.jetbrains.com/issue/IDEA-153134
