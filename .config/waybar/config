@@ -1,6 +1,5 @@
 [
     {
-        "layer": "top",
         "position": "bottom",
         "output": "Acer Technologies XF270HU T78EE0048521",
         "height": 40,
@@ -145,7 +144,6 @@
         }
     },
     {
-        "layer": "top",
         "position": "bottom",
         "output": [
             "Dell Inc. DELL U2515H 9X2VY4B101CL"
@@ -190,7 +188,6 @@
         }
     },
     {
-        "layer": "top",
         "position": "bottom",
         "output": [
             "Dell Inc. DELL U2515H 9X2VY4B101BL"
