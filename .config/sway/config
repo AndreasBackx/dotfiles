@@ -18,6 +18,7 @@ exec_always swayidle -d \
     timeout 3602 'swaymsg "output * dpms off"' \
         resume 'swaymsg "output * dpms on"' \
     before-sleep 'lock' > /var/log/swayidle.log
+exec waycorner
 
 include ~/.config/sway/base
 
