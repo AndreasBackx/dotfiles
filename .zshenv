@@ -62,7 +62,6 @@ if [[ -f "$ZSHENV_WORK" ]]; then
     source "$ZSHENV_WORK"
 fi
 
-
 if [[ -n "$TMUX" ]]; then
   # Use GPG curses based pin entry in tmux.
   export GPG_TTY=$(tty)

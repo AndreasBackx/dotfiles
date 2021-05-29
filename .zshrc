@@ -49,8 +49,6 @@ export VISUAL=vim
 export EDITOR="$VISUAL"
 source $ZSH/oh-my-zsh.sh
 
-# OS-specific
-machine=`uname -s`
 if [[ $machine == "Linux" ]]; then
   # Linux specific commands.
 elif [[ $machine == "Darwin" ]]; then
