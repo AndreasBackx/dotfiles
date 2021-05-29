@@ -46,11 +46,10 @@ PATH=$HOME/.local/bin:$PATH
 PATH=$PATH:~/.npm-global/bin
 
 # $ENV_LOCATION should be set in .variables.
-if [[ $ENV_LOCATION != "devserver" ]]; then
-  # Pyenv
-  if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
-  if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
-  export PYENV_VIRTUALENV_DISABLE_PROMPT=1
+if [[ "$ENV_LOCATION" != "devserver" ]]; then
+  export PYENV_ROOT="$HOME/.pyenv"
+  export PATH="$PYENV_ROOT/bin:$PATH"
+  eval "$(pyenv init --path)"
 fi
 
 # Otherwise IntelliJ won't run on Sway.

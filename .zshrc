@@ -38,9 +38,11 @@ SPACESHIP_RPROMPT_ORDER+=(
   time          # Time stamps section
 )
 
-if which pyenv > /dev/null; then eval "$(pyenv init - --no-rehash zsh)"; fi
-if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
-export PYENV_VIRTUALENV_DISABLE_PROMPT=1
+# $ENV_LOCATION should be set in .variables.
+if [[ "$ENV_LOCATION" != "devserver" ]]; then
+  if which pyenv > /dev/null; then eval "$(pyenv init - --no-rehash zsh)"; fi
+  if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
+fi
 
 export LS_COLORS="di=34:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43"
 export VISUAL=vim
