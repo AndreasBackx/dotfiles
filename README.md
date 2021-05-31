@@ -56,7 +56,7 @@ touch ~/.config/.variables
 ### oh-my-zsh
 
 ```zsh
-sh -c "$(wget https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --keep-zshrc
 ```
 
 ### spaceship-prompt
@@ -85,12 +85,25 @@ chmod 755 ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting -R
 
 **Arch User Repository (AUR)**
 
-```
+```zsh
 yay -S fzf
 ```
 
 **Fedora**
 
-```
+```zsh
 sudo dnf install fzf
+```
+
+**Debian**
+
+```zsh
+sudo apt-get install fzf
+```
+
+### pyenv
+
+```zsh
+git clone https://github.com/pyenv/pyenv.git ~/.pyenv
+cd ~/.pyenv && src/configure && make -C src
 ```
