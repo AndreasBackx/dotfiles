@@ -217,10 +217,10 @@ workspace $WORKSPACE_RIGHT_12 output $MONITOR_RIGHT
     bindsym $mod+Return exec $TERM
 
     # start your launcher
-    bindsym $mod+space exec "rofi -monitor -1 -show run"
-    bindsym $mod+d exec "rofi -monitor -1 -show run"
+    bindsym $mod+space exec "rofi -show run"
+    bindsym $mod+d exec "rofi -show run"
     # sudo launcher version
-    bindsym $mod+Shift+space exec "rofi -monitor -1 -show run -display-run sudo -run-command 'sudo {cmd}'"
+    bindsym $mod+Shift+space exec "rofi -show run -display-run sudo -run-command 'sudo {cmd}'"
     # Emoji
     bindsym $mod+Control+space exec "emoji"
 
