@@ -1,5 +1,3 @@
-rofi.monitor:                           -5
-
 ! "Enabled modi" Set from: Default
 ! rofi.modi:                           window,run,ssh
 ! "Window width" Set from: Default
