@@ -1,0 +1,13 @@
+[left]
+command = ["lock"]
+locations = ["bottom_left"]
+
+[left.output]
+description = "Dell Inc. DELL U2515H 9X2VY4B101CL"
+
+[right]
+command = ["lock"]
+locations = ["bottom_right"]
+
+[right.output]
+description = "Dell Inc. DELL U2515H 9X2VY4B101BL"
