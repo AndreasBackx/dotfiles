@@ -30,12 +30,11 @@ def is_enabled() -> bool:
 
 
 def enable_forwarding() -> None:
-    subprocess.run(["ip", "link", "set", INTERFACE, "up"])
     subprocess.run(["ip", "route", "add", ROUTE, "dev", INTERFACE])
 
 
 def disable_forwarding() -> None:
-    subprocess.run(["ip", "link", "set", INTERFACE, "down"])
+    subprocess.run(["ip", "route", "del", ROUTE, "dev", INTERFACE])
 
 
 @click.group()
