@@ -93,6 +93,8 @@ client.focused          $DARKER_GRAY    $BLACK_GRAY     $LIGHT_GRAY     $YELLOW 
 client.focused_inactive $BLACK_GRAY     $BLACK          $GRAY           $YELLOW         $BLACK_GRAY
 client.unfocused        $BLACK_GRAY     $BLACK          $GRAY           $YELLOW         $BLACK_GRAY
 client.urgent           $PINK           $BLACK          $GRAY           $YELLOW         $PINK
+
+
 client.placeholder      $BLACK_GRAY     $BLACK          $GRAY           $YELLOW         $BLACK_GRAY
 
 client.background       $BLACK_GRAY
@@ -100,7 +102,7 @@ client.background       $BLACK_GRAY
 ### Applications
 exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 exec_always pgrep -x "redshift-gtk" > /dev/null || redshift-gtk
-exec_always pgrep -x "cadmus" > /dev/null || cadmus
+exec_always noisetorch -i
 exec_always pgrep -x "/usr/lib/geoclue-2.0/demos/agent" > /dev/null || /usr/lib/geoclue-2.0/demos/agent
 
 #
