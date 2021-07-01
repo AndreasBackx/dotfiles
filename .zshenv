@@ -21,6 +21,9 @@ if [[ $machine == "Linux" ]]; then
   export ELECTRON_TRASH="gio"
 
   export BROWSER="/usr/bin/firefox"
+
+  # https://wiki.archlinux.org/title/Firefox#Applications_on_Wayland_can_not_launch_Firefox
+  export MOZ_DBUS_REMOTE=1
 elif [[ $machine == "Darwin" ]]; then
   # MacOS specific commands.
 
