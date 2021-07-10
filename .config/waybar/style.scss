@@ -43,7 +43,7 @@ window#waybar {
 /* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
 #workspaces {
     button {
-        padding: 0;
+        padding: 4px;
         color: white;
         border-bottom: 3px solid transparent;
 
@@ -56,9 +56,6 @@ window#waybar {
         }
     }
 }
-
-
-
 
 #mode {
     border-bottom: 3px solid $foreground;
