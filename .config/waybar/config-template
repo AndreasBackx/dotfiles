@@ -1,7 +1,9 @@
 [
     {
+        "output": [
+            "$MONITOR_CENTER"
+        ],
         "position": "bottom",
-        "output": "Acer Technologies XF270HU T78EE0048521",
         "height": 40,
         "modules-left": [
             "sway/workspaces",
@@ -104,7 +106,7 @@
         "custom/services": {
             "format": "<span color=\"#6E6E6E\">{}</span>",
             "interval": 15,
-            "exec": "~/.bin/running-services"
+            "exec": "running-services"
         },
         "custom/updates": {
             "format": "<span color=\"#6E6E6E\">{icon}</span>  {}",
@@ -112,9 +114,9 @@
                 "default": ""
             },
             "return-type": "json",
-            "restart-interval": 900,
-            "on-click": "kitty zsh -c 'yay -Syu; zsh' &",
-            "exec": "~/.bin/updates"
+            "interval": 900,
+            "on-click": "kitty-cwd -- zsh -c \"updates update; zsh\" &",
+            "exec": "updates check"
         },
         "custom/backup": {
             "format": "{}",
@@ -127,8 +129,8 @@
         "custom/spotify": {
             "format": "{}",
             "return-type": "json",
-            "on-click-middle": "~/.bin/spotifycl save-remove",
-            "exec": "~/.bin/spotifycl monitor"
+            "on-click-right": "spotifycl save-remove",
+            "exec": "spotifycl monitor"
         },
         "custom/power": {
             "exec": "echo '{\"text\": \"<span color=\\\"#6E6E6E\\\">\uf1e6</span>\", \"tooltip\": \"Power options\"}'",
@@ -137,6 +139,7 @@
         },
         "custom/vpn-forward": {
             "format": "{}",
+            "tooltip": false,
             "interval": 2,
             "return-type": "json",
             "on-click": "sudo -E vpn-forward toggle",
@@ -144,10 +147,168 @@
         }
     },
     {
-        "position": "bottom",
         "output": [
-            "Dell Inc. DELL U2515H 9X2VY4B101CL"
+            "$MONITOR_LAPTOP"
         ],
+        "battery": {
+            "interval": 60,
+            "states": {
+                "warning": 30,
+                "critical": 15
+            },
+            "format": "<span color=\"#6E6E6E\">{icon}</span>  {capacity}%",
+            "format-icons": ["", "", "", "", ""],
+            "max-length": 25
+        },
+        "position": "bottom",
+        "height": 40,
+        "modules-left": [
+            "sway/workspaces",
+            "sway/mode",
+            "sway/window"
+        ],
+        "modules-center": [
+            "custom/spotify"
+        ],
+        "modules-right": [
+            "custom/updates",
+            "custom/backup",
+            "custom/vpn-forward",
+            "custom/brightness",
+            "idle_inhibitor",
+            "custom/headphones",
+            "pulseaudio",
+            "cpu",
+            "memory",
+            "battery",
+            "custom/power",
+            "clock",
+            "tray"
+        ],
+        "sway/workspaces": {
+            "format": "{index}"
+        },
+        "sway/mode": {
+            "format": "<span style=\"italic\">{}</span>"
+        },
+        "sway/window": {
+            "rewrite": {
+                "^(.*) — Mozilla Firefox$": "$1",
+                "^(.*) - Mozilla Thunderbird$": "$1",
+                "^(.*) - Discord$": "$1",
+                "^Slack \\| (.*)$": "$1"
+            }
+        },
+        "idle_inhibitor": {
+            "format": "{icon}",
+            "format-icons": {
+                "activated": "\uf06e",
+                "deactivated": "\uf070"
+            }
+        },
+        "tray": {
+            "spacing": 12
+        },
+        "clock": {
+            "format": "{:%a %d %B %H:%M}",
+            "tooltip": false
+        },
+        "cpu": {
+            "format": "<span color=\"#6E6E6E\">\uf2db</span>  {usage}%"
+        },
+        "memory": {
+            "format": "<span color=\"#6E6E6E\">\uf538</span>  {}%"
+        },
+        "custom/headphones": {
+            "format": "{}",
+            "interval": 2,
+            "return-type": "json",
+            "on-click": "headphones toggle",
+            "on-click-right": "headphones disconnect",
+            "on-scroll-up": "headphones noise-cancellation high",
+            "on-click-middle": "headphones noise-cancellation low",
+            "on-scroll-down": "headphones noise-cancellation off",
+            "exec": "headphones status"
+        },
+        "pulseaudio": {
+            "scroll-step": 5,
+            "format": "<span color=\"#6E6E6E\">{icon}</span>  {volume}%",
+            "format-muted": "<span color=\"#6E6E6E\">{icon}  {volume}%</span>",
+            "format-icons": {
+                "headphones": "",
+                "handsfree": "",
+                "headset": "",
+                "phone": "",
+                "portable": "",
+                "car": "",
+                "muted":  "\ue04f",
+                "default": [
+                    "\uf027",
+                    ""
+                ]
+            },
+            "on-click": "pamixer --toggle-mute",
+            "on-click-right": "pavucontrol",
+            "on-scroll-up": "pamixer --increase 5",
+            "on-scroll-down": "pamixer --decrease 5"
+        },
+        "custom/brightness": {
+            "format": "<span color=\"#6E6E6E\">\uf042</span>  {}",
+            "tooltip": false,
+            "interval": 2,
+            "on-click": "monitors brightness toggle",
+            "on-scroll-up": "monitors brightness up",
+            "on-scroll-down": "monitors brightness down",
+            "exec": "monitors brightness --display center"
+        },
+        "custom/services": {
+            "format": "<span color=\"#6E6E6E\">{}</span>",
+            "interval": 15,
+            "exec": "running-services"
+        },
+        "custom/updates": {
+            "format": "<span color=\"#6E6E6E\">{icon}</span>  {}",
+            "format-icons": {
+                "default": ""
+            },
+            "return-type": "json",
+            "interval": 900,
+            "on-click": "kitty-cwd -- zsh -c \"updates update; zsh\" &",
+            "exec": "updates check"
+        },
+        "custom/backup": {
+            "format": "{}",
+            "interval": "once",
+            "return-type": "json",
+            "on-click": "backup start --background",
+            "exec": "backup status",
+            "signal": 8
+        },
+        "custom/spotify": {
+            "format": "{}",
+            "return-type": "json",
+            "on-click-right": "spotifycl save-remove",
+            "exec": "spotifycl monitor"
+        },
+        "custom/power": {
+            "exec": "echo '{\"text\": \"<span color=\\\"#6E6E6E\\\">\uf1e6</span>\", \"tooltip\": \"Power options\"}'",
+            "return-type": "json",
+            "on-click": "power-options selection"
+        },
+        "custom/vpn-forward": {
+            "format": "{}",
+            "tooltip": false,
+            "interval": 2,
+            "return-type": "json",
+            "on-click": "sudo -E vpn-forward toggle",
+            "exec": "sudo -E vpn-forward status"
+        }
+    },
+    {
+        "output": [
+            "$MONITOR_LEFT"
+        ],
+        "position": "bottom",
         "height": 40,
         "modules-left": [
             "sway/workspaces",
@@ -188,10 +349,10 @@
         }
     },
     {
-        "position": "bottom",
         "output": [
-            "Dell Inc. DELL U2515H 9X2VY4B101BL"
+            "$MONITOR_RIGHT"
         ],
+        "position": "bottom",
         "height": 40,
         "modules-left": [
             "sway/workspaces",
