@@ -1,0 +1,9 @@
+profile "External Monitors Only" {
+    output "$MONITOR_LEFT" transform 270 position 0,30 mode 2560x1440@59.951000Hz
+    output "$MONITOR_CENTER" position 1440,570 mode 2560x1440@144.006Hz
+    output "$MONITOR_RIGHT" transform 90 position 4000,0 mode 2560x1440@59.951000Hz    
+}
+
+profile "Laptop Only" {
+    output "$MONITOR_LAPTOP" mode 1920x1080
+}
