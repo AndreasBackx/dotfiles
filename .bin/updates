@@ -1,19 +1,47 @@
 #!/usr/bin/env zsh
 
+set -e
+
 source ~/.bin/utils.zsh
 
-if type "yay" > /dev/null; then
-    amount=`yay -Qu | wc -l`
-else
-    amount=`dnf check-update --quiet --disablerepo="cpe-yum*" | wc -l`
-fi
+case "$1" in
+    check)
+        if is_fedora; then
+            amount=`dnf check-update --cacheonly --quiet --disablerepo="cpe-yum*" | wc -l`
+        else
+            amount=`yay -Pu | wc -l`
+        fi
 
-if is_wayland; then
-    # Return as fast as possible, then update the repos and update.
-    waybar-json "$amount" "There are $amount updates available, click to update."
-    amount=`yay -Syy > /dev/null; yay -Qu | wc -l`
-    waybar-json "$amount" "There are $amount updates available, click to update."
-else
-    polybar-output "$amount"
-fi
+        # Return as fast as possible, then update the repos and update.
+        if is_wayland; then
+            waybar-json "$amount"
+        else
+            echo "$amount"
+        fi
 
+        if is_fedora; then
+            amount=`dnf check-update --quiet --disablerepo="cpe-yum*" | wc -l || echo "$amount"`
+        else
+            amount=`yay -Syy > /dev/null; yay -Pu | wc -l || echo "$amount"`
+        fi
+
+        if is_wayland; then
+            # Return as fast as possible, then update the repos and update.
+            waybar-json "$amount"
+        else
+            echo "$amount"
+        fi
+        ;;
+    update)
+        if is_fedora; then
+            sudo dnf upgrade --refresh
+        else
+            yay -Syu
+        fi
+        ;;
+    *)
+        echo "Usage: $0 {check|update}"
+        exit 2
+esac
+
+exit 0
