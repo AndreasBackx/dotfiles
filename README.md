@@ -107,3 +107,32 @@ sudo apt-get install fzf
 git clone https://github.com/pyenv/pyenv.git ~/.pyenv
 cd ~/.pyenv && src/configure && make -C src
 ```
+### ~/.npm-global
+
+```
+mkdir ~/.npm-global
+npm config set prefix ~/.npm-global
+```
+
+### pyenv
+
+```
+git clone git@github.com:pyenv/pyenv.git ~/.pyenv
+git clone git@github.com:pyenv/pyenv-virtualenv.git $(pyenv root)/plugins/pyenv-virtualenv
+```
+
+### ddcutil i2c
+
+From:
+
+```
+sudo groupadd --system i2c
+sudo usermod $(whoami) -aG i2c
+sudo cp /usr/share/ddcutil/data/45-ddcutil-i2c.rules /etc/udev/rules.d
+
+# Or change the permissions
+# For current boot
+sudo chmod a+rw /dev/i2c-*
+# Or after quick logout
+sudo chgrp i2c /dev/i2c-*
+```
