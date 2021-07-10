@@ -63,3 +63,11 @@ function get-output-name() {
 
     echo "$outputs" | jq -r ".[] | . + {description: \"\(.make) \(.model) \(.serial)\"} | select(.description == \"$description\") | .name"
 }
+
+function is_fedora() {
+    if grep '^NAME=Fedora' /etc/os-release > /dev/null; then
+        return 0  # success
+    else
+        return 1  # failure
+    fi
+}
