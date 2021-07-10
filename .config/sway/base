@@ -104,6 +104,7 @@ exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 exec_always pgrep -x "redshift-gtk" > /dev/null || redshift-gtk
 exec_always noisetorch -i
 exec_always pgrep -x "/usr/lib/geoclue-2.0/demos/agent" > /dev/null || /usr/lib/geoclue-2.0/demos/agent
+exec nm-applet --indicator
 
 #
 # Left:
