@@ -9,7 +9,7 @@ case "$1" in
         if is_fedora; then
             amount=`dnf check-update --cacheonly --quiet --disablerepo="cpe-yum*" | wc -l`
         else
-            amount=`yay -Pu | wc -l`
+            amount=`yay -Qu | wc -l`
         fi
 
         # Return as fast as possible, then update the repos and update.
@@ -22,7 +22,7 @@ case "$1" in
         if is_fedora; then
             amount=`dnf check-update --quiet --disablerepo="cpe-yum*" | wc -l || echo "$amount"`
         else
-            amount=`yay -Syy > /dev/null; yay -Pu | wc -l || echo "$amount"`
+            amount=`yay -Syy > /dev/null; yay -Qu | wc -l || echo "$amount"`
         fi
 
         if is_wayland; then
