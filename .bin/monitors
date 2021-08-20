@@ -250,9 +250,12 @@ class DDCUtilController(Controller):
 
 
 class Display(Enum):
-    LEFT = DDCUtilController(monitor=os.environ["MONITOR_LEFT"])
-    CENTER = DDCUtilController(monitor=os.environ["MONITOR_CENTER"])
-    RIGHT = DDCUtilController(monitor=os.environ["MONITOR_RIGHT"])
+    if "MONITOR_LEFT" in os.environ:
+        LEFT = DDCUtilController(monitor=os.environ["MONITOR_LEFT"])
+    if "MONITOR_CENTER" in os.environ:
+        CENTER = DDCUtilController(monitor=os.environ["MONITOR_CENTER"])
+    if "MONITOR_RIGHT" in os.environ:
+        RIGHT = DDCUtilController(monitor=os.environ["MONITOR_RIGHT"])
     LAPTOP = LightController()
 
     @property
