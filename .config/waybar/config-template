@@ -157,8 +157,7 @@
                 "critical": 15
             },
             "format": "<span color=\"#6E6E6E\">{icon}</span>  {capacity}%",
-            "format-icons": ["", "", "", "", ""],
-            "max-length": 25
+            "format-icons": ["", "", "", "", ""]
         },
         "position": "bottom",
         "height": 40,
