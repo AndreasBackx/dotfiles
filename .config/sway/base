@@ -183,19 +183,19 @@ workspace $WORKSPACE_RIGHT_12 output $MONITOR_RIGHT
 
     # Left
     # Workspace 1
-    assign [class="Thunderbird"] $WORKSPACE_LEFT_1
-    assign [class="Firefox" instance="Firefox" title="fb.workplace.com" window_role="Toplevel"] $WORKSPACE_LEFT_1
-    for_window [class="Firefox" instance="Firefox" title="fb.workplace.com" window_role="Toplevel"] move window to workspace $WORKSPACE_LEFT_1
+    #assign [class="Thunderbird"] $WORKSPACE_LEFT_1
+    #assign [class="Firefox" instance="Firefox" title="fb.workplace.com" window_role="Toplevel"] $WORKSPACE_LEFT_1
+    #for_window [class="Firefox" instance="Firefox" title="fb.workplace.com" window_role="Toplevel"] move window to workspace $WORKSPACE_LEFT_1
 
-    # Workspace 2
-    assign [class="discord"] $WORKSPACE_LEFT_2
-    for_window [class="discord"] move window to workspace $WORKSPACE_LEFT_2
-    assign [class="Slack"] $WORKSPACE_LEFT_2
+    # Workspace 5
+    assign [class="discord"] $WORKSPACE_LEFT_5
+    for_window [class="discord"] move window to workspace $WORKSPACE_LEFT_5
+    assign [class="Slack"] $WORKSPACE_LEFT_5
 
-    # Workspace 3
-    assign [class="Caprine"] $WORKSPACE_LEFT_3
-    assign [title="WhatsApp"] $WORKSPACE_LEFT_3
-    assign [class="telegramdesktop"] $WORKSPACE_LEFT_3
+    # Workspace 6
+    assign [class="Caprine"] $WORKSPACE_LEFT_6
+    assign [title="WhatsApp"] $WORKSPACE_LEFT_6
+    assign [class="telegramdesktop"] $WORKSPACE_LEFT_6
 
     # Workspace 7
     for_window [class="Spotify"] move window to workspace $WORKSPACE_LEFT_7
@@ -226,6 +226,7 @@ workspace $WORKSPACE_RIGHT_12 output $MONITOR_RIGHT
     bindsym $mod+space exec "rofi -show run"
     bindsym $mod+d exec "rofi -show run"
     # sudo launcher version
+    bindsym $mod+Shift+d exec "rofi -show run -display-run sudo -run-command 'sudo {cmd}'"
     bindsym $mod+Shift+space exec "rofi -show run -display-run sudo -run-command 'sudo {cmd}'"
     # Emoji
     bindsym $mod+Control+space exec "emoji"
