@@ -1,0 +1,21 @@
+#!/usr/bin/env zsh
+
+source ~/.bin/utils.zsh
+
+if is_wayland; then
+    clipboard_type=`wl-paste -l`
+else
+
+fi
+
+if [ "$clipboard_type" != "image/png" ]; then
+    notify "Clipboard does not contain an image!" critical
+    exit 1
+fi
+
+if is_wayland; then
+    wl-paste | imgur.sh | wl-copy
+else
+fi
+
+notify "Imgur link saved to clipboard!" low

@@ -10,4 +10,4 @@ else
     maim -s | xclip -selection clipboard -t image/png
 fi
 
-notify-send -u low "Screenshot saved to clipboard!" --expire-time 5
+notify "Screenshot saved to clipboard!"
