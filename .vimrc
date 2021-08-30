@@ -5,3 +5,4 @@ set noswapfile  " disable swap file
 
 syntax on
 set number
+colorscheme default
