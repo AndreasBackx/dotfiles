@@ -1,21 +1,13 @@
 ### Output configuration
-#set $MONITOR_LEFT "Dell Inc. DELL U2515H 9X2VY4B101CL"
-#set $MONITOR_CENTER "Acer Technologies XF270HU T78EE0048521"
-#set $MONITOR_RIGHT "Dell Inc. DELL U2515H 9X2VY4B101BL"
-#set $MONITOR_TV "Goldstar Company Ltd LG TV 0x00000101"
+set $MONITOR_LEFT "Dell Inc. DELL U2515H 9X2VY4B101CL"
+set $MONITOR_CENTER "Acer Technologies XF270HU T78EE0048521"
+set $MONITOR_RIGHT "Dell Inc. DELL U2515H 9X2VY4B101BL"
+set $MONITOR_TV "Goldstar Company Ltd LG TV 0x00000101"
 
-set $MONITOR_LEFT "Dell Inc. DELL U2715H GH85D74E134S"
-set $MONITOR_CENTER "Samsung Electric Company C34H89x H4ZR102382"
-set $MONITOR_RIGHT "Unknown 0x0662 0x00000000"
-
-#output $MONITOR_LEFT transform 270 pos 0 30 res 2560x1440@59.951000Hz bg ~/.config/wallpapers/tyrion-lannister.jpg fill
-#output $MONITOR_CENTER pos 1440 570 res 2560x1440@144.006Hz bg /home/andreas/.config/wallpapers/jaime-lannister.jpg fill adaptive_sync on
-#output $MONITOR_RIGHT transform 90 pos 4000 0 res 2560x1440@59.951000Hz bg ~/.config/wallpapers/jon-snow.jpg fill
-#output $MONITOR_TV scale 2
-
-output $MONITOR_LEFT bg ~/.config/wallpapers/jaime-lannister.jpg fill pos 0 0 transform 270
-output $MONITOR_CENTER bg ~/.config/wallpapers/jaime-lannister.jpg fill pos 1440 470 res 3440x1440@99.982Hz adaptive_sync on
-output $MONITOR_RIGHT bg ~/.config/wallpapers/jaime-lannister.jpg fill pos 4880 830
+output $MONITOR_LEFT transform 270 pos 0 30 res 2560x1440@59.951000Hz bg ~/.config/wallpapers/tyrion-lannister.jpg fill
+output $MONITOR_CENTER pos 1440 570 res 2560x1440@144.006Hz bg /home/andreas/.config/wallpapers/jaime-lannister.jpg fill adaptive_sync on
+output $MONITOR_RIGHT transform 90 pos 4000 0 res 2560x1440@59.951000Hz bg ~/.config/wallpapers/jon-snow.jpg fill
+output $MONITOR_TV scale 2
 
 ### Environment
 exec_always systemctl --user import-environment
