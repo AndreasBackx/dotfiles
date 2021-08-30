@@ -45,4 +45,4 @@ SPACESHIP_RPROMPT_ORDER+=(
   time          # Time stamps section
 )
 
-source $HOME/.oh-my-zsh//oh-my-zsh.sh
+source $HOME/.oh-my-zsh/oh-my-zsh.sh
