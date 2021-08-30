@@ -71,3 +71,15 @@ function is_fedora() {
         return 1  # failure
     fi
 }
+
+# If interactive, print to stderr. If not, send to libnotify.
+function notify() {
+    message=$1
+    urgency=${2:-normal}
+    expire_time=${3:-5000}
+    if [ -t 0 ] ; then
+        >&2 echo "$message"
+    else
+        notify-send -u "$urgency" "$message" --expire-time "$expire_time"
+    fi
+}
