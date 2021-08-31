@@ -114,7 +114,7 @@
                 "default": ""
             },
             "return-type": "json",
-            "interval": 900,
+            "interval": 60,
             "on-click": "kitty-cwd -- zsh -c \"updates update; zsh\" &",
             "exec": "updates check"
         },
@@ -271,7 +271,7 @@
                 "default": ""
             },
             "return-type": "json",
-            "interval": 900,
+            "interval": 60,
             "on-click": "kitty-cwd -- zsh -c \"updates update; zsh\" &",
             "exec": "updates check"
         },

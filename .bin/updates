@@ -4,33 +4,47 @@ set -e
 
 source ~/.bin/utils.zsh
 
+function check_cache() {
+    if is_fedora; then
+        amount=`dnf check-update --cacheonly --quiet --disablerepo="cpe-yum*" | wc -l`
+    else
+        amount=`yay -Qu | wc -l`
+    fi
+
+    # Return as fast as possible, then update the repos and update.
+    if is_wayland; then
+        waybar-json "$amount"
+    else
+        echo "$amount"
+    fi
+}
+
+function check_live() {
+    if is_fedora; then
+        amount=`dnf check-update --quiet --disablerepo="cpe-yum*" | wc -l || echo "$amount"`
+    else
+        amount=`yay -Syy > /dev/null; yay -Qu | wc -l || echo "$amount"`
+    fi
+
+    if is_wayland; then
+        # Return as fast as possible, then update the repos and update.
+        waybar-json "$amount"
+    else
+        echo "$amount"
+    fi
+}
+
 case "$1" in
     check)
-        if is_fedora; then
-            amount=`dnf check-update --cacheonly --quiet --disablerepo="cpe-yum*" | wc -l`
-        else
-            amount=`yay -Qu | wc -l`
-        fi
-
-        # Return as fast as possible, then update the repos and update.
-        if is_wayland; then
-            waybar-json "$amount"
-        else
-            echo "$amount"
-        fi
-
-        if is_fedora; then
-            amount=`dnf check-update --quiet --disablerepo="cpe-yum*" | wc -l || echo "$amount"`
-        else
-            amount=`yay -Syy > /dev/null; yay -Qu | wc -l || echo "$amount"`
-        fi
-
-        if is_wayland; then
-            # Return as fast as possible, then update the repos and update.
-            waybar-json "$amount"
-        else
-            echo "$amount"
-        fi
+        check_cache
+        check_live
+        ;;
+    monitor)
+        check_cache
+        while true; do
+            check_live
+            sleep 60
+        done
         ;;
     update)
         if is_fedora; then
@@ -40,7 +54,7 @@ case "$1" in
         fi
         ;;
     *)
-        echo "Usage: $0 {check|update}"
+        echo "Usage: $0 {check|monitor|update}"
         exit 2
 esac
 

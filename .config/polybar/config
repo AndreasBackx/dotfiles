@@ -198,9 +198,9 @@ label-foreground = ${config.FOREGROUND_INACTIVE}
 
 [module/updates]
 type = custom/script
-interval = 900
-exec = "dnf check-update --quiet --disablerepo="cpe-yum*" | wc -l"
-click-left = kitty-cwd -- sudo dnf upgrade --refresh
+interval = 60
+exec = "updates check"
+click-left = kitty-cwd -- zsh -c \"updates update; zsh\" &
 label = %output%
 tail = true
 
