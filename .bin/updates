@@ -21,9 +21,13 @@ function check_cache() {
 
 function check_live() {
     if is_fedora; then
-        amount=`dnf check-update --quiet --disablerepo="cpe-yum*" | wc -l || echo "$amount"`
+        amount=`dnf check-update --quiet --disablerepo="cpe-yum*" | wc -l || echo "-1"`
     else
-        amount=`yay -Syy > /dev/null; yay -Qu | wc -l || echo "$amount"`
+        amount=`yay -Syy &> /dev/null; yay -Qu | wc -l || echo "-1"`
+    fi
+
+    if [[ "$amount" == "-1" ]]; then
+        return
     fi
 
     if is_wayland; then
