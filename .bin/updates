@@ -31,7 +31,6 @@ function check_live() {
     fi
 
     if is_wayland; then
-        # Return as fast as possible, then update the repos and update.
         waybar-json "$amount"
     else
         echo "$amount"
