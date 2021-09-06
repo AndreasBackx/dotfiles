@@ -30,7 +30,7 @@ SPACESHIP_PROMPT_ORDER=(
 )
 SPACESHIP_RPROMPT_ORDER=()
 
-if type "ldcli" > /dev/null; then
+if type "ldcli" &> /dev/null; then
   plugins+=(logdevice)
   SPACESHIP_RPROMPT_ORDER+=(logdevice)
   eval $(ldcli :session init)
