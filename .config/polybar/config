@@ -200,7 +200,7 @@ label-foreground = ${config.FOREGROUND_INACTIVE}
 type = custom/script
 interval = 60
 exec = "updates check"
-click-left = kitty-cwd -- zsh -c \"updates update; zsh\" &
+click-left = kitty-cwd -- zsh -c "updates update; zsh" &
 label = %output%
 tail = true
 
