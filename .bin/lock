@@ -19,7 +19,7 @@ if is_wayland; then
     outputs=$(swaymsg -t get_outputs)
     monitor_left=$(get-output-name "$MONITOR_LEFT" "$outputs")
     monitor_center=$(get-output-name "$MONITOR_CENTER" "$outputs")
-    monitor_right=$(get-output-name "$MONITOR_RIGHT" "$outputs")
+    monitor_right=$(get-output-name "$MONITOR_LAPTOP" "$outputs")
 
     parallel --link -X "grim -t $extension -o {1} - | convert - -encoding $extension -scale 10% -scale 1000% {2}" ::: $monitor_left $monitor_center $monitor_right ::: $file_location_left $file_location_center $file_location_right
 else

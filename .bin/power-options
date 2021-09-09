@@ -10,9 +10,15 @@ case "$1" in
             i3-msg exit
         fi
         ;;
+    update-shutdown | update-poweroff)
+        updates update
+        ;&
     shutdown | poweroff)
         systemctl poweroff
         ;;
+    update-restart | update-reboot)
+        updates update
+        ;&
     restart | reboot)
         systemctl reboot
         ;;
@@ -24,17 +30,23 @@ case "$1" in
         ;;
     selection)
         logout="logout"
+        update_shutdown="update & shutdown"
         shutdown="shutdown"
+        update_restart="update & restart/reboot"
         restart="restart/reboot"
         suspend="suspend"
         hibernate="hibernate"
 
-        selection=$(echo -e "$logout\n$shutdown\n$restart\n$suspend\n$hibernate" | rofi -dmenu -i -window-title "actions")
+        selection=$(echo -e "$logout\n$update_shutdown\n$shutdown\n$update_restart\n$restart\n$suspend\n$hibernate" | rofi -dmenu -i -window-title "actions")
 
         if [[ $selection = "$logout" ]]; then
             power-options logout
+        elif [[ $selection = "$update_shutdown" ]]; then
+            power-options update-shutdown
         elif [[ $selection = "$shutdown" ]]; then
             power-options shutdown
+        elif [[ $selection = "$update_restart" ]]; then
+            power-options update-restart
         elif [[ $selection = "$restart" ]]; then
             power-options restart
         elif [[ $selection = "$suspend" ]]; then
@@ -44,7 +56,7 @@ case "$1" in
         fi
         ;;
     *)
-        echo "Usage: $0 {suspend|hibernate|restart|shutdown|logout|selection}"
+        echo "Usage: $0 {suspend|hibernate|update-restart|restart|update-shutdown|shutdown|logout|selection}"
         exit 2
 esac
 

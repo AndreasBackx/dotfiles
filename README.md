@@ -147,3 +147,15 @@ sudo dnf copr enable atim/choose
 sudo dnf install choose
 ## Other: https://github.com/theryangeary/choose#compilation-and-installation
 ```
+
+### gammastep
+
+Make sure gammastep, gammastep-gtk, and geoclue are installed. Then add the following to `/etc/geoclue/geoclue.conf`:
+
+```ini
+[gammastep]
+allowed=true
+system=false
+users=
+>>>>>>> fef5671 (tmp to be deleted and used on master)
+```
