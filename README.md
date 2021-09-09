@@ -119,6 +119,7 @@ npm config set prefix ~/.npm-global
 ```
 git clone git@github.com:pyenv/pyenv.git ~/.pyenv
 git clone git@github.com:pyenv/pyenv-virtualenv.git $(pyenv root)/plugins/pyenv-virtualenv
+git clone https://github.com/pyenv/pyenv-update.git $(pyenv root)/plugins/pyenv-update
 ```
 
 ### ddcutil i2c
