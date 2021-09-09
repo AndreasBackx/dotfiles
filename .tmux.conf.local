@@ -1,0 +1,14 @@
+set -goq @theme-clock-mode-colour blue
+set -goq @theme-display-panes-active-colour red
+
+bind -n C-l send-keys -R \; clear-history
+# Do not jump to the end when copying.
+#unbind -T copy-mode-vi MouseDragEnd1Pane
+
+bind-key    -T copy-mode    C-w               send-keys -X copy-selection
+bind-key    -T copy-mode    MouseDragEnd1Pane send-keys -X copy-selection
+bind-key    -T copy-mode    M-w               send-keys -X copy-selection
+bind-key    -T copy-mode-vi C-j               send-keys -X copy-selection
+bind-key    -T copy-mode-vi Enter             send-keys -X copy-selection
+bind-key    -T copy-mode-vi MouseDragEnd1Pane send-keys -X copy-selection
+
