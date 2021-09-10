@@ -104,22 +104,16 @@ sudo apt-get install fzf
 ### pyenv
 
 ```zsh
-git clone https://github.com/pyenv/pyenv.git ~/.pyenv
+git clone git@github.com:pyenv/pyenv.git ~/.pyenv
 cd ~/.pyenv && src/configure && make -C src
+git clone git@github.com:pyenv/pyenv-virtualenv.git $(pyenv root)/plugins/pyenv-virtualenv
+git clone https://github.com/pyenv/pyenv-update.git $(pyenv root)/plugins/pyenv-update
 ```
 ### ~/.npm-global
 
 ```
 mkdir ~/.npm-global
 npm config set prefix ~/.npm-global
-```
-
-### pyenv
-
-```
-git clone git@github.com:pyenv/pyenv.git ~/.pyenv
-git clone git@github.com:pyenv/pyenv-virtualenv.git $(pyenv root)/plugins/pyenv-virtualenv
-git clone https://github.com/pyenv/pyenv-update.git $(pyenv root)/plugins/pyenv-update
 ```
 
 ### ddcutil i2c
