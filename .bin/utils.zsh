@@ -16,7 +16,7 @@ function waybar-json() {
 
     if [[ -z "$tooltip" ]]; then
         echo "{\"text\": \"$text\"}"
-    elif [[ -z "$suffix" ]]; then
+    elif [[ -z "$class" ]]; then
         echo "{\"text\": \"$text\", \"tooltip\": \"$tooltip\"}"
     elif [[ -z "$extra" ]]; then
         echo "{\"text\": \"$text\", \"tooltip\": \"$tooltip\", \"class\": \"$class\"}"
