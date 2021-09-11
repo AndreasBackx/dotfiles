@@ -15,6 +15,8 @@ export ENV_LOCATION=""
 export MONITOR_LEFT=""
 export MONITOR_CENTER""
 export MONITOR_RIGHT=""
+# Uncomment to indicate there is a laptop monitor.
+# export MONITOR_LAPTOP="yes"
 
 # If you want to disable the monitors cli.
 # export DISABLE_MONITORS="yes"

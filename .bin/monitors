@@ -256,7 +256,8 @@ class Display(Enum):
         CENTER = DDCUtilController(monitor=os.environ["MONITOR_CENTER"])
     if "MONITOR_RIGHT" in os.environ:
         RIGHT = DDCUtilController(monitor=os.environ["MONITOR_RIGHT"])
-    LAPTOP = LightController()
+    if "MONITOR_LAPTOP" in os.environ:
+        LAPTOP = LightController()
 
     @property
     async def brightness(self) -> int | None:
@@ -399,8 +400,10 @@ async def period_changed(old_period: str, new_period: str) -> None:
         await display.set_brightness(target_brightness)
 
     await asyncio.gather(
-        change_brightness(display=display, target_brightness=target_brightness)
-        for display in list(Display)
+        *[
+            change_brightness(display=display, target_brightness=target_brightness)
+            for display in list(Display)
+        ]
     )
 
 
