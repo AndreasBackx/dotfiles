@@ -50,10 +50,6 @@ bar {
 input * {
     xkb_layout us
     xkb_options compose:rctrl
-
-    #accel_profile flat pointer_accel 1.7
-
-    #scroll_factor 4
 }
 
 input "2:14:ETPS/2_Elantech_Touchpad" {
