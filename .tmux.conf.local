@@ -12,3 +12,7 @@ bind-key    -T copy-mode-vi C-j               send-keys -X copy-selection
 bind-key    -T copy-mode-vi Enter             send-keys -X copy-selection
 bind-key    -T copy-mode-vi MouseDragEnd1Pane send-keys -X copy-selection
 
+# Disable Ctrl+A prefix
+set -gu prefix2
+unbind C-a
+
