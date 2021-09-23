@@ -2,6 +2,7 @@
 
 source ~/.config/.variables
 source ~/.config/.secrets
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 ## ENV VARS ##
 
