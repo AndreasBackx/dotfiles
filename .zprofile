@@ -47,7 +47,6 @@ PATH=$HOME/.local/bin:$PATH
 
 # APPEND
 PATH=$PATH:~/.npm-global/bin
-PATH=$PATH:~/.pyenv/bin
 PATH=$PATH:~/.local/bin
 
 # $ENV_LOCATION should be set in .variables.
