@@ -84,5 +84,7 @@ spaceship_hg_commit() {
             "" \
             "$SPACESHIP_HG_STATUS_PREFIX"$hg_status"$SPACESHIP_HG_STATUS_SUFFIX" \
             " "
+    else
+        echo -n " "
     fi
 }
