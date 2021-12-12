@@ -21,6 +21,7 @@ exec_always swayidle -d \
         resume 'swaymsg "output * dpms on"' \
     before-sleep 'lock' > /var/log/swayidle.log
 exec_always pgrep -x "waycorner" > /dev/null || waycorner
+exec_always pgrep -x "xsettingsd" > /dev/null || xsettingsd
 
 include ~/.config/sway/base
 
