@@ -8,7 +8,7 @@ function check_cache() {
     if is_fedora; then
         amount=`dnf check-update --cacheonly --quiet --disablerepo="cpe-yum*" | wc -l`
     else
-        amount=`yay -Qu | wc -l`
+        amount=`paru -Qu | wc -l`
     fi
 
     # Return as fast as possible, then update the repos and update.
@@ -23,7 +23,7 @@ function check_live() {
     if is_fedora; then
         amount=`dnf check-update --refresh --quiet --disablerepo="cpe-yum*" | wc -l || echo "-1"`
     else
-        amount=`yay -Syy &> /dev/null; yay -Qu | wc -l || echo "-1"`
+        amount=`paru -Syy &> /dev/null; paru -Qu | wc -l || echo "-1"`
     fi
 
     if [[ "$amount" == "-1" ]]; then
@@ -53,7 +53,7 @@ case "$1" in
         if is_fedora; then
             sudo dnf upgrade --refresh
         else
-            yay -Syu
+            paru -Syu
         fi
         ;;
     *)
