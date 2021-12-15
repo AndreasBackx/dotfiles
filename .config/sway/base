@@ -217,8 +217,6 @@ workspace $WORKSPACE_RIGHT_12 output $MONITOR_RIGHT
 #
 # Basics:
 #
-
-
     # start a terminal
     bindsym $mod+Return exec $TERM
 
@@ -243,6 +241,9 @@ workspace $WORKSPACE_RIGHT_12 output $MONITOR_RIGHT
 
     # Power options
     bindsym $mod+Shift+e exec power-options selection
+
+    # Screenshot
+    bindsym $mod+Shift+s exec screenshot
 #
 # Media
 #
