@@ -62,7 +62,7 @@ case "$1" in
         fi
         ;;
     *)
-        echo "Usage: $0 {suspend|hibernate|restart|shutdown|logout|selection}"
+        echo "Usage: $0 {suspend|hibernate|restart|shutdown|update-restart|update-shutdown|logout|selection}"
         exit 2
 esac
 
