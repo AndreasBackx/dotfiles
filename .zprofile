@@ -24,6 +24,9 @@ export BROWSER="/usr/bin/firefox"
 # https://youtrack.jetbrains.com/issue/IDEA-153134
 export _JAVA_AWT_WM_NONREPARENTING=1
 
+# Firefox new touchpad input support.
+export MOZ_USE_XINPUT2=1
+
 if [[ -n "$SSH_CONNECTION" ]]; then
   # Use GPG curses based pin entry via SSH.
   export GPG_TTY=$(tty)
