@@ -31,11 +31,11 @@ SPACESHIP_PROMPT_ORDER=(
 )
 SPACESHIP_RPROMPT_ORDER=()
 
-if type "ldcli" &> /dev/null; then
-  plugins+=(logdevice)
-  SPACESHIP_RPROMPT_ORDER+=(logdevice)
-  eval $(ldcli :session init)
-fi
+# if type "ldcli" &> /dev/null; then
+#   plugins+=(logdevice)
+#   SPACESHIP_RPROMPT_ORDER+=(logdevice)
+#   eval $(ldcli :session init)
+# fi
 
 if [[ -z "$TMUX" ]]; then
   # Only show host if not running in tmux.
