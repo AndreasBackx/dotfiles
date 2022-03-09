@@ -39,13 +39,14 @@
                 "^(.*) - Mozilla Thunderbird$": "$1",
                 "^(.*) - Discord$": "$1",
                 "^Slack \\| (.*)$": "$1"
-            }
+            },
+            "icon": false
         },
         "idle_inhibitor": {
             "format": "{icon}",
             "format-icons": {
-                "activated": "\uf06e",
-                "deactivated": "\uf070"
+                "activated": "",
+                "deactivated": ""
             }
         },
         "tray": {
@@ -56,10 +57,10 @@
             "tooltip": false
         },
         "cpu": {
-            "format": "<span color=\"#6E6E6E\">\uf2db</span>  {usage}%"
+            "format": "<span color=\"#6E6E6E\"></span>  {usage}%"
         },
         "memory": {
-            "format": "<span color=\"#6E6E6E\">\uf538</span>  {}%"
+            "format": "<span color=\"#6E6E6E\"></span>  {}%"
         },
         "custom/headphones": {
             "format": "{}",
@@ -83,9 +84,9 @@
                 "phone": "",
                 "portable": "",
                 "car": "",
-                "muted":  "\ue04f",
+                "muted": "",
                 "default": [
-                    "\uf027",
+                    "",
                     ""
                 ]
             },
@@ -95,7 +96,7 @@
             "on-scroll-down": "pamixer --decrease 5"
         },
         "custom/brightness": {
-            "format": "<span color=\"#6E6E6E\">\uf042</span>  {}",
+            "format": "<span color=\"#6E6E6E\"></span>  {}",
             "tooltip": false,
             "interval": 2,
             "on-click": "monitors brightness toggle",
@@ -129,11 +130,11 @@
         "custom/spotify": {
             "format": "{}",
             "return-type": "json",
-            "on-click-right": "spotifycl save-remove",
-            "exec": "spotifycl monitor"
+            "on-click-right": "spotifycl-rust toggle-saved",
+            "exec": "spotifycl-rust monitor"
         },
         "custom/power": {
-            "exec": "echo '{\"text\": \"<span color=\\\"#6E6E6E\\\">\uf1e6</span>\", \"tooltip\": \"Power options\"}'",
+            "exec": "echo '{\"text\": \"<span color=\\\"#6E6E6E\\\"></span>\", \"tooltip\": \"Power options\"}'",
             "return-type": "json",
             "on-click": "power-options selection"
         },
@@ -157,7 +158,13 @@
                 "critical": 15
             },
             "format": "<span color=\"#6E6E6E\">{icon}</span>  {capacity}%",
-            "format-icons": ["", "", "", "", ""]
+            "format-icons": [
+                "",
+                "",
+                "",
+                "",
+                ""
+            ]
         },
         "position": "bottom",
         "height": 40,
@@ -196,13 +203,14 @@
                 "^(.*) - Mozilla Thunderbird$": "$1",
                 "^(.*) - Discord$": "$1",
                 "^Slack \\| (.*)$": "$1"
-            }
+            },
+            "icon": false
         },
         "idle_inhibitor": {
             "format": "{icon}",
             "format-icons": {
-                "activated": "\uf06e",
-                "deactivated": "\uf070"
+                "activated": "",
+                "deactivated": ""
             }
         },
         "tray": {
@@ -213,10 +221,10 @@
             "tooltip": false
         },
         "cpu": {
-            "format": "<span color=\"#6E6E6E\">\uf2db</span>  {usage}%"
+            "format": "<span color=\"#6E6E6E\"></span>  {usage}%"
         },
         "memory": {
-            "format": "<span color=\"#6E6E6E\">\uf538</span>  {}%"
+            "format": "<span color=\"#6E6E6E\"></span>  {}%"
         },
         "custom/headphones": {
             "format": "{}",
@@ -240,9 +248,9 @@
                 "phone": "",
                 "portable": "",
                 "car": "",
-                "muted":  "\ue04f",
+                "muted": "",
                 "default": [
-                    "\uf027",
+                    "",
                     ""
                 ]
             },
@@ -252,7 +260,7 @@
             "on-scroll-down": "pamixer --decrease 5"
         },
         "custom/brightness": {
-            "format": "<span color=\"#6E6E6E\">\uf042</span>  {}",
+            "format": "<span color=\"#6E6E6E\"></span>  {}",
             "tooltip": false,
             "interval": 2,
             "on-click": "monitors brightness toggle",
@@ -286,11 +294,11 @@
         "custom/spotify": {
             "format": "{}",
             "return-type": "json",
-            "on-click-right": "spotifycl save-remove",
-            "exec": "spotifycl monitor"
+            "on-click-right": "spotifycl-rust toggle-saved",
+            "exec": "spotifycl-rust monitor"
         },
         "custom/power": {
-            "exec": "echo '{\"text\": \"<span color=\\\"#6E6E6E\\\">\uf1e6</span>\", \"tooltip\": \"Power options\"}'",
+            "exec": "echo '{\"text\": \"<span color=\\\"#6E6E6E\\\"></span>\", \"tooltip\": \"Power options\"}'",
             "return-type": "json",
             "on-click": "power-options selection"
         },
@@ -335,10 +343,11 @@
                 "^(.*) - Mozilla Thunderbird$": "$1",
                 "^(.*) - Discord$": "$1",
                 "^Slack \\| (.*)$": "$1"
-            }
+            },
+            "icon": false
         },
         "custom/brightness": {
-            "format": "<span color=\"#6E6E6E\">\uf042</span>  {}",
+            "format": "<span color=\"#6E6E6E\"></span>  {}",
             "tooltip": false,
             "interval": 2,
             "on-click": "monitors brightness toggle",
@@ -379,10 +388,11 @@
                 "^(.*) - Mozilla Thunderbird$": "$1",
                 "^(.*) - Discord$": "$1",
                 "^Slack \\| (.*)$": "$1"
-            }
+            },
+            "icon": false
         },
         "custom/brightness": {
-            "format": "<span color=\"#6E6E6E\">\uf042</span>  {}",
+            "format": "<span color=\"#6E6E6E\"></span>  {}",
             "tooltip": false,
             "interval": 2,
             "on-click": "monitors brightness toggle",
