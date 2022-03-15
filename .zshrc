@@ -5,6 +5,7 @@ plugins=(
   zsh-autosuggestions
   zsh-syntax-highlighting
   fzf
+  poetry
 )
 
 ZSH_THEME="spaceship"
