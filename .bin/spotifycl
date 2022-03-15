@@ -51,6 +51,8 @@ class ChoiceEnum(click.Choice):
         self.enum = enum
 
     def convert(self, value, param, ctx):
+        if isinstance(value, self.enum):
+            return value
         value = super().convert(value, param, ctx)
         return next(
             option for option in self.enum if str(option).lower() == value.lower()
