@@ -10,18 +10,18 @@ output $MONITOR_RIGHT transform 90 pos 4000 0 res 2560x1440@59.951000Hz bg ~/.co
 output $MONITOR_TV scale 2
 
 ### Environment
-exec_always systemctl --user import-environment
+exec_always --no-startup-id systemctl --user import-environment
 
 ### Idle configuration
-exec_always swayidle -d \
+exec_always --no-startup-id swayidle -d \
     timeout 10 'if pgrep swaylock; then swaymsg "output * dpms off"; fi'\
         resume 'if pgrep swaylock; then swaymsg "output * dpms on"; fi' \
     timeout 3600 'lock' \
     timeout 3602 'swaymsg "output * dpms off"' \
         resume 'swaymsg "output * dpms on"' \
     before-sleep 'lock' > /var/log/swayidle.log
-exec_always pgrep -x "waycorner" > /dev/null || waycorner
-exec_always pgrep -x "xsettingsd" > /dev/null || xsettingsd
+exec_always --no-startup-id pgrep -x "waycorner" > /dev/null || waycorner
+exec_always --no-startup-id pgrep -x "xsettingsd" > /dev/null || xsettingsd
 
 include ~/.config/sway/base
 

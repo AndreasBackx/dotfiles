@@ -100,16 +100,17 @@ client.placeholder      $BLACK_GRAY     $BLACK          $GRAY           $YELLOW 
 client.background       $BLACK_GRAY
 
 ### Applications
-exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
-exec_always pgrep -x "redshift-gtk" > /dev/null || redshift-gtk
-exec_always pgrep -x "noisetorch" > /dev/null || noisetorch -i
-exec_always pgrep -x "/usr/lib/geoclue-2.0/demos/agent" > /dev/null || /usr/lib/geoclue-2.0/demos/agent
-exec nm-applet --indicator
+exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+exec_always --no-startup-id pgrep -x "redshift-gtk" > /dev/null || redshift-gtk
+exec_always --no-startup-id pgrep -x "noisetorch" > /dev/null || noisetorch -i
+exec_always --no-startup-id pgrep -x "/usr/lib/geoclue-2.0/demos/agent" > /dev/null || /usr/lib/geoclue-2.0/demos/agent
+exec --no-startup-id nm-applet --indicator
+exec_always --no-startup-id pgrep -x "agent" > /dev/null || /usr/libexec/geoclue-2.0/demos/agent
 
 #
 # Left:
 #
-exec spotify
+exec --no-startup-id spotify
 
 #
 # Center:
