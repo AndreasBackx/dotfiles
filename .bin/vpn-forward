@@ -25,7 +25,7 @@ def is_enabled() -> bool:
         ["ip", "route"],
         capture_output=True,
     )
-    default_route = f"{ROUTE} dev {INTERFACE} scope link"
+    default_route = f"{ROUTE} dev {INTERFACE}"
     return default_route in process.stdout.decode()
 
 
@@ -55,15 +55,13 @@ def toggle():
 @cli.command()
 def enable():
     """Enable traffic forwarding."""
-    if not is_enabled():
-        enable_forwarding()
+    enable_forwarding()
 
 
 @cli.command()
 def disable():
     """Disable traffic forwarding."""
-    if is_enabled():
-        disable_forwarding()
+    disable_forwarding()
 
 
 @cli.command()
