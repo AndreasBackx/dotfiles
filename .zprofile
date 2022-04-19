@@ -3,11 +3,15 @@
 source ~/.config/.variables
 source ~/.config/.secrets
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+[ -f /usr/share/nvm/init-nvm.sh ] && source /usr/share/nvm/init-nvm.sh
 
 ## ENV VARS ##
 
 skip_global_compinit=1
 export ZSH=$HOME/.oh-my-zsh
+# Enable extra zsh completions: https://github.com/zsh-users/zsh-completions
+fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
+
 export LC_ALL=en_GB.UTF-8
 export LANG=en_GB.UTF-8
 export PROMPT_EOL_MARK=""
