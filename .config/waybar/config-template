@@ -130,8 +130,8 @@
         "custom/spotify": {
             "format": "{}",
             "return-type": "json",
-            "on-click-right": "spotifycl-rust toggle-saved",
-            "exec": "spotifycl-rust monitor"
+            "on-click-right": "spotifatius toggle-saved",
+            "exec": "spotifatius monitor"
         },
         "custom/power": {
             "exec": "echo '{\"text\": \"<span color=\\\"#6E6E6E\\\"></span>\", \"tooltip\": \"Power options\"}'",
@@ -294,8 +294,8 @@
         "custom/spotify": {
             "format": "{}",
             "return-type": "json",
-            "on-click-right": "spotifycl-rust toggle-saved",
-            "exec": "spotifycl-rust monitor"
+            "on-click-right": "spotifatius toggle-saved",
+            "exec": "spotifatius monitor"
         },
         "custom/power": {
             "exec": "echo '{\"text\": \"<span color=\\\"#6E6E6E\\\"></span>\", \"tooltip\": \"Power options\"}'",
