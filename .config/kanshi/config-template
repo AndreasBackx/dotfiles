@@ -1,9 +1,19 @@
-profile "External Monitors Only" {
-    output "$MONITOR_LEFT" transform 270 position 0,30 mode 2560x1440@59.951000Hz
-    output "$MONITOR_CENTER" position 1440,570 mode 2560x1440@144.006Hz
-    output "$MONITOR_RIGHT" transform 90 position 4000,0 mode 2560x1440@59.951000Hz    
+profile "Office Laptop Open" {
+    output "@MONITOR_LEFT" position 0,120 transform 90 scale 1.5
+    output "@MONITOR_CENTER" position 1440,650 mode 3440x1440@143.923Hz
+    output "@MONITOR_RIGHT" position 4880,0 transform 270
+
+    output "@MONITOR_LAPTOP" enable position 2320,2090
+}
+
+profile "Office Laptop Closed" {
+    output "@MONITOR_LEFT" position 0,120 transform 90 scale 1.5
+    output "@MONITOR_CENTER" position 1440,650 mode 3440x1440@143.923Hz
+    output "@MONITOR_RIGHT" position 4880,0 transform 270
+
+    # output "@MONITOR_LAPTOP" disable position 2320,2090
 }
 
 profile "Laptop Only" {
-    output "$MONITOR_LAPTOP" mode 1920x1080
+    output "@MONITOR_LAPTOP" enable mode 1920x1080
 }

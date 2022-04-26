@@ -144,7 +144,6 @@ class DDCUtilController(Controller):
                 *args,
             ]
         )
-
         retries = 20
         retry = 0
         exception = None
@@ -160,11 +159,11 @@ class DDCUtilController(Controller):
                 stdout, stderr = stdout.decode(), stderr.decode()
                 not_found = "Display not found" in stderr
                 if not_found:
+                    # This may still be thrown incorrectly when issuing
+                    # multiple commands at once, so keep trying just in case.
                     raise DisplayNotFound(serial_number)
                 if process.returncode != 0:
                     raise Exception(stderr)
-            except DisplayNotFound:
-                raise
             except Exception as e:
                 time.sleep(0.1)
                 retry += 1
@@ -445,7 +444,6 @@ async def redshift(event: str, details: List[str]) -> None:
 )
 async def brightness(displays: list[Display], brightness: Brightness | None) -> None:
     """Get or set the brightness of displays."""
-
     if brightness is None:
         brightnesses = await asyncio.gather(
             *[display.brightness for display in displays], return_exceptions=True

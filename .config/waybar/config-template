@@ -1,7 +1,7 @@
 [
     {
         "output": [
-            "$MONITOR_CENTER"
+            "@MONITOR_CENTER"
         ],
         "position": "bottom",
         "height": 40,
@@ -149,7 +149,7 @@
     },
     {
         "output": [
-            "$MONITOR_LAPTOP"
+            "@MONITOR_LAPTOP"
         ],
         "battery": {
             "interval": 60,
@@ -313,7 +313,7 @@
     },
     {
         "output": [
-            "$MONITOR_LEFT"
+            "@MONITOR_LEFT"
         ],
         "position": "bottom",
         "height": 40,
@@ -358,7 +358,7 @@
     },
     {
         "output": [
-            "$MONITOR_RIGHT"
+            "@MONITOR_RIGHT"
         ],
         "position": "bottom",
         "height": 40,

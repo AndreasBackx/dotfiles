@@ -76,6 +76,19 @@ set $WORKSPACE_RIGHT_10         "10:right"
 set $WORKSPACE_RIGHT_11         "11:right"
 set $WORKSPACE_RIGHT_12         "12:right"
 
+set $WORKSPACE_LAPTOP_1         "1:laptop"
+set $WORKSPACE_LAPTOP_2         "2:laptop"
+set $WORKSPACE_LAPTOP_3         "3:laptop"
+set $WORKSPACE_LAPTOP_4         "4:laptop"
+set $WORKSPACE_LAPTOP_5         "5:laptop"
+set $WORKSPACE_LAPTOP_6         "6:laptop"
+set $WORKSPACE_LAPTOP_7         "7:laptop"
+set $WORKSPACE_LAPTOP_8         "8:laptop"
+set $WORKSPACE_LAPTOP_9         "9:laptop"
+set $WORKSPACE_LAPTOP_10        "10:laptop"
+set $WORKSPACE_LAPTOP_11        "11:laptop"
+set $WORKSPACE_LAPTOP_12        "12:laptop"
+
 font pango:Roboto Regular 10.5
 
 # Lock
@@ -124,19 +137,6 @@ exec --no-startup-id spotify
 #
 # Workspaces:
 #
-#workspace $WORKSPACE1 output $MONITOR_CENTER
-#workspace $WORKSPACE2 output $MONITOR_CENTER
-#workspace $WORKSPACE3 output $MONITOR_CENTER
-#workspace $WORKSPACE4 output $MONITOR_RIGHT
-#workspace $WORKSPACE5 output $MONITOR_RIGHT
-#workspace $WORKSPACE6 output $MONITOR_RIGHT
-#workspace $WORKSPACE7 output $MONITOR_RIGHT
-#workspace $WORKSPACE8 output $MONITOR_LEFT
-#workspace $WORKSPACE9 output $MONITOR_LEFT
-#workspace $WORKSPACE10 output $MONITOR_LEFT
-#workspace $WORKSPACE11 output $MONITOR_LEFT
-#workspace $WORKSPACE12 output $MONITOR_LEFT
-
 workspace $WORKSPACE_LEFT_1 output $MONITOR_LEFT
 workspace $WORKSPACE_LEFT_2 output $MONITOR_LEFT
 workspace $WORKSPACE_LEFT_3 output $MONITOR_LEFT
@@ -175,6 +175,19 @@ workspace $WORKSPACE_RIGHT_9 output $MONITOR_RIGHT
 workspace $WORKSPACE_RIGHT_10 output $MONITOR_RIGHT
 workspace $WORKSPACE_RIGHT_11 output $MONITOR_RIGHT
 workspace $WORKSPACE_RIGHT_12 output $MONITOR_RIGHT
+
+workspace $WORKSPACE_LAPTOP_1 output $MONITOR_LAPTOP
+workspace $WORKSPACE_LAPTOP_2 output $MONITOR_LAPTOP
+workspace $WORKSPACE_LAPTOP_3 output $MONITOR_LAPTOP
+workspace $WORKSPACE_LAPTOP_4 output $MONITOR_LAPTOP
+workspace $WORKSPACE_LAPTOP_5 output $MONITOR_LAPTOP
+workspace $WORKSPACE_LAPTOP_6 output $MONITOR_LAPTOP
+workspace $WORKSPACE_LAPTOP_7 output $MONITOR_LAPTOP
+workspace $WORKSPACE_LAPTOP_8 output $MONITOR_LAPTOP
+workspace $WORKSPACE_LAPTOP_9 output $MONITOR_LAPTOP
+workspace $WORKSPACE_LAPTOP_10 output $MONITOR_LAPTOP
+workspace $WORKSPACE_LAPTOP_11 output $MONITOR_LAPTOP
+workspace $WORKSPACE_LAPTOP_12 output $MONITOR_LAPTOP
 
 #
 # Applications
@@ -322,6 +335,19 @@ workspace $WORKSPACE_RIGHT_12 output $MONITOR_RIGHT
     bindsym $mod+Mod1+minus workspace $WORKSPACE_RIGHT_11
     bindsym $mod+Mod1+plus workspace $WORKSPACE_RIGHT_12
 
+    bindsym $mod+Mod2+1 workspace $WORKSPACE_LAPTOP_1
+    bindsym $mod+Mod2+2 workspace $WORKSPACE_LAPTOP_2
+    bindsym $mod+Mod2+3 workspace $WORKSPACE_LAPTOP_3
+    bindsym $mod+Mod2+4 workspace $WORKSPACE_LAPTOP_4
+    bindsym $mod+Mod2+5 workspace $WORKSPACE_LAPTOP_5
+    bindsym $mod+Mod2+6 workspace $WORKSPACE_LAPTOP_6
+    bindsym $mod+Mod2+7 workspace $WORKSPACE_LAPTOP_7
+    bindsym $mod+Mod2+8 workspace $WORKSPACE_LAPTOP_8
+    bindsym $mod+Mod2+9 workspace $WORKSPACE_LAPTOP_9
+    bindsym $mod+Mod2+0 workspace $WORKSPACE_LAPTOP_10
+    bindsym $mod+Mod2+minus workspace $WORKSPACE_LAPTOP_11
+    bindsym $mod+Mod2+plus workspace $WORKSPACE_LAPTOP_12
+
     # Move focused container to workspace
     bindsym $mod+Control+Shift+1 move container to workspace $WORKSPACE_LEFT_1
     bindsym $mod+Control+Shift+2 move container to workspace $WORKSPACE_LEFT_2
@@ -361,6 +387,19 @@ workspace $WORKSPACE_RIGHT_12 output $MONITOR_RIGHT
     bindsym $mod+Mod1+Shift+0 move container to workspace $WORKSPACE_RIGHT_10
     bindsym $mod+Mod1+Shift+minus move container to workspace $WORKSPACE_RIGHT_11
     bindsym $mod+Mod1+Shift+plus move container to workspace $WORKSPACE_RIGHT_12
+
+    bindsym $mod+Mod2+Shift+1 move container to workspace $WORKSPACE_LAPTOP_1
+    bindsym $mod+Mod2+Shift+2 move container to workspace $WORKSPACE_LAPTOP_2
+    bindsym $mod+Mod2+Shift+3 move container to workspace $WORKSPACE_LAPTOP_3
+    bindsym $mod+Mod2+Shift+4 move container to workspace $WORKSPACE_LAPTOP_4
+    bindsym $mod+Mod2+Shift+5 move container to workspace $WORKSPACE_LAPTOP_5
+    bindsym $mod+Mod2+Shift+6 move container to workspace $WORKSPACE_LAPTOP_6
+    bindsym $mod+Mod2+Shift+7 move container to workspace $WORKSPACE_LAPTOP_7
+    bindsym $mod+Mod2+Shift+8 move container to workspace $WORKSPACE_LAPTOP_8
+    bindsym $mod+Mod2+Shift+9 move container to workspace $WORKSPACE_LAPTOP_9
+    bindsym $mod+Mod2+Shift+0 move container to workspace $WORKSPACE_LAPTOP_10
+    bindsym $mod+Mod2+Shift+minus move container to workspace $WORKSPACE_LAPTOP_11
+    bindsym $mod+Mod2+Shift+plus move container to workspace $WORKSPACE_LAPTOP_12
 
     # Change workspace on current output
     bindsym $mod+Left workspace prev_on_output

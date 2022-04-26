@@ -1,17 +1,9 @@
-### Output configuration
-set $MONITOR_LEFT "Dell Inc. DELL U2515H 9X2VY4B101CL"
-# set $MONITOR_LEFT "Goldstar Company Ltd IPS277 "
-set $MONITOR_CENTER "Acer Technologies XF270HU T78EE0048521"
-# set $MONITOR_CENTER "Dell Inc. DELL P2720DC 81WTK9CD0C6S"
-set $MONITOR_RIGHT "Dell Inc. DELL U2515H 9X2VY4B101BL"
-set $MONITOR_TV "Goldstar Company Ltd LG TV 0x00000101"
+include ~/.config/sway/variables
 
-output $MONITOR_LEFT transform 270 pos 0 30 res 2560x1440@59.951000Hz bg ~/.config/wallpapers/tyrion-lannister.jpg fill
-# output $MONITOR_LEFT pos 0 360 bg ~/.config/wallpapers/tyrion-lannister.jpg fill
-# output $MONITOR_CENTER pos 1920 0 bg /home/andreas/.config/wallpapers/jaime-lannister.jpg fill adaptive_sync on
-output $MONITOR_CENTER pos 1440 570 res 2560x1440@144.006Hz bg /home/andreas/.config/wallpapers/jaime-lannister.jpg fill adaptive_sync on
-output $MONITOR_RIGHT transform 90 pos 4000 0 res 2560x1440@59.951000Hz bg ~/.config/wallpapers/jon-snow.jpg fill
-output $MONITOR_TV scale 2 disable
+exec kanshi
+
+bindswitch --locked lid:off output $MONITOR_LAPTOP enable
+bindswitch --locked lid:on output $MONITOR_LAPTOP disable
 
 ### Environment
 exec_always --no-startup-id systemctl --user import-environment
@@ -23,7 +15,7 @@ exec_always --no-startup-id swayidle -d \
     timeout 3600 'lock' \
     timeout 3602 'swaymsg "output * dpms off"' \
         resume 'swaymsg "output * dpms on"' \
-    before-sleep 'lock' > /var/log/swayidle.log
+    before-sleep 'lock' >> /var/log/swayidle.log
 exec_always --no-startup-id pgrep -x "waycorner" > /dev/null || waycorner
 exec_always --no-startup-id pgrep -x "xsettingsd" > /dev/null || xsettingsd
 
@@ -60,6 +52,7 @@ bar {
 input * {
     xkb_layout us
     xkb_options compose:rctrl
+    xkb_options caps:numlock
 }
 
 input "2:14:ETPS/2_Elantech_Touchpad" {
