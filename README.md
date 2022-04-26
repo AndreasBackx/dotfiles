@@ -160,5 +160,4 @@ Make sure gammastep, gammastep-gtk, and geoclue are installed. Then add the foll
 allowed=true
 system=false
 users=
->>>>>>> fef5671 (tmp to be deleted and used on master)
 ```
