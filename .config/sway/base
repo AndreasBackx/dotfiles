@@ -201,6 +201,9 @@ workspace $WORKSPACE_LAPTOP_12 output $MONITOR_LAPTOP
     #assign [class="Firefox" instance="Firefox" title="fb.workplace.com" window_role="Toplevel"] $WORKSPACE_LEFT_1
     #for_window [class="Firefox" instance="Firefox" title="fb.workplace.com" window_role="Toplevel"] move window to workspace $WORKSPACE_LEFT_1
 
+    # Workspace 4
+    assign [class="WorkFlowy"] $WORKSPACE_LEFT_4
+
     # Workspace 5
     assign [class="discord"] $WORKSPACE_LEFT_5
     for_window [class="discord"] move window to workspace $WORKSPACE_LEFT_5
