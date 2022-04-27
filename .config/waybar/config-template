@@ -130,7 +130,7 @@
         "custom/spotify": {
             "format": "{}",
             "return-type": "json",
-            "on-click-right": "spotifatius toggle-saved",
+            "on-click-right": "spotifatius toggle-liked",
             "exec": "spotifatius monitor"
         },
         "custom/power": {
@@ -294,7 +294,7 @@
         "custom/spotify": {
             "format": "{}",
             "return-type": "json",
-            "on-click-right": "spotifatius toggle-saved",
+            "on-click-right": "spotifatius toggle-liked",
             "exec": "spotifatius monitor"
         },
         "custom/power": {

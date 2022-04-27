@@ -49,11 +49,12 @@ bar {
     position bottom
 }
 
-input * {
-    xkb_layout us
-    xkb_options compose:rctrl
-    xkb_options caps:numlock
-}
+# Doing it this way instead of directly using input {} stops Firefox from
+# crashing on reload.
+# https://bugzilla.mozilla.org/show_bug.cgi?id=1652820
+exec_always swaymsg "input * xkb_options compose:rctrl"
+exec_always swaymsg "input * kb_options compose:rctrl"
+
 
 input "2:14:ETPS/2_Elantech_Touchpad" {
     natural_scroll enabled
