@@ -5,18 +5,19 @@ This repository contains most if not all of the changes made to my machines that
 
 ## Unstaged File Templates
 
-`.config/.variables`
+`.config/.local-variables`
 ```zsh
 #!/usr/bin/env zsh
 
-# Optionally ame the location of your shell environment.
+# Optionally name the location of your shell environment.
 export ENV_LOCATION=""
 
-export MONITOR_LEFT=""
-export MONITOR_CENTER""
-export MONITOR_RIGHT=""
-# Uncomment to indicate there is a laptop monitor.
-# export MONITOR_LAPTOP="yes"
+# You can use variables from ~/.config/.variables.
+export MONITOR_LEFT="$MONITOR_HOME_LEFT"
+export MONITOR_CENTER="$MONITOR_HOME_CENTER"
+export MONITOR_RIGHT="$MONITOR_HOME_RIGHT"
+# export MONITOR_TV="$MONITOR_HOME_TV"
+# export MONITOR_LAPTOP=""
 
 # If you want to disable the monitors cli.
 # export DISABLE_MONITORS="yes"
@@ -30,6 +31,10 @@ export BORG_BASE_DIR=""
 ```zsh
 # borg backup
 export BORG_PASSPHRASE=""
+
+# spotifatius
+export RSPOTIFY_CLIENT_ID=""
+export RSPOTIFY_CLIENT_SECRET=""
 
 # spotifycl
 export SPOTIPY_CLIENT_ID=""
@@ -52,7 +57,7 @@ config checkout
 config config --local status.showUntrackedFiles no
 
 touch ~/.config/.secrets
-touch ~/.config/.variables
+touch ~/.config/.local-variables
 
 # oh-my-zsh
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --keep-zshrc

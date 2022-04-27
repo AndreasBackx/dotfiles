@@ -2,6 +2,7 @@
 # Sourcing again so they can be dynamically changed without logging out/in again.
 
 source ~/.config/.variables
+source ~/.config/.local-variables
 source ~/.config/.secrets
 
 ## ALIASES ##

@@ -4,6 +4,7 @@ set -e
 
 source ~/.bin/utils.zsh
 source ~/.config/.variables
+source ~/.config/.local-variables
 
 if is_wayland; then
     extension="ppm"

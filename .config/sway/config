@@ -2,6 +2,11 @@ include ~/.config/sway/variables
 
 exec kanshi
 
+output $MONITOR_LEFT bg ~/.config/wallpapers/jon-snow.jpg fill
+output $MONITOR_CENTER bg ~/.config/wallpapers/jaime-lannister.jpg fill
+output $MONITOR_LAPTOP bg ~/.config/wallpapers/jaime-lannister.jpg fill
+output $MONITOR_RIGHT bg ~/.config/wallpapers/tyrion-lannister.jpg fill
+
 bindswitch --locked lid:off output $MONITOR_LAPTOP enable
 bindswitch --locked lid:on output $MONITOR_LAPTOP disable
 

@@ -195,7 +195,12 @@ dmypy.json
 
 .cfg
 .config/.secrets
-.config/.variables
-.config/waybar/style.css
-# This is generated
+.config/.local-variables
+
+# These are generated
 .config/i3/config
+.config/kanshi/config
+.config/sway/variables
+.config/waybar/config
+.config/waybar/style.css
+

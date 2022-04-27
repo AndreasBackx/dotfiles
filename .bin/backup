@@ -7,6 +7,7 @@ SCRIPT_DIR=`dirname "$0"`
 source "$SCRIPT_DIR/utils.zsh"
 
 source "$SCRIPT_DIR/../.config/.variables"
+source "$SCRIPT_DIR/../.config/.local-variables"
 source "$SCRIPT_DIR/../.config/.secrets"
 
 function is_timer_active() {
