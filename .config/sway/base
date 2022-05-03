@@ -124,6 +124,7 @@ exec_always --no-startup-id pgrep -x "agent" > /dev/null || /usr/libexec/geoclue
 # Left:
 #
 exec --no-startup-id spotify
+exec --no-startup-id workflowy
 
 #
 # Center:
