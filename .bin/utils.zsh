@@ -65,7 +65,7 @@ function get-output-name() {
 }
 
 function is_fedora() {
-    if grep '^NAME=Fedora' /etc/os-release > /dev/null; then
+    if grep 'Fedora' /etc/os-release > /dev/null; then
         return 0  # success
     else
         return 1  # failure
