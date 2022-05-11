@@ -125,6 +125,7 @@ exec_always --no-startup-id pgrep -x "agent" > /dev/null || /usr/libexec/geoclue
 #
 exec --no-startup-id spotify
 exec --no-startup-id workflowy
+exec --no-startup-id zulip
 
 #
 # Center:
@@ -217,6 +218,7 @@ workspace $WORKSPACE_LAPTOP_12 output $MONITOR_LAPTOP
 
     # Workspace 8
     assign [class="WorkFlowy"] $WORKSPACE_LEFT_8
+    assign [class="Zulip"] $WORKSPACE_LEFT_8
 
     # Workspace 12
     assign [class="transmission-gtk"] $WORKSPACE_LEFT_12
