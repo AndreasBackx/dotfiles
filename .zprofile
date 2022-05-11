@@ -56,6 +56,7 @@ PATH=$HOME/.local/bin:$PATH
 PATH=$PATH:~/.npm-global/bin
 PATH=$PATH:~/.local/bin
 PATH=$PATH:~/.poetry/bin
+PATH=$PATH:/var/lib/flatpak/exports/bin
 
 # $ENV_LOCATION should be set in .variables.
 if [[ "$ENV_LOCATION" != "devserver" ]]; then
