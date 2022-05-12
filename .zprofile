@@ -104,3 +104,7 @@ elif [[ -n "$PS1" ]] && [[ -z "$TMUX" ]] && [[ -n "$SSH_CONNECTION" ]]; then
     tmux -CC attach-session -t ssh_tmux || tmux -CC new-session -s ssh_tmux
   fi
 fi
+
+## ZSH ##
+# Do not warn if glob has no matches.
+setopt no_nomatch
