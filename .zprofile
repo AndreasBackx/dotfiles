@@ -2,8 +2,6 @@
 
 source ~/.config/.variables
 source ~/.config/.secrets
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-[ -f /usr/share/nvm/init-nvm.sh ] && source /usr/share/nvm/init-nvm.sh
 
 ## ENV VARS ##
 
@@ -15,6 +13,38 @@ fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
 export LC_ALL=en_GB.UTF-8
 export LANG=en_GB.UTF-8
 export PROMPT_EOL_MARK=""
+
+# XDG
+export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_STATE_HOME="$HOME/.local/state"
+export XDG_CACHE_HOME="$HOME/.cache"
+
+export CARGO_HOME="$XDG_DATA_HOME"/cargo
+export DOCKER_CONFIG="$XDG_CONFIG_HOME"/docker
+export GNUPGHOME="$XDG_DATA_HOME"/gnupg
+export GRADLE_USER_HOME="$XDG_DATA_HOME"/gradle
+export GTK2_RC_FILES="$XDG_CONFIG_HOME"/gtk-2.0/gtkrc
+export NPM_CONFIG_USERCONFIG=$XDG_CONFIG_HOME/npm/npmrc
+export NVM_DIR="$XDG_DATA_HOME"/nvm
+export _JAVA_OPTIONS=-Djava.util.prefs.userRoot="$XDG_CONFIG_HOME"/java
+export PARALLEL_HOME="$XDG_CONFIG_HOME"/parallel
+export RUSTUP_HOME="$XDG_DATA_HOME"/rustup
+export TEXMFVAR=$XDG_CACHE_HOME/texlive/texmf-var
+export WINEPREFIX="$XDG_DATA_HOME"/wine
+
+# $ENV_LOCATION should be set in .variables.
+if [[ "$ENV_LOCATION" != "devserver" ]]; then
+  export PYENV_ROOT=$XDG_DATA_HOME/pyenv
+  PATH="$PYENV_ROOT/bin:$PATH"
+  eval "$(pyenv init --path)"
+  eval "$(pyenv virtualenv-init -)"
+fi
+
+
+alias irssi=irssi --config="$XDG_CONFIG_HOME"/irssi/config --home="$XDG_DATA_HOME"/irssi
+alias svn="svn --config-dir $XDG_CONFIG_HOME/subversion"
+alias wget=wget --hsts-file="$XDG_DATA_HOME/wget-hsts"
 
 # Sway to use legacy mode for gamma changing for redshift
 export WLR_DRM_NO_ATOMIC=1
@@ -58,14 +88,6 @@ PATH=$PATH:~/.local/bin
 PATH=$PATH:~/.poetry/bin
 PATH=$PATH:/var/lib/flatpak/exports/bin
 
-# $ENV_LOCATION should be set in .variables.
-if [[ "$ENV_LOCATION" != "devserver" ]]; then
-  export PYENV_ROOT="$HOME/.pyenv"
-  PATH="$PYENV_ROOT/bin:$PATH"
-  eval "$(pyenv init --path)"
-  eval "$(pyenv virtualenv-init -)"
-fi
-
 ## Linux / MacOS ##
 machine=`uname -s`
 if [[ $machine == "Linux" ]]; then
@@ -108,3 +130,6 @@ fi
 ## ZSH ##
 # Do not warn if glob has no matches.
 setopt no_nomatch
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+[ -f /usr/share/nvm/init-nvm.sh ] && source /usr/share/nvm/init-nvm.sh

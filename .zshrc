@@ -47,3 +47,4 @@ SPACESHIP_RPROMPT_ORDER+=(
 )
 
 source $HOME/.oh-my-zsh/oh-my-zsh.sh
+compinit -d $XDG_CACHE_HOME/zsh/zcompdump-$ZSH_VERSION

@@ -29,13 +29,13 @@
 
 [include]
     # Only exists on Linux.
-    path = /home/andreas/.gitconfig-linux
-    path = /home/andreasbackx/.gitconfig-linux
+    path = /home/andreas/.config/git/linux
+    path = /home/andreasbackx/.config/git/linux
     # Only exists on MacOS
-    path = /Users/Andreas/.gitconfig-macos
-    path = /Users/andreasbackx/.gitconfig-macos
+    path = /Users/Andreas/.config/git/macos
+    path = /Users/andreasbackx/.config/git/macos
     # Includes private settings (e.g.: work).
-    path = ~/.gitconfig-private
+    path = ~/.config/git/private
 
 [filter "lfs"]
 	clean = git-lfs clean -- %f
