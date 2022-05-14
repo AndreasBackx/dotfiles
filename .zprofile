@@ -76,7 +76,7 @@ unset GOROOT
 PATH=$GOPATH/bin:$PATH
 
 # PREPEND
-PATH=$HOME/.cargo/bin:$PATH
+PATH=$CARGO_HOME/bin:$PATH
 PATH=/usr/local/sbin:$PATH
 PATH=/usr/local/bin:$PATH
 PATH=$HOME/.bin:$PATH
@@ -85,7 +85,6 @@ PATH=$HOME/.local/bin:$PATH
 # APPEND
 PATH=$PATH:~/.npm-global/bin
 PATH=$PATH:~/.local/bin
-PATH=$PATH:~/.poetry/bin
 PATH=$PATH:/var/lib/flatpak/exports/bin
 
 ## Linux / MacOS ##
