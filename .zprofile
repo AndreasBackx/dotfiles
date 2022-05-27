@@ -14,6 +14,9 @@ export LC_ALL=en_GB.UTF-8
 export LANG=en_GB.UTF-8
 export PROMPT_EOL_MARK=""
 
+# autoupdate
+export UPDATE_ZSH_DAYS=30
+
 # XDG
 export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_CONFIG_HOME="$HOME/.config"

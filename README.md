@@ -63,7 +63,7 @@ touch ~/.config/.local-variables
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --keep-zshrc
 
 # spaceship-prompt
-git clone https://github.com/denysdovhan/spaceship-prompt.git "$ZSH_CUSTOM/themes/spaceship-prompt" --depth=1
+git clone git@github.com:denysdovhan/spaceship-prompt.git "$ZSH_CUSTOM/themes/spaceship-prompt" --depth=1
 ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme"
 
 # zsh-autosuggestions
@@ -75,7 +75,10 @@ git clone git@github.com:zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.
 chmod 755 ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting -R
 
 # zsh-completions
-git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions
+git clone git@github.com:zsh-users/zsh-completions ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions
+
+# autoupdate
+git clone git@github.com:TamCore/autoupdate-oh-my-zsh-plugins.git ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/autoupdate
 
 # fzf
 ## Arch Linux
@@ -89,7 +92,7 @@ sudo apt-get install fzf
 git clone git@github.com:pyenv/pyenv.git ~/.pyenv
 cd ~/.pyenv && src/configure && make -C src
 git clone git@github.com:pyenv/pyenv-virtualenv.git $(pyenv root)/plugins/pyenv-virtualenv
-git clone https://github.com/pyenv/pyenv-update.git $(pyenv root)/plugins/pyenv-update
+git clone git@github.com:pyenv/pyenv-update.git $(pyenv root)/plugins/pyenv-update
 
 # ~/.npm-global
 mkdir ~/.npm-global
@@ -107,7 +110,7 @@ sudo chmod a+rw /dev/i2c-*
 sudo chgrp i2c /dev/i2c-*
 
 # oh-my-tmux
-git clone https://github.com/gpakosz/.tmux.git
+git clone git@github.com:gpakosz/.tmux.git
 ln -s -f .tmux/.tmux.conf
 
 # delta
