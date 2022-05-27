@@ -8,9 +8,6 @@ output $MONITOR_RIGHT bg ~/.config/wallpapers/tyrion-lannister.jpg fill
 bindswitch --locked lid:off output $MONITOR_LAPTOP enable
 bindswitch --locked lid:on output $MONITOR_LAPTOP disable
 
-### Environment
-exec_always --no-startup-id systemctl --user import-environment
-
 ### Idle configuration
 exec_always --no-startup-id swayidle -d \
     timeout 10 'if pgrep swaylock; then swaymsg "output * dpms off"; fi'\
