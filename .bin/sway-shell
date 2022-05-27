@@ -13,5 +13,4 @@ if [ "x$XDG_SESSION_TYPE" = "xwayland" ] &&
   fi
 fi
 
-exec /usr/bin/sway "$@"
-
+exec /usr/bin/sway "$@" > /var/log/sway.log 2>&1

@@ -18,7 +18,7 @@ exec_always --no-startup-id swayidle -d \
     before-sleep 'lock' >> /var/log/swayidle.log
 exec_always --no-startup-id pgrep -x "waycorner" > /dev/null || waycorner
 exec_always --no-startup-id pgrep -x "xsettingsd" > /dev/null || xsettingsd
-exec_always --no-startup-id pkill kanshi; exec kanshi
+exec kanshi
 
 include ~/.config/sway/base
 
@@ -34,7 +34,7 @@ bindsym --locked XF86AudioPrev exec "dbus-send --print-reply --dest=org.mpris.Me
 bindsym --locked XF86AudioNext exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next"
 
 # Reload
-bindsym $mod+Shift+c exec sway-config && swaymsg reload
+bindsym $mod+Shift+c exec "sway-config && swaymsg reload && pkill kanshi; kanshi"
 
 # Notifications
 bindsym Ctrl+Space exec makoctl dismiss
@@ -54,7 +54,6 @@ bar {
 # crashing on reload.
 # https://bugzilla.mozilla.org/show_bug.cgi?id=1652820
 exec_always swaymsg "input * xkb_options compose:rctrl"
-exec_always swaymsg "input * kb_options compose:rctrl"
 
 
 input "2:14:ETPS/2_Elantech_Touchpad" {
