@@ -127,6 +127,7 @@ exec_always --no-startup-id pgrep -x "agent" > /dev/null || /usr/libexec/geoclue
 exec --no-startup-id spotify
 exec --no-startup-id workflowy
 exec --no-startup-id zulip
+exec --no-startup-id discord || Discord
 
 #
 # Center:
