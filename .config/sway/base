@@ -243,11 +243,11 @@ workspace $WORKSPACE_LAPTOP_12 output $MONITOR_LAPTOP
     bindsym $mod+Return exec $TERM
 
     # start your launcher
-    bindsym $mod+space exec "rofi -show run"
-    bindsym $mod+d exec "rofi -show run"
+    bindsym $mod+space exec "pkill rofi; rofi -show run"
+    bindsym $mod+d exec "pkill rofi; rofi -show run"
     # sudo launcher version
-    bindsym $mod+Shift+d exec "rofi -show run -display-run sudo -run-command 'sudo {cmd}'"
-    bindsym $mod+Shift+space exec "rofi -show run -display-run sudo -run-command 'sudo {cmd}'"
+    bindsym $mod+Shift+d exec "pkill rofi; rofi -show run -display-run sudo -run-command 'sudo {cmd}'"
+    bindsym $mod+Shift+space exec "pkill rofi; rofi -show run -display-run sudo -run-command 'sudo {cmd}'"
     # Emoji
     bindsym $mod+Control+space exec "emoji"
 
