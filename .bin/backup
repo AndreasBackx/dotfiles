@@ -68,6 +68,8 @@ function start_backup() {
         --exclude '/var/lock'                                       \
         --exclude '/var/run'                                        \
         --exclude '/var/spool'                                      \
+        --exclude "$XDG_CACHE_HOME"                                 \
+        --exclude "$XDG_RUNTIME_DIR"                                \
         --exclude '*.pyc'                                           \
         --exclude '*.log'                                           \
         --exclude 'movies'                                          \
