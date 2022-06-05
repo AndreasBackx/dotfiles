@@ -37,7 +37,7 @@ export TEXMFVAR=$XDG_CACHE_HOME/texlive/texmf-var
 export WINEPREFIX="$XDG_DATA_HOME"/wine
 
 # $ENV_LOCATION should be set in .variables.
-if [[ "$ENV_LOCATION" != "devserver" ]]; then
+if [[ "$ENV_LOCATION" != "devserver" ]] && ! type "pyenv" > /dev/null; then
   export PYENV_ROOT=$XDG_DATA_HOME/pyenv
   PATH="$PYENV_ROOT/bin:$PATH"
   eval "$(pyenv init --path)"
