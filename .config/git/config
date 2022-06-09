@@ -17,8 +17,6 @@
 
 [alias]
     stash-rename = "!_() { rev=$(git rev-parse $1) && git stash drop $1 || exit 1 ; git diff-index --quiet HEAD; s=$?; [ $s != 0 ] && git stash save \"tmp stash from stash-rename\"; git stash apply $rev && shift && git stash save \"$@\" && [ $s != 0 ] && git stash pop stash@{1}; }; _"
-
-[alias]
     lg1 = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
     lg2 = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all
     lg = !"git lg1"
@@ -30,9 +28,7 @@
     wip = "!f() { git add -A && git commit -m \"WIP\" --no-verify; }; f"
     sync = "!f() { git pull --rebase && git push; }; f"
     recent = "!f() { git checkout `git branch -v --sort=-committerdate | fzf | sed 's/^[* ]*//g' | cut -d ' ' -f 1`; }; f"
-
-# Allow for `git git push`.
-[alias]
+    # Allow for `git git push`.
     git = !exec git
 
 [include]
