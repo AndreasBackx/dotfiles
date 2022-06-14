@@ -82,7 +82,7 @@ git clone git@github.com:TamCore/autoupdate-oh-my-zsh-plugins.git ${ZSH_CUSTOM:-
 
 # fzf
 ## Arch Linux
-yay -S fzf
+paru -S fzf
 ## Fedora
 sudo dnf install fzf
 ## Debian
@@ -115,14 +115,14 @@ ln -s -f .tmux/.tmux.conf
 
 # delta
 ## Arch Linux
-yay -S git-delta
+paru -S git-delta
 ## Fedora
 sudo dnf install git-delta
 ## Other: https://github.com/dandavison/delta#installation
 
 # bat
 ## Arch linux
-yay -S bat
+paru -S bat
 ## Fedora
 sudo dnf install rust-bat
 ## Debian
@@ -131,19 +131,19 @@ sudo apt-get install rust-bat
 
 # lsd
 ## Arch linux
-yay -S lsd
+paru -S lsd
 ## Fedora
 sudo dnf install lsd
 ## Other: https://github.com/Peltoche/lsd#installation
 
 # duf
 ## Arch Linux
-yay -S duf
+paru -S duf
 ## Other: https://github.com/muesli/duf#installation
 
 # ripgrep
 ## Arch Linux
-yay -S ripgrep
+paru -S ripgrep
 ## Fedora
 sudo dnf install ripgrep
 ## Debian
@@ -152,11 +152,19 @@ sudo apt-get install ripgrep
 
 # choose
 ## Arch Linux
-yay -S choose-rust-git
+paru -S choose-rust-git
 ## Fedora
 sudo dnf copr enable atim/choose
 sudo dnf install choose
 ## Other: https://github.com/theryangeary/choose#compilation-and-installation
+
+
+# hyperfine
+## Arch Linux
+paru -S hyperfine
+## Fedora
+sudo dnf install hyperfine
+## Other: https://github.com/sharkdp/hyperfine#installation
 ```
 
 ### gammastep
