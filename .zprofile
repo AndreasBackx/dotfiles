@@ -52,7 +52,7 @@ alias wget=wget --hsts-file="$XDG_DATA_HOME/wget-hsts"
 # Sway to use legacy mode for gamma changing for redshift
 export WLR_DRM_NO_ATOMIC=1
 
-export VISUAL=vim
+export VISUAL=nvim
 export EDITOR="$VISUAL"
 
 export BROWSER="/usr/bin/firefox"
