@@ -59,6 +59,10 @@ config config --local status.showUntrackedFiles no
 touch ~/.config/.secrets
 touch ~/.config/.local-variables
 
+source ~/.zprofile
+source ~/.zshenv
+source ~/.zshrc
+
 # oh-my-zsh
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --keep-zshrc
 
@@ -89,14 +93,10 @@ sudo dnf install fzf
 sudo apt-get install fzf
 
 # pyenv
-git clone git@github.com:pyenv/pyenv.git ~/.pyenv
-cd ~/.pyenv && src/configure && make -C src
+git clone git@github.com:pyenv/pyenv.git $PYENV_ROOT
+cd $PYENV_ROOT && src/configure && make -C src
 git clone git@github.com:pyenv/pyenv-virtualenv.git $(pyenv root)/plugins/pyenv-virtualenv
 git clone git@github.com:pyenv/pyenv-update.git $(pyenv root)/plugins/pyenv-update
-
-# ~/.npm-global
-mkdir ~/.npm-global
-npm config set prefix ~/.npm-global
 
 # ddcutil i2c
 sudo groupadd --system i2c
