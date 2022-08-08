@@ -1,5 +1,6 @@
 include ~/.config/sway/variables
 
+output * adaptive_sync on
 output $MONITOR_LEFT bg ~/.config/wallpapers/jon-snow.jpg fill
 output $MONITOR_CENTER bg ~/.config/wallpapers/jaime-lannister.jpg fill
 output $MONITOR_LAPTOP bg ~/.config/wallpapers/jaime-lannister.jpg fill

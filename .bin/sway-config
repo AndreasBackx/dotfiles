@@ -16,7 +16,9 @@ function replace_monitors() {
     sed "s/@MONITOR_WORK_LEFT/$MONITOR_WORK_LEFT/" | \
     sed "s/@MONITOR_WORK_CENTER/$MONITOR_WORK_CENTER/" | \
     sed "s/@MONITOR_WORK_RIGHT/$MONITOR_WORK_RIGHT/" | \
-    sed "s/@MONITOR_WORK_LAPTOP/$MONITOR_WORK_LAPTOP/"
+    sed "s/@MONITOR_WORK_LAPTOP/$MONITOR_WORK_LAPTOP/" | \
+    sed "s/@MONITOR_BJARNE_CENTER/$MONITOR_BJARNE_CENTER/" | \
+    sed "s/@MONITOR_BJARNE_RIGHT/$MONITOR_BJARNE_RIGHT/"
 }
 
 kanshi_config=~/.config/kanshi/config

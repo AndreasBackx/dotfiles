@@ -29,3 +29,15 @@ profile "Office Work Laptop Closed" {
 profile "Work Laptop Only" {
     output "@MONITOR_WORK_LAPTOP" enable mode 1920x1080
 }
+
+profile "Bjarne Laptop Open" {
+    output "@MONITOR_BJARNE_CENTER" position 0,470 scale 1.5
+    output "@MONITOR_BJARNE_RIGHT" position 2560,0 transform 270
+
+    output "@MONITOR_WORK_LAPTOP" enable position 320,1910
+}
+
+profile "Bjarne Laptop Closed" {
+    output "@MONITOR_BJARNE_CENTER" position 0,470 scale 1.5
+    output "@MONITOR_BJARNE_RIGHT" position 2560,0 transform 270
+}
