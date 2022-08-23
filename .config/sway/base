@@ -199,6 +199,8 @@ workspace $WORKSPACE_LAPTOP_12 output $MONITOR_LAPTOP
 
     focus_on_window_activation focus
 
+    for_window [title="Firefox — Sharing Indicator"] floating enable; move absolute position 0 0;
+
     # Left
     # Workspace 1
     #assign [class="Thunderbird"] $WORKSPACE_LEFT_1
