@@ -89,6 +89,7 @@ PATH=$HOME/.local/bin:$PATH
 PATH=$PATH:~/.npm-global/bin
 PATH=$PATH:~/.local/bin
 PATH=$PATH:/var/lib/flatpak/exports/bin
+PATH=$PATH:~/.opam/default/bin
 
 ## Linux / MacOS ##
 machine=`uname -s`
