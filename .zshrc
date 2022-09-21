@@ -23,7 +23,7 @@ SPACESHIP_PROMPT_ORDER=(
   hg_commit
   golang        # Go section
   rust          # Rust section
-  pyenv         # Pyenv section
+  python        # Python section
   exec_time     # Execution time
   line_sep      # Line break
   jobs          # Background jobs indicator
