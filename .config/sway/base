@@ -127,6 +127,7 @@ exec --no-startup-id spotify
 exec --no-startup-id logseq || com.logseq.Logseq
 exec --no-startup-id zulip
 exec --no-startup-id discord || Discord
+exec --no-startup-id mattermost-desktop
 
 #
 # Center:
@@ -211,6 +212,7 @@ workspace $WORKSPACE_LAPTOP_12 output $MONITOR_LAPTOP
     for_window [class="discord"] move window to workspace $WORKSPACE_LEFT_5
     assign [title="WhatsApp"] $WORKSPACE_LEFT_5
     assign [class="telegramdesktop"] $WORKSPACE_LEFT_5
+    assign [class="Mattermost"] $WORKSPACE_LEFT_5
 
     # Workspace 6
     assign [class="Caprine"] $WORKSPACE_LEFT_6
