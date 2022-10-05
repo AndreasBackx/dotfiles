@@ -51,9 +51,9 @@ case "$1" in
         ;;
     update)
         if is_fedora; then
-            sudo dnf upgrade --refresh
+            sudo dnf upgrade --refresh --assumeyes
         else
-            paru -Syu
+            paru -Syu --noconfirm
         fi
         ;;
     *)
