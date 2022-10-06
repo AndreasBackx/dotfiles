@@ -23,7 +23,15 @@ SPACESHIP_PROMPT_ORDER=(
   hg_commit
   golang        # Go section
   rust          # Rust section
-  python        # Python section
+)
+
+if [[ "$LOCATION" -ne "devserver" ]]; then
+  SPACESHIP_PROMPT_ORDER+=(
+    python        # Python section
+  )
+fi
+
+SPACESHIP_PROMPT_ORDER+=(
   exec_time     # Execution time
   line_sep      # Line break
   jobs          # Background jobs indicator
