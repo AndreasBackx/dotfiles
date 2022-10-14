@@ -370,12 +370,10 @@ async def period_changed(old_period: str, new_period: str) -> None:
         "daytime": 100,
     }
 
-    gtk_theme = (
-        "Materia-dark"
-        if new_period == "night"
-        or (old_period == "daytime" and new_period == "transition")
-        else "Materia"
+    is_dark = new_period == "night" or (
+        old_period == "daytime" and new_period == "transition"
     )
+    gtk_theme = "Materia-dark" if is_dark else "Materia"
     subprocess.run(
         [
             "gsettings",
@@ -383,6 +381,15 @@ async def period_changed(old_period: str, new_period: str) -> None:
             "org.gnome.desktop.interface",
             "gtk-theme",
             f'"{gtk_theme}"',
+        ]
+    )
+    subprocess.run(
+        [
+            "gsettings",
+            "set",
+            "org.gnome.desktop.interface",
+            "color-scheme",
+            "prefer-dark" if is_dark else "prefer-light",
         ]
     )
 
