@@ -63,6 +63,8 @@ export _JAVA_AWT_WM_NONREPARENTING=1
 
 # Firefox new touchpad input support.
 export MOZ_USE_XINPUT2=1
+# Firefox use Wayland instead of XWayland.
+export MOZ_ENABLE_WAYLAND=1
 
 if [[ -n "$SSH_CONNECTION" ]]; then
   # Use GPG curses based pin entry via SSH.
