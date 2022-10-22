@@ -1,12 +1,12 @@
 profile "Home" {
     output "@MONITOR_HOME_LEFT" position 0,30 transform 90
-    output "@MONITOR_HOME_CENTER" position 1440,570 mode 2560x1440@143.856Hz
+    output "@MONITOR_HOME_CENTER" position 1440,570 mode 2560x1440@144Hz
     output "@MONITOR_HOME_RIGHT" position 4000,0 transform 270
 }
 
 profile "Home TV" {
     output "@MONITOR_HOME_LEFT" position 0,30 transform 90
-    output "@MONITOR_HOME_CENTER" position 1440,570 mode 2560x1440@143.856Hz
+    output "@MONITOR_HOME_CENTER" position 1440,570 mode 2560x1440@144Hz
     output "@MONITOR_HOME_RIGHT" position 4000,0 transform 270
 
     output "@MONITOR_HOME_TV" position 6560,0 scale 1.5
