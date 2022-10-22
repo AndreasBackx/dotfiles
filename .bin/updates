@@ -55,6 +55,8 @@ case "$1" in
         else
             paru -Syu --noconfirm
         fi
+        flatpak update
+        sudo snap refresh
         ;;
     *)
         echo "Usage: $0 {check|monitor|update}"
