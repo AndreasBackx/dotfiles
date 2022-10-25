@@ -37,6 +37,7 @@
             "rewrite": {
                 "^(.*) — Mozilla Firefox$": "$1",
                 "^(.*) - Mozilla Thunderbird$": "$1",
+                "^(.*) - Firefox Developer Edition$": "$1",
                 "^(.*) - Discord$": "$1",
                 "^Slack \\| (.*)$": "$1"
             },
@@ -201,6 +202,7 @@
             "rewrite": {
                 "^(.*) — Mozilla Firefox$": "$1",
                 "^(.*) - Mozilla Thunderbird$": "$1",
+                "^(.*) - Firefox Developer Edition$": "$1",
                 "^(.*) - Discord$": "$1",
                 "^Slack \\| (.*)$": "$1"
             },
@@ -341,6 +343,7 @@
             "rewrite": {
                 "^(.*) — Mozilla Firefox$": "$1",
                 "^(.*) - Mozilla Thunderbird$": "$1",
+                "^(.*) - Firefox Developer Edition$": "$1",
                 "^(.*) - Discord$": "$1",
                 "^Slack \\| (.*)$": "$1"
             },
@@ -386,6 +389,7 @@
             "rewrite": {
                 "^(.*) — Mozilla Firefox$": "$1",
                 "^(.*) - Mozilla Thunderbird$": "$1",
+                "^(.*) - Firefox Developer Edition$": "$1",
                 "^(.*) - Discord$": "$1",
                 "^Slack \\| (.*)$": "$1"
             },
