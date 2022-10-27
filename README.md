@@ -91,6 +91,8 @@ paru -S fzf
 sudo dnf install fzf
 ## Debian
 sudo apt-get install fzf
+## MacOS
+brew install fzf
 
 # pyenv
 git clone git@github.com:pyenv/pyenv.git $PYENV_ROOT
@@ -118,6 +120,8 @@ ln -s -f .tmux/.tmux.conf
 paru -S git-delta
 ## Fedora
 sudo dnf install git-delta
+## MacOS
+brew install git-delta
 ## Other: https://github.com/dandavison/delta#installation
 
 # bat
@@ -127,6 +131,8 @@ paru -S bat
 sudo dnf install rust-bat
 ## Debian
 sudo apt-get install rust-bat
+## MacOS
+brew install bat
 ## Other: https://github.com/sharkdp/bat#installation
 
 # lsd
@@ -134,11 +140,15 @@ sudo apt-get install rust-bat
 paru -S lsd
 ## Fedora
 sudo dnf install lsd
+## MacOS
+brew install lsd
 ## Other: https://github.com/Peltoche/lsd#installation
 
 # duf
 ## Arch Linux
 paru -S duf
+## MacOS
+brew install duf
 ## Other: https://github.com/muesli/duf#installation
 
 # ripgrep
@@ -148,6 +158,8 @@ paru -S ripgrep
 sudo dnf install ripgrep
 ## Debian
 sudo apt-get install ripgrep
+## MacOS
+brew install ripgrep
 ## Other: https://github.com/BurntSushi/ripgrep#installation
 
 # choose
@@ -156,6 +168,8 @@ paru -S choose-rust-git
 ## Fedora
 sudo dnf copr enable atim/choose
 sudo dnf install choose
+## MacOS
+brew install choose-rust
 ## Other: https://github.com/theryangeary/choose#compilation-and-installation
 
 
@@ -164,6 +178,8 @@ sudo dnf install choose
 paru -S hyperfine
 ## Fedora
 sudo dnf install hyperfine
+## MacOS
+brew install hyperfine
 ## Other: https://github.com/sharkdp/hyperfine#installation
 ```
 
