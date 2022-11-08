@@ -125,9 +125,7 @@ exec --no-start-up-id rclone mount "Work Drive:/" "~/Work Drive" --vfs-cache-mod
 # Left:
 #
 exec --no-startup-id spotify
-exec --no-startup-id logseq || com.logseq.Logseq
 exec --no-startup-id md.obsidian.Obsidian
-# exec --no-startup-id zulip
 exec --no-startup-id discord || Discord
 exec --no-startup-id mattermost-desktop
 
