@@ -120,7 +120,7 @@ exec_always --no-startup-id pgrep -x "/usr/lib/geoclue-2.0/demos/agent" > /dev/n
 exec --no-startup-id nm-applet --indicator
 exec_always --no-startup-id pgrep -x "agent" > /dev/null || /usr/libexec/geoclue-2.0/demos/agent
 exec --no-start-up-id rclone mount "Work Drive:/" "~/Work Drive" --vfs-cache-mode full
-
+exec --no-startup-id blueman-applet
 #
 # Left:
 #
