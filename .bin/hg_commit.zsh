@@ -2,6 +2,7 @@
 # Configuration
 # ------------------------------------------------------------------------------
 
+SPACESHIP_HG_COMMIT_ASYNC="${SPACESHIP_HG_COMMIT_ASYNC=true}"
 SPACESHIP_HG_COMMIT_SHOW="${SPACESHIP_HG_COMMIT_SHOW=true}"
 SPACESHIP_HG_COMMIT_PREFIX="${SPACESHIP_HG_COMMIT_PREFIX="on "}"
 SPACESHIP_HG_COMMIT_SUFFIX="${SPACESHIP_HG_COMMIT_SUFFIX=" "}"
@@ -53,15 +54,11 @@ spaceship_hg_commit() {
         return
     fi
 
-    spaceship::section \
-        "white" \
-        "$SPACESHIP_HG_COMMIT_PREFIX"
+    local prefix_section=$(spaceship::section --color white $SPACESHIP_HG_COMMIT_PREFIX)
+    local commit_section=$(spaceship::section --color $SPACESHIP_HG_COMMIT_COLOR --symbol $SPACESHIP_HG_COMMIT_SYMBOL $hg_info)
 
-    spaceship::section \
-        "$SPACESHIP_HG_COMMIT_COLOR" \
-            "${SPACESHIP_HG_COMMIT_SYMBOL}${hg_info}"
-
-    local INDEX=$(hg status 2>/dev/null) hg_status=""
+    local INDEX=$(hg status 2>/dev/null)
+    local hg_status=""
 
     # Indicators are suffixed instead of prefixed to each other to
     # provide uniform view across git and mercurial indicators
@@ -78,13 +75,12 @@ spaceship_hg_commit() {
         hg_status="$SPACESHIP_HG_STATUS_DELETED$hg_status"
     fi
 
+    local status_section=" "
+
     if [[ -n $hg_status ]]; then
-        spaceship::section \
-            "$SPACESHIP_HG_STATUS_COLOR" \
-            "" \
-            "$SPACESHIP_HG_STATUS_PREFIX"$hg_status"$SPACESHIP_HG_STATUS_SUFFIX" \
-            " "
-    else
-        echo -n " "
+        status_section="$(spaceship::section --color $SPACESHIP_HG_STATUS_COLOR --prefix $SPACESHIP_HG_STATUS_PREFIX --suffix $SPACESHIP_HG_STATUS_SUFFIX $hg_status)"
     fi
+
+    spaceship::section \
+        "$(spaceship::section::render $prefix_section)$(spaceship::section::render $commit_section)$(spaceship::section::render $status_section)"
 }
