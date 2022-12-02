@@ -55,7 +55,7 @@ spaceship_hg_commit() {
     fi
 
     local prefix_section=$(spaceship::section --color white $SPACESHIP_HG_COMMIT_PREFIX)
-    local commit_section=$(spaceship::section --color $SPACESHIP_HG_COMMIT_COLOR --symbol $SPACESHIP_HG_COMMIT_SYMBOL $hg_info)
+    local commit_section=$(spaceship::section --color $SPACESHIP_HG_COMMIT_COLOR --symbol $SPACESHIP_HG_COMMIT_SYMBOL --suffix $SPACESHIP_HG_COMMIT_SUFFIX $hg_info)
 
     local INDEX=$(hg status 2>/dev/null)
     local hg_status=""
