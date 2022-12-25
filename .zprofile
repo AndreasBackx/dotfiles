@@ -8,7 +8,7 @@ source ~/.config/.secrets
 skip_global_compinit=1
 export ZSH=$HOME/.oh-my-zsh
 # Enable extra zsh completions: https://github.com/zsh-users/zsh-completions
-fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
+fpath+="${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src"
 
 export LC_ALL=en_GB.UTF-8
 export LANG=en_GB.UTF-8
@@ -17,12 +17,49 @@ export PROMPT_EOL_MARK=""
 # autoupdate
 export UPDATE_ZSH_DAYS=30
 
-# XDG
-export XDG_DATA_HOME="$HOME/.local/share"
-export XDG_CONFIG_HOME="$HOME/.config"
-export XDG_STATE_HOME="$HOME/.local/state"
-export XDG_CACHE_HOME="$HOME/.cache"
+## Linux / MacOS ##
+machine=`uname -s`
+if [[ $machine == "Linux" ]]; then
+  # Linux specific commands.
 
+  # Make Electron use gio for trash.
+  # Used for VS Code.
+  export ELECTRON_TRASH="gio"
+
+  # https://wiki.archlinux.org/title/Firefox#Applications_on_Wayland_can_not_launch_Firefox
+  export MOZ_DBUS_REMOTE=1
+
+  export XDG_DATA_HOME="$HOME/.local/share"
+  export XDG_CONFIG_HOME="$HOME/.config"
+  export XDG_STATE_HOME="$HOME/.local/state"
+  export XDG_CACHE_HOME="$HOME/.cache"
+elif [[ $machine == "Darwin" ]]; then
+  # MacOS specific commands.
+
+  # Use GNU utils.
+  PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
+
+  # Homebrew
+  PATH="$HOME/.homebrew/bin:$HOME/.homebrew/sbin:$PATH"
+  export FZF_BASE="$HOME/.homebrew/bin/..."
+
+  export GLASSFISH_HOME=/usr/local/opt/glassfish/libexec
+
+  # Ignore iTunes play button
+  # launchctl unload -w /System/Library/LaunchAgents/com.apple.rcd.plist &> /dev/null
+
+  # Use GNU man.
+  MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
+
+  alias flushdns="sudo dscacheutil -flushcache;sudo killall -HUP mDNSResponder"
+
+  export XDG_DATA_HOME="$HOME/Library/Application Support"
+  export XDG_CONFIG_HOME="$HOME/.config"
+  export XDG_STATE_HOME="$HOME/Library/Application Support"
+  export XDG_CACHE_HOME="$HOME/Library/Caches"
+fi
+
+# XDG
 export CARGO_HOME="$XDG_DATA_HOME"/cargo
 export DOCKER_CONFIG="$XDG_CONFIG_HOME"/docker
 export GNUPGHOME="$XDG_DATA_HOME"/gnupg
@@ -35,12 +72,13 @@ export PARALLEL_HOME="$XDG_CONFIG_HOME"/parallel
 export RUSTUP_HOME="$XDG_DATA_HOME"/rustup
 export TEXMFVAR=$XDG_CACHE_HOME/texlive/texmf-var
 export WINEPREFIX="$XDG_DATA_HOME"/wine
+export LESSHISTFILE="$XDG_CACHE_HOME"/less/history
 
-export PYENV_ROOT=$XDG_DATA_HOME/pyenv
+export PYENV_ROOT="$XDG_DATA_HOME/pyenv"
 PATH="$PYENV_ROOT/bin:$PATH"
 # $ENV_LOCATION should be set in .local-variables.
 if [[ "$ENV_LOCATION" != "devserver" ]] && type "pyenv" > /dev/null; then
-  eval "$(pyenv init --path)"
+  eval "$(pyenv init -)"
   eval "$(pyenv virtualenv-init -)"
 fi
 
@@ -78,48 +116,20 @@ typeset -U PATH
 
 export GOPATH=$HOME/dev/go
 unset GOROOT
-PATH=$GOPATH/bin:$PATH
+PATH="$GOPATH/bin:$PATH"
 
 # PREPEND
-PATH=$CARGO_HOME/bin:$PATH
-PATH=/usr/local/sbin:$PATH
-PATH=/usr/local/bin:$PATH
-PATH=$HOME/.bin:$PATH
-PATH=$HOME/.local/bin:$PATH
+PATH="$CARGO_HOME/bin:$PATH"
+PATH="/usr/local/sbin:$PATH"
+PATH="/usr/local/bin:$PATH"
+PATH="$HOME/.bin:$PATH"
+PATH="$HOME/.local/bin:$PATH"
 
 # APPEND
-PATH=$PATH:~/.npm-global/bin
-PATH=$PATH:~/.local/bin
-PATH=$PATH:/var/lib/flatpak/exports/bin
-PATH=$PATH:~/.opam/default/bin
-
-## Linux / MacOS ##
-machine=`uname -s`
-if [[ $machine == "Linux" ]]; then
-  # Linux specific commands.
-
-  # Make Electron use gio for trash.
-  # Used for VS Code.
-  export ELECTRON_TRASH="gio"
-
-  # https://wiki.archlinux.org/title/Firefox#Applications_on_Wayland_can_not_launch_Firefox
-  export MOZ_DBUS_REMOTE=1
-elif [[ $machine == "Darwin" ]]; then
-  # MacOS specific commands.
-
-  # Use GNU utils.
-  PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
-
-  export GLASSFISH_HOME=/usr/local/opt/glassfish/libexec
-
-  # Ignore iTunes play button
-  # launchctl unload -w /System/Library/LaunchAgents/com.apple.rcd.plist &> /dev/null
-
-  # Use GNU man.
-  MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
-
-  alias flushdns="sudo dscacheutil -flushcache;sudo killall -HUP mDNSResponder"
-fi
+PATH="$PATH:$HOME/.npm-global/bin"
+PATH="$PATH:$HOME/.local/bin"
+PATH="$PATH:/var/lib/flatpak/exports/bin"
+PATH="$PATH:$HOME/.opam/default/bin"
 
 ## EXEC ###
 if [ -z "$DISPLAY" ] && [ -n "$XDG_VTNR" ] && [ "$XDG_VTNR" -eq 1 ]; then
