@@ -5,6 +5,9 @@
 [commit]
 	gpgsign = true
 
+[gpg]
+    format = ssh
+
 [filter "media"]
     clean = git-media-clean %f
     smudge = git-media-smudge %f
@@ -58,5 +61,6 @@
 
 [delta]
     side-by-side = true
+
 [init]
 	defaultBranch = main
