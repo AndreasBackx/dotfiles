@@ -87,8 +87,11 @@ alias irssi=irssi --config="$XDG_CONFIG_HOME"/irssi/config --home="$XDG_DATA_HOM
 alias svn="svn --config-dir $XDG_CONFIG_HOME/subversion"
 alias wget=wget --hsts-file="$XDG_DATA_HOME/wget-hsts"
 
-# Sway to use legacy mode for gamma changing for redshift
+# wlroots
+# Use legacy mode for gamma changing for redshift.
 export WLR_DRM_NO_ATOMIC=1
+# Use the Vulkan renderer for no flickering on Nvidia.
+#export WLR_RENDERER="vulkan"
 
 export VISUAL=nvim
 export EDITOR="$VISUAL"
@@ -103,6 +106,9 @@ export _JAVA_AWT_WM_NONREPARENTING=1
 export MOZ_USE_XINPUT2=1
 # Firefox use Wayland instead of XWayland.
 export MOZ_ENABLE_WAYLAND=1
+
+# https://gitlab.freedesktop.org/xorg/xserver/-/issues/1317
+export XWAYLAND_NO_GLAMOR=1
 
 if [[ -n "$SSH_CONNECTION" ]]; then
   # Use GPG curses based pin entry via SSH.
