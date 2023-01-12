@@ -1,10 +1,10 @@
 include ~/.config/sway/variables
 
-output * adaptive_sync on
-output $MONITOR_LEFT bg ~/.config/wallpapers/jon-snow.jpg fill
+output $MONITOR_CENTER adaptive_sync on
+output $MONITOR_LEFT bg ~/.config/wallpapers/jon-snow.jpg fill transform 270
 output $MONITOR_CENTER bg ~/.config/wallpapers/jaime-lannister.jpg fill
 output $MONITOR_LAPTOP bg ~/.config/wallpapers/jaime-lannister.jpg fill
-output $MONITOR_RIGHT bg ~/.config/wallpapers/tyrion-lannister.jpg fill
+output $MONITOR_RIGHT bg ~/.config/wallpapers/tyrion-lannister.jpg fill transform 90
 
 bindswitch --locked lid:off output $MONITOR_LAPTOP enable
 bindswitch --locked lid:on output $MONITOR_LAPTOP disable
