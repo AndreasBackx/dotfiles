@@ -15,10 +15,16 @@ case "$1" in
         fi
         ;;
     shutdown | poweroff)
-        systemctl poweroff
+        while true; do
+            systemctl poweroff
+            sleep 10
+        done
         ;;
     restart | reboot)
-        systemctl reboot
+        while true; do
+            systemctl reboot
+            sleep 10
+        done
         ;;
     update-shutdown | update-poweroff)
         wait_for_update
