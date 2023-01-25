@@ -2,11 +2,11 @@ source ~/.bin/hg_commit.zsh
 
 ## OH MY ZSH ##
 plugins=(
-  zsh-autosuggestions
-  zsh-syntax-highlighting
   fzf
   poetry
   autoupdate
+  zsh-autosuggestions
+  zsh-syntax-highlighting
 )
 
 ZSH_THEME="spaceship"
