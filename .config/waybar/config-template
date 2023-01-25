@@ -132,7 +132,8 @@
             "format": "{}",
             "return-type": "json",
             "on-click-right": "spotifatius toggle-liked",
-            "exec": "spotifatius monitor"
+            "exec": "spotifatius monitor",
+            "restart-interval": 1
         },
         "custom/power": {
             "exec": "echo '{\"text\": \"<span color=\\\"#6E6E6E\\\"></span>\", \"tooltip\": \"Power options\"}'",
@@ -297,7 +298,8 @@
             "format": "{}",
             "return-type": "json",
             "on-click-right": "spotifatius toggle-liked",
-            "exec": "spotifatius monitor"
+            "exec": "spotifatius monitor",
+            "restart-interval": 1
         },
         "custom/power": {
             "exec": "echo '{\"text\": \"<span color=\\\"#6E6E6E\\\"></span>\", \"tooltip\": \"Power options\"}'",
