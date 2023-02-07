@@ -56,6 +56,9 @@ bar {
 # https://bugzilla.mozilla.org/show_bug.cgi?id=1652820
 exec_always swaymsg "input * xkb_options compose:rctrl"
 
+# Disable middle click to paste primary selection.
+# Will be in sway 1.9, disabled for now.
+# primary_selection disabled
 
 input "2:14:ETPS/2_Elantech_Touchpad" {
     natural_scroll enabled
