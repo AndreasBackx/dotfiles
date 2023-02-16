@@ -40,25 +40,6 @@ if [[ $machine == "Linux" ]]; then
   export XDG_STATE_HOME="$HOME/.local/state"
   export XDG_CACHE_HOME="$HOME/.cache"
 elif [[ $machine == "Darwin" ]]; then
-  # MacOS specific commands.
-
-  # Use GNU utils.
-  PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
-
-  # Homebrew
-  PATH="$HOME/.homebrew/bin:$HOME/.homebrew/sbin:$PATH"
-  export FZF_BASE="$HOME/.homebrew/bin/..."
-
-  export GLASSFISH_HOME=/usr/local/opt/glassfish/libexec
-
-  # Ignore iTunes play button
-  # launchctl unload -w /System/Library/LaunchAgents/com.apple.rcd.plist &> /dev/null
-
-  # Use GNU man.
-  MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
-
-  alias flushdns="sudo dscacheutil -flushcache;sudo killall -HUP mDNSResponder"
-
   export XDG_DATA_HOME="$HOME/Library/Application Support"
   export XDG_CONFIG_HOME="$HOME/.config"
   export XDG_STATE_HOME="$HOME/Library/Application Support"
@@ -141,6 +122,28 @@ PATH="/usr/local/sbin:$PATH"
 PATH="/usr/local/bin:$PATH"
 PATH="$HOME/.bin:$PATH"
 PATH="$HOME/.local/bin:$PATH"
+
+if [[ $machine == "Darwin" ]]; then
+  # MacOS specific commands.
+  export HOMEBREW_HOME="$HOME/.homebrew"
+
+  # Use GNU utils.
+  PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
+  PATH="$HOMEBREW_HOME/bin:$PATH"
+
+  # Homebrew fzf
+  export FZF_BASE="$HOMEBREW_HOME/opt/fzf"
+
+  export GLASSFISH_HOME=/usr/local/opt/glassfish/libexec
+
+  # Ignore iTunes play button
+  # launchctl unload -w /System/Library/LaunchAgents/com.apple.rcd.plist &> /dev/null
+
+  # Use GNU man.
+  MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
+
+  alias flushdns="sudo dscacheutil -flushcache;sudo killall -HUP mDNSResponder"
+fi
 
 # APPEND
 PATH="$PATH:$HOME/.npm-global/bin"
