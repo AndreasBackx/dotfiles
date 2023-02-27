@@ -10,6 +10,14 @@ source "$SCRIPT_DIR/../.config/.variables"
 source "$SCRIPT_DIR/../.config/.local-variables"
 source "$SCRIPT_DIR/../.config/.secrets"
 
+function is_environment_setup() {
+    if [[ -z "${BORG_REPO}" || -z "${BORG_BASE_DIR}" ]]; then
+        false
+    else
+        true
+    fi
+}
+
 function is_timer_active() {
     if systemctl is-active --quiet backup.timer; then
         true
@@ -100,19 +108,28 @@ function start_backup() {
 }
 
 function status() {
-    if is_timer_active; then
-        if is_service_active; then
-            waybar-json "\uf382" "Backing up..." running
-        else
-            if is_service_failed; then
-                waybar-json "\uf7e4" "Backup has failed, click to try again." failed
-            else
-                waybar-json "\uf0c2" "Backup timer is waiting for the next backup. Click to start now." waiting
-            fi
-        fi
-    else
-        waybar-json "\uf740" "Backup is disabled. Click to enable and start it." inactive
+    if ! is_environment_setup; then
+        >&2 echo "Borg env vars BORG_REPO and BORG_BASE_DIR not setup."
+        return 1
     fi
+
+
+    if ! is_timer_active; then
+        waybar-json "\uf740" "Backup is disabled. Click to enable and start it." inactive
+        return 1
+    fi
+
+    if ! is_service_active; then
+        if is_service_failed; then
+            waybar-json "\uf7e4" "Backup has failed, click to try again." failed
+            return 1
+        else
+            waybar-json "\uf0c2" "Backup timer is waiting for the next backup. Click to start now." waiting
+            return 0
+        fi
+    fi
+
+    waybar-json "\uf382" "Backing up..." running
 }
 
 function error_usage() {
