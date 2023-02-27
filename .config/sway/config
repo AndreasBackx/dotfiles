@@ -41,6 +41,8 @@ bindsym $mod+Shift+c exec "sway-config && swaymsg reload && pkill kanshi; kanshi
 bindsym Ctrl+Space exec makoctl dismiss
 bindsym Ctrl+Grave exec makoctl restore
 
+# 1Password
+bindsym Ctrl+Shift+Space exec 1password --quick-access
 
 #
 # Status Bar:
