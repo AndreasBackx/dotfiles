@@ -16,7 +16,7 @@
         "modules-right": [
             "custom/updates",
             "custom/backup",
-            "custom/vpn-forward",
+            // "custom/vpn-forward",
             "custom/brightness",
             "idle_inhibitor",
             "custom/headphones",
@@ -181,7 +181,7 @@
         "modules-right": [
             "custom/updates",
             "custom/backup",
-            "custom/vpn-forward",
+            // "custom/vpn-forward",
             "custom/brightness",
             "idle_inhibitor",
             "custom/headphones",
