@@ -89,7 +89,7 @@ alias wget=wget --hsts-file="$XDG_DATA_HOME/wget-hsts"
 
 # wlroots
 # Use legacy mode for gamma changing for redshift.
-export WLR_DRM_NO_ATOMIC=1
+# export WLR_DRM_NO_ATOMIC=1
 # Use the Vulkan renderer for no flickering on Nvidia.
 #export WLR_RENDERER="vulkan"
 
