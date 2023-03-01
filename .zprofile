@@ -87,6 +87,10 @@ alias irssi=irssi --config="$XDG_CONFIG_HOME"/irssi/config --home="$XDG_DATA_HOM
 alias svn="svn --config-dir $XDG_CONFIG_HOME/subversion"
 alias wget=wget --hsts-file="$XDG_DATA_HOME/wget-hsts"
 
+if type "exa" > /dev/null; then
+  alias ls="exa"
+fi
+
 # wlroots
 # Use legacy mode for gamma changing for redshift.
 # export WLR_DRM_NO_ATOMIC=1
