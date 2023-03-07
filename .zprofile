@@ -3,6 +3,12 @@
 source ~/.config/.variables
 source ~/.config/.secrets
 
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+[ -f /usr/share/nvm/init-nvm.sh ] && source /usr/share/nvm/init-nvm.sh
+
+# Do not warn if glob has no matches.
+setopt no_nomatch
+
 ## ENV VARS ##
 
 skip_global_compinit=1
@@ -151,10 +157,3 @@ elif [[ -n "$PS1" ]] && [[ -z "$TMUX" ]] && [[ -n "$SSH_CONNECTION" ]]; then
     tmux -CC attach-session -t ssh_tmux || tmux -CC new-session -s ssh_tmux
   fi
 fi
-
-## ZSH ##
-# Do not warn if glob has no matches.
-setopt no_nomatch
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-[ -f /usr/share/nvm/init-nvm.sh ] && source /usr/share/nvm/init-nvm.sh
