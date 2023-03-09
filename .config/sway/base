@@ -125,7 +125,7 @@ exec --no-startup-id blueman-applet
 # Left:
 #
 exec --no-startup-id spotify
-exec --no-startup-id md.obsidian.Obsidian
+exec --no-startup-id obsidian || md.obsidian.Obsidian
 exec --no-startup-id discord || Discord || com.discordapp.Discord
 exec --no-startup-id mattermost-desktop
 
