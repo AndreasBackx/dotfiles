@@ -24,7 +24,7 @@ SPACESHIP_PROMPT_ORDER=(
   rust          # Rust section
 )
 
-if [[ "$LOCATION" -ne "devserver" ]]; then
+if [[ "$ENV_LOCATION" != "devserver" ]]; then
   SPACESHIP_PROMPT_ORDER+=(
     python        # Python section
   )
