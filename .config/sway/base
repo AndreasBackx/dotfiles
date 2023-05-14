@@ -129,7 +129,8 @@ exec --no-startup-id obsidian || md.obsidian.Obsidian
 exec --no-startup-id discord || Discord || com.discordapp.Discord
 exec --no-startup-id mattermost-desktop
 exec --no-startup-id slack
-exec --no-startup-id trayscale
+exec --no-startup-id trayscale --hide-window
+exec --no-startup-id 1password --silent
 
 #
 # Center:
