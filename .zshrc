@@ -3,7 +3,6 @@ source ~/.bin/hg_commit.zsh
 ## OH MY ZSH ##
 plugins=(
   fzf
-  poetry
   autoupdate
   zsh-autosuggestions
   zsh-syntax-highlighting

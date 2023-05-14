@@ -117,8 +117,9 @@ export MOZ_USE_XINPUT2=1
 # Firefox use Wayland instead of XWayland.
 export MOZ_ENABLE_WAYLAND=1
 
+# Only on Nvidia as it causes llvmpipe software rendering on AMD.
 # https://gitlab.freedesktop.org/xorg/xserver/-/issues/1317
-export XWAYLAND_NO_GLAMOR=1
+# export XWAYLAND_NO_GLAMOR=1
 
 if [[ -n "$SSH_CONNECTION" ]]; then
   # Use GPG curses based pin entry via SSH.
