@@ -274,6 +274,7 @@ workspace $WORKSPACE_LAPTOP_12 output $MONITOR_LAPTOP
 
     # Screenshot
     bindsym $mod+Shift+s exec screenshot
+    bindsym $mod+Shift+Control+s exec "grim - | wl-copy"
 #
 # Media
 #
