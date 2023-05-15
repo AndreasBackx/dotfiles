@@ -47,12 +47,16 @@ window#waybar {
         color: white;
         border-bottom: 3px solid transparent;
 
-        &.visible {
+        &.visible, &.focused, &.active {
             border-bottom: 3px solid $foreground;
         }
 
         &.urgent {
             background: rgba($pink, 0.6);
+        }
+
+        &.hidden {
+            color: red;
         }
     }
 }
