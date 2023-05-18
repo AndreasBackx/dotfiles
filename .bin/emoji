@@ -62,7 +62,7 @@ function download() {
         # Download the list of emoji and remove all the junk around it
         emojis=$(curl -s "$url" | \
                  xmllint --html \
-                         --xpath '//ul[@class="emoji-list"]' - 2>/dev/null)
+                         --xpath '//ul[@class="emoji-list css_test1"]' - 2>/dev/null)
 
         # Get rid of starting/closing ul tags
         emojis=$(echo "$emojis" | head -n -1 | tail -n +1)
@@ -81,16 +81,19 @@ function download() {
 function display() {
     emoji=$(cat "$EMOJI_FILE" | grep -v '#' | grep -v '^[[:space:]]*$')
     line=$(echo "$emoji" | rofi -dmenu -i -p emoji -kb-custom-1 Ctrl+c $@)
-    # Create an array so we can only select the left emoji char.
+    exit_code=$?
+
     line=($line)
 
     emoji_char="${line[0]}"
 
-
-    if is_wayland; then
-        echo -n "$emoji_char" | wl-copy
-    else
-        echo -n "$emoji_char" | xclip -selection clipboard
+    if [ $exit_code == 0 ]; then
+        if is_wayland; then
+            # ydotool type --clearmodifiers "$emoji_char"
+            echo -n "$emoji_char" | wl-copy
+        else
+            echo -n "$emoji_char" | xclip -selection clipboard
+        fi
     fi
 
 }
