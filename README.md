@@ -19,6 +19,8 @@ export MONITOR_RIGHT="$MONITOR_HOME_RIGHT"
 # export MONITOR_TV="$MONITOR_HOME_TV"
 # export MONITOR_LAPTOP=""
 
+# export MONITOR_HOME_CENTER_REFRESH_RATE="144.06"
+
 # If you want to disable the monitors cli.
 # export DISABLE_MONITORS="yes"
 
