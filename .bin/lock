@@ -37,11 +37,7 @@ if [[ "$is_muted" == "false" ]]; then
 fi
 
 # Pause notifications
-if command -v mako &> /dev/null; then
-    killall -USR1 mako || echo "Could not pause Mako."
-else
-    killall -USR1 dunst || echo "Could not pause Dunst."
-fi
+makoctl set-mode dnd
 
 
 if [[ $# -eq 1 ]] ; then
@@ -59,11 +55,7 @@ else
 fi
 
 # Resume notifications
-if command -v mako &> /dev/null; then
-    killall -USR2 mako || echo "Could not resume Mako."
-else
-    killall -USR2 dunst || echo "Could not resume Dunst."
-fi
+makoctl set-mode default
 
 if [[ "$spotify_status" == "playing" ]]; then
     spotifycl play &
