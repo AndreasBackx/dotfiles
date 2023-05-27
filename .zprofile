@@ -150,6 +150,7 @@ PATH="$PATH:$HOME/.npm-global/bin"
 PATH="$PATH:$HOME/.local/bin"
 PATH="$PATH:/var/lib/flatpak/exports/bin"
 PATH="$PATH:$HOME/.opam/default/bin"
+PATH="$PATH:$XDG_DATA_HOME/npm/bin/"
 
 ## EXEC ###
 if [ -z "$DISPLAY" ] && [ -n "$XDG_VTNR" ] && [ "$XDG_VTNR" -eq 1 ]; then
