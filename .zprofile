@@ -63,6 +63,7 @@ export LESSHISTFILE="$XDG_CACHE_HOME"/less/history
 
 export PYENV_ROOT="$XDG_DATA_HOME/pyenv"
 PATH="$PYENV_ROOT/shims:$PATH"
+PATH="$PYENV_ROOT/bin:$PATH"
 # $ENV_LOCATION should be set in .local-variables.
 if [[ "$ENV_LOCATION" != "devserver" ]] && type "pyenv" > /dev/null; then
   eval "$(pyenv init -)"
