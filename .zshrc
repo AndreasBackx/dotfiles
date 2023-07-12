@@ -48,4 +48,5 @@ SPACESHIP_RPROMPT_ORDER+=(
 )
 
 source $HOME/.oh-my-zsh/oh-my-zsh.sh
+source ${ZSH_CUSTOM}/plugins/zsh-autocomplete/zsh-autocomplete.plugin.zsh
 compinit -d $XDG_CACHE_HOME/zsh/zcompdump-$ZSH_VERSION

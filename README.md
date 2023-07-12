@@ -87,6 +87,9 @@ chmod 755 ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting -R
 # zsh-completions
 git clone git@github.com:zsh-users/zsh-completions ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions
 
+# zsh-autocomplete
+git clone git@github.com:marlonrichert/zsh-autocomplete ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-autocomplete
+
 # autoupdate
 git clone git@github.com:TamCore/autoupdate-oh-my-zsh-plugins.git ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/autoupdate
 
