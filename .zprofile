@@ -24,7 +24,7 @@ export PROMPT_EOL_MARK=""
 export UPDATE_ZSH_DAYS=30
 
 ## Linux / MacOS ##
-machine=`uname -s`
+machine=$(uname -s)
 if [[ $machine == "Linux" ]]; then
   # Linux specific commands.
 
@@ -61,21 +61,11 @@ export TEXMFVAR=$XDG_CACHE_HOME/texlive/texmf-var
 export WINEPREFIX="$XDG_DATA_HOME"/wine
 export LESSHISTFILE="$XDG_CACHE_HOME"/less/history
 
-export PYENV_ROOT="$XDG_DATA_HOME/pyenv"
-PATH="$PYENV_ROOT/shims:$PATH"
-PATH="$PYENV_ROOT/bin:$PATH"
-# $ENV_LOCATION should be set in .local-variables.
-if [[ "$ENV_LOCATION" != "devserver" ]] && type "pyenv" > /dev/null; then
-  eval "$(pyenv init -)"
-  eval "$(pyenv virtualenv-init -)"
-fi
-
-
 alias irssi=irssi --config="$XDG_CONFIG_HOME"/irssi/config --home="$XDG_DATA_HOME"/irssi
 alias svn="svn --config-dir $XDG_CONFIG_HOME/subversion"
 alias wget=wget --hsts-file="$XDG_DATA_HOME/wget-hsts"
 
-if type "exa" > /dev/null; then
+if type "exa" >/dev/null; then
   alias ls="exa"
 fi
 
@@ -124,6 +114,15 @@ PATH="/usr/local/bin:$PATH"
 PATH="$HOME/.bin:$PATH"
 PATH="$HOME/.local/bin:$PATH"
 
+export PYENV_ROOT="$XDG_DATA_HOME/pyenv"
+PATH="$PYENV_ROOT/shims:$PATH"
+PATH="$PYENV_ROOT/bin:$PATH"
+# $ENV_LOCATION should be set in .local-variables.
+if [[ "$ENV_LOCATION" != "devserver" ]] && type "pyenv" >/dev/null; then
+  eval "$(pyenv init -)"
+  eval "$(pyenv virtualenv-init -)"
+fi
+
 if [[ $machine == "Darwin" ]]; then
   # MacOS specific commands.
   export HOMEBREW_HOME="$HOME/.homebrew"
@@ -155,7 +154,7 @@ PATH="$PATH:$XDG_DATA_HOME/npm/bin/"
 
 ## EXEC ###
 if [ -z "$DISPLAY" ] && [ -n "$XDG_VTNR" ] && [ "$XDG_VTNR" -eq 1 ]; then
-  exec sway > /var/log/sway.log 2>&1
+  exec sway >/var/log/sway.log 2>&1
 elif [[ -n "$PS1" ]] && [[ -z "$TMUX" ]] && [[ -n "$SSH_CONNECTION" ]]; then
   if [[ $TERM == "xterm-kitty" ]]; then
     tmux attach-session -t ssh_tmux || tmux new-session -s ssh_tmux
