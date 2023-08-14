@@ -128,7 +128,7 @@ exec --no-startup-id spotify
 exec --no-startup-id obsidian || md.obsidian.Obsidian
 exec --no-startup-id discord || Discord || com.discordapp.Discord
 exec --no-startup-id mattermost-desktop
-exec --no-startup-id slack
+exec --no-startup-id zulip
 exec --no-startup-id trayscale --hide-window
 exec --no-startup-id 1password --silent
 
@@ -215,12 +215,13 @@ workspace $WORKSPACE_LAPTOP_12 output $MONITOR_LAPTOP
     assign [class="discord"] $WORKSPACE_LEFT_5
     for_window [class="discord"] move window to workspace $WORKSPACE_LEFT_5
     assign [title="WhatsApp"] $WORKSPACE_LEFT_5
-    assign [class="telegramdesktop"] $WORKSPACE_LEFT_5
     assign [class="Mattermost"] $WORKSPACE_LEFT_5
 
     # Workspace 6
-    assign [class="Caprine"] $WORKSPACE_LEFT_6
+    assign [class="Zulip"] $WORKSPACE_LEFT_6
     assign [class="Slack"] $WORKSPACE_LEFT_6
+    assign [class="Caprine"] $WORKSPACE_LEFT_6
+    assign [class="telegramdesktop"] $WORKSPACE_LEFT_6
 
     # Workspace 7
     for_window [class="Spotify"] move window to workspace $WORKSPACE_LEFT_7
@@ -228,7 +229,6 @@ workspace $WORKSPACE_LAPTOP_12 output $MONITOR_LAPTOP
     # Workspace 8
     assign [class="Logseq"] $WORKSPACE_LEFT_8
     assign [class="obsidian"] $WORKSPACE_LEFT_8
-    assign [class="Zulip"] $WORKSPACE_LEFT_8
 
     # Workspace 12
     assign [class="transmission-gtk"] $WORKSPACE_LEFT_12
