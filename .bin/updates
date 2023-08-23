@@ -55,7 +55,7 @@ case "$1" in
         else
             paru -Syu --noconfirm
         fi
-        flatpak update --assumeyes
+        flatpak remove --unused --assumeyes && flatpak update --assumeyes
         sudo snap refresh
         ;;
     *)
