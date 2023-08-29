@@ -122,9 +122,6 @@ exec_always --no-startup-id pgrep -x "agent" > /dev/null || /usr/libexec/geoclue
 exec --no-startup-id blueman-applet
 exec --no-startup-id com.github.eneshecan.WhatsAppForLinux || whatsapp-for-linux
 
-#
-# Left:
-#
 exec --no-startup-id spotify
 exec --no-startup-id obsidian || md.obsidian.Obsidian
 exec --no-startup-id discord || Discord || com.discordapp.Discord
@@ -132,14 +129,6 @@ exec --no-startup-id mattermost-desktop
 exec --no-startup-id zulip
 exec --no-startup-id trayscale --hide-window
 exec --no-startup-id 1password --silent
-
-#
-# Center:
-#
-
-#
-# Right:
-#
 
 ### Assignments
 #

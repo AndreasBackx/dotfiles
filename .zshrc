@@ -1,5 +1,7 @@
 source ~/.bin/hg_commit.zsh
 
+# setopt noglob
+
 ## OH MY ZSH ##
 plugins=(
   fzf
