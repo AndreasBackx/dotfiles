@@ -1,0 +1,70 @@
+include ~/.config/sway/variables
+
+output $MONITOR_CENTER adaptive_sync on
+output $MONITOR_LEFT bg ~/.config/wallpapers/jon-snow.jpg fill transform 270
+output $MONITOR_CENTER bg ~/.config/wallpapers/jaime-lannister.jpg fill
+output $MONITOR_LAPTOP bg ~/.config/wallpapers/jaime-lannister.jpg fill
+output $MONITOR_RIGHT bg ~/.config/wallpapers/tyrion-lannister.jpg fill transform 90
+
+bindswitch --locked lid:off output $MONITOR_LAPTOP enable
+bindswitch --locked lid:on output $MONITOR_LAPTOP disable
+
+### Idle configuration
+exec_always --no-startup-id swayidle -d \
+    timeout 10 'if pgrep swaylock; then swaymsg "output * dpms off"; fi'\
+        resume 'if pgrep swaylock; then swaymsg "output * dpms on"; fi' \
+    timeout 3600 'lock' \
+    timeout 3602 'swaymsg "output * dpms off"' \
+        resume 'swaymsg "output * dpms on"' \
+    before-sleep 'lock' >> /var/log/swayidle.log
+exec_always --no-startup-id pgrep -x "waycorner" > /dev/null || waycorner
+exec_always --no-startup-id pgrep -x "xsettingsd" > /dev/null || xsettingsd
+exec --no-startup-id kanshi
+
+include ~/.config/sway/base
+
+### Brightness
+bindsym XF86MonBrightnessUp exec monitors brightness up
+bindsym XF86MonBrightnessDown exec monitors brightness down
+
+### Media
+bindsym --locked Ctrl+Alt+Tab exec "pamixer --toggle-mute; dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause"
+bindsym --locked XF86AudioPlay exec "pamixer --toggle-mute; dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause"
+bindsym --locked XF86AudioStop exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Stop"
+bindsym --locked XF86AudioPrev exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous"
+bindsym --locked XF86AudioNext exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next"
+
+# Reload
+bindsym $mod+Shift+c exec "sway-config && swaymsg reload && pkill kanshi; kanshi"
+
+# Notifications
+bindsym Ctrl+Space exec makoctl dismiss
+bindsym Ctrl+Grave exec makoctl restore
+
+# 1Password
+bindsym Ctrl+Shift+Space exec 1password --quick-access
+
+#
+# Status Bar:
+#
+# Read `man 5 sway-bar` for more information about this section.
+bar {
+    swaybar_command waybar
+    position bottom
+}
+
+# Doing it this way instead of directly using input {} stops Firefox from
+# crashing on reload.
+# https://bugzilla.mozilla.org/show_bug.cgi?id=1652820
+exec_always swaymsg "input * xkb_options compose:rctrl"
+
+# Disable middle click to paste primary selection.
+# Will be in sway 1.9, disabled for now.
+# primary_selection disabled
+
+input "2:14:ETPS/2_Elantech_Touchpad" {
+    natural_scroll enabled
+    tap enabled
+}
+
+include /etc/sway/config.d/*

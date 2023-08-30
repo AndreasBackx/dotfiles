@@ -1,0 +1,7 @@
+[polybar]
+[polybar.colors]
+# added = ""
+# liked = ""
+paused = "#6E6E6E"
+playing = "#CECECE"
+# removed = ""

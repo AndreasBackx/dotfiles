@@ -1,0 +1,43 @@
+profile "Home" {
+    output "@MONITOR_HOME_LEFT" position 0,30 transform 90
+    output "@MONITOR_HOME_CENTER" position 1440,570 mode 2560x1440@@MONITOR_HOME_CENTER_REFRESH_RATEHz
+    output "@MONITOR_HOME_RIGHT" position 4000,0 transform 270
+}
+
+profile "Home TV" {
+    output "@MONITOR_HOME_LEFT" position 0,30 transform 90
+    output "@MONITOR_HOME_CENTER" position 1440,570 mode 2560x1440@@MONITOR_HOME_CENTER_REFRESH_RATEHz
+    output "@MONITOR_HOME_RIGHT" position 4000,0 transform 270
+
+    output "@MONITOR_HOME_TV" position 6560,0 scale 1.5
+}
+
+profile "Office Work Laptop Open" {
+    output "@MONITOR_WORK_LEFT" position 0,0 transform 90 scale 1.3
+    output "@MONITOR_WORK_CENTER" position 1661,465 mode 3440x1440@143.923Hz
+    output "@MONITOR_WORK_RIGHT" position 5101,227 transform 270
+
+    output "@MONITOR_WORK_LAPTOP" enable position 3181,1905
+}
+
+profile "Office Work Laptop Closed" {
+    output "@MONITOR_WORK_LEFT" position 0,0 transform 90 scale 1.3
+    output "@MONITOR_WORK_CENTER" position 1661,465 mode 3440x1440@143.923Hz
+    output "@MONITOR_WORK_RIGHT" position 5101,227 transform 270
+}
+
+profile "Work Laptop Only" {
+    output "@MONITOR_WORK_LAPTOP" enable mode 1920x1080
+}
+
+profile "Bjarne Laptop Open" {
+    output "@MONITOR_BJARNE_CENTER" position 0,470 scale 1.5
+    output "@MONITOR_BJARNE_RIGHT" position 2560,0 transform 270
+
+    output "@MONITOR_WORK_LAPTOP" enable position 320,1910
+}
+
+profile "Bjarne Laptop Closed" {
+    output "@MONITOR_BJARNE_CENTER" position 0,470 scale 1.5
+    output "@MONITOR_BJARNE_RIGHT" position 2560,0 transform 270
+}

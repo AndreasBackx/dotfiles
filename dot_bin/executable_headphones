@@ -1,0 +1,76 @@
+#!/usr/bin/env zsh
+
+source ~/.bin/utils.zsh
+
+MAC_ADDRESS="04:52:C7:7A:D9:C8"
+HEADPHONES_ICON="\uf025"
+
+function bluetooth() {
+    cmd="$1"
+    echo "$cmd"
+    result=`echo -e "$cmd $MAC_ADDRESS" | bluetoothctl 2>/dev/null`
+    echo $result
+}
+
+function is_connected() {
+    connected=`bluetooth info | grep "Connected:"`
+    if [[ $connected == *"yes"* ]]; then
+        true
+    else
+        false
+    fi
+}
+
+function battery() {
+    based-connect --battery-level $MAC_ADDRESS
+}
+
+case "$1" in
+    connect)
+        echo "Connecting..."
+        bluetooth connect
+        ;;
+    pair)
+        echo "Pairing..."
+        bluetooth remove
+        bluetooth pair
+        bluetooth trust
+        ;;
+    disconnect)
+        echo "Disconnecting..."
+        bluetooth disconnect
+        ;;
+    toggle)
+        if is_connected; then
+            $0 disconnect
+        else
+            $0 connect
+        fi
+        ;;
+    battery)
+        battery
+        ;;
+    noise-cancellation)
+        based-connect --noise-cancelling $2 $MAC_ADDRESS
+        ;;
+    status)
+        if is_connected; then
+            if is_wayland; then
+                battery_percentage=`battery`
+                waybar-json $HEADPHONES_ICON "Connected ($battery_percentage%)" connected
+            else
+                echo "%{F#CECECE}%{F-}"
+            fi
+        else
+            if is_wayland; then
+                waybar-json $HEADPHONES_ICON "Disconnected" disconnected
+            else
+                echo "%{F#6E6E6E}%{F-}"
+            fi
+        fi
+        ;;
+    *)
+        echo "Usage: $0 {connect|pair|disconnect|toggle|battery|noise-cancellation|status}"
+        exit 1
+        ;;
+esac

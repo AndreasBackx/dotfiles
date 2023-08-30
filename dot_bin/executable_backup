@@ -1,0 +1,188 @@
+#!/usr/bin/env zsh
+
+set -e
+
+# This needs to be able to run from root as well.
+SCRIPT_DIR=`dirname "$0"`
+source "$SCRIPT_DIR/utils.zsh"
+
+source "$SCRIPT_DIR/../.config/.variables"
+source "$SCRIPT_DIR/../.config/.local-variables"
+source "$SCRIPT_DIR/../.config/.secrets"
+
+function is_environment_setup() {
+    if [[ -z "${BORG_REPO}" || -z "${BORG_BASE_DIR}" ]]; then
+        false
+    else
+        true
+    fi
+}
+
+function is_timer_active() {
+    if systemctl is-active --quiet backup.timer; then
+        true
+    else
+        false
+    fi
+}
+
+function is_service_active() {
+    if systemctl is-active --quiet backup.service; then
+        true
+    else
+        false
+    fi
+}
+
+function is_service_failed() {
+    if systemctl is-failed --quiet backup.service; then
+        true
+    else
+        false
+    fi
+}
+
+function is_timer_waiting() {
+    timer_status=`systemctl status --quiet backup.timer`
+    if  [[ $timer_status == *"Active: active (waiting)"* ]]; then
+        true
+    else
+        false
+    fi
+}
+
+function start_backup() {
+    echo "Creating backup..."
+    /usr/bin/borg create					                        \
+        ::'{hostname}-{now:%Y-%m-%dT%H:%M:%S}'                      \
+        /home/andreas                                               \
+        /etc                                                        \
+        /var                                                        \
+        /usr/local                                                  \
+        --compression auto,lzma                                     \
+        --exclude-caches                                            \
+        --show-rc                                                   \
+        --list                                                      \
+        --filter AME                                                \
+        --one-file-system                                           \
+        --debug						                                \
+        --stats						                                \
+        --exclude '/mnt'                                            \
+        --exclude '/home/*/.cache'                                  \
+        --exclude '/tmp'                                            \
+        --exclude '/var/cache'                                      \
+        --exclude '/var/log'                                        \
+        --exclude '/var/tmp'                                        \
+        --exclude '/var/lock'                                       \
+        --exclude '/var/run'                                        \
+        --exclude '/var/spool'                                      \
+        --exclude "$XDG_CACHE_HOME"                                 \
+        --exclude "$XDG_RUNTIME_DIR"                                \
+        --exclude '*.pyc'                                           \
+        --exclude '*.log'                                           \
+        --exclude 'movies'                                          \
+        --exclude '.gradle'                                         \
+        --exclude '.local'                                          \
+        --exclude '.pyenv'                                          \
+        --exclude '.rbenv'                                          \
+        --exclude '.npm-global'                                     \
+        --exclude 'Downloads'                                       \
+        --exclude '.npm/_cacache'                                   \
+        --exclude 'node_modules'                                    \
+        --exclude '__pycache__'                                     \
+        --exclude '*Cache*'                                         \
+        --exclude '*cache*'                                         \
+        --exclude '*logs*'                                          \
+        --exclude '.AndroidStudio*'                                 \
+        --exclude '.IntelliJ*'                                      \
+        --exclude '.CLion*'
+
+    echo "Pruning backup..."
+    /usr/bin/borg prune \
+        -v \
+        --list \
+        --prefix '{hostname}-' \
+        --keep-daily=2 \
+        --keep-weekly=4 \
+        --keep-monthly=6
+}
+
+function status() {
+    if ! is_environment_setup; then
+        >&2 echo "Borg env vars BORG_REPO and BORG_BASE_DIR not setup."
+        return 1
+    fi
+
+
+    if ! is_timer_active; then
+        waybar-json "\uf740" "Backup is disabled. Click to enable and start it." inactive
+        return 1
+    fi
+
+    if ! is_service_active; then
+        if is_service_failed; then
+            waybar-json "\uf7e4" "Backup has failed, click to try again." failed
+            return 1
+        else
+            waybar-json "\uf0c2" "Backup timer is waiting for the next backup. Click to start now." waiting
+            return 0
+        fi
+    fi
+
+    waybar-json "\uf382" "Backing up..." running
+}
+
+function error_usage() {
+    echo "Usage: $0 {status|update|start} [--background]"
+    exit 1
+}
+
+subcommand="$1"
+background="no"
+
+while [ -n "$2" ]; do
+	case "$2" in
+        --background)
+            if [[ "$subcommand" == "start" ]]; then
+                background="yes"
+            else
+                echo "$subcommand does not support --background."
+                error_usage
+            fi
+            ;;
+
+	    *)
+            echo "$subcommand passed but not recognised."
+            ;;
+
+	esac
+
+	shift
+
+done
+
+case "$subcommand" in
+    status)
+        status
+        ;;
+    update)
+        pkill -RTMIN+8 waybar
+        ;;
+    start)
+        if [[ "$background" == "yes" ]]; then
+            if ! is_timer_active; then
+                sudo systemctl enable backup.timer
+                sudo systemctl start backup.timer
+            fi
+            sudo systemctl start backup.service
+        else
+            start_backup
+        fi
+        ;;
+    stop)
+        sudo systemctl stop backup.service
+        ;;
+    *)
+        error_usage
+        ;;
+esac

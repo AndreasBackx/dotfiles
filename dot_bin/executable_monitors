@@ -1,0 +1,499 @@
+#!/usr/bin/env python
+
+# MIT License
+#
+# Copyright (c) 2018 Andreas Backx
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+from __future__ import annotations
+
+import asyncio
+import os
+import subprocess
+import time
+from abc import ABC, abstractproperty
+from dataclasses import dataclass
+from enum import Enum
+from functools import wraps
+from typing import List
+
+import click
+
+FEATURES = {
+    "input_source": {
+        "value": "60",
+        "choices": {
+            "dp1": "0x0f",
+            "dp2": "0x10",
+            "hdmi1": "0x11",
+            "hdmi2": "0x12",
+        },
+    },
+    "display_mode": {
+        "value": "DC",
+        "type": hex,
+        "choices": {
+            "default": "00",
+            "multimedia": "02",
+            "movie": "03",
+            "games": "05",
+        },
+    },
+    "power_mode": {
+        "value": "D6",
+        "choices": {
+            "on": "01",
+            "standby": "04",
+            "off": "05",
+        },
+    },
+    "brightness": {
+        "value": "10",
+        "min": 0,
+        "max": 100,
+    },
+}
+
+
+class DisplayNotFound(Exception):
+    pass
+
+
+class Controller(ABC):
+    @abstractproperty
+    def brightness(self) -> int:
+        pass
+
+    @brightness.setter
+    def brightness(self, value: int) -> None:
+        pass
+
+
+class LightController(Controller):
+    @property
+    async def brightness(self) -> int:
+        process = await asyncio.create_subprocess_shell(
+            cmd="lux -G",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        stdout, stderr = await process.communicate()
+        return int(stdout.strip()[:-1])
+
+    async def set_brightness(self, value: int) -> None:
+        process = await asyncio.create_subprocess_shell(
+            cmd=f"lux -S {value}%",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        stdout, stderr = await process.communicate()
+
+
+@dataclass
+class DDCUtilController(Controller):
+
+    monitor: str
+
+    @property
+    async def brightness(self) -> int | None:
+        response = await DDCUtilController.get_vcp(self.serial_number, "brightness")
+        try:
+            return int(response)
+        except (TypeError, ValueError):
+            return None
+
+    async def set_brightness(self, value: int) -> None:
+        await DDCUtilController.set_vcp(self.serial_number, "brightness", value)
+
+    @property
+    def serial_number(self) -> str:
+        return self.monitor.split(" ")[-1]
+
+    @classmethod
+    async def run(cls, command: str, serial_number: str, *args) -> str | None:
+        if "DISABLE_MONITORS" in os.environ:
+            return None
+
+        cmd = " ".join(
+            [
+                "ddcutil",
+                command,
+                "--sn",
+                serial_number,
+                "--async",
+                "--noverify",
+                "--force-slave-address",
+                "--brief",
+                *args,
+            ]
+        )
+        retries = 20
+        retry = 0
+        exception = None
+
+        while retry < retries:
+            process = await asyncio.create_subprocess_shell(
+                cmd=cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+            try:
+                stdout, stderr = await process.communicate()
+                stdout, stderr = stdout.decode(), stderr.decode()
+                not_found = "Display not found" in stderr
+                if not_found:
+                    # This may still be thrown incorrectly when issuing
+                    # multiple commands at once, so keep trying just in case.
+                    raise DisplayNotFound(serial_number)
+                if process.returncode != 0:
+                    raise Exception(stderr)
+            except Exception as e:
+                time.sleep(0.1)
+                retry += 1
+                exception = e
+                continue
+            return stdout
+        raise exception
+
+    @classmethod
+    async def set_vcp(cls, serial_number: str, feature: str, value) -> None:
+        feature_options = FEATURES[feature]
+        feature_choices = feature_options.get("choices")
+        feature_min = feature_options.get("min")
+        feature_max = feature_options.get("max")
+
+        if feature_choices is not None:
+            for key, val in feature_choices.items():
+                if value == key:
+                    value = val
+                    break
+            else:
+                print(
+                    f'Invalid choice "{value}", valid choices are: '
+                    f'{", ".join(feature_choices.values())}'
+                )
+                return
+
+        if (feature_min is not None or feature_max is not None) and not isinstance(
+            value, int
+        ):
+            print(f"Value type needs to be an int, not {type(value).__name__}.")
+            return
+
+        if feature_min is not None and value < feature_min:
+            print(f"Minimum value is {feature_min}.")
+            return
+
+        if feature_max is not None and value > feature_max:
+            print(f"Maximum value is {feature_max}.")
+            return
+
+        await DDCUtilController.run(
+            "setvcp",
+            serial_number,
+            feature_options["value"],
+            str(value),
+        )
+
+    @classmethod
+    async def get_vcp(cls, serial_number: str, feature: str) -> str | None:
+        stdout = await DDCUtilController.run(
+            "getvcp",
+            serial_number,
+            FEATURES[feature]["value"],
+        )
+
+        if stdout is None:
+            return None
+
+        value = stdout.split(" ")[3].strip()
+
+        feature_options = FEATURES[feature]
+        feature_type = feature_options.get("type")
+        feature_choices = feature_options.get("choices")
+
+        if feature_type is hex:
+            # Convert 'x00' to '00'.
+            value = value[1:]
+
+        if feature_choices is not None:
+            for key, val in feature_choices.items():
+                if value == val:
+                    value = key
+                    break
+            else:
+                print(
+                    f'Received invalid choice "{value}", valid choices are: '
+                    f'{", ".join(feature_choices.values())}'
+                )
+                return None
+
+        return value
+
+
+class Display(Enum):
+    if "MONITOR_LEFT" in os.environ:
+        LEFT = DDCUtilController(monitor=os.environ["MONITOR_LEFT"])
+    if "MONITOR_CENTER" in os.environ:
+        CENTER = DDCUtilController(monitor=os.environ["MONITOR_CENTER"])
+    if "MONITOR_RIGHT" in os.environ:
+        RIGHT = DDCUtilController(monitor=os.environ["MONITOR_RIGHT"])
+    if "MONITOR_LAPTOP" in os.environ:
+        LAPTOP = LightController()
+
+    @property
+    async def brightness(self) -> int | None:
+        return await self.value.brightness
+
+    async def set_brightness(self, value: int) -> None:
+        await self.value.set_brightness(value=value)
+
+
+class EnumType(click.Choice):
+    def __init__(self, enum) -> None:
+        self.__enum = enum
+        choices = (member.lower() for member in enum.__members__)
+        super().__init__(choices)
+
+    def convert(self, value, param, ctx):
+        if isinstance(value, self.__enum):
+            return value
+        return next(
+            enum for enum in self._EnumType__enum if enum.name.lower() == value.lower()
+        )
+
+
+@dataclass
+class Brightness:
+    """Brightness can hold a value or a relative value.
+
+    Args:
+        value: int: Value of brightness kept.
+        relative: Whether to be relative to the current brightness value. (default: {False})
+    """
+
+    value: int
+    relative: bool = False
+    toggle: bool = False
+
+    def __post_init__(self) -> None:
+        self.relative = self.relative or self.toggle
+
+    def resolve(self, brightness: int | None = None) -> int:
+        """Resolve the value relatively or absolutely.
+
+        * If `relative` is set to True, then the brightness argument is
+        required.
+        * If it is set to True, it'll add the `value` to the given
+        brightness level.
+        * Otherwise it will return `value`.
+
+        Args:
+            brightness: int: The current brightness level.
+        """
+
+        result = self.value
+        if self.relative:
+            result = brightness + self.value
+        if self.toggle:
+            result = 0 if brightness == 100 else 100
+
+        return max(0, min(100, result))
+
+
+class BrightnessType(click.ParamType):
+
+    name = "brightness"
+
+    STEP = 25
+
+    def convert(self, value, param, ctx):
+        if value == "up":
+            return Brightness(value=self.STEP, relative=True)
+        elif value == "down":
+            return Brightness(value=-self.STEP, relative=True)
+        elif value == "toggle":
+            return Brightness(value=0, toggle=True)
+        elif isinstance(value, int):
+            return Brightness(value=value)
+
+        try:
+            return Brightness(value=int(value))
+        except ValueError:
+            self.fail("Value is not a valid integer or 'up'/'down'.")
+
+
+@click.group()
+def cli():
+    """Script for managing the monitors of my setup."""
+    pass
+
+
+def coro(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        return asyncio.run(f(*args, **kwargs))
+
+    return wrapper
+
+
+async def period_changed(old_period: str, new_period: str) -> None:
+    """Redshift period-changed event hook.
+
+    Possible periods: night, daytime, transition, none (only for old period).
+
+    Args:
+        old_period: str: The old period transitioning from.
+        new_period: str: The new period transitioning to.
+    """
+
+    PERIOD_BRIGHTNESS = {
+        "night": 0,
+        "transition": 50,
+        "daytime": 100,
+    }
+
+    is_dark = new_period == "night" or (
+        old_period == "daytime" and new_period == "transition"
+    )
+    gtk_theme = "Materia-dark" if is_dark else "Materia"
+    subprocess.run(
+        [
+            "gsettings",
+            "set",
+            "org.gnome.desktop.interface",
+            "gtk-theme",
+            f'"{gtk_theme}"',
+        ]
+    )
+    subprocess.run(
+        [
+            "gsettings",
+            "set",
+            "org.gnome.desktop.interface",
+            "color-scheme",
+            "prefer-dark" if is_dark else "prefer-light",
+        ]
+    )
+
+    target_brightness = PERIOD_BRIGHTNESS.get(new_period)
+    if target_brightness is None:
+        return
+
+    async def change_brightness(display: Display, target_brightness: int) -> None:
+        brightness = await display.brightness
+
+        if brightness == target_brightness:
+            return
+
+        await display.set_brightness(target_brightness)
+
+    await asyncio.gather(
+        *[
+            change_brightness(display=display, target_brightness=target_brightness)
+            for display in list(Display)
+        ]
+    )
+
+
+@cli.command()
+@coro
+@click.argument("event")
+@click.argument("details", nargs=-1)
+async def redshift(event: str, details: List[str]) -> None:
+    """Redshift event brightness hook.
+
+    Executables (e.g. scripts) placed in folder ~/.config/redshift/hooks
+    will be run when a certain event happens. The first parameter to the
+    script indicates the event and further parameters may indicate
+    more details about the event. The event period-changed is indicated
+    when the period changes (night, daytime, transition). The second
+    parameter is the old period and the third is the new period. The event
+    is also signaled when Redshift starts up with the old period set to
+    none. Any dotfiles in the folder are skipped.
+    """
+
+    if event == "period-changed":
+        await period_changed(details[0], details[1])
+
+
+@cli.command()
+@coro
+@click.option(
+    "--display",
+    "displays",
+    default=list(Display),
+    multiple=True,
+    type=EnumType(Display),
+    help="Specify which displays, default is all.",
+)
+@click.argument(
+    "brightness",
+    type=BrightnessType(),
+    required=False,
+)
+async def brightness(displays: list[Display], brightness: Brightness | None) -> None:
+    """Get or set the brightness of displays."""
+    if brightness is None:
+        brightnesses = await asyncio.gather(
+            *[display.brightness for display in displays], return_exceptions=True
+        )
+        for brightness in brightnesses:
+            if isinstance(brightness, DisplayNotFound):
+                continue
+            if brightness is None:
+                print("…%")
+                return
+            print(f"{brightness}%")
+        return
+
+    if not brightness.relative:
+        await asyncio.gather(
+            *[display.set_brightness(brightness.resolve()) for display in displays],
+            return_exceptions=True,
+        )
+        return
+
+    brightnesses = await asyncio.gather(
+        *[display.brightness for display in displays], return_exceptions=True
+    )
+    for brightness_or_error in brightnesses:
+        if not isinstance(brightness_or_error, (DisplayNotFound, int)):
+            raise brightness_or_error
+    brightnesses = filter(
+        lambda brightness: not isinstance(brightness, Exception), brightnesses
+    )
+    target_brightness = min(brightnesses, default=None)
+
+    if target_brightness is None:
+        print("Displays are not found.")
+        return
+
+    await asyncio.gather(
+        *[
+            display.set_brightness(brightness.resolve(target_brightness))
+            for display in displays
+        ],
+        return_exceptions=True,
+    )
+
+
+if __name__ == "__main__":
+    cli()

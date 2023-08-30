@@ -1,0 +1,13 @@
+#!/usr/bin/env zsh
+
+source ~/.bin/utils.zsh
+
+set -
+
+if is_wayland; then
+    grim -g "$(slurp)" - | wl-copy
+else
+    maim -s | xclip -selection clipboard -t image/png
+fi
+
+notify "Screenshot saved to clipboard!"

@@ -1,0 +1,124 @@
+$black: #141414;
+$blackGray: #1C1C1C;
+$darkerGray: #242424;
+$darkGray: #404040;
+$gray: #6E6E6E;
+$lightGray: #CECECE;
+$white: #E5E5E5;
+
+$yellow: #CCC47A;
+$pink: #E52E71;
+$green: #9CCC3D;
+$cyan: #6CC7D9;
+$orange: #D9882B;
+$purple: #A082D9;
+
+// Background colors
+$darkBackground: $black;
+$background: $blackGray;
+$lightBackground: $darkerGray;
+$highlightBackground: $darkGray;
+
+$border: $darkGray;
+$matchBorder: $yellow;
+
+// Foregrounds
+$brightForeground: white;
+$foreground: $lightGray;
+$inactiveForeground: $gray;
+
+* {
+    border: none;
+    border-radius: 0;
+    font-family: monospace, "MesloLGM Nerd Font";
+    font-size: 14px;
+}
+
+
+window#waybar {
+    background: rgba($background, 0.8);
+    color: $foreground;
+}
+
+/* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
+#workspaces {
+    button {
+        padding: 4px;
+        color: white;
+        border-bottom: 3px solid transparent;
+
+        &.visible, &.focused, &.active {
+            border-bottom: 3px solid $foreground;
+        }
+
+        &.urgent {
+            background: rgba($pink, 0.6);
+        }
+
+        &.hidden {
+            color: red;
+        }
+    }
+}
+
+#mode {
+    border-bottom: 3px solid $foreground;
+}
+
+#window {
+    padding-left: 16px;
+}
+
+#clock,
+#cpu,
+#memory,
+#pulseaudio,
+#custom-headphones,
+#tray,
+#mode,
+#custom-brightness,
+#idle_inhibitor,
+#custom-updates,
+#custom-power,
+#custom-backup,
+#custom-vpn-forward {
+    padding: 0 12px;
+}
+
+@keyframes blink {
+    to {
+        background-color: $foreground;
+        color: #000000;
+    }
+}
+
+
+#custom-vpn-forward {
+    color: $inactiveForeground;
+
+    &.enabled {
+        color: $foreground;
+    }
+}
+
+#custom-backup {
+    color: $inactiveForeground;
+
+    &.running {
+        color: $foreground;
+    }
+}
+
+#custom-spotify.paused,
+#idle_inhibitor.deactivated,
+#custom-headphones {
+    color: $inactiveForeground;
+}
+
+#custom-headphones.connected {
+    color: $foreground;
+}
+
+#custom-spotify {
+    padding: 0 32px;
+}

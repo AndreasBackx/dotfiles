@@ -1,0 +1,78 @@
+#!/usr/bin/env zsh
+
+function start() {
+    shairport-sync -j &> /dev/null
+}
+
+function stop() {
+    sudo pkill shairport-sync
+}
+
+function started() {
+    running_processes=$(ps -fC shairport-sync | tee >(wc -l))
+    # echo "running_processes: $running_processes"
+    running_processes=$(echo "$running_processes" | tail -1)
+    # echo "running_processes: $running_processes"
+    (( running_processes=$running_processes - 1 ))
+    if [[ $running_processes -ge 1 ]]; then
+        true
+    else
+        false
+    fi
+}
+
+case "$1" in
+    start)
+        echo "Starting Shairport-Sync..."
+        start
+        ;;
+    stop)
+        echo "Stopping Shairport-Sync..."
+        stop
+        ;;
+    restart)
+        echo "Restarting Shairport-Sync..."
+        stop
+        start
+        ;;
+    toggle)
+        if started; then
+            $0 stop
+        else
+            $0 start
+        fi
+        ;;
+    status)
+        if started; then
+            echo "%{F#CECECE}%{F-}"
+        else
+            echo "%{F#6E6E6E}%{F-}"
+        fi
+        ;;
+    volume)
+        if [ "$#" -ne 2 ]; then
+            echo "The volume command requires you to pass the wanted volume."
+            exit 1
+        fi
+
+        volume=$2
+
+        if [[ $volume -eq -144 ]]; then
+            # Mute
+            # Pulsaudio-ctl doesn't unmute automatically.
+            pulseaudio-ctl set 0
+        else
+            zmodload zsh/mathfunc
+            (( volume_percentage=(int(($volume + 30) * 100 / 30)) ))
+            volume_percentage=$(( $volume_percentage > 100 ? 100 : $volume_percentage ))
+            volume_percentage=$(( $volume_percentage < 0 ? 0 : $volume_percentage ))
+            volume_percentage=${volume_percentage%.*}
+            pulseaudio-ctl set $volume_percentage
+        fi
+
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|toggle|status|volume}"
+        exit 1
+        ;;
+esac

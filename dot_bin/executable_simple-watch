@@ -1,0 +1,31 @@
+#!/usr/bin/env zsh
+
+if [ $# -ge 2 ]; then
+    input=$1
+    inputFolder=$(dirname "$input")
+    inputName=$(basename "$input")
+    inputExtension="${inputName##*.}"
+
+    output=$2
+    outputName=$(basename "$output")
+    outputExtension="${outputName##*.}"
+    if [ "$inputExtension" = "scss" ]; then
+        if [ $# -ge 3 ] && [ "$3" = "sourcemap" ]; then
+            sass --watch $input:$output --scss --sourcemap=file --style=compressed
+        else
+            sass --watch $input:$output --scss --sourcemap=none --style=compressed
+        fi
+    elif [ "$inputExtension" = "raml" ]; then
+        if [ "$outputExtension" = "html" ]; then
+            echo "Watching '$inputFolder' and subdirectories for RAML file changes..."
+            fswatch -0 $inputFolder/**/*.(raml|schema|inc) | xargs -0 -n1 -I%changedFile zsh -i -c "watchLog %changedFile $input $output"
+        else
+            echo "Output file extension needs to be '.html'."
+        fi
+    else
+        echo "File extension not supported."
+    fi
+else
+    echo "Please enter a source and destination file."
+fi
+

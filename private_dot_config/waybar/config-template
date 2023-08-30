@@ -1,0 +1,470 @@
+[
+    {
+        "clock": {
+            "format": "{:%a %d %B %H:%M}",
+            "tooltip": false
+        },
+        "cpu": {
+            "format": "<span color=\"#6E6E6E\"></span>  {usage}%"
+        },
+        "custom/backup": {
+            "exec": "backup status",
+            "format": "{}",
+            "interval": "once",
+            "on-click": "backup start --background",
+            "return-type": "json",
+            "signal": 8
+        },
+        "custom/brightness": {
+            "exec": "monitors brightness --display center",
+            "format": "<span color=\"#6E6E6E\"></span>  {}",
+            "interval": 2,
+            "on-click": "monitors brightness toggle",
+            "on-scroll-down": "monitors brightness down",
+            "on-scroll-up": "monitors brightness up",
+            "tooltip": false
+        },
+        "custom/headphones": {
+            "exec": "headphones status",
+            "format": "{}",
+            "interval": 2,
+            "on-click": "headphones toggle",
+            "on-click-middle": "headphones noise-cancellation low",
+            "on-click-right": "headphones disconnect",
+            "on-scroll-down": "headphones noise-cancellation off",
+            "on-scroll-up": "headphones noise-cancellation high",
+            "return-type": "json"
+        },
+        "custom/power": {
+            "exec": "echo '{\"text\": \"<span color=\\\"#6E6E6E\\\"></span>\", \"tooltip\": \"Power options\"}'",
+            "on-click": "power-options selection",
+            "return-type": "json"
+        },
+        "custom/services": {
+            "exec": "running-services",
+            "format": "<span color=\"#6E6E6E\">{}</span>",
+            "interval": 15
+        },
+        "custom/spotify": {
+            "exec": "spotifatius monitor",
+            "format": "{}",
+            "on-click-right": "spotifatius toggle-liked",
+            "restart-interval": 1,
+            "return-type": "json"
+        },
+        "custom/updates": {
+            "exec": "updates check",
+            "format": "<span color=\"#6E6E6E\">{icon}</span>  {}",
+            "format-icons": {
+                "default": ""
+            },
+            "interval": 60,
+            "on-click": "kitty-cwd -- zsh -c \"updates update; zsh\" &",
+            "return-type": "json"
+        },
+        "custom/vpn-forward": {
+            "exec": "sudo -E vpn-forward status",
+            "format": "{}",
+            "interval": 2,
+            "on-click": "sudo -E vpn-forward toggle",
+            "return-type": "json",
+            "tooltip": false
+        },
+        "height": 40,
+        "hyprland/submap": {
+            "format": "<span style=\"italic\">{}</span>"
+        },
+        "hyprland/window": {
+            "icon": false,
+            "rewrite": {
+                "^(.*) - Discord$": "$1",
+                "^(.*) - Firefox Developer Edition$": "$1",
+                "^(.*) - Mozilla Thunderbird$": "$1",
+                "^(.*) — Mozilla Firefox$": "$1",
+                "^Slack \\| (.*)$": "$1"
+            }
+        },
+        "id": "center",
+        "idle_inhibitor": {
+            "format": "{icon}",
+            "format-icons": {
+                "activated": "",
+                "deactivated": ""
+            }
+        },
+        "layer": "top",
+        "memory": {
+            "format": "<span color=\"#6E6E6E\"></span>  {}%"
+        },
+        "modules-center": [
+            "custom/spotify"
+        ],
+        "modules-left": [
+            "wlr/workspaces",
+            "hyprland/submap",
+            "hyprland/window"
+        ],
+        "modules-right": [
+            "custom/updates",
+            "custom/backup",
+            "custom/brightness",
+            "idle_inhibitor",
+            "custom/headphones",
+            "pulseaudio",
+            "cpu",
+            "memory",
+            "custom/power",
+            "clock",
+            "tray"
+        ],
+        "output": [
+            "@MONITOR_CENTER"
+        ],
+        "position": "bottom",
+        "pulseaudio": {
+            "format": "<span color=\"#6E6E6E\">{icon}</span>  {volume}%",
+            "format-icons": {
+                "car": "",
+                "default": [
+                    "",
+                    ""
+                ],
+                "handsfree": "",
+                "headphones": "",
+                "headset": "",
+                "muted": "",
+                "phone": "",
+                "portable": ""
+            },
+            "format-muted": "<span color=\"#6E6E6E\">{icon}  {volume}%</span>",
+            "on-click": "pamixer --toggle-mute",
+            "on-click-right": "pavucontrol",
+            "on-scroll-down": "pamixer --decrease 5",
+            "on-scroll-up": "pamixer --increase 5",
+            "scroll-step": 5
+        },
+        "tray": {
+            "spacing": 12
+        },
+        "wlr/workspaces": {
+            "format": "{icon}",
+            "format-icons": {
+                "101": "1",
+                "102": "2",
+                "103": "3",
+                "104": "4",
+                "105": "5",
+                "106": "6",
+                "107": "7",
+                "108": "8",
+                "109": "9",
+                "110": "10",
+                "111": "11",
+                "112": "12"
+            },
+            "on-click": "activate",
+            "on-scroll-down": "hyprctl dispatch workspace m-1",
+            "on-scroll-up": "hyprctl dispatch workspace m+1"
+        }
+    },
+    {
+        "battery": {
+            "format": "<span color=\"#6E6E6E\">{icon}</span>  {capacity}%",
+            "format-icons": [
+                "",
+                "",
+                "",
+                "",
+                ""
+            ],
+            "interval": 60,
+            "states": {
+                "critical": 15,
+                "warning": 30
+            }
+        },
+        "clock": {
+            "format": "{:%a %d %B %H:%M}",
+            "tooltip": false
+        },
+        "cpu": {
+            "format": "<span color=\"#6E6E6E\"></span>  {usage}%"
+        },
+        "custom/backup": {
+            "exec": "backup status",
+            "format": "{}",
+            "interval": "once",
+            "on-click": "backup start --background",
+            "return-type": "json",
+            "signal": 8
+        },
+        "custom/brightness": {
+            "exec": "monitors brightness --display center",
+            "format": "<span color=\"#6E6E6E\"></span>  {}",
+            "interval": 2,
+            "on-click": "monitors brightness toggle",
+            "on-scroll-down": "monitors brightness down",
+            "on-scroll-up": "monitors brightness up",
+            "tooltip": false
+        },
+        "custom/headphones": {
+            "exec": "headphones status",
+            "format": "{}",
+            "interval": 2,
+            "on-click": "headphones toggle",
+            "on-click-middle": "headphones noise-cancellation low",
+            "on-click-right": "headphones disconnect",
+            "on-scroll-down": "headphones noise-cancellation off",
+            "on-scroll-up": "headphones noise-cancellation high",
+            "return-type": "json"
+        },
+        "custom/power": {
+            "exec": "echo '{\"text\": \"<span color=\\\"#6E6E6E\\\"></span>\", \"tooltip\": \"Power options\"}'",
+            "on-click": "power-options selection",
+            "return-type": "json"
+        },
+        "custom/services": {
+            "exec": "running-services",
+            "format": "<span color=\"#6E6E6E\">{}</span>",
+            "interval": 15
+        },
+        "custom/spotify": {
+            "exec": "spotifatius monitor",
+            "format": "{}",
+            "on-click-right": "spotifatius toggle-liked",
+            "restart-interval": 1,
+            "return-type": "json"
+        },
+        "custom/updates": {
+            "exec": "updates check",
+            "format": "<span color=\"#6E6E6E\">{icon}</span>  {}",
+            "format-icons": {
+                "default": ""
+            },
+            "interval": 60,
+            "on-click": "kitty-cwd -- zsh -c \"updates update; zsh\" &",
+            "return-type": "json"
+        },
+        "custom/vpn-forward": {
+            "exec": "sudo -E vpn-forward status",
+            "format": "{}",
+            "interval": 2,
+            "on-click": "sudo -E vpn-forward toggle",
+            "return-type": "json",
+            "tooltip": false
+        },
+        "height": 40,
+        "hyprland/submap": {
+            "format": "<span style=\"italic\">{}</span>"
+        },
+        "hyprland/window": {
+            "icon": false,
+            "rewrite": {
+                "^(.*) - Discord$": "$1",
+                "^(.*) - Firefox Developer Edition$": "$1",
+                "^(.*) - Mozilla Thunderbird$": "$1",
+                "^(.*) — Mozilla Firefox$": "$1",
+                "^Slack \\| (.*)$": "$1"
+            }
+        },
+        "id": "laptop",
+        "idle_inhibitor": {
+            "format": "{icon}",
+            "format-icons": {
+                "activated": "",
+                "deactivated": ""
+            }
+        },
+        "layer": "top",
+        "memory": {
+            "format": "<span color=\"#6E6E6E\"></span>  {}%"
+        },
+        "modules-center": [
+            "custom/spotify"
+        ],
+        "modules-left": [
+            "wlr/workspaces",
+            "hyprland/submap",
+            "hyprland/window"
+        ],
+        "modules-right": [
+            "custom/updates",
+            "custom/backup",
+            "custom/brightness",
+            "idle_inhibitor",
+            "custom/headphones",
+            "pulseaudio",
+            "cpu",
+            "memory",
+            "battery",
+            "custom/power",
+            "clock",
+            "tray"
+        ],
+        "output": [
+            "@MONITOR_LAPTOP"
+        ],
+        "position": "bottom",
+        "pulseaudio": {
+            "format": "<span color=\"#6E6E6E\">{icon}</span>  {volume}%",
+            "format-icons": {
+                "car": "",
+                "default": [
+                    "",
+                    ""
+                ],
+                "handsfree": "",
+                "headphones": "",
+                "headset": "",
+                "muted": "",
+                "phone": "",
+                "portable": ""
+            },
+            "format-muted": "<span color=\"#6E6E6E\">{icon}  {volume}%</span>",
+            "on-click": "pamixer --toggle-mute",
+            "on-click-right": "pavucontrol",
+            "on-scroll-down": "pamixer --decrease 5",
+            "on-scroll-up": "pamixer --increase 5",
+            "scroll-step": 5
+        },
+        "tray": {
+            "spacing": 12
+        },
+        "wlr/workspaces": {
+            "format": "{icon}",
+            "format-icons": {
+                "301": "1",
+                "302": "2",
+                "303": "3",
+                "304": "4",
+                "305": "5",
+                "306": "6",
+                "307": "7",
+                "308": "8",
+                "309": "9",
+                "310": "10",
+                "311": "11",
+                "312": "12"
+            },
+            "on-click": "activate",
+            "on-scroll-down": "hyprctl dispatch workspace m-1",
+            "on-scroll-up": "hyprctl dispatch workspace m+1"
+        }
+    },
+    {
+        "clock": {
+            "format": "{:%a %d %B %H:%M}",
+            "tooltip": false
+        },
+        "custom/brightness": {
+            "exec": "monitors brightness --display left",
+            "format": "<span color=\"#6E6E6E\"></span>  {}",
+            "interval": 2,
+            "on-click": "monitors brightness toggle",
+            "on-scroll-down": "monitors brightness down",
+            "on-scroll-up": "monitors brightness up",
+            "tooltip": false
+        },
+        "height": 40,
+        "hyprland/submap": {
+            "format": "<span style=\"italic\">{}</span>"
+        },
+        "hyprland/window": {
+            "icon": false,
+            "rewrite": {
+                "^(.*) - Discord$": "$1",
+                "^(.*) - Firefox Developer Edition$": "$1",
+                "^(.*) - Mozilla Thunderbird$": "$1",
+                "^(.*) — Mozilla Firefox$": "$1",
+                "^Slack \\| (.*)$": "$1"
+            }
+        },
+        "id": "left",
+        "layer": "top",
+        "modules-center": [],
+        "modules-left": [
+            "wlr/workspaces",
+            "hyprland/submap",
+            "hyprland/window"
+        ],
+        "modules-right": [
+            "custom/brightness",
+            "clock"
+        ],
+        "output": [
+            "@MONITOR_LEFT"
+        ],
+        "position": "bottom",
+        "wlr/workspaces": {
+            "format": "{name}",
+            "on-click": "activate",
+            "on-scroll-down": "hyprctl dispatch workspace m-1",
+            "on-scroll-up": "hyprctl dispatch workspace m+1"
+        }
+    },
+    {
+        "clock": {
+            "format": "{:%a %d %B %H:%M}",
+            "tooltip": false
+        },
+        "custom/brightness": {
+            "exec": "monitors brightness --display right",
+            "format": "<span color=\"#6E6E6E\"></span>  {}",
+            "interval": 2,
+            "on-click": "monitors brightness toggle",
+            "on-scroll-down": "monitors brightness down",
+            "on-scroll-up": "monitors brightness up",
+            "tooltip": false
+        },
+        "height": 40,
+        "hyprland/submap": {
+            "format": "<span style=\"italic\">{}</span>"
+        },
+        "hyprland/window": {
+            "icon": false,
+            "rewrite": {
+                "^(.*) - Discord$": "$1",
+                "^(.*) - Firefox Developer Edition$": "$1",
+                "^(.*) - Mozilla Thunderbird$": "$1",
+                "^(.*) — Mozilla Firefox$": "$1",
+                "^Slack \\| (.*)$": "$1"
+            }
+        },
+        "id": "right",
+        "layer": "top",
+        "modules-center": [],
+        "modules-left": [
+            "wlr/workspaces",
+            "hyprland/submap",
+            "hyprland/window"
+        ],
+        "modules-right": [
+            "custom/brightness",
+            "clock"
+        ],
+        "output": [
+            "@MONITOR_RIGHT"
+        ],
+        "position": "bottom",
+        "wlr/workspaces": {
+            "format": "{icon}",
+            "format-icons": {
+                "201": "1",
+                "202": "2",
+                "203": "3",
+                "204": "4",
+                "205": "5",
+                "206": "6",
+                "207": "7",
+                "208": "8",
+                "209": "9",
+                "210": "10",
+                "211": "11",
+                "212": "12"
+            },
+            "on-click": "activate",
+            "on-scroll-down": "hyprctl dispatch workspace m-1",
+            "on-scroll-up": "hyprctl dispatch workspace m+1"
+        }
+    }
+]

@@ -1,0 +1,18 @@
+#!/usr/bin/env zsh
+
+file_name=android-screenshot-temp.png
+if [ $# -ge 1 ]; then
+    file_name=$1
+fi
+
+dir="/sdcard/Pictures"
+
+device_location="${dir}/${file_name}"
+adb shell screencap -p "${device_location}"
+adb pull "${device_location}" >/dev/null
+adb shell rm "${device_location}"
+
+if [ $# -lt 1 ]; then
+    imgur-screenshot $file_name
+    rm $file_name
+fi

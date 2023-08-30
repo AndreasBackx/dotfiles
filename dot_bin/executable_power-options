@@ -1,0 +1,76 @@
+#!/usr/bin/env zsh
+
+source ~/.bin/utils.zsh
+
+function wait_for_update() {
+    kitty-cwd --single-instance --wait-for-single-instance-window-close -- zsh -c "updates update"
+}
+
+case "$1" in
+logout)
+    if is_wayland; then
+        hyprctl dispatch exit || swaymsg exit
+    else
+        i3-msg exit
+    fi
+    ;;
+shutdown | poweroff)
+    while true; do
+        systemctl poweroff
+        sleep 10
+    done
+    ;;
+restart | reboot)
+    while true; do
+        systemctl reboot
+        sleep 10
+    done
+    ;;
+update-shutdown | update-poweroff)
+    wait_for_update
+    power-options shutdown
+    ;;
+update-restart | update-reboot)
+    wait_for_update
+    power-options restart
+    ;;
+suspend)
+    systemctl suspend
+    ;;
+hibernate)
+    systemctl hibernate
+    ;;
+selection)
+    logout="logout"
+    shutdown="shutdown"
+    restart="restart/reboot"
+    update_restart="update restart/reboot"
+    update_shutdown="update shutdown"
+    suspend="suspend"
+    hibernate="hibernate"
+
+    selection=$(echo -e "$logout\n$shutdown\n$restart\n$update_shutdown\n$update_restart\n$suspend\n$hibernate" | rofi -dmenu -i -window-title "actions")
+
+    if [[ $selection = "$logout" ]]; then
+        power-options logout
+    elif [[ $selection = "$shutdown" ]]; then
+        power-options shutdown
+    elif [[ $selection = "$restart" ]]; then
+        power-options restart
+    elif [[ $selection = "$update_restart" ]]; then
+        power-options update-restart
+    elif [[ $selection = "$update_shutdown" ]]; then
+        power-options update-shutdown
+    elif [[ $selection = "$suspend" ]]; then
+        power-options suspend
+    elif [[ $selection = "$hibernate" ]]; then
+        power-options hibernate
+    fi
+    ;;
+*)
+    echo "Usage: $0 {suspend|hibernate|restart|shutdown|update-restart|update-shutdown|logout|selection}"
+    exit 2
+    ;;
+esac
+
+exit 0

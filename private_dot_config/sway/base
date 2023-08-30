@@ -1,0 +1,457 @@
+### Variables
+
+# Logo key. Use Mod1 for Alt.
+set $mod                Mod4
+
+# Home row direction keys, like vim
+set $LEFT               h
+set $DOWN               j
+set $UP                 k
+set $RIGHT              l
+
+# Terminal
+set $TERM               kitty-cwd
+
+# Monitors
+set $MONITOR_LEFT_X     "0"
+set $MONITOR_LEFT_Y     "30"
+set $MONITOR_CENTER_X   "1440"
+set $MONITOR_CENTER_Y   "570"
+set $MONITOR_RIGHT_X    "4000"
+set $MONITOR_RIGHT_Y    "0"
+
+# Colors
+set $BLACK              #141414
+set $BLACK_GRAY         #1C1C1C
+set $DARKER_GRAY        #242424
+set $DARK_GRAY          #404040
+set $GRAY               #6E6E6E
+set $LIGHT_GRAY         #CECECE
+set $WHITE              #E5E5E5
+
+set $YELLOW             #CCC47A
+set $PINK               #E52E71
+set $GREEN              #9CCC3D
+set $CYAN               #6CC7D9
+set $ORANGE             #D9882B
+set $PURPLE             #A082D9
+
+# Workspaces
+set $WORKSPACE_LEFT_1           "1:left"
+set $WORKSPACE_LEFT_2           "2:left"
+set $WORKSPACE_LEFT_3           "3:left"
+set $WORKSPACE_LEFT_4           "4:left"
+set $WORKSPACE_LEFT_5           "5:left"
+set $WORKSPACE_LEFT_6           "6:left"
+set $WORKSPACE_LEFT_7           "7:left"
+set $WORKSPACE_LEFT_8           "8:left"
+set $WORKSPACE_LEFT_9           "9:left"
+set $WORKSPACE_LEFT_10          "10:left"
+set $WORKSPACE_LEFT_11          "11:left"
+set $WORKSPACE_LEFT_12          "12:left"
+
+set $WORKSPACE_CENTER_1         "1:center"
+set $WORKSPACE_CENTER_2         "2:center"
+set $WORKSPACE_CENTER_3         "3:center"
+set $WORKSPACE_CENTER_4         "4:center"
+set $WORKSPACE_CENTER_5         "5:center"
+set $WORKSPACE_CENTER_6         "6:center"
+set $WORKSPACE_CENTER_7         "7:center"
+set $WORKSPACE_CENTER_8         "8:center"
+set $WORKSPACE_CENTER_9         "9:center"
+set $WORKSPACE_CENTER_10        "10:center"
+set $WORKSPACE_CENTER_11        "11:center"
+set $WORKSPACE_CENTER_12        "12:center"
+
+set $WORKSPACE_RIGHT_1          "1:right"
+set $WORKSPACE_RIGHT_2          "2:right"
+set $WORKSPACE_RIGHT_3          "3:right"
+set $WORKSPACE_RIGHT_4          "4:right"
+set $WORKSPACE_RIGHT_5          "5:right"
+set $WORKSPACE_RIGHT_6          "6:right"
+set $WORKSPACE_RIGHT_7          "7:right"
+set $WORKSPACE_RIGHT_8          "8:right"
+set $WORKSPACE_RIGHT_9          "9:right"
+set $WORKSPACE_RIGHT_10         "10:right"
+set $WORKSPACE_RIGHT_11         "11:right"
+set $WORKSPACE_RIGHT_12         "12:right"
+
+set $WORKSPACE_LAPTOP_1         "1:laptop"
+set $WORKSPACE_LAPTOP_2         "2:laptop"
+set $WORKSPACE_LAPTOP_3         "3:laptop"
+set $WORKSPACE_LAPTOP_4         "4:laptop"
+set $WORKSPACE_LAPTOP_5         "5:laptop"
+set $WORKSPACE_LAPTOP_6         "6:laptop"
+set $WORKSPACE_LAPTOP_7         "7:laptop"
+set $WORKSPACE_LAPTOP_8         "8:laptop"
+set $WORKSPACE_LAPTOP_9         "9:laptop"
+set $WORKSPACE_LAPTOP_10        "10:laptop"
+set $WORKSPACE_LAPTOP_11        "11:laptop"
+set $WORKSPACE_LAPTOP_12        "12:laptop"
+
+font pango:Roboto Regular 10.5
+
+# Lock
+bindsym --release $mod+P exec lock
+
+
+### Design
+# If it can run without border, run without a border.
+for_window [class="^.*"] border none
+default_border none
+
+# Sometimes it still uses a border, so use these settings.
+# class                 border          backgr.         text            indicator       child_border
+client.focused          $DARKER_GRAY    $BLACK_GRAY     $LIGHT_GRAY     $YELLOW         $DARKER_GRAY
+client.focused_inactive $BLACK_GRAY     $BLACK          $GRAY           $YELLOW         $BLACK_GRAY
+client.unfocused        $BLACK_GRAY     $BLACK          $GRAY           $YELLOW         $BLACK_GRAY
+client.urgent           $PINK           $BLACK          $GRAY           $YELLOW         $PINK
+
+
+client.placeholder      $BLACK_GRAY     $BLACK          $GRAY           $YELLOW         $BLACK_GRAY
+
+client.background       $BLACK_GRAY
+
+### Applications
+exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+exec_always --no-startup-id pgrep -x "redshift-gtk" > /dev/null || redshift-gtk
+exec_always --no-startup-id pgrep -x "noisetorch" > /dev/null || noisetorch -i
+exec_always --no-startup-id pgrep -x "/usr/lib/geoclue-2.0/demos/agent" > /dev/null || /usr/lib/geoclue-2.0/demos/agent
+exec --no-startup-id nm-applet --indicator
+exec_always --no-startup-id pgrep -x "agent" > /dev/null || /usr/libexec/geoclue-2.0/demos/agent
+exec --no-startup-id blueman-applet
+exec --no-startup-id com.github.eneshecan.WhatsAppForLinux || whatsapp-for-linux
+
+exec --no-startup-id spotify
+exec --no-startup-id obsidian || md.obsidian.Obsidian
+exec --no-startup-id discord || Discord || com.discordapp.Discord
+exec --no-startup-id mattermost-desktop
+exec --no-startup-id zulip
+exec --no-startup-id trayscale --hide-window
+exec --no-startup-id 1password --silent
+
+### Assignments
+#
+# Workspaces:
+#
+workspace $WORKSPACE_LEFT_1 output $MONITOR_LEFT
+workspace $WORKSPACE_LEFT_2 output $MONITOR_LEFT
+workspace $WORKSPACE_LEFT_3 output $MONITOR_LEFT
+workspace $WORKSPACE_LEFT_4 output $MONITOR_LEFT
+workspace $WORKSPACE_LEFT_5 output $MONITOR_LEFT
+workspace $WORKSPACE_LEFT_6 output $MONITOR_LEFT
+workspace $WORKSPACE_LEFT_7 output $MONITOR_LEFT
+workspace $WORKSPACE_LEFT_8 output $MONITOR_LEFT
+workspace $WORKSPACE_LEFT_9 output $MONITOR_LEFT
+workspace $WORKSPACE_LEFT_10 output $MONITOR_LEFT
+workspace $WORKSPACE_LEFT_11 output $MONITOR_LEFT
+workspace $WORKSPACE_LEFT_12 output $MONITOR_LEFT
+
+workspace $WORKSPACE_CENTER_1 output $MONITOR_CENTER
+workspace $WORKSPACE_CENTER_2 output $MONITOR_CENTER
+workspace $WORKSPACE_CENTER_3 output $MONITOR_CENTER
+workspace $WORKSPACE_CENTER_4 output $MONITOR_CENTER
+workspace $WORKSPACE_CENTER_5 output $MONITOR_CENTER
+workspace $WORKSPACE_CENTER_6 output $MONITOR_CENTER
+workspace $WORKSPACE_CENTER_7 output $MONITOR_CENTER
+workspace $WORKSPACE_CENTER_8 output $MONITOR_CENTER
+workspace $WORKSPACE_CENTER_9 output $MONITOR_CENTER
+workspace $WORKSPACE_CENTER_10 output $MONITOR_CENTER
+workspace $WORKSPACE_CENTER_11 output $MONITOR_CENTER
+workspace $WORKSPACE_CENTER_12 output $MONITOR_CENTER
+
+workspace $WORKSPACE_RIGHT_1 output $MONITOR_RIGHT
+workspace $WORKSPACE_RIGHT_2 output $MONITOR_RIGHT
+workspace $WORKSPACE_RIGHT_3 output $MONITOR_RIGHT
+workspace $WORKSPACE_RIGHT_4 output $MONITOR_RIGHT
+workspace $WORKSPACE_RIGHT_5 output $MONITOR_RIGHT
+workspace $WORKSPACE_RIGHT_6 output $MONITOR_RIGHT
+workspace $WORKSPACE_RIGHT_7 output $MONITOR_RIGHT
+workspace $WORKSPACE_RIGHT_8 output $MONITOR_RIGHT
+workspace $WORKSPACE_RIGHT_9 output $MONITOR_RIGHT
+workspace $WORKSPACE_RIGHT_10 output $MONITOR_RIGHT
+workspace $WORKSPACE_RIGHT_11 output $MONITOR_RIGHT
+workspace $WORKSPACE_RIGHT_12 output $MONITOR_RIGHT
+
+workspace $WORKSPACE_LAPTOP_1 output $MONITOR_LAPTOP
+workspace $WORKSPACE_LAPTOP_2 output $MONITOR_LAPTOP
+workspace $WORKSPACE_LAPTOP_3 output $MONITOR_LAPTOP
+workspace $WORKSPACE_LAPTOP_4 output $MONITOR_LAPTOP
+workspace $WORKSPACE_LAPTOP_5 output $MONITOR_LAPTOP
+workspace $WORKSPACE_LAPTOP_6 output $MONITOR_LAPTOP
+workspace $WORKSPACE_LAPTOP_7 output $MONITOR_LAPTOP
+workspace $WORKSPACE_LAPTOP_8 output $MONITOR_LAPTOP
+workspace $WORKSPACE_LAPTOP_9 output $MONITOR_LAPTOP
+workspace $WORKSPACE_LAPTOP_10 output $MONITOR_LAPTOP
+workspace $WORKSPACE_LAPTOP_11 output $MONITOR_LAPTOP
+workspace $WORKSPACE_LAPTOP_12 output $MONITOR_LAPTOP
+
+#
+# Applications
+#
+
+    focus_on_window_activation focus
+
+    for_window [title="Firefox — Sharing Indicator"] floating enable; move absolute position 0 0;
+    for_window [class="1Password"] floating enable
+
+    # Left
+    # Workspace 1
+    #assign [class="Thunderbird"] $WORKSPACE_LEFT_1
+    #assign [class="Firefox" instance="Firefox" title="fb.workplace.com" window_role="Toplevel"] $WORKSPACE_LEFT_1
+    #for_window [class="Firefox" instance="Firefox" title="fb.workplace.com" window_role="Toplevel"] move window to workspace $WORKSPACE_LEFT_1
+
+    # Workspace 5
+    assign [class="discord"] $WORKSPACE_LEFT_5
+    for_window [class="discord"] move window to workspace $WORKSPACE_LEFT_5
+    assign [title="WhatsApp"] $WORKSPACE_LEFT_5
+    assign [class="Mattermost"] $WORKSPACE_LEFT_5
+
+    # Workspace 6
+    assign [class="Zulip"] $WORKSPACE_LEFT_6
+    assign [class="Slack"] $WORKSPACE_LEFT_6
+    assign [class="Caprine"] $WORKSPACE_LEFT_6
+    assign [class="telegramdesktop"] $WORKSPACE_LEFT_6
+
+    # Workspace 7
+    for_window [class="Spotify"] move window to workspace $WORKSPACE_LEFT_7
+
+    # Workspace 8
+    assign [class="Logseq"] $WORKSPACE_LEFT_8
+    assign [class="obsidian"] $WORKSPACE_LEFT_8
+
+    # Workspace 12
+    assign [class="transmission-gtk"] $WORKSPACE_LEFT_12
+    # Move Android Studio design preview
+    assign [class="jetbrains-studio" title="Preview - "] $WORKSPACE_LEFT_12
+    for_window [title="Android Emulator"] move to workspace $WORKSPACE_LEFT_12
+    # Bug see https://github.com/i3/i3/issues/2060
+
+    # Center
+    assign [class="Code"] output primary
+
+    # Right
+
+
+### Key bindings
+#
+# Basics:
+#
+    # start a terminal
+    bindsym $mod+Return exec $TERM
+
+    # start your launcher
+    bindsym $mod+space exec "pkill rofi; rofi -show run"
+    bindsym $mod+d exec "pkill rofi; rofi -show run"
+    # sudo launcher version
+    bindsym $mod+Shift+d exec "pkill rofi; rofi -show run -display-run sudo -run-command 'sudo {cmd}'"
+    bindsym $mod+Shift+space exec "pkill rofi; rofi -show run -display-run sudo -run-command 'sudo {cmd}'"
+    # Emoji
+    bindsym $mod+Control+space exec "emoji"
+
+    # Drag floating windows by holding down $mod and left mouse button.
+    # Resize them with right mouse button + $mod.
+    # Despite the name, also works for non-floating windows.
+    # Change normal to inverse to use left mouse button for resizing and right
+    # mouse button for dragging.
+    floating_modifier $mod
+
+    # kill the current window
+    bindsym $mod+q kill
+
+    # Power options
+    bindsym $mod+Shift+e exec power-options selection
+
+    # Screenshot
+    bindsym $mod+Shift+s exec screenshot
+    bindsym $mod+Shift+Control+s exec "grim - | wl-copy"
+#
+# Media
+#
+
+    # Volume
+    bindsym XF86AudioRaiseVolume exec pamixer --increase 5
+    bindsym XF86AudioLowerVolume exec pamixer --decrease 5
+    bindsym XF86AudioMute exec pamixer --toggle-mute
+
+    # Controls
+    bindsym Ctrl+Mod1+Tab exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause"
+    bindsym XF86AudioPlay exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause"
+    bindsym XF86AudioStop exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Stop"
+    bindsym XF86AudioPrev exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous"
+    bindsym XF86AudioNext exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next"
+
+#
+# Moving around:
+#
+    # Move your focus around
+    bindsym $mod+Control+Left focus left
+    bindsym $mod+Control+Down focus down
+    bindsym $mod+Control+Up focus up
+    bindsym $mod+Control+Right focus right
+
+    # Move the focused window around
+    bindsym $mod+Control+Mod1+Left move left
+    bindsym $mod+Control+Mod1+Down move down
+    bindsym $mod+Control+Mod1+Up move up
+    bindsym $mod+Control+Mod1+Right move right
+
+    bindsym $mod+Shift+Right move container to workspace next_on_output, workspace next_on_output
+    bindsym $mod+Shift+Left move container to workspace prev_on_output, workspace prev_on_output
+
+#
+# Workspaces:
+#
+    # Switch to workspace
+    bindsym $mod+Control+1 workspace $WORKSPACE_LEFT_1
+    bindsym $mod+Control+2 workspace $WORKSPACE_LEFT_2
+    bindsym $mod+Control+3 workspace $WORKSPACE_LEFT_3
+    bindsym $mod+Control+4 workspace $WORKSPACE_LEFT_4
+    bindsym $mod+Control+5 workspace $WORKSPACE_LEFT_5
+    bindsym $mod+Control+6 workspace $WORKSPACE_LEFT_6
+    bindsym $mod+Control+7 workspace $WORKSPACE_LEFT_7
+    bindsym $mod+Control+8 workspace $WORKSPACE_LEFT_8
+    bindsym $mod+Control+9 workspace $WORKSPACE_LEFT_9
+    bindsym $mod+Control+0 workspace $WORKSPACE_LEFT_10
+    bindsym $mod+Control+minus workspace $WORKSPACE_LEFT_11
+    bindsym $mod+Control+plus workspace $WORKSPACE_LEFT_12
+
+    bindsym $mod+1 workspace $WORKSPACE_CENTER_1
+    bindsym $mod+2 workspace $WORKSPACE_CENTER_2
+    bindsym $mod+3 workspace $WORKSPACE_CENTER_3
+    bindsym $mod+4 workspace $WORKSPACE_CENTER_4
+    bindsym $mod+5 workspace $WORKSPACE_CENTER_5
+    bindsym $mod+6 workspace $WORKSPACE_CENTER_6
+    bindsym $mod+7 workspace $WORKSPACE_CENTER_7
+    bindsym $mod+8 workspace $WORKSPACE_CENTER_8
+    bindsym $mod+9 workspace $WORKSPACE_CENTER_9
+    bindsym $mod+0 workspace $WORKSPACE_CENTER_10
+    bindsym $mod+minus workspace $WORKSPACE_CENTER_11
+    bindsym $mod+plus workspace $WORKSPACE_CENTER_12
+
+    bindsym $mod+Mod1+1 workspace $WORKSPACE_RIGHT_1
+    bindsym $mod+Mod1+2 workspace $WORKSPACE_RIGHT_2
+    bindsym $mod+Mod1+3 workspace $WORKSPACE_RIGHT_3
+    bindsym $mod+Mod1+4 workspace $WORKSPACE_RIGHT_4
+    bindsym $mod+Mod1+5 workspace $WORKSPACE_RIGHT_5
+    bindsym $mod+Mod1+6 workspace $WORKSPACE_RIGHT_6
+    bindsym $mod+Mod1+7 workspace $WORKSPACE_RIGHT_7
+    bindsym $mod+Mod1+8 workspace $WORKSPACE_RIGHT_8
+    bindsym $mod+Mod1+9 workspace $WORKSPACE_RIGHT_9
+    bindsym $mod+Mod1+0 workspace $WORKSPACE_RIGHT_10
+    bindsym $mod+Mod1+minus workspace $WORKSPACE_RIGHT_11
+    bindsym $mod+Mod1+plus workspace $WORKSPACE_RIGHT_12
+
+    bindsym $mod+Mod2+1 workspace $WORKSPACE_LAPTOP_1
+    bindsym $mod+Mod2+2 workspace $WORKSPACE_LAPTOP_2
+    bindsym $mod+Mod2+3 workspace $WORKSPACE_LAPTOP_3
+    bindsym $mod+Mod2+4 workspace $WORKSPACE_LAPTOP_4
+    bindsym $mod+Mod2+5 workspace $WORKSPACE_LAPTOP_5
+    bindsym $mod+Mod2+6 workspace $WORKSPACE_LAPTOP_6
+    bindsym $mod+Mod2+7 workspace $WORKSPACE_LAPTOP_7
+    bindsym $mod+Mod2+8 workspace $WORKSPACE_LAPTOP_8
+    bindsym $mod+Mod2+9 workspace $WORKSPACE_LAPTOP_9
+    bindsym $mod+Mod2+0 workspace $WORKSPACE_LAPTOP_10
+    bindsym $mod+Mod2+minus workspace $WORKSPACE_LAPTOP_11
+    bindsym $mod+Mod2+plus workspace $WORKSPACE_LAPTOP_12
+
+    # Move focused container to workspace
+    bindsym $mod+Control+Shift+1 move container to workspace $WORKSPACE_LEFT_1
+    bindsym $mod+Control+Shift+2 move container to workspace $WORKSPACE_LEFT_2
+    bindsym $mod+Control+Shift+3 move container to workspace $WORKSPACE_LEFT_3
+    bindsym $mod+Control+Shift+4 move container to workspace $WORKSPACE_LEFT_4
+    bindsym $mod+Control+Shift+5 move container to workspace $WORKSPACE_LEFT_5
+    bindsym $mod+Control+Shift+6 move container to workspace $WORKSPACE_LEFT_6
+    bindsym $mod+Control+Shift+7 move container to workspace $WORKSPACE_LEFT_7
+    bindsym $mod+Control+Shift+8 move container to workspace $WORKSPACE_LEFT_8
+    bindsym $mod+Control+Shift+9 move container to workspace $WORKSPACE_LEFT_9
+    bindsym $mod+Control+Shift+0 move container to workspace $WORKSPACE_LEFT_10
+    bindsym $mod+Control+Shift+minus move container to workspace $WORKSPACE_LEFT_11
+    bindsym $mod+Control+Shift+plus move container to workspace $WORKSPACE_LEFT_12
+
+    bindsym $mod+Shift+1 move container to workspace $WORKSPACE_CENTER_1
+    bindsym $mod+Shift+2 move container to workspace $WORKSPACE_CENTER_2
+    bindsym $mod+Shift+3 move container to workspace $WORKSPACE_CENTER_3
+    bindsym $mod+Shift+4 move container to workspace $WORKSPACE_CENTER_4
+    bindsym $mod+Shift+5 move container to workspace $WORKSPACE_CENTER_5
+    bindsym $mod+Shift+6 move container to workspace $WORKSPACE_CENTER_6
+    bindsym $mod+Shift+7 move container to workspace $WORKSPACE_CENTER_7
+    bindsym $mod+Shift+8 move container to workspace $WORKSPACE_CENTER_8
+    bindsym $mod+Shift+9 move container to workspace $WORKSPACE_CENTER_9
+    bindsym $mod+Shift+0 move container to workspace $WORKSPACE_CENTER_10
+    bindsym $mod+Shift+minus move container to workspace $WORKSPACE_CENTER_11
+    bindsym $mod+Shift+plus move container to workspace $WORKSPACE_CENTER_12
+
+    bindsym $mod+Mod1+Shift+1 move container to workspace $WORKSPACE_RIGHT_1
+    bindsym $mod+Mod1+Shift+2 move container to workspace $WORKSPACE_RIGHT_2
+    bindsym $mod+Mod1+Shift+3 move container to workspace $WORKSPACE_RIGHT_3
+    bindsym $mod+Mod1+Shift+4 move container to workspace $WORKSPACE_RIGHT_4
+    bindsym $mod+Mod1+Shift+5 move container to workspace $WORKSPACE_RIGHT_5
+    bindsym $mod+Mod1+Shift+6 move container to workspace $WORKSPACE_RIGHT_6
+    bindsym $mod+Mod1+Shift+7 move container to workspace $WORKSPACE_RIGHT_7
+    bindsym $mod+Mod1+Shift+8 move container to workspace $WORKSPACE_RIGHT_8
+    bindsym $mod+Mod1+Shift+9 move container to workspace $WORKSPACE_RIGHT_9
+    bindsym $mod+Mod1+Shift+0 move container to workspace $WORKSPACE_RIGHT_10
+    bindsym $mod+Mod1+Shift+minus move container to workspace $WORKSPACE_RIGHT_11
+    bindsym $mod+Mod1+Shift+plus move container to workspace $WORKSPACE_RIGHT_12
+
+    bindsym $mod+Mod2+Shift+1 move container to workspace $WORKSPACE_LAPTOP_1
+    bindsym $mod+Mod2+Shift+2 move container to workspace $WORKSPACE_LAPTOP_2
+    bindsym $mod+Mod2+Shift+3 move container to workspace $WORKSPACE_LAPTOP_3
+    bindsym $mod+Mod2+Shift+4 move container to workspace $WORKSPACE_LAPTOP_4
+    bindsym $mod+Mod2+Shift+5 move container to workspace $WORKSPACE_LAPTOP_5
+    bindsym $mod+Mod2+Shift+6 move container to workspace $WORKSPACE_LAPTOP_6
+    bindsym $mod+Mod2+Shift+7 move container to workspace $WORKSPACE_LAPTOP_7
+    bindsym $mod+Mod2+Shift+8 move container to workspace $WORKSPACE_LAPTOP_8
+    bindsym $mod+Mod2+Shift+9 move container to workspace $WORKSPACE_LAPTOP_9
+    bindsym $mod+Mod2+Shift+0 move container to workspace $WORKSPACE_LAPTOP_10
+    bindsym $mod+Mod2+Shift+minus move container to workspace $WORKSPACE_LAPTOP_11
+    bindsym $mod+Mod2+Shift+plus move container to workspace $WORKSPACE_LAPTOP_12
+
+    # Change workspace on current output
+    bindsym $mod+Left workspace prev_on_output
+    bindsym $mod+Right workspace next_on_output
+
+#
+# Layout stuff:
+#
+    # You can "split" the current object of your focus with
+    # $mod+b or $mod+v, for horizontal and vertical splits
+    # respectively.
+    bindsym $mod+h splith
+    bindsym $mod+v splitv
+
+    # Switch the current container between different layout styles
+    bindsym $mod+s layout stacking
+    bindsym $mod+w layout tabbed
+    bindsym $mod+e layout toggle split
+
+    # Make the current focus fullscreen
+    bindsym $mod+Shift+f fullscreen
+
+    # Toggle the current focus between tiling and floating mode
+    bindsym $mod+f floating toggle
+#
+# Resizing containers:
+#
+mode "resize" {
+    # left will shrink the containers width
+    # right will grow the containers width
+    # up will shrink the containers height
+    # down will grow the containers height
+    bindsym $LEFT resize shrink width 50px
+    bindsym $DOWN resize grow height 50px
+    bindsym $UP resize shrink height 50px
+    bindsym $RIGHT resize grow width 50px
+
+    # ditto, with arrow keys
+    bindsym Left resize shrink width 50px
+    bindsym Down resize grow height 50px
+    bindsym Up resize shrink height 50px
+    bindsym Right resize grow width 50px
+
+    # return to default mode
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+r mode "resize"
