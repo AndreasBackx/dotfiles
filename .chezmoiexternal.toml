@@ -1,0 +1,36 @@
+
+[".oh-my-zsh"]
+    type = "git-repo"
+    url = "https://github.com/ohmyzsh/ohmyzsh.git"
+    refreshPeriod = "168h"
+
+[".oh-my-zsh/custom/plugins/zsh-autosuggestions"]
+    type = "git-repo"
+    url = "https://github.com/zsh-users/zsh-autosuggestions.git"
+    refreshPeriod = "168h"
+    exact = true
+
+[".oh-my-zsh/custom/plugins/zsh-syntax-highlighting"]
+    type = "git-repo"
+    url = "https://github.com/zsh-users/zsh-syntax-highlighting.git"
+    refreshPeriod = "168h"
+    exact = true
+
+[".oh-my-zsh/custom/plugins/zsh-completions"]
+    type = "git-repo"
+    url = "https://github.com/zsh-users/zsh-completions.git"
+    refreshPeriod = "168h"
+    exact = true
+
+
+[".oh-my-zsh/custom/themes/spaceship-prompt"]
+    type = "git-repo"
+    url = "https://github.com/denysdovhan/spaceship-prompt.git"
+    refreshPeriod = "168h"
+    exact = true
+
+[".tmux"]
+    type = "git-repo"
+    url = "https://github.com/gpakosz/.tmux.git"
+    refreshPeriod = "168h"
+    exact = true
