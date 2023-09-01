@@ -1,6 +1,9 @@
 #!/bin/zsh
 
-[ `whoami` = andreas ] || exec su -c $0 andreas
+touch /var/log/hyprland.log
+chown {{ .chezmoi.username }}:{{ .chezmoi.group }} /var/log/hyprland.log
+
+[ `whoami` = {{ .chezmoi.username }} ] || exec su -c $0 {{ .chezmoi.username }}
 
 if [ "x$XDG_SESSION_TYPE" = "xwayland" ] &&
     [ "x$XDG_SESSION_CLASS" != "xgreeter" ] &&
