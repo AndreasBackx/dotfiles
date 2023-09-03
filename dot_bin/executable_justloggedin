@@ -1,0 +1,8 @@
+#!/usr/bin/env zsh
+
+# If it's been more than 10 seconds since login, return exit code 1.
+# As then they did not just log in.
+if [[ $(($(date +%s) - $(last --time-format iso | grep andreas | grep 'still logged in' | head -1 | awk '{print $4}' | xargs -I {} date -d {} '+%s'))) -gt 10 ]]; then
+    exit 1
+fi
+exit 0
