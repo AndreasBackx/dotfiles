@@ -100,7 +100,7 @@
             "custom/spotify"
         ],
         "modules-left": [
-            "wlr/workspaces",
+            "hyprland/workspaces",
             "hyprland/submap",
             "hyprland/window"
         ],
@@ -146,7 +146,7 @@
         "tray": {
             "spacing": 12
         },
-        "wlr/workspaces": {
+        "hyprland/workspaces": {
             "format": "{icon}",
             "format-icons": {
                 "101": "1",
@@ -283,7 +283,7 @@
             "custom/spotify"
         ],
         "modules-left": [
-            "wlr/workspaces",
+            "hyprland/workspaces",
             "hyprland/submap",
             "hyprland/window"
         ],
@@ -330,7 +330,7 @@
         "tray": {
             "spacing": 12
         },
-        "wlr/workspaces": {
+        "hyprland/workspaces": {
             "format": "{icon}",
             "format-icons": {
                 "301": "1",
@@ -383,7 +383,7 @@
         "layer": "top",
         "modules-center": [],
         "modules-left": [
-            "wlr/workspaces",
+            "hyprland/workspaces",
             "hyprland/submap",
             "hyprland/window"
         ],
@@ -395,7 +395,7 @@
             "@MONITOR_LEFT"
         ],
         "position": "bottom",
-        "wlr/workspaces": {
+        "hyprland/workspaces": {
             "format": "{name}",
             "on-click": "activate",
             "on-scroll-down": "hyprctl dispatch workspace m-1",
@@ -434,7 +434,7 @@
         "layer": "top",
         "modules-center": [],
         "modules-left": [
-            "wlr/workspaces",
+            "hyprland/workspaces",
             "hyprland/submap",
             "hyprland/window"
         ],
@@ -446,7 +446,7 @@
             "@MONITOR_RIGHT"
         ],
         "position": "bottom",
-        "wlr/workspaces": {
+        "hyprland/workspaces": {
             "format": "{icon}",
             "format-icons": {
                 "201": "1",
