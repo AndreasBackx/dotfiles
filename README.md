@@ -5,7 +5,7 @@ This repository contains most if not all of the changes made to my machines that
 
 ## Example `~/.config/chezmoi/chezmoi.toml`
 
-```
+```toml
 [data]
 [data.monitors]
 [data.monitors.left]
