@@ -1,9 +1,9 @@
 # See https://wiki.hyprland.org/Configuring/Monitors/
 monitor=,preferred,auto,auto
 
-monitor=desc:Dell Inc. DELL U2515H 9X2VY4B101CL, 2560x1440, 0x30, 1, transform, 1
-monitor=desc:Acer Technologies XF270HU T78EE0048521, 2560x1440@144Hz, 1440x570, 1
-monitor=desc:Dell Inc. DELL U2515H 9X2VY4B101BL, 2560x1440, 4000x0, 1, transform, 3
+monitor=desc:{{ .monitors.left.name }}, {{ .monitors.left.mode }}, {{ .monitors.left.position }}, {{ .monitors.left.scale }}, transform, 1
+monitor=desc:{{ .monitors.center.name }}, {{ .monitors.center.mode }}, {{ .monitors.center.position }}, {{ .monitors.center.scale }}
+monitor=desc:{{ .monitors.right.name }}, {{ .monitors.right.mode }}, {{ .monitors.right.position }}, {{ .monitors.right.scale }}, transform, 3
 
 exec = swaybg --output "$MONITOR_LEFT" --image ~/.config/wallpapers/dark/1440x2560/jon-snow.jpg --mode fill
 exec = swaybg --output "$MONITOR_CENTER" --image ~/.config/wallpapers/dark/2560x1440/jaime-lannister.jpg --mode fill

@@ -84,68 +84,6 @@
                 "^Slack \\| (.*)$": "$1"
             }
         },
-        "id": "center",
-        "idle_inhibitor": {
-            "format": "{icon}",
-            "format-icons": {
-                "activated": "",
-                "deactivated": ""
-            }
-        },
-        "layer": "top",
-        "memory": {
-            "format": "<span color=\"#6E6E6E\"></span>  {}%"
-        },
-        "modules-center": [
-            "custom/spotify"
-        ],
-        "modules-left": [
-            "hyprland/workspaces",
-            "hyprland/submap",
-            "hyprland/window"
-        ],
-        "modules-right": [
-            "custom/updates",
-            "custom/backup",
-            "custom/brightness",
-            "idle_inhibitor",
-            "custom/headphones",
-            "pulseaudio",
-            "cpu",
-            "memory",
-            "custom/power",
-            "clock",
-            "tray"
-        ],
-        "output": [
-            "@MONITOR_CENTER"
-        ],
-        "position": "bottom",
-        "pulseaudio": {
-            "format": "<span color=\"#6E6E6E\">{icon}</span>  {volume}%",
-            "format-icons": {
-                "car": "",
-                "default": [
-                    "",
-                    ""
-                ],
-                "handsfree": "",
-                "headphones": "",
-                "headset": "",
-                "muted": "",
-                "phone": "",
-                "portable": ""
-            },
-            "format-muted": "<span color=\"#6E6E6E\">{icon}  {volume}%</span>",
-            "on-click": "pamixer --toggle-mute",
-            "on-click-right": "pavucontrol",
-            "on-scroll-down": "pamixer --decrease 5",
-            "on-scroll-up": "pamixer --increase 5",
-            "scroll-step": 5
-        },
-        "tray": {
-            "spacing": 12
-        },
         "hyprland/workspaces": {
             "format": "{icon}",
             "format-icons": {
@@ -165,18 +103,67 @@
             "on-click": "activate",
             "on-scroll-down": "hyprctl dispatch workspace m-1",
             "on-scroll-up": "hyprctl dispatch workspace m+1"
+        },
+        "id": "center",
+        "idle_inhibitor": {
+            "format": "{icon}",
+            "format-icons": {
+                "activated": "",
+                "deactivated": ""
+            }
+        },
+        "layer": "top",
+        "memory": {
+            "format": "<span color=\"#6E6E6E\"></span>  {}%"
+        },
+        "modules-center": ["custom/spotify"],
+        "modules-left": [
+            "hyprland/workspaces",
+            "hyprland/submap",
+            "hyprland/window"
+        ],
+        "modules-right": [
+            "custom/updates",
+            "custom/backup",
+            "custom/brightness",
+            "idle_inhibitor",
+            "custom/headphones",
+            "pulseaudio",
+            "cpu",
+            "memory",
+            "custom/power",
+            "clock",
+            "tray"
+        ],
+        "output": ["{{ .monitors.center.name }}"],
+        "position": "bottom",
+        "pulseaudio": {
+            "format": "<span color=\"#6E6E6E\">{icon}</span>  {volume}%",
+            "format-icons": {
+                "car": "",
+                "default": ["", ""],
+                "handsfree": "",
+                "headphones": "",
+                "headset": "",
+                "muted": "",
+                "phone": "",
+                "portable": ""
+            },
+            "format-muted": "<span color=\"#6E6E6E\">{icon}  {volume}%</span>",
+            "on-click": "pamixer --toggle-mute",
+            "on-click-right": "pavucontrol",
+            "on-scroll-down": "pamixer --decrease 5",
+            "on-scroll-up": "pamixer --increase 5",
+            "scroll-step": 5
+        },
+        "tray": {
+            "spacing": 12
         }
     },
     {
         "battery": {
             "format": "<span color=\"#6E6E6E\">{icon}</span>  {capacity}%",
-            "format-icons": [
-                "",
-                "",
-                "",
-                "",
-                ""
-            ],
+            "format-icons": ["", "", "", "", ""],
             "interval": 60,
             "states": {
                 "critical": 15,
@@ -267,69 +254,6 @@
                 "^Slack \\| (.*)$": "$1"
             }
         },
-        "id": "laptop",
-        "idle_inhibitor": {
-            "format": "{icon}",
-            "format-icons": {
-                "activated": "",
-                "deactivated": ""
-            }
-        },
-        "layer": "top",
-        "memory": {
-            "format": "<span color=\"#6E6E6E\"></span>  {}%"
-        },
-        "modules-center": [
-            "custom/spotify"
-        ],
-        "modules-left": [
-            "hyprland/workspaces",
-            "hyprland/submap",
-            "hyprland/window"
-        ],
-        "modules-right": [
-            "custom/updates",
-            "custom/backup",
-            "custom/brightness",
-            "idle_inhibitor",
-            "custom/headphones",
-            "pulseaudio",
-            "cpu",
-            "memory",
-            "battery",
-            "custom/power",
-            "clock",
-            "tray"
-        ],
-        "output": [
-            "@MONITOR_LAPTOP"
-        ],
-        "position": "bottom",
-        "pulseaudio": {
-            "format": "<span color=\"#6E6E6E\">{icon}</span>  {volume}%",
-            "format-icons": {
-                "car": "",
-                "default": [
-                    "",
-                    ""
-                ],
-                "handsfree": "",
-                "headphones": "",
-                "headset": "",
-                "muted": "",
-                "phone": "",
-                "portable": ""
-            },
-            "format-muted": "<span color=\"#6E6E6E\">{icon}  {volume}%</span>",
-            "on-click": "pamixer --toggle-mute",
-            "on-click-right": "pavucontrol",
-            "on-scroll-down": "pamixer --decrease 5",
-            "on-scroll-up": "pamixer --increase 5",
-            "scroll-step": 5
-        },
-        "tray": {
-            "spacing": 12
-        },
         "hyprland/workspaces": {
             "format": "{icon}",
             "format-icons": {
@@ -349,6 +273,62 @@
             "on-click": "activate",
             "on-scroll-down": "hyprctl dispatch workspace m-1",
             "on-scroll-up": "hyprctl dispatch workspace m+1"
+        },
+        "id": "laptop",
+        "idle_inhibitor": {
+            "format": "{icon}",
+            "format-icons": {
+                "activated": "",
+                "deactivated": ""
+            }
+        },
+        "layer": "top",
+        "memory": {
+            "format": "<span color=\"#6E6E6E\"></span>  {}%"
+        },
+        "modules-center": ["custom/spotify"],
+        "modules-left": [
+            "hyprland/workspaces",
+            "hyprland/submap",
+            "hyprland/window"
+        ],
+        "modules-right": [
+            "custom/updates",
+            "custom/backup",
+            "custom/brightness",
+            "idle_inhibitor",
+            "custom/headphones",
+            "pulseaudio",
+            "cpu",
+            "memory",
+            "battery",
+            "custom/power",
+            "clock",
+            "tray"
+        ],
+        "output": ["{{ .monitors.laptop.name }}"],
+        "position": "bottom",
+        "pulseaudio": {
+            "format": "<span color=\"#6E6E6E\">{icon}</span>  {volume}%",
+            "format-icons": {
+                "car": "",
+                "default": ["", ""],
+                "handsfree": "",
+                "headphones": "",
+                "headset": "",
+                "muted": "",
+                "phone": "",
+                "portable": ""
+            },
+            "format-muted": "<span color=\"#6E6E6E\">{icon}  {volume}%</span>",
+            "on-click": "pamixer --toggle-mute",
+            "on-click-right": "pavucontrol",
+            "on-scroll-down": "pamixer --decrease 5",
+            "on-scroll-up": "pamixer --increase 5",
+            "scroll-step": 5
+        },
+        "tray": {
+            "spacing": 12
         }
     },
     {
@@ -379,6 +359,12 @@
                 "^Slack \\| (.*)$": "$1"
             }
         },
+        "hyprland/workspaces": {
+            "format": "{name}",
+            "on-click": "activate",
+            "on-scroll-down": "hyprctl dispatch workspace m-1",
+            "on-scroll-up": "hyprctl dispatch workspace m+1"
+        },
         "id": "left",
         "layer": "top",
         "modules-center": [],
@@ -387,20 +373,9 @@
             "hyprland/submap",
             "hyprland/window"
         ],
-        "modules-right": [
-            "custom/brightness",
-            "clock"
-        ],
-        "output": [
-            "@MONITOR_LEFT"
-        ],
-        "position": "bottom",
-        "hyprland/workspaces": {
-            "format": "{name}",
-            "on-click": "activate",
-            "on-scroll-down": "hyprctl dispatch workspace m-1",
-            "on-scroll-up": "hyprctl dispatch workspace m+1"
-        }
+        "modules-right": ["custom/brightness", "clock"],
+        "output": ["{{ .monitors.left.name }}"],
+        "position": "bottom"
     },
     {
         "clock": {
@@ -430,22 +405,6 @@
                 "^Slack \\| (.*)$": "$1"
             }
         },
-        "id": "right",
-        "layer": "top",
-        "modules-center": [],
-        "modules-left": [
-            "hyprland/workspaces",
-            "hyprland/submap",
-            "hyprland/window"
-        ],
-        "modules-right": [
-            "custom/brightness",
-            "clock"
-        ],
-        "output": [
-            "@MONITOR_RIGHT"
-        ],
-        "position": "bottom",
         "hyprland/workspaces": {
             "format": "{icon}",
             "format-icons": {
@@ -465,6 +424,17 @@
             "on-click": "activate",
             "on-scroll-down": "hyprctl dispatch workspace m-1",
             "on-scroll-up": "hyprctl dispatch workspace m+1"
-        }
+        },
+        "id": "right",
+        "layer": "top",
+        "modules-center": [],
+        "modules-left": [
+            "hyprland/workspaces",
+            "hyprland/submap",
+            "hyprland/window"
+        ],
+        "modules-right": ["custom/brightness", "clock"],
+        "output": ["{{ .monitors.right.name }}"],
+        "position": "bottom"
     }
 ]
