@@ -3,6 +3,44 @@
 
 This repository contains most if not all of the changes made to my machines that run Arch Linux, Fedora, Ubuntu, or CentOS, but primarily Arch Linux as it's what I use on my personal computers. It should support both sway and i3.
 
+## Example `~/.config/chezmoi/chezmoi.toml`
+
+```
+[data]
+[data.monitors]
+[data.monitors.left]
+name = "Dell Inc. DELL U3219Q F2XWXV2"
+mode = "3840x2160@60Hz"
+position = "0x0"
+scale = "1.3"
+
+[data.monitors.center]
+name = "Acer Technologies XV340CK P T5Y000013E00"
+mode = "3440x1440@144Hz"
+position = "1661x465"
+scale = "1"
+
+[data.monitors.right]
+name = "Dell Inc. DELL U2515H 9X2VY6A80A8L"
+mode = "2560x1440@144Hz"
+position = "5101x227"
+scale = "1"
+
+[data.monitors.laptop]
+name = "LG Display 0x0662"
+mode = "1920x1080@60Hz"
+position = "3181x1905"
+scale = "1"
+
+[edit]
+    command = "code"
+    args = ["--wait"]
+
+[git]
+    autoCommit = true
+    autoPush = true
+```
+
 ## Unstaged File Templates
 
 `.config/.local-variables`
