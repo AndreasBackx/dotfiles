@@ -85,10 +85,6 @@ sudo chmod a+rw /dev/i2c-*
 # Or after quick logout
 sudo chgrp i2c /dev/i2c-*
 
-# oh-my-tmux
-git clone git@github.com:gpakosz/.tmux.git
-ln -s -f .tmux/.tmux.conf
-
 # delta
 ## Arch Linux
 paru -S git-delta

@@ -14,7 +14,7 @@ if [ "$clipboard_type" != "image/png" ]; then
 fi
 
 if is_wayland; then
-    wl-paste | imgur.sh | head -c -1 | wl-copy
+    wl-paste | imgur.sh | head -c -1/ | wl-copy
 else
 fi
 
