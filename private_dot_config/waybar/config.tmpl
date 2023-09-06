@@ -135,7 +135,7 @@
             "clock",
             "tray"
         ],
-        "output": ["{{ .monitors.center.name }}"],
+        "output": ["{{ index .monitors .monitors.selected "center" "name" }}"],
         "position": "bottom",
         "pulseaudio": {
             "format": "<span color=\"#6E6E6E\">{icon}</span>  {volume}%",
@@ -306,7 +306,7 @@
             "clock",
             "tray"
         ],
-        "output": ["{{ .monitors.laptop.name }}"],
+        "output": ["{{ index .monitors .monitors.selected "laptop" "name" }}"],
         "position": "bottom",
         "pulseaudio": {
             "format": "<span color=\"#6E6E6E\">{icon}</span>  {volume}%",
@@ -374,7 +374,7 @@
             "hyprland/window"
         ],
         "modules-right": ["custom/brightness", "clock"],
-        "output": ["{{ .monitors.left.name }}"],
+        "output": ["{{ index .monitors .monitors.selected "left" "name" }}"],
         "position": "bottom"
     },
     {
@@ -434,7 +434,7 @@
             "hyprland/window"
         ],
         "modules-right": ["custom/brightness", "clock"],
-        "output": ["{{ .monitors.right.name }}"],
+        "output": ["{{ index .monitors .monitors.selected "right" "name" }}"],
         "position": "bottom"
     }
 ]

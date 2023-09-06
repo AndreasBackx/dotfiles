@@ -1,11 +1,10 @@
 # See https://wiki.hyprland.org/Configuring/Monitors/
-monitor=,preferred,auto,auto
 
-monitor=desc:{{ .monitors.left.name }}, {{ .monitors.left.mode }}, {{ .monitors.left.position }}, {{ .monitors.left.scale }}, transform, 1
-monitor=desc:{{ .monitors.center.name }}, {{ .monitors.center.mode }}, {{ .monitors.center.position }}, {{ .monitors.center.scale }}
-monitor=desc:{{ .monitors.right.name }}, {{ .monitors.right.mode }}, {{ .monitors.right.position }}, {{ .monitors.right.scale }}, transform, 3
+monitor=desc:{{ index .monitors .monitors.selected "left" "name" }}, {{ index .monitors .monitors.selected "left" "mode" }}, {{ index .monitors .monitors.selected "left" "position" }}, {{ index .monitors .monitors.selected "left" "scale" }}, transform, 1
+monitor=desc:{{ index .monitors .monitors.selected "center" "name" }}, {{ index .monitors .monitors.selected "center" "mode" }}, {{ index .monitors .monitors.selected "center" "position" }}, {{ index .monitors .monitors.selected "center" "scale" }}
+monitor=desc:{{ index .monitors .monitors.selected "right" "name" }}, {{ index .monitors .monitors.selected "right" "mode" }}, {{ index .monitors .monitors.selected "right" "position" }}, {{ index .monitors .monitors.selected "right" "scale" }}, transform, 3
 
-exec = swaybg --output "$MONITOR_LEFT" --image ~/.config/wallpapers/dark/1440x2560/jon-snow.jpg --mode fill
-exec = swaybg --output "$MONITOR_CENTER" --image ~/.config/wallpapers/dark/2560x1440/jaime-lannister.jpg --mode fill
-exec = swaybg --output "$MONITOR_RIGHT" --image ~/.config/wallpapers/dark/1440x2560/tyrion-lannister.jpg --mode fill
+exec = swaybg --output {{ index .monitors .monitors.selected "left" "name" }} --image ~/.config/wallpapers/dark/1440x2560/jon-snow.jpg --mode fill
+exec = swaybg --output {{ index .monitors .monitors.selected "center" "name" }} --image ~/.config/wallpapers/dark/2560x1440/jaime-lannister.jpg --mode fill
+exec = swaybg --output {{ index .monitors .monitors.selected "right" "name" }} --image ~/.config/wallpapers/dark/1440x2560/tyrion-lannister.jpg --mode fill
 
