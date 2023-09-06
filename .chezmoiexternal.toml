@@ -22,7 +22,6 @@
     refreshPeriod = "168h"
     exact = true
 
-
 [".oh-my-zsh/custom/themes/spaceship-prompt"]
     type = "git-repo"
     url = "https://github.com/denysdovhan/spaceship-prompt.git"
@@ -32,5 +31,16 @@
 [".tmux"]
     type = "git-repo"
     url = "https://github.com/gpakosz/.tmux.git"
+    refreshPeriod = "168h"
+    exact = true
+
+[".local/share/pyenv"]
+    type = "git-repo"
+    url = "https://github.com/pyenv/pyenv.git"
+    refreshPeriod = "168h"
+
+[".local/share/pyenv/plugins/pyenv-virtualenv"]
+    type = "git-repo"
+    url = "https://github.com/pyenv/pyenv-virtualenv.git"
     refreshPeriod = "168h"
     exact = true
