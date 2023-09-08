@@ -33,7 +33,7 @@ scale = "1"
 
 [monitors.home.center]
 name = "Acer Technologies XF270HU T78EE0048521"
-mode = "3440x1440@144Hz"
+mode = "2560x1440@144Hz"
 position = "1440x570"
 scale = "1"
 
