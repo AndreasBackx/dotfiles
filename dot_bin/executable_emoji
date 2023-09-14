@@ -26,7 +26,6 @@
 
 source ~/.bin/utils.zsh
 
-
 # Where to save the emojis file.
 EMOJI_FILE="$HOME/.cache/emojis.txt"
 
@@ -43,44 +42,41 @@ URLS=(
     'https://emojipedia.org/flags/'
 )
 
-
 function notify() {
     if [ "$(command -v notify-send)" ]; then
         notify-send "$1" "$2"
     fi
 }
 
-
 function download() {
-    notify `basename "$0"` 'Downloading all emoji for your pleasure'
+    notify $(basename "$0") 'Downloading all emoji for your pleasure'
 
-    echo "" > "$EMOJI_FILE"
+    echo "" >"$EMOJI_FILE"
 
     for url in "${URLS[@]}"; do
         echo "Downloading: $url"
 
         # Download the list of emoji and remove all the junk around it
-        emojis=$(curl -s "$url" | \
-                 xmllint --html \
-                         --xpath '//ul[@class="emoji-list css_test1"]' - 2>/dev/null)
+        emojis=$(curl -s "$url" |
+            xmllint --html \
+                --xpath '//ul[@class="emoji-list css_test1"]' - 2>/dev/null)
 
         # Get rid of starting/closing ul tags
         emojis=$(echo "$emojis" | head -n -1 | tail -n +1)
 
         # Extract the emoji and its description
-        emojis=$(echo "$emojis" | \
-                 sed -rn 's/.*<span class="emoji">(.*)<\/span> (.*)<\/a><\/li>/\1 \2/p')
+        emojis=$(echo "$emojis" |
+            sed -rn 's/.*<span class="emoji">(.*)<\/span> (.*)<\/a><\/li>/\1 \2/p')
 
-        echo "$emojis" >> "$EMOJI_FILE"
+        echo "$emojis" >>"$EMOJI_FILE"
     done
 
-    notify `basename "$0"` "We're all set!"
+    notify $(basename "$0") "We're all set!"
 }
-
 
 function display() {
     emoji=$(cat "$EMOJI_FILE" | grep -v '#' | grep -v '^[[:space:]]*$')
-    line=$(echo "$emoji" | rofi -dmenu -i -p emoji -kb-custom-1 Ctrl+c $@)
+    line=$(echo "$emoji" | rofi -dmenu -i -p emoji $@)
     exit_code=$?
 
     line=($line)
@@ -97,7 +93,6 @@ function display() {
     fi
 
 }
-
 
 # Some simple argparsing
 if [[ "$1" =~ -D|--download ]]; then
