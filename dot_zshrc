@@ -5,7 +5,6 @@ source ~/.bin/hg_commit.zsh
 ## OH MY ZSH ##
 plugins=(
   fzf
-  autoupdate
   zsh-autosuggestions
   zsh-syntax-highlighting
 )
@@ -52,6 +51,6 @@ SPACESHIP_RPROMPT_ORDER+=(
 source $HOME/.oh-my-zsh/oh-my-zsh.sh
 compinit -d $XDG_CACHE_HOME/zsh/zcompdump-$ZSH_VERSION
 
-if type "exa" >/dev/null; then
-  alias ls="exa"
+if type "eza" >/dev/null; then
+  alias ls="eza"
 fi
