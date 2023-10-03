@@ -21,8 +21,7 @@ export LANG=en_GB.UTF-8
 export PROMPT_EOL_MARK=""
 
 # autoupdate
-# export UPDATE_ZSH_DAYS=30
-DISABLE_UPDATE_PROMPT=true
+zstyle ':omz:update' mode auto
 
 ## Linux / MacOS ##
 machine=$(uname -s)
