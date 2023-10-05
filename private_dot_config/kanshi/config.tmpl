@@ -9,7 +9,7 @@ profile "Home TV" {
     output "{{ .monitors.home.center.name }}" position {{ .monitors.home.center.position | replace "x" "," }}
     output "{{ .monitors.home.right.name }}" position {{ .monitors.home.right.position | replace "x" "," }} transform 270
 
-    output "{{ .monitors.home.tv.name }}" position {{ .monitors.home.tv.position | replace "x" "," }} scale {{ .monitors.home.tv.scale }}
+    output "{{ .monitors.home.tv.name }}" position {{ .monitors.home.tv.position | replace "x" "," }} scale {{ .monitors.home.tv.scale }} disable
 }
 
 profile "Office Work Laptop Open" {
