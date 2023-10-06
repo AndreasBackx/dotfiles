@@ -37,6 +37,22 @@ function check_live() {
     fi
 }
 
+function update_package_manager() {
+    if is_fedora; then
+        sudo dnf upgrade --refresh --assumeyes
+    else
+        paru -Syu --noconfirm
+    fi
+}
+
+function update_flatpak() {
+    flatpak remove --unused --assumeyes && flatpak update --assumeyes
+}
+
+function update_snap() {
+    sudo snap refresh
+}
+
 case "$1" in
     check)
         check_cache
@@ -50,13 +66,32 @@ case "$1" in
         done
         ;;
     update)
-        if is_fedora; then
-            sudo dnf upgrade --refresh --assumeyes
-        else
-            paru -Syu --noconfirm
-        fi
-        flatpak remove --unused --assumeyes && flatpak update --assumeyes
-        sudo snap refresh
+        case "$2" in
+            --kitty)
+                kitty @ goto-layout vertical
+                kitty @ launch --title "Flatpak update" --no-response --dont-take-focus --type window -- updates update --flatpak
+                kitty @ launch --title "Snap update" --no-response --dont-take-focus --type window -- updates update --snap
+                kitty @ launch --title "Package manager update" --no-response --dont-take-focus --type window -- updates update --package-manager
+                ;;
+            --package-manager)
+                update_package_manager
+                ;;
+            --flatpak)
+                update_flatpak
+                ;;
+            --snap)
+                update_snap
+                ;;
+            *)
+                # If desktop environment is running.
+                if [[ -n "$DESKTOP_SESSION" ]]; then
+                    kitty @ launch --title "Starting update" --no-response --dont-take-focus --type os-window -- updates update --kitty
+                else
+                    update_package_manager
+                    update_flatpak
+                    update_snap
+                fi
+        esac
         ;;
     *)
         echo "Usage: $0 {check|monitor|update}"

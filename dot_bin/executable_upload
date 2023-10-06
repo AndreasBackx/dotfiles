@@ -3,7 +3,7 @@
 source ~/.bin/utils.zsh
 
 if is_wayland; then
-    clipboard_type=$(wl-paste -l)
+    clipboard_type=`wl-paste -l`
 else
 
 fi
@@ -14,7 +14,7 @@ if [ "$clipboard_type" != "image/png" ]; then
 fi
 
 if is_wayland; then
-    wl-paste | imgur.sh | head -c -1/ | wl-copy
+    wl-paste | imgur.sh | wl-copy
 else
 fi
 

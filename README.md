@@ -1,7 +1,7 @@
 
 # Dotfiles
 
-This repository contains most if not all of the changes made to my machines that run Arch Linux, Fedora, Ubuntu, or CentOS, but primarily Arch Linux as it's what I use on my personal computers. The desktop environment setup is Hyprland.
+This repository contains most if not all of the changes made to my machines that run Arch Linux, Fedora, Ubuntu, or CentOS, but primarily Arch Linux as it's what I use on my personal computers. It should support both sway and i3.
 
 ## Example `~/.config/chezmoi/chezmoi.toml`
 
@@ -84,6 +84,10 @@ sudo cp /usr/share/ddcutil/data/45-ddcutil-i2c.rules /etc/udev/rules.d
 sudo chmod a+rw /dev/i2c-*
 # Or after quick logout
 sudo chgrp i2c /dev/i2c-*
+
+# oh-my-tmux
+git clone git@github.com:gpakosz/.tmux.git
+ln -s -f .tmux/.tmux.conf
 
 # delta
 ## Arch Linux
