@@ -23,6 +23,10 @@ export PROMPT_EOL_MARK=""
 # autoupdate
 export UPDATE_ZSH_DAYS=30
 
+# WhatsApp freeze fix
+# https://github.com/eneshecan/whatsapp-for-linux/issues/330
+export WEBKIT_DISABLE_DMABUF_RENDERER=1
+
 ## Linux / MacOS ##
 machine=$(uname -s)
 if [[ $machine == "Linux" ]]; then
