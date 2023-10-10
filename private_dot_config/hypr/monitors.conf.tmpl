@@ -10,4 +10,10 @@ monitor=desc:LG Electronics LG TV 0x01010101, disable
 exec = swaybg --output "{{ index .monitors .monitors.selected "left" "name" }}" --image ~/.config/wallpapers/dark/1440x2560/jon-snow.jpg --mode fill
 exec = swaybg --output "{{ index .monitors .monitors.selected "center" "name" }}" --image ~/.config/wallpapers/dark/2560x1440/jaime-lannister.jpg --mode fill
 exec = swaybg --output "{{ index .monitors .monitors.selected "right" "name" }}" --image ~/.config/wallpapers/dark/1440x2560/tyrion-lannister.jpg --mode fill
+exec = swaybg --output "{{ index .monitors .monitors.selected "laptop" "name" }}" --image  ~/.config/wallpapers/dark/2560x1440/jaime-lannister.jpg --mode fill
 
+
+# Turn on/off laptop with lid.
+bindl = , switch:off:Lid Switch,exec,hyprctl keyword monitor "desc:{{ index .monitors .monitors.selected "laptop" "name" }}, {{ index .monitors .monitors.selected "laptop" "mode" }}, {{ index .monitors .monitors.selected "laptop" "position" }}, 1"
+# trigger when the switch is turning on
+bindl = , switch:on:Lid Switch,exec,hyprctl keyword monitor "desc:{{ index .monitors .monitors.selected "laptop" "name" }}, disable"
