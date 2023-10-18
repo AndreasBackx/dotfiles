@@ -6,9 +6,9 @@ source ~/.bin/utils.zsh
 
 function check_cache() {
     if is_fedora; then
-        amount=`dnf check-update --cacheonly --quiet --disablerepo="cpe-yum*" | wc -l`
+        amount=$(dnf check-update --cacheonly --quiet --disablerepo="cpe-yum*" | wc -l)
     else
-        amount=`paru -Qu | wc -l`
+        amount=$(paru -Qu | wc -l)
     fi
 
     # Return as fast as possible, then update the repos and update.
@@ -21,9 +21,12 @@ function check_cache() {
 
 function check_live() {
     if is_fedora; then
-        amount=`dnf check-update --refresh --quiet --disablerepo="cpe-yum*" | wc -l || echo "-1"`
+        amount=$(dnf check-update --refresh --quiet --disablerepo="cpe-yum*" | wc -l || echo "-1")
     else
-        amount=`paru -Syy &> /dev/null; paru -Qu | wc -l || echo "-1"`
+        amount=$(
+            paru -Syy &>/dev/null
+            paru -Qu | wc -l || echo "-1"
+        )
     fi
 
     if [[ "$amount" == "-1" ]]; then
@@ -54,48 +57,50 @@ function update_snap() {
 }
 
 case "$1" in
-    check)
-        check_cache
+check)
+    check_cache
+    check_live
+    ;;
+monitor)
+    check_cache
+    while true; do
         check_live
+        sleep 60
+    done
+    ;;
+update)
+    case "$2" in
+    --kitty)
+        kitty @ goto-layout vertical
+        kitty @ launch --title "Flatpak update" --no-response --dont-take-focus --type window -- updates update --flatpak
+        kitty @ launch --title "Snap update" --no-response --dont-take-focus --type window -- updates update --snap
+        kitty @ launch --title "Package manager update" --no-response --dont-take-focus --type window -- updates update --package-manager
         ;;
-    monitor)
-        check_cache
-        while true; do
-            check_live
-            sleep 60
-        done
+    --package-manager)
+        update_package_manager
         ;;
-    update)
-        case "$2" in
-            --kitty)
-                kitty @ goto-layout vertical
-                kitty @ launch --title "Flatpak update" --no-response --dont-take-focus --type window -- updates update --flatpak
-                kitty @ launch --title "Snap update" --no-response --dont-take-focus --type window -- updates update --snap
-                kitty @ launch --title "Package manager update" --no-response --dont-take-focus --type window -- updates update --package-manager
-                ;;
-            --package-manager)
-                update_package_manager
-                ;;
-            --flatpak)
-                update_flatpak
-                ;;
-            --snap)
-                update_snap
-                ;;
-            *)
-                # If desktop environment is running.
-                if [[ -n "$DESKTOP_SESSION" ]]; then
-                    kitty @ launch --title "Starting update" --no-response --dont-take-focus --type os-window -- updates update --kitty
-                else
-                    update_package_manager
-                    update_flatpak
-                    update_snap
-                fi
-        esac
+    --flatpak)
+        update_flatpak
+        ;;
+    --snap)
+        update_snap
         ;;
     *)
-        echo "Usage: $0 {check|monitor|update}"
-        exit 2
+        # If desktop environment is running.
+        if [[ -n "$DESKTOP_SESSION" ]]; then
+            kitty @ --to unix:/tmp/kitty launch --title "Starting update" --no-response --dont-take-focus --type os-window --os-window-class updates -- updates update --kitty
+        else
+            update_package_manager
+            update_flatpak
+            update_snap
+        fi
+        ;;
+    esac
+    ;;
+*)
+    echo "Usage: $0 {check|monitor|update}"
+    exit 2
+    ;;
 esac
 
 exit 0
