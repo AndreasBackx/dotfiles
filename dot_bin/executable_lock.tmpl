@@ -17,8 +17,8 @@ file_location_center=/tmp/lockscreen_center.$extension
 file_location_right=/tmp/lockscreen_right.$extension
 
 if is_wayland; then
-    outputs=$(swaymsg -t get_outputs)
-    monitor_left=$(get-output-name "$MONITOR_LEFT" "$outputs")
+    outputs=$(hyprctl monitors -j || swaymsg -t get_outputs)
+    monitor_left=$(get-output-name "{{ index .monitors .monitors.selected "left" "name" }}" "$outputs")
     monitor_center=$(get-output-name "$MONITOR_CENTER" "$outputs")
     monitor_right=$(get-output-name "$MONITOR_RIGHT" "$outputs")
 
@@ -27,10 +27,10 @@ else
 
 fi
 
-spotify_status=`spotifycl status`
+spotify_status=$(spotifycl status)
 spotifycl pause &
 
-is_muted=`pamixer --get-mute || true`
+is_muted=$(pamixer --get-mute || true)
 if [[ "$is_muted" == "false" ]]; then
     echo "Muting"
     pamixer --mute &
@@ -39,8 +39,7 @@ fi
 # Pause notifications
 makoctl set-mode dnd
 
-
-if [[ $# -eq 1 ]] ; then
+if [[ $# -eq 1 ]]; then
     sudo systemctl $1
 fi
 

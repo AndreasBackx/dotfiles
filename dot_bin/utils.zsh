@@ -2,9 +2,9 @@
 
 function is_wayland() {
     if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
-        return 0  # success
+        return 0 # success
     else
-        return 1  # failure
+        return 1 # failure
     fi
 }
 
@@ -58,17 +58,17 @@ function get-output-name() {
     fi
 
     if [[ -z "$outputs" ]]; then
-        outputs=`swaymsg -t get_outputs`
+        outputs=$(hyprctl monitors -j || swaymsg -t get_outputs)
     fi
 
     echo "$outputs" | jq -r ".[] | . + {description: \"\(.make) \(.model) \(.serial)\"} | select(.description == \"$description\") | .name"
 }
 
 function is_fedora() {
-    if grep 'Fedora' /etc/os-release > /dev/null; then
-        return 0  # success
+    if grep 'Fedora' /etc/os-release >/dev/null; then
+        return 0 # success
     else
-        return 1  # failure
+        return 1 # failure
     fi
 }
 
@@ -77,8 +77,8 @@ function notify() {
     message=$1
     urgency=${2:-normal}
     expire_time=${3:-5000}
-    if [ -t 0 ] ; then
-        >&2 echo "$message"
+    if [ -t 0 ]; then
+        echo >&2 "$message"
     else
         notify-send -u "$urgency" "$message" --expire-time "$expire_time"
     fi
