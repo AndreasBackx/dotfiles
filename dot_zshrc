@@ -51,21 +51,4 @@ SPACESHIP_RPROMPT_ORDER+=(
 )
 
 source $HOME/.oh-my-zsh/oh-my-zsh.sh
-# source ${ZSH_CUSTOM}/plugins/zsh-autocomplete/zsh-autocomplete.plugin.zsh
-
-# # Delay zsh-autocomplete
-# zstyle ':autocomplete:*' delay 0.1
-
-# # Disable autocomplete history
-# () {
-#    local -a prefix=( '\e'{\[,O} )
-#    local -a up=( ${^prefix}A ) down=( ${^prefix}B )
-#    local key=
-#    for key in $up[@]; do
-#       bindkey "$key" up-line-or-history
-#    done
-#    for key in $down[@]; do
-#       bindkey "$key" down-line-or-history
-#    done
-# }
 compinit -d $XDG_CACHE_HOME/zsh/zcompdump-$ZSH_VERSION

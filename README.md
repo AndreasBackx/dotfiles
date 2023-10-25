@@ -3,6 +3,24 @@
 
 This repository contains most if not all of the changes made to my machines that run Arch Linux, Fedora, Ubuntu, or CentOS, but primarily Arch Linux as it's what I use on my personal computers. It should support both sway and i3.
 
+## Example `~/.config/chezmoi/chezmoi.toml`
+
+```toml
+[data]
+[data.monitors]
+selected = "home"
+
+[edit]
+    command = "code"
+    args = ["--wait"]
+
+[git]
+    autoCommit = true
+    autoPush = true
+```
+
+
+
 ## Unstaged File Templates
 
 `.config/.local-variables`
@@ -11,15 +29,6 @@ This repository contains most if not all of the changes made to my machines that
 
 # Optionally name the location of your shell environment.
 export ENV_LOCATION=""
-
-# You can use variables from ~/.config/.variables.
-export MONITOR_LEFT="$MONITOR_HOME_LEFT"
-export MONITOR_CENTER="$MONITOR_HOME_CENTER"
-export MONITOR_RIGHT="$MONITOR_HOME_RIGHT"
-# export MONITOR_TV="$MONITOR_HOME_TV"
-# export MONITOR_LAPTOP=""
-
-# export MONITOR_HOME_CENTER_REFRESH_RATE="144.06"
 
 # If you want to disable the monitors cli.
 # export DISABLE_MONITORS="yes"
@@ -50,51 +59,12 @@ export GITHUB_TOKEN=""
 ## Installation
 
 ```zsh
-echo ".cfg" >> .gitignore
-git clone --bare git@github.com:AndreasBackx/dotfiles.git $HOME/.cfg
-alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
-mkdir -p .config-backup
-config checkout 2>&1 | egrep "\s+\." | awk {'print $1'} | xargs -I{} mv {} .config-backup/{}
-config checkout
-config config --local status.showUntrackedFiles no
-
 touch ~/.config/.secrets
 touch ~/.config/.local-variables
-
-source ~/.zprofile
-source ~/.zshenv
-source ~/.zshrc
 
 # Homebrew
 git clone https://github.com/Homebrew/brew ~/.homebrew
 brew update
-
-# oh-my-zsh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --keep-zshrc
-
-# spaceship-prompt
-git clone git@github.com:denysdovhan/spaceship-prompt.git "$ZSH_CUSTOM/themes/spaceship-prompt" --depth=1
-ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme"
-
-# starship-prompt (for non-zsh)
-curl -sS https://starship.rs/install.sh | sh
-
-# zsh-autosuggestions
-git clone git@github.com:zsh-users/zsh-autosuggestions.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-chmod 755 ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions -R
-
-# zsh-syntax-highlighting
-git clone git@github.com:zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-chmod 755 ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting -R
-
-# zsh-completions
-git clone git@github.com:zsh-users/zsh-completions ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions
-
-# zsh-autocomplete
-git clone git@github.com:marlonrichert/zsh-autocomplete ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-autocomplete
-
-# autoupdate
-git clone git@github.com:TamCore/autoupdate-oh-my-zsh-plugins.git ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/autoupdate
 
 # fzf
 ## Arch Linux
@@ -105,12 +75,6 @@ sudo dnf install fzf
 sudo apt-get install fzf
 ## MacOS
 brew install fzf
-
-# pyenv
-git clone git@github.com:pyenv/pyenv.git $PYENV_ROOT
-cd $PYENV_ROOT && src/configure && make -C src
-git clone git@github.com:pyenv/pyenv-virtualenv.git $(pyenv root)/plugins/pyenv-virtualenv
-git clone git@github.com:pyenv/pyenv-update.git $(pyenv root)/plugins/pyenv-update
 
 # ddcutil i2c
 sudo groupadd --system i2c
