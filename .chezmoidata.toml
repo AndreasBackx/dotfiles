@@ -21,7 +21,7 @@ scale = "1"
 [monitors.work.laptop]
 name = "LG Display 0x0662"
 mode = "1920x1080@60Hz"
-position = "2874x1666"
+position = "2454x2226"
 scale = "1"
 
 [monitors.home]
