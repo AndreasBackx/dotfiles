@@ -4,24 +4,24 @@
 name = "Dell Inc. DELL U3219Q F2XWXV2"
 mode = "3840x2160@60Hz"
 position = "0x0"
-scale = "1.3"
+scale = "1.27525528811"
 
 [monitors.work.center]
 name = "Acer Technologies XV340CK P T5Y000013E00"
 mode = "3440x1440@144Hz"
-position = "1661x757"
+position = "1694x786"
 scale = "1"
 
 [monitors.work.right]
 name = "Dell Inc. DELL U2515H 9X2VY6A80A8L"
 mode = "2560x1440@60Hz"
-position = "5101x227"
+position = "5134x226"
 scale = "1"
 
 [monitors.work.laptop]
 name = "LG Display 0x0662"
 mode = "1920x1080@60Hz"
-position = "3181x1905"
+position = "2874x1666"
 scale = "1"
 
 [monitors.home]
