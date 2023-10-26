@@ -19,8 +19,8 @@ file_location_right=/tmp/lockscreen_right.$extension
 if is_wayland; then
     outputs=$(hyprctl monitors -j || swaymsg -t get_outputs)
     monitor_left=$(get-output-name "{{ index .monitors .monitors.selected "left" "name" }}" "$outputs")
-    monitor_center=$(get-output-name "$MONITOR_CENTER" "$outputs")
-    monitor_right=$(get-output-name "$MONITOR_RIGHT" "$outputs")
+    monitor_center=$(get-output-name "{{ index .monitors .monitors.selected "center" "name" }}" "$outputs")
+    monitor_right=$(get-output-name "{{ index .monitors .monitors.selected "right" "name" }}" "$outputs")
 
     parallel --link -X "grim -t $extension -o {1} - | convert - -encoding $extension -scale 10% -scale 1000% {2}" ::: $monitor_left $monitor_center $monitor_right ::: $file_location_left $file_location_center $file_location_right
 else
@@ -49,7 +49,8 @@ if is_wayland; then
         --image "$monitor_left:$file_location_left" \
         --image "$monitor_center:$file_location_center" \
         --image "$monitor_right:$file_location_right" \
-        --font="Roboto Regular"
+        --font="Roboto Regular" \
+        --scaling fill
 else
 fi
 

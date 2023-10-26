@@ -9,7 +9,7 @@ scale = "1.3"
 [monitors.work.center]
 name = "Acer Technologies XV340CK P T5Y000013E00"
 mode = "3440x1440@144Hz"
-position = "1661x465"
+position = "1661x757"
 scale = "1"
 
 [monitors.work.right]
