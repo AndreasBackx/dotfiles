@@ -157,13 +157,14 @@ PATH="$PATH:$XDG_DATA_HOME/npm/bin/"
 local wayland_args="--enable-features=WaylandWindowDecorations --ozone-platform-hint=auto"
 # Keeping here in case the above doesn't work.
 local wayland_flatpak_args=" --enable-features=UseOzonePlatform --ozone-platform=wayland"
-alias spotify="spotify $wayland_args"
-alias mattermost-desktop="mattermost-desktop $wayland_args"
-alias zulip="zulip $wayland_args || flatpak run --socket=wayland org.zulip.Zulip $wayland_args"
+# alias spotify="spotify $wayland_args"
+# alias mattermost-desktop="mattermost-desktop $wayland_args"
+# alias signal-desktop="signal-desktop $wayland_args"
+alias zulip="zulip || flatpak run --socket=wayland org.zulip.Zulip $wayland_args"
 
 export OBSIDIAN_USE_WAYLAND=1
-alias obsidian="obsidian $wayland_args || flatpak run --socket=wayland md.obsidian.Obsidian $wayland_args"
-alias discord="discord $wayland_args || Discord $wayland_args || flatpak run --socket=wayland com.discordapp.Discord $wayland_args"
+alias obsidian="obsidian || flatpak run --socket=wayland md.obsidian.Obsidian $wayland_args"
+alias discord="discord || Discord || flatpak run --socket=wayland com.discordapp.Discord $wayland_args"
 
 
 
