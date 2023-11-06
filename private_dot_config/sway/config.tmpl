@@ -1,13 +1,13 @@
-include ~/.config/sway/variables
+output "{{ index .monitors .monitors.selected "center" "name" }}" adaptive_sync on
 
-output $MONITOR_CENTER adaptive_sync on
-output $MONITOR_LEFT bg ~/.config/wallpapers/jon-snow.jpg fill transform 270
-output $MONITOR_CENTER bg ~/.config/wallpapers/jaime-lannister.jpg fill
-output $MONITOR_LAPTOP bg ~/.config/wallpapers/jaime-lannister.jpg fill
-output $MONITOR_RIGHT bg ~/.config/wallpapers/tyrion-lannister.jpg fill transform 90
+output "{{ index .monitors .monitors.selected "left" "name" }}" mode {{ index .monitors .monitors.selected "left" "mode" }} pos {{ index .monitors .monitors.selected "left" "position" | replace "x" " " }} bg ~/.config/wallpapers/dark/1440x2560/jon-snow.jpg fill transform 270
+output "{{ index .monitors .monitors.selected "center" "name" }}" mode {{ index .monitors .monitors.selected "center" "mode" }} pos {{ index .monitors .monitors.selected "center" "position" | replace "x" " " }} bg ~/.config/wallpapers/dark/2560x1440/jaime-lannister.jpg fill
+output "{{ index .monitors .monitors.selected "right" "name" }}" mode {{ index .monitors .monitors.selected "right" "mode" }} pos {{ index .monitors .monitors.selected "right" "position" | replace "x" " " }} bg ~/.config/wallpapers/dark/1440x2560/tyrion-lannister.jpg fill transform 90
 
-bindswitch --locked lid:off output $MONITOR_LAPTOP enable
-bindswitch --locked lid:on output $MONITOR_LAPTOP disable
+output "{{ index .monitors .monitors.selected "laptop" "name" }}" mode {{ index .monitors .monitors.selected "laptop" "mode" }} pos {{ index .monitors .monitors.selected "laptop" "position" | replace "x" " " }} bg ~/.config/wallpapers/dark/2560x1440/jaime-lannister.jpg fill
+
+bindswitch --locked lid:off output {{ index .monitors .monitors.selected "laptop" "name" }} enable
+bindswitch --locked lid:on output {{ index .monitors .monitors.selected "laptop" "name" }} disable
 
 ### Idle configuration
 exec_always --no-startup-id swayidle -d \
