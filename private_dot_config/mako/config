@@ -19,7 +19,7 @@ icons=1
 max-icon-size=64
 
 layer=overlay
-output=HDMI-A-1
+output=DP-2
 
 sort=-time
 
@@ -37,3 +37,12 @@ border-color=#E52E71
 
 [mode=dnd]
 invisible=1
+
+[category="transfer"]
+border-color=#1C1C1C
+
+[category="transfer.complete"]
+border-color=#9CCC3D
+
+[category="transfer.error"]
+border-color=#E52E71
