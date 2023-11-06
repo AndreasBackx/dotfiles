@@ -1,21 +1,23 @@
 #!/usr/bin/env zsh
 
-source ~/.bin/utils.zsh
+source ~/.config/.secrets
 
-if is_wayland; then
-    clipboard_type=`wl-paste -l`
+types=$(wl-paste --list-types)
+if [[ $types == *image* ]]; then
+    notification_id=$(notify-send "Uploading to Pixelcloud" --print-id --category transfer)
+    tmpfile=$(mktemp --suffix .png)
+    wl-paste > $tmpfile
+
+    pixelcloud_link=$(px -n "$tmpfile")
+    notify-send "Uploaded to Pixelcloud" "$pixelcloud_link copied to clipboard!" --replace-id=$notification_id --category transfer.complete
+    echo $pixelcloud_link | wl-copy
 else
+    notification_id=$(notify-send "Uploading to Pastry" --print-id --category transfer)
+    pastry_id_link=$(wl-paste | pastry | sed 's/://g')
+    pastry_id_link_parts=(${(@s/ /)pastry_id_link})
+    pastry_id=${pastry_id_link_parts[1]}
+    pastry_link=${pastry_id_link_parts[2]}
 
+    notify-send "Uploaded to Pastry" "$pastry_id copied to clipboard!" --replace-id=$notification_id --category transfer.complete
+    echo $pastry_id | wl-copy --trim-newline
 fi
-
-if [ "$clipboard_type" != "image/png" ]; then
-    notify "Clipboard does not contain an image!" critical
-    exit 1
-fi
-
-if is_wayland; then
-    wl-paste | imgur.sh | wl-copy
-else
-fi
-
-notify "Imgur link saved to clipboard!" low
