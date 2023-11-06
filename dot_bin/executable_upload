@@ -1,23 +1,50 @@
 #!/usr/bin/env zsh
 
 source ~/.config/.secrets
+source ~/.config/.variables
 
 types=$(wl-paste --list-types)
 if [[ $types == *image* ]]; then
-    notification_id=$(notify-send "Uploading to Pixelcloud" --print-id --category transfer)
-    tmpfile=$(mktemp --suffix .png)
-    wl-paste > $tmpfile
+    if [[ $CHEZMOI_DATA_MONITORS_SELECTED == "work" ]]; then
+        service_name="Pixelcloud"
+    else
+        service_name="Imgur"
+    fi
 
-    pixelcloud_link=$(px -n "$tmpfile")
-    notify-send "Uploaded to Pixelcloud" "$pixelcloud_link copied to clipboard!" --replace-id=$notification_id --category transfer.complete
-    echo $pixelcloud_link | wl-copy
+    notification_id=$(notify-send "Uploading to $service_name" --print-id --category transfer)
+
+    if [[ $CHEZMOI_DATA_MONITORS_SELECTED == "work" ]]; then
+        tmpfile=$(mktemp --suffix .png)
+        wl-paste > $tmpfile
+        link=$(px -n "$tmpfile")
+    else
+        link=$(wl-paste | imgur.sh)
+    fi
+
+    notify-send "Uploaded to $service_name" "$link copied to clipboard!" --replace-id=$notification_id --category transfer.complete
+    echo $link | wl-copy
 else
-    notification_id=$(notify-send "Uploading to Pastry" --print-id --category transfer)
-    pastry_id_link=$(wl-paste | pastry | sed 's/://g')
-    pastry_id_link_parts=(${(@s/ /)pastry_id_link})
-    pastry_id=${pastry_id_link_parts[1]}
-    pastry_link=${pastry_id_link_parts[2]}
+    if [[ $CHEZMOI_DATA_MONITORS_SELECTED == "work" ]]; then
+        service_name="Pastry"
+    else
+        service_name="GitHub Gist"
+    fi
 
-    notify-send "Uploaded to Pastry" "$pastry_id copied to clipboard!" --replace-id=$notification_id --category transfer.complete
-    echo $pastry_id | wl-copy --trim-newline
+    notification_id=$(notify-send "Uploading to $service_name" --print-id --category transfer)
+
+    if [[ $CHEZMOI_DATA_MONITORS_SELECTED == "work" ]]; then
+        pastry_output=$(wl-paste | pastry | sed 's/://g')
+        pastry_output_parts=(${(@s/ /)pastry_output})
+        pastry_id=${pastry_output_parts[1]}
+        pastry_link=${pastry_output_parts[2]}
+
+        to_copy="$pastry_id"
+    else
+        service_name="GitHub Gist"
+        to_copy=$(wl-paste | gh gist create -)
+    fi
+
+
+    notify-send "Uploaded to $service_name" "$to_copy copied to clipboard!" --replace-id=$notification_id --category transfer.complete
+    echo $to_copy | wl-copy --trim-newline
 fi
