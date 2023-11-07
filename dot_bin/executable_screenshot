@@ -1,13 +1,7 @@
 #!/usr/bin/env zsh
 
-source ~/.bin/utils.zsh
+set -eo pipefail
 
-set -
+grim -g "$(slurp)" - | wl-copy
 
-if is_wayland; then
-    grim -g "$(slurp)" - | wl-copy
-else
-    maim -s | xclip -selection clipboard -t image/png
-fi
-
-notify "Screenshot saved to clipboard!"
+notify-send "📸 Screenshot saved to clipboard!" "Press Super+Shift+C to upload." --category transfer.complete
