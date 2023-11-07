@@ -34,6 +34,6 @@ windowrule=workspace 4 silent, title:^(Spotify)$
 windowrule=workspace 5 silent, ^(obsidian)$
 
 # Center
-windowrule=monitor desc:$MONITOR_CENTER, ^(Code)$
+windowrule=monitor desc:{{ index .monitors .monitors.selected "center" "name" }}, ^(Code)$
 
 # Right
