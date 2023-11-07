@@ -6,7 +6,7 @@ monitor=desc:{{ index .monitors .monitors.selected "center" "name" }}, {{ index 
 monitor=desc:{{ index .monitors .monitors.selected "right" "name" }}, {{ index .monitors .monitors.selected "right" "mode" }}, {{ index .monitors .monitors.selected "right" "position" }}, {{ index .monitors .monitors.selected "right" "scale" }}, transform, 3
 monitor=desc:{{ index .monitors .monitors.selected "laptop" "name" }}, {{ index .monitors .monitors.selected "laptop" "mode" }}, {{ index .monitors .monitors.selected "laptop" "position" }}, {{ index .monitors .monitors.selected "laptop" "scale" }}
 
-monitor=desc:LG Electronics LG TV 0x01010101, disable
+monitor=desc:{{ .monitors.home.tv.name }}, disable
 
 exec = swaybg --output "{{ index .monitors .monitors.selected "left" "name" }}" --image ~/.config/wallpapers/dark/1440x2560/jon-snow.jpg --mode fill
 exec = swaybg --output "{{ index .monitors .monitors.selected "center" "name" }}" --image ~/.config/wallpapers/dark/2560x1440/jaime-lannister.jpg --mode fill
