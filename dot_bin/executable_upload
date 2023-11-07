@@ -1,7 +1,16 @@
 #!/usr/bin/env zsh
 
+set -eo pipefail
+
 source ~/.config/.secrets
 source ~/.config/.variables
+
+on_error() {
+    notify-send "An error occured! ☹" "Error at $1" --category transfer.error
+    exit 1
+}
+
+trap 'on_error ${funcstack[1]}:$LINENO' ERR
 
 types=$(wl-paste --list-types)
 if [[ $types == *image* ]]; then
@@ -11,7 +20,7 @@ if [[ $types == *image* ]]; then
         service_name="Imgur"
     fi
 
-    notification_id=$(notify-send "Uploading to $service_name" --print-id --category transfer)
+    notification_id=$(notify-send "⏳ Uploading to $service_name" --print-id --category transfer)
 
     if [[ $CHEZMOI_DATA_MONITORS_SELECTED == "work" ]]; then
         tmpfile=$(mktemp --suffix .png)
@@ -21,7 +30,7 @@ if [[ $types == *image* ]]; then
         link=$(wl-paste | imgur.sh)
     fi
 
-    notify-send "Uploaded to $service_name" "$link copied to clipboard!" --replace-id=$notification_id --category transfer.complete
+    notify-send "🎉 Uploaded to $service_name" "$link copied to clipboard!" --replace-id=$notification_id --category transfer.complete
     echo $link | wl-copy
 else
     if [[ $CHEZMOI_DATA_MONITORS_SELECTED == "work" ]]; then
@@ -30,7 +39,7 @@ else
         service_name="GitHub Gist"
     fi
 
-    notification_id=$(notify-send "Uploading to $service_name" --print-id --category transfer)
+    notification_id=$(notify-send "⏳ Uploading to $service_name" --print-id --category transfer)
 
     if [[ $CHEZMOI_DATA_MONITORS_SELECTED == "work" ]]; then
         pastry_output=$(wl-paste | pastry | sed 's/://g')
@@ -44,7 +53,17 @@ else
         to_copy=$(wl-paste | gh gist create -)
     fi
 
-
-    notify-send "Uploaded to $service_name" "$to_copy copied to clipboard!" --replace-id=$notification_id --category transfer.complete
     echo $to_copy | wl-copy --trim-newline
+    notify_output_lines=($(notify-send "🎉 Uploaded to $service_name" "Link copied to clipboard, click here to delete." --print-id --replace-id=$notification_id --category transfer.complete --action=default=delete --expire-time 15000 ))
+    notification_id=$notify_output_lines[1]
+    action=$notify_output_lines[2]
+
+    if [[ $action == "default" ]]; then
+        # It means it was clicked.
+        if [[ $CHEZMOI_DATA_MONITORS_SELECTED == "work" ]]; then
+            notify-send "😫 You cannot delete pastries." --category transfer.error --replace-id=$notification_id
+        else
+            (gh gist delete $to_copy && notify-send "🗑 Deleted GitHub Gist!" "The original link remains in the clipboard." --replace-id=$notification_id --category transfer.complete) || notify-send "😫 Could not delete GitHub Gist!" "Try to delete it manually, it's still in your clipboard." --replace-id=$notification_id --category transfer.complete
+        fi
+    fi
 fi
