@@ -12,7 +12,7 @@ border-size=1
 margin=16
 padding=8
 
-default-timeout=5000
+default-timeout=15000
 ignore-timeout=0
 
 icons=1
@@ -24,6 +24,7 @@ output=DP-2
 sort=-time
 
 [urgency=low]
+default-timeout=5000
 text-color=#6E6E6E
 background-color=#141414
 progress-color=over #1C1C1C
