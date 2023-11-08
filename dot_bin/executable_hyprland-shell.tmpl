@@ -5,22 +5,17 @@ chown {{ .chezmoi.username }}:{{ .chezmoi.group }} /var/log/hyprland.log
 
 [ $(whoami) = {{ .chezmoi.username }} ] || exec su -c $0 {{ .chezmoi.username }}
 
-# if [ "x$XDG_SESSION_TYPE" = "xwayland" ] &&
-#     [ "x$XDG_SESSION_CLASS" != "xgreeter" ] &&
-#     [ -n "$SHELL" ] &&
-#     grep -q "$SHELL" /etc/shells &&
-#     ! (echo "$SHELL" | grep -q "false") &&
-#     ! (echo "$SHELL" | grep -q "nologin"); then
-#     if [ "$1" != '-l' ]; then
-#         exec bash -c "exec -l '$SHELL' -c '$0 -l $*'"
-#     else
-#         shift
-#     fi
-# fi
-
-if [[ ! -o login ]]; then
-    exec bash -c "exec -l '$SHELL' -c '$0 -l $*'"
+if [ "x$XDG_SESSION_TYPE" = "xwayland" ] &&
+    [ "x$XDG_SESSION_CLASS" != "xgreeter" ] &&
+    [ -n "$SHELL" ] &&
+    grep -q "$SHELL" /etc/shells &&
+    ! (echo "$SHELL" | grep -q "false") &&
+    ! (echo "$SHELL" | grep -q "nologin"); then
+    if [ "$1" != '-l' ]; then
+        exec bash -c "exec -l '$SHELL' -c '$0 -l $*'"
+    else
+        shift
+    fi
 fi
 
-shift
 exec /usr/bin/Hyprland $@ >/var/log/hyprland.log 2>&1
