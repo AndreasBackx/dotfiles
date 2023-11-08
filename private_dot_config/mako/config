@@ -16,7 +16,7 @@ default-timeout=15000
 ignore-timeout=0
 
 icons=1
-max-icon-size=64
+max-icon-size=48
 
 layer=overlay
 output=DP-2
