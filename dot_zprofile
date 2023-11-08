@@ -32,9 +32,6 @@ if [[ $machine == "Linux" ]]; then
   # Used for VS Code.
   export ELECTRON_TRASH="gio"
 
-  # https://wiki.archlinux.org/title/Firefox#Applications_on_Wayland_can_not_launch_Firefox
-  export MOZ_DBUS_REMOTE=1
-
   export XDG_DATA_HOME="$HOME/.local/share"
   export XDG_CONFIG_HOME="$HOME/.config"
   export XDG_STATE_HOME="$HOME/.local/state"
@@ -93,15 +90,6 @@ export BROWSER="/usr/bin/firefox"
 # https://youtrack.jetbrains.com/issue/IDEA-153134
 export _JAVA_AWT_WM_NONREPARENTING=1
 
-# Firefox new touchpad input support.
-export MOZ_USE_XINPUT2=1
-# Firefox use Wayland instead of XWayland.
-export MOZ_ENABLE_WAYLAND=1
-
-# Only on Nvidia as it causes llvmpipe software rendering on AMD.
-# https://gitlab.freedesktop.org/xorg/xserver/-/issues/1317
-# export XWAYLAND_NO_GLAMOR=1
-
 if [[ -n "$SSH_CONNECTION" ]]; then
   # Use GPG curses based pin entry via SSH.
   export GPG_TTY=$(tty)
@@ -152,7 +140,13 @@ PATH="$PATH:/var/lib/flatpak/exports/bin"
 PATH="$PATH:$HOME/.opam/default/bin"
 PATH="$PATH:$XDG_DATA_HOME/npm/bin/"
 
-# Wayland aliasing
+# Wayland
+# Firefox new touchpad input support.
+export MOZ_USE_XINPUT2=1
+# Firefox use Wayland instead of XWayland.
+export MOZ_ENABLE_WAYLAND=1
+
+export ELECTRON_OZONE_PLATFORM_HINT="wayland"
 local wayland_args="--enable-features=WaylandWindowDecorations --ozone-platform-hint=auto"
 # Keeping here in case the above doesn't work.
 local wayland_flatpak_args=" --enable-features=UseOzonePlatform --ozone-platform=wayland"
