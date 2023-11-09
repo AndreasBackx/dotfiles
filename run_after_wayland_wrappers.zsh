@@ -19,7 +19,14 @@ mkdir -p $wrappers_directory
 for key value in ${(kv)WRAPPERS}; do
   CONTENTS="#!/usr/bin/env zsh
 
-export PATH=\${PATH//:\$HOME\/.bin\/wrappers:/:}
+FILE_PATH="\${0:a}"
+PARENT_DIR="\${FILE_PATH:h}"
+export PATH=\${PATH//\$PARENT_DIR:/:}
+
+if [[ \$(which $key) == "\$FILE_PATH" ]]; then
+    notify-send \"Tried recursively running $key wrapper, exiting...\" --urgency=critical
+    exit 1
+fi
 $value
 "
 
