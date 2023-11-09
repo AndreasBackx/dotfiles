@@ -33,7 +33,6 @@ $value
   to="$wrappers_directory/$key"
   cmp --silent <(echo $CONTENTS) $to || (
     echo "$key wrapper changed, copying to $to..."
-    # cp $from $to
     echo $CONTENTS > $to
     chmod +x $to
   )
