@@ -14,7 +14,7 @@ trap 'on_error ${funcstack[1]}:$LINENO' ERR
 
 types=$(wl-paste --list-types)
 if [[ $types == *image* ]]; then
-    if [[ $CHEZMOI_DATA_MONITORS_SELECTED == "work" ]]; then
+    if [[ $CHEZMOI_DATA_ENVIRONMENT == "work" ]]; then
         service_name="Pixelcloud"
     else
         service_name="Imgur"
@@ -22,7 +22,7 @@ if [[ $types == *image* ]]; then
 
     notification_id=$(notify-send "⏳ Uploading to $service_name" --print-id --category transfer)
 
-    if [[ $CHEZMOI_DATA_MONITORS_SELECTED == "work" ]]; then
+    if [[ $CHEZMOI_DATA_ENVIRONMENT == "work" ]]; then
         tmpfile=$(mktemp --suffix .png)
         wl-paste > $tmpfile
         link=$(px -n "$tmpfile")
@@ -33,7 +33,7 @@ if [[ $types == *image* ]]; then
     notify-send "🎉 Uploaded to $service_name" "$link copied to clipboard!" --replace-id=$notification_id --category transfer.complete
     echo $link | wl-copy
 else
-    if [[ $CHEZMOI_DATA_MONITORS_SELECTED == "work" ]]; then
+    if [[ $CHEZMOI_DATA_ENVIRONMENT == "work" ]]; then
         service_name="Pastry"
     else
         service_name="GitHub Gist"
@@ -41,7 +41,7 @@ else
 
     notification_id=$(notify-send "⏳ Uploading to $service_name" --print-id --category transfer)
 
-    if [[ $CHEZMOI_DATA_MONITORS_SELECTED == "work" ]]; then
+    if [[ $CHEZMOI_DATA_ENVIRONMENT == "work" ]]; then
         pastry_output=$(wl-paste | pastry | sed 's/://g')
         pastry_output_parts=(${(@s/ /)pastry_output})
         pastry_id=${pastry_output_parts[1]}
@@ -60,7 +60,7 @@ else
 
     if [[ $action == "default" ]]; then
         # It means it was clicked.
-        if [[ $CHEZMOI_DATA_MONITORS_SELECTED == "work" ]]; then
+        if [[ $CHEZMOI_DATA_ENVIRONMENT == "work" ]]; then
             notify-send "😫 You cannot delete pastries." --category transfer.error --replace-id=$notification_id
         else
             (gh gist delete $to_copy && notify-send "🗑 Deleted GitHub Gist!" "The original link remains in the clipboard." --replace-id=$notification_id --category transfer.complete) || notify-send "😫 Could not delete GitHub Gist!" "Try to delete it manually, it's still in your clipboard." --replace-id=$notification_id --category transfer.complete
