@@ -150,10 +150,10 @@
                 "portable": ""
             },
             "format-muted": "<span color=\"#6E6E6E\">{icon}  {volume}%</span>",
-            "on-click": "pamixer --toggle-mute",
+            "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@",
             "on-click-right": "pavucontrol",
-            "on-scroll-down": "pamixer --decrease 5",
-            "on-scroll-up": "pamixer --increase 5",
+            "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-",
+            "on-scroll-up": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+",
             "scroll-step": 5
         },
         "tray": {
@@ -321,10 +321,10 @@
                 "portable": ""
             },
             "format-muted": "<span color=\"#6E6E6E\">{icon}  {volume}%</span>",
-            "on-click": "pamixer --toggle-mute",
+            "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@",
             "on-click-right": "pavucontrol",
-            "on-scroll-down": "pamixer --decrease 5",
-            "on-scroll-up": "pamixer --increase 5",
+            "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-",
+            "on-scroll-up": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+",
             "scroll-step": 5
         },
         "tray": {
