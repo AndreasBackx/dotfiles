@@ -88,7 +88,7 @@ update)
     *)
         # If desktop environment is running.
         if [[ -n "$DESKTOP_SESSION" ]]; then
-            kitty @ --to unix:/tmp/kitty launch --title "Starting update" --no-response --dont-take-focus --type os-window --os-window-class updates -- updates update --kitty
+            kitty --class updates --detach updates update --kitty
         else
             update_package_manager
             update_flatpak
