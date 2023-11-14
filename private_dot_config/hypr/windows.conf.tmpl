@@ -12,8 +12,7 @@ windowrule=float,^(updates)$
 
 # Left
 # Workspace 1
-windowrule=workspace 1 silent,^(Zulip)$
-windowrule=workspace 1 silent, ^(Slack)$
+windowrule=workspace 1 silent, ^(obsidian)$
 
 # Workspace 2
 windowrule=workspace 2 silent, ^(discord)$
@@ -31,7 +30,8 @@ windowrule=workspace 4 silent, ^(Spotify)$
 windowrule=workspace 4 silent, title:^(Spotify)$
 
 # Workspace 5
-windowrule=workspace 5 silent, ^(obsidian)$
+windowrule=workspace 5 silent,^(Zulip)$
+windowrule=workspace 5 silent, ^(Slack)$
 
 # Center
 windowrule=monitor desc:{{ index .monitors .monitors.selected "center" "name" }}, ^(Code)$
