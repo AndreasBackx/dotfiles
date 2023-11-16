@@ -1,12 +1,13 @@
 {
+  "DANGEROUS_ENABLE_DEVTOOLS_ONLY_ENABLE_IF_YOU_KNOW_WHAT_YOURE_DOING": true,
   "BACKGROUND_COLOR": "#202225",
   "SKIP_HOST_UPDATE": true,
   "IS_MAXIMIZED": false,
   "IS_MINIMIZED": false,
   "WINDOW_BOUNDS": {
-    "x": 4000,
+    "x": 0,
     "y": 0,
-    "width": 1693,
-    "height": 1485
+    "width": 1440,
+    "height": 2520
   }
 }
