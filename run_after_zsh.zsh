@@ -12,8 +12,3 @@ echo "Execute $0..."
 [ -L ~/.tmux.conf ] ||
   ln -s ~/.tmux/.tmux.conf ~/.tmux.conf
 
-zsh=$(whereis zsh | awk '{print $2}')
-
-if ! grep "^$USER" /etc/passwd | grep -q zsh; then
-  chsh -s "$zsh"
-fi
