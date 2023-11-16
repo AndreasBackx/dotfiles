@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh
 
 from=$(realpath ~/.config/hypr/hyprland-shell.desktop)
-to="/usr/share/wayland-sessions/hyprland-shell.desktop"
+to_directory="/usr/share/wayland-sessions"
+to="$to_directory/hyprland-shell.desktop"
 
-[ ! -f "$to" ] && exit 0
+[ ! -d "$to_directory" ] && exit 0
 
 cmp --silent $from $to || (
     echo "$from changed, copying to $to..."
