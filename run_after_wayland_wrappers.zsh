@@ -2,9 +2,11 @@
 
 set -o errexit -o nounset
 
+source $HOME/.config/.variables
+
 wayland_args="--enable-features=WaylandWindowDecorations --ozone-platform-hint=auto"
 
-declare -A WRAPPERS=(
+declare -A WAYLAND_WRAPPERS=(
   [discord]="discord $wayland_args || Discord $wayland_args || flatpak run --socket=wayland com.discordapp.Discord $wayland_args"
   [mattermost-desktop]="mattermost-desktop $wayland_args"
   [obsidian]="obsidian $wayland_args"
@@ -12,9 +14,24 @@ declare -A WRAPPERS=(
   [spotify]="spotify $wayland_args"
   [zulip]="zulip $wayland_args || flatpak run --socket=wayland org.zulip.Zulip $wayland_args"
 )
+declare -A X_WRAPPERS=(
+  [discord]="discord || Discord || flatpak run --socket=wayland com.discordapp.Discord"
+  #[mattermost-desktop]="mattermost-desktop"
+  #[obsidian]="obsidian"
+  #[signal-desktop]="signal-desktop"
+  #[spotify]="spotify"
+  [zulip]="zulip || flatpak run --socket=wayland org.zulip.Zulip"
+)
 
 wrappers_directory="$HOME/.bin/wrappers"
+rm -rf $wrappers_directory
 mkdir -p $wrappers_directory
+
+if [[ $CHEZMOI_DATA_ENVIRONMENT == "work" ]]; then
+  set -A WRAPPERS ${(kv)X_WRAPPERS}
+else
+  declare -A WRAPPERS=$WAYLAND_WRAPPERS
+fi
 
 for key value in ${(kv)WRAPPERS}; do
   CONTENTS="#!/usr/bin/env zsh
