@@ -30,7 +30,7 @@ mkdir -p $wrappers_directory
 if [[ $CHEZMOI_DATA_ENVIRONMENT == "work" ]]; then
   set -A WRAPPERS ${(kv)X_WRAPPERS}
 else
-  declare -A WRAPPERS=$WAYLAND_WRAPPERS
+  set -A WRAPPERS ${(kv)WAYLAND_WRAPPERS}
 fi
 
 for key value in ${(kv)WRAPPERS}; do
