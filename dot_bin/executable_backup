@@ -3,7 +3,7 @@
 set -e
 
 # This needs to be able to run from root as well.
-SCRIPT_DIR=`dirname "$0"`
+SCRIPT_DIR=$(dirname "$0")
 source "$SCRIPT_DIR/utils.zsh"
 
 source "$SCRIPT_DIR/../.config/.variables"
@@ -43,8 +43,8 @@ function is_service_failed() {
 }
 
 function is_timer_waiting() {
-    timer_status=`systemctl status --quiet backup.timer`
-    if  [[ $timer_status == *"Active: active (waiting)"* ]]; then
+    timer_status=$(systemctl status --quiet backup.timer)
+    if [[ $timer_status == *"Active: active (waiting)"* ]]; then
         true
     else
         false
@@ -53,49 +53,24 @@ function is_timer_waiting() {
 
 function start_backup() {
     echo "Creating backup..."
-    /usr/bin/borg create					                        \
-        ::'{hostname}-{now:%Y-%m-%dT%H:%M:%S}'                      \
-        /home/andreas                                               \
-        /etc                                                        \
-        /var                                                        \
-        /usr/local                                                  \
-        --compression auto,lzma                                     \
-        --exclude-caches                                            \
-        --show-rc                                                   \
-        --list                                                      \
-        --filter AME                                                \
-        --one-file-system                                           \
-        --debug						                                \
-        --stats						                                \
-        --exclude '/mnt'                                            \
-        --exclude '/home/*/.cache'                                  \
-        --exclude '/tmp'                                            \
-        --exclude '/var/cache'                                      \
-        --exclude '/var/log'                                        \
-        --exclude '/var/tmp'                                        \
-        --exclude '/var/lock'                                       \
-        --exclude '/var/run'                                        \
-        --exclude '/var/spool'                                      \
-        --exclude "$XDG_CACHE_HOME"                                 \
-        --exclude "$XDG_RUNTIME_DIR"                                \
-        --exclude '*.pyc'                                           \
-        --exclude '*.log'                                           \
-        --exclude 'movies'                                          \
-        --exclude '.gradle'                                         \
-        --exclude '.local'                                          \
-        --exclude '.pyenv'                                          \
-        --exclude '.rbenv'                                          \
-        --exclude '.npm-global'                                     \
-        --exclude 'Downloads'                                       \
-        --exclude '.npm/_cacache'                                   \
-        --exclude 'node_modules'                                    \
-        --exclude '__pycache__'                                     \
-        --exclude '*Cache*'                                         \
-        --exclude '*cache*'                                         \
-        --exclude '*logs*'                                          \
-        --exclude '.AndroidStudio*'                                 \
-        --exclude '.IntelliJ*'                                      \
-        --exclude '.CLion*'
+    /usr/bin/borg create \
+        ::'{hostname}-{now:%Y-%m-%dT%H:%M:%S}' \
+        /home/andreas \
+        /etc \
+        /var \
+        /usr/local \
+        --compression auto,lzma \
+        --exclude-caches \
+        --show-rc \
+        --list \
+        --filter AME \
+        --one-file-system \
+        --debug \
+        --stats \
+        --exclude "$XDG_CACHE_HOME" \
+        --exclude "$XDG_RUNTIME_DIR" \
+        --exclude "$GOPATH" \
+        --exclude-from "$HOME/.config/borg/excludefile"
 
     echo "Pruning backup..."
     /usr/bin/borg prune \
@@ -109,10 +84,9 @@ function start_backup() {
 
 function status() {
     if ! is_environment_setup; then
-        >&2 echo "Borg env vars BORG_REPO and BORG_BASE_DIR not setup."
+        echo >&2 "Borg env vars BORG_REPO and BORG_BASE_DIR not setup."
         return 1
     fi
-
 
     if ! is_timer_active; then
         waybar-json "\uf740" "Backup is disabled. Click to enable and start it." inactive
@@ -141,48 +115,48 @@ subcommand="$1"
 background="no"
 
 while [ -n "$2" ]; do
-	case "$2" in
-        --background)
-            if [[ "$subcommand" == "start" ]]; then
-                background="yes"
-            else
-                echo "$subcommand does not support --background."
-                error_usage
-            fi
-            ;;
+    case "$2" in
+    --background)
+        if [[ "$subcommand" == "start" ]]; then
+            background="yes"
+        else
+            echo "$subcommand does not support --background."
+            error_usage
+        fi
+        ;;
 
-	    *)
-            echo "$subcommand passed but not recognised."
-            ;;
+    *)
+        echo "$subcommand passed but not recognised."
+        ;;
 
-	esac
+    esac
 
-	shift
+    shift
 
 done
 
 case "$subcommand" in
-    status)
-        status
-        ;;
-    update)
-        pkill -RTMIN+8 waybar
-        ;;
-    start)
-        if [[ "$background" == "yes" ]]; then
-            if ! is_timer_active; then
-                sudo systemctl enable backup.timer
-                sudo systemctl start backup.timer
-            fi
-            sudo systemctl start backup.service
-        else
-            start_backup
+status)
+    status
+    ;;
+update)
+    pkill -RTMIN+8 waybar
+    ;;
+start)
+    if [[ "$background" == "yes" ]]; then
+        if ! is_timer_active; then
+            sudo systemctl enable backup.timer
+            sudo systemctl start backup.timer
         fi
-        ;;
-    stop)
-        sudo systemctl stop backup.service
-        ;;
-    *)
-        error_usage
-        ;;
+        sudo systemctl start backup.service
+    else
+        start_backup
+    fi
+    ;;
+stop)
+    sudo systemctl stop backup.service
+    ;;
+*)
+    error_usage
+    ;;
 esac
