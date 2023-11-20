@@ -27,7 +27,7 @@ wrappers_directory="$HOME/.bin/wrappers"
 rm -rf $wrappers_directory
 mkdir -p $wrappers_directory
 
-if [[ $CHEZMOI_DATA_ENVIRONMENT == "work" ]]; then
+if [[ $CHEZMOI_DATA_ENVIRONMENT == "home" ]]; then
   set -A WRAPPERS ${(kv)X_WRAPPERS}
 else
   set -A WRAPPERS ${(kv)WAYLAND_WRAPPERS}
