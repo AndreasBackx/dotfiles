@@ -67,10 +67,7 @@ function start_backup() {
         --one-file-system \
         --debug \
         --stats \
-        --exclude "$XDG_CACHE_HOME" \
-        --exclude "$XDG_RUNTIME_DIR" \
-        --exclude "$GOPATH" \
-        --exclude-from "$HOME/.config/borg/excludefile"
+        --exclude-from "/home/andreas/.config/borg/excludefile"
 
     echo "Pruning backup..."
     /usr/bin/borg prune \

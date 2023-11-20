@@ -7,6 +7,8 @@
 /var/lock
 /var/run
 /var/spool
+/run/user
+/home/andreas/dev/go
 *.pyc
 *.log
 */movies
@@ -32,3 +34,9 @@
 */leagueoflegends
 */.venv
 */.build
+*/.npm
+*.zip
+*.7z
+*.rar
+*.tar*
+*.iso
