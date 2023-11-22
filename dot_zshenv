@@ -9,11 +9,6 @@ source ~/.config/.secrets
 alias config='git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 alias sudo="sudo -E"
 
-ENV_PARALLEL="/usr/bin/env_parallel.zsh"
-if [[ -f "$ENV_PARALLEL" ]]; then
-    source "$ENV_PARALLEL"
-fi
-
 ZSHENV_WORK="$HOME/.zshenv-work"
 if [[ -f "$ZSHENV_WORK" ]]; then
     source "$ZSHENV_WORK"
