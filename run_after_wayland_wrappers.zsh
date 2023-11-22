@@ -11,15 +11,15 @@ declare -A WAYLAND_WRAPPERS=(
   [mattermost-desktop]="mattermost-desktop $wayland_args"
   [obsidian]="obsidian $wayland_args"
   [signal-desktop]="signal-desktop $wayland_args"
-  [spotify]="spotify $wayland_args"
+  [spotify]="spotify $wayland_args || flatpak run --socket=wayland com.spotify.Client $wayland_args"
   [zulip]="zulip $wayland_args || flatpak run --socket=wayland org.zulip.Zulip $wayland_args"
 )
 declare -A X_WRAPPERS=(
-  [discord]="discord || Discord || flatpak run --socket=wayland com.discordapp.Discord"
+  [discord]="discord || Discord || flatpak run com.discordapp.Discord"
   #[mattermost-desktop]="mattermost-desktop"
   #[obsidian]="obsidian"
   #[signal-desktop]="signal-desktop"
-  #[spotify]="spotify"
+  [spotify]="spotify || flatpak run com.spotify.Client"
   [zulip]="zulip || flatpak run --socket=wayland org.zulip.Zulip"
 )
 
@@ -27,7 +27,7 @@ wrappers_directory="$HOME/.bin/wrappers"
 rm -rf $wrappers_directory
 mkdir -p $wrappers_directory
 
-if [[ $CHEZMOI_DATA_ENVIRONMENT == "home" ]]; then
+if [[ $CHEZMOI_DATA_MONITORS_SELECTED == "home" ]]; then
   set -A WRAPPERS ${(kv)X_WRAPPERS}
 else
   set -A WRAPPERS ${(kv)WAYLAND_WRAPPERS}
