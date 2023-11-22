@@ -6,67 +6,67 @@ source ~/.bin/utils.zsh
 source ~/.config/.variables
 source ~/.config/.local-variables
 
-if is_wayland; then
-    extension="ppm"
-else
-
-fi
+extension="ppm"
 
 file_location_left=/tmp/lockscreen_left.$extension
 file_location_center=/tmp/lockscreen_center.$extension
 file_location_right=/tmp/lockscreen_right.$extension
 
-if is_wayland; then
-    outputs=$(hyprctl monitors -j || swaymsg -t get_outputs)
-    monitor_left=$(get-output-name "{{ index .monitors .monitors.selected "left" "name" }}" "$outputs")
-    monitor_center=$(get-output-name "{{ index .monitors .monitors.selected "center" "name" }}" "$outputs")
-    monitor_right=$(get-output-name "{{ index .monitors .monitors.selected "right" "name" }}" "$outputs")
+local spotify_status
+local is_muted=false
 
-    parallel --link -X "grim -t $extension -o {1} - | convert - -encoding $extension -scale 10% -scale 1000% {2}" ::: $monitor_left $monitor_center $monitor_right ::: $file_location_left $file_location_center $file_location_right
-else
+function before_lock() {
+    spotify_status=$(spotifycl status)
+    spotifycl pause
 
-fi
+    volume_response=$(wpctl get-volume @DEFAULT_AUDIO_SINK@)
+    [[ "$volume_response" =~ "MUTED" ]] && is_muted=true
 
-spotify_status=$(spotifycl status)
-spotifycl pause &
+    if [[ "$is_muted" == "false" ]]; then
+        echo "Muting"
+        wpctl set-mute @DEFAULT_AUDIO_SINK@ 1
+    fi
 
-volume_response=$(wpctl get-volume @DEFAULT_AUDIO_SINK@)
-is_muted=false
-[[ "$volume_response" =~ "MUTED" ]] && is_muted=true
+    # Pause notifications
+    makoctl set-mode dnd
+}
 
-if [[ "$is_muted" == "false" ]]; then
-    echo "Muting"
-    wpctl set-mute @DEFAULT_AUDIO_SINK@ 1 &
-fi
+function after_unlock() {
+    # Resume notifications
+    makoctl set-mode default &
 
-# Pause notifications
-makoctl set-mode dnd
+    if [[ "$spotify_status" == "playing" ]]; then
+        spotifycl play &
+    fi
 
-if [[ $# -eq 1 ]]; then
-    sudo systemctl $1
-fi
+    if [[ "$is_muted" == "false" ]]; then
+        echo "Unmuting"
+        wpctl set-mute @DEFAULT_AUDIO_SINK@ 0 &
+    fi
 
-# Lock
-if is_wayland; then
-    swaylock \
-        --image "$monitor_left:$file_location_left" \
-        --image "$monitor_center:$file_location_center" \
-        --image "$monitor_right:$file_location_right" \
-        --font="Roboto Regular" \
-        --scaling fill
-else
-fi
+    parallel --link rm {} ::: $file_location_left $file_location_center $file_location_right
 
-# Resume notifications
-makoctl set-mode default
+}
 
-if [[ "$spotify_status" == "playing" ]]; then
-    spotifycl play &
-fi
+before_lock &
 
-if [[ "$is_muted" == "false" ]]; then
-    echo "Unmuting"
-    wpctl set-mute @DEFAULT_AUDIO_SINK@ 0 &
-fi
+outputs=$(hyprctl monitors -j || swaymsg -t get_outputs)
+# monitor_left=$(get-output-name "{{ index .monitors .monitors.selected "left" "name" }}" "$outputs")
+# monitor_center=$(get-output-name "{{ index .monitors .monitors.selected "center" "name" }}" "$outputs")
+# monitor_right=$(get-output-name "{{ index .monitors .monitors.selected "right" "name" }}" "$outputs")
 
-parallel --link rm {} ::: $file_location_left $file_location_center $file_location_right
+time parset "monitor_left monitor_center monitor_right" ::: \
+    'source ~/.bin/utils.zsh; get-output-name "{{ index .monitors .monitors.selected "left" "name" }}" "$outputs"' \
+    'source ~/.bin/utils.zsh; get-output-name "{{ index .monitors .monitors.selected "center" "name" }}" "$outputs"' \
+    'source ~/.bin/utils.zsh; get-output-name "{{ index .monitors .monitors.selected "right" "name" }}" "$outputs"'
+
+time parallel --link -X "grim -t $extension -o {1} - | convert - -encoding $extension -scale 10% -scale 1000% {2}" ::: $monitor_left $monitor_center $monitor_right ::: $file_location_left $file_location_center $file_location_right
+
+swaylock \
+    --image "$monitor_left:$file_location_left" \
+    --image "$monitor_center:$file_location_center" \
+    --image "$monitor_right:$file_location_right" \
+    --font="Roboto Regular" \
+    --scaling fill
+
+after_unlock &
