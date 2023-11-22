@@ -51,10 +51,6 @@ function after_unlock() {
 before_lock &
 
 outputs=$(hyprctl monitors -j || swaymsg -t get_outputs)
-# monitor_left=$(get-output-name "{{ index .monitors .monitors.selected "left" "name" }}" "$outputs")
-# monitor_center=$(get-output-name "{{ index .monitors .monitors.selected "center" "name" }}" "$outputs")
-# monitor_right=$(get-output-name "{{ index .monitors .monitors.selected "right" "name" }}" "$outputs")
-
 time parset "monitor_left monitor_center monitor_right" ::: \
     'source ~/.bin/utils.zsh; get-output-name "{{ index .monitors .monitors.selected "left" "name" }}" "$outputs"' \
     'source ~/.bin/utils.zsh; get-output-name "{{ index .monitors .monitors.selected "center" "name" }}" "$outputs"' \
