@@ -31,7 +31,7 @@ if [[ $types == *image* ]]; then
     fi
 
     notify-send "🎉 Uploaded to $service_name" "$link copied to clipboard!" --replace-id=$notification_id --category transfer.complete
-    echo $link | wl-copy
+    echo $link | wl-copy --trim-newline
 else
     if [[ $CHEZMOI_DATA_ENVIRONMENT == "work" ]]; then
         service_name="Pastry"
