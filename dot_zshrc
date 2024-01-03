@@ -4,7 +4,6 @@ source ~/.bin/taste_tester.zsh
 ## OH MY ZSH ##
 plugins=(
   fzf
-  autoupdate
   zsh-autosuggestions
   zsh-syntax-highlighting
 )
