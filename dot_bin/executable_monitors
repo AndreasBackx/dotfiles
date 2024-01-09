@@ -27,6 +27,7 @@ from __future__ import annotations
 import asyncio
 import os
 import subprocess
+import sys
 import time
 from abc import ABC, abstractproperty
 from dataclasses import dataclass
@@ -108,7 +109,6 @@ class LightController(Controller):
 
 @dataclass
 class DDCUtilController(Controller):
-
     monitor: str
 
     @property
@@ -319,7 +319,6 @@ class Brightness:
 
 
 class BrightnessType(click.ParamType):
-
     name = "brightness"
 
     STEP = 25
@@ -496,4 +495,7 @@ async def brightness(displays: list[Display], brightness: Brightness | None) -> 
 
 
 if __name__ == "__main__":
+    if "DISABLE_MONITORS" in os.environ:
+        sys.exit(0)
+
     cli()

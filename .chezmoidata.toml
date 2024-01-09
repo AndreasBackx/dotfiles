@@ -4,7 +4,8 @@
 name = "Dell Inc. DELL U3219Q F2XWXV2"
 mode = "3840x2160@60Hz"
 position = "0x0"
-scale = "1.27525528811"
+scale = "1.25"
+# scale = "1.27525528811"
 
 [monitors.work.center]
 name = "Acer Technologies XV340CK P T5Y000013E00"
