@@ -1,8 +1,8 @@
 {
-  "IS_MAXIMIZED": true,
+  "IS_MAXIMIZED": false,
   "IS_MINIMIZED": false,
   "WINDOW_BOUNDS": {
-    "x": 4000,
+    "x": 2560,
     "y": 0,
     "width": 1440,
     "height": 2520
