@@ -26,6 +26,8 @@
 #
 # Changed to work with Wayland and made it escape HTML entities using Python.
 
+source ~/.bin/utils.zsh
+
 # Where to save the emojis file.
 EMOJI_FILE="$HOME/.cache/emojis.txt"
 
@@ -56,16 +58,18 @@ function display() {
     emoji_char="${line[0]}"
 
     if [ $exit_code == 0 ]; then
-        sleep 0.1 # Delay pasting so the text-entry can come active
+        # sleep 0.25 # Delay pasting so the text-entry can come active
 
         if is_wayland; then
-            ydotool type --clearmodifiers "$emoji_char"
+            # for now cannot do ctrl+c
+            # ydotool type "$emoji_char"
+
+            echo -n "$emoji_char" | wl-copy
         else
             xdotool type --clearmodifiers "$emoji_char"
         fi
     elif [ $exit_code == 10 ]; then
         if is_wayland; then
-            # ydotool type --clearmodifiers "$emoji_char"
             echo -n "$emoji_char" | wl-copy
         else
             # echo -n "$emoji_char" | xclip -selection clipboard
