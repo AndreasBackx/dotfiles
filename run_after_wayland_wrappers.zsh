@@ -9,7 +9,8 @@ wayland_args="--enable-features=WaylandWindowDecorations --ozone-platform-hint=a
 declare -A WAYLAND_WRAPPERS=(
   [discord]="discord $wayland_args || Discord $wayland_args || flatpak run --socket=wayland com.discordapp.Discord $wayland_args"
   [mattermost-desktop]="mattermost-desktop $wayland_args"
-  [obsidian]="obsidian $wayland_args"
+  [obsidian]="obsidian $wayland_args || flatpak run --socket=wayland md.obsidian.Obsidian $wayland_args"
+  # [tuba]="tuba || flatpak run --socket=wayland dev.geopjr.Tuba $wayland_args"
   [signal-desktop]="signal-desktop $wayland_args"
   [spotify]="spotify $wayland_args || flatpak run --socket=wayland com.spotify.Client $wayland_args"
   [zulip]="zulip $wayland_args || flatpak run --socket=wayland org.zulip.Zulip $wayland_args"

@@ -1,14 +1,12 @@
 #!/usr/bin/env bash
 #
-# From Tadly @ https://gist.github.com/Tadly/0741821d3694deaec1ee454a95c591fa
-# Changed to work with Wayland.
-#
-#
 #   Use rofi to pick emoji because that's what this
 #   century is about apparently...
 #
 #   Requirements:
-#     rofi, xsel, xdotool, curl, xmllint
+#     rofi, curl, python
+#     X11: xsel, xdotool
+#     Wayland: wl-clipboard, ydotool
 #
 #   Usage:
 #     1. Download all emoji
@@ -23,24 +21,13 @@
 #       writing it to your clipboard.
 #     * Ctrl+C will copy it to your clipboard WITHOUT pasting it.
 #
-
-source ~/.bin/utils.zsh
+# Source: https://gist.github.com/omc8db/d95462784bc1c5c41f7f489df5dbc377
+# "Forked" fromhttps://gist.github.com/Tadly/0741821d3694deaec1ee454a95c591fa
+#
+# Changed to work with Wayland and made it escape HTML entities using Python.
 
 # Where to save the emojis file.
 EMOJI_FILE="$HOME/.cache/emojis.txt"
-
-# Urls of emoji to download.
-# You can remove what you don't need.
-URLS=(
-    'https://emojipedia.org/people/'
-    'https://emojipedia.org/nature/'
-    'https://emojipedia.org/food-drink/'
-    'https://emojipedia.org/activity/'
-    'https://emojipedia.org/travel-places/'
-    'https://emojipedia.org/objects/'
-    'https://emojipedia.org/symbols/'
-    'https://emojipedia.org/flags/'
-)
 
 function notify() {
     if [ "$(command -v notify-send)" ]; then
@@ -51,47 +38,40 @@ function notify() {
 function download() {
     notify $(basename "$0") 'Downloading all emoji for your pleasure'
 
-    echo "" >"$EMOJI_FILE"
-
-    for url in "${URLS[@]}"; do
-        echo "Downloading: $url"
-
-        # Download the list of emoji and remove all the junk around it
-        emojis=$(curl -s "$url" |
-            xmllint --html \
-                --xpath '//ul[@class="emoji-list css_test1"]' - 2>/dev/null)
-
-        # Get rid of starting/closing ul tags
-        emojis=$(echo "$emojis" | head -n -1 | tail -n +1)
-
-        # Extract the emoji and its description
-        emojis=$(echo "$emojis" |
-            sed -rn 's/.*<span class="emoji">(.*)<\/span> (.*)<\/a><\/li>/\1 \2/p')
-
-        echo "$emojis" >>"$EMOJI_FILE"
-    done
+    curl https://unicode.org/emoji/charts/full-emoji-list.html |
+        grep -Po "class='(chars|name)'>\K[^<]+" |
+        paste - - |
+        python -c 'import html, sys; print(html.unescape(sys.stdin.read()))' |
+        tee "$EMOJI_FILE"
 
     notify $(basename "$0") "We're all set!"
 }
 
 function display() {
     emoji=$(cat "$EMOJI_FILE" | grep -v '#' | grep -v '^[[:space:]]*$')
-    line=$(echo "$emoji" | rofi -dmenu -i -p emoji $@)
+    line=$(echo "$emoji" | rofi -dmenu -i -p emoji $@) #-kb-custom-1 Ctrl+c $@)
     exit_code=$?
 
     line=($line)
-
     emoji_char="${line[0]}"
 
     if [ $exit_code == 0 ]; then
+        sleep 0.1 # Delay pasting so the text-entry can come active
+
+        if is_wayland; then
+            ydotool type --clearmodifiers "$emoji_char"
+        else
+            xdotool type --clearmodifiers "$emoji_char"
+        fi
+    elif [ $exit_code == 10 ]; then
         if is_wayland; then
             # ydotool type --clearmodifiers "$emoji_char"
             echo -n "$emoji_char" | wl-copy
         else
-            echo -n "$emoji_char" | xclip -selection clipboard
+            # echo -n "$emoji_char" | xclip -selection clipboard
+            echo -n "$emoji_char" | xsel -i -b
         fi
     fi
-
 }
 
 # Some simple argparsing

@@ -16,6 +16,6 @@ exec = swaybg --output "{{ index .monitors .monitors.selected "laptop" "name" }}
 
 
 # Turn on/off laptop with lid.
-bindl = , switch:off:Lid Switch,exec,hyprctl keyword monitor "desc:{{ index .monitors .monitors.selected "laptop" "name" }}, {{ index .monitors .monitors.selected "laptop" "mode" }}, {{ index .monitors .monitors.selected "laptop" "position" }}, 1"
+bindl = , switch:off:Lid Switch,exec,hyprctl keyword monitor "desc:{{ index .monitors .monitors.selected "laptop" "name" }}, {{ index .monitors .monitors.selected "laptop" "mode" }}, {{ index .monitors .monitors.selected "laptop" "position" }}, {{ index .monitors .monitors.selected "laptop" "scale" }}"
 # trigger when the switch is turning on
 bindl = , switch:on:Lid Switch,exec,hyprctl keyword monitor "desc:{{ index .monitors .monitors.selected "laptop" "name" }}, disable"

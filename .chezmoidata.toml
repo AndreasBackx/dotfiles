@@ -10,20 +10,20 @@ scale = "1.25"
 [monitors.work.center]
 name = "Acer Technologies XV340CK P T5Y000013E00"
 mode = "3440x1440@144Hz"
-position = "1694x786"
+position = "1728x786"
 scale = "1"
 
 [monitors.work.right]
 name = "Dell Inc. DELL U2515H 9X2VY6A80A8L"
 mode = "2560x1440@60Hz"
-position = "5134x226"
+position = "5168x226"
 scale = "1"
 
 [monitors.work.laptop]
-name = "LG Display 0x0662"
-mode = "1920x1080@60Hz"
-position = "2454x2226"
-scale = "1"
+name = "Samsung Display Corp. 0x4193"
+mode = "2880x1800@90Hz"
+position = "2648x2226"
+scale = "1.8"
 
 [monitors.home]
 [monitors.home.left]
