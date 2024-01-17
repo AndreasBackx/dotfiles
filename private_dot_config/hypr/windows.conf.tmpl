@@ -18,27 +18,30 @@ windowrule=float,^(updates)$
 
 # Left
 # Workspace 1
-windowrule=workspace 1 silent, ^(obsidian)$
+windowrule=workspace 1 silent, ^(thunderbird)$
 
 # Workspace 2
-windowrule=workspace 2 silent, ^(discord)$
-#for_window [class:discord"] move window to workspace $WORKSPACE_LEFT_5
-windowrule=workspace 2 silent, ^(Mattermost)$
+windowrule=workspace 2 silent, ^(obsidian)$
 
 # Workspace 3
-windowrule=workspace 3 silent,title:^(Signal.*)$
-windowrule=workspace 3 silent,title:^(WhatsApp.*)$
-windowrule=workspace 3 silent,^(Hexchat)$
+windowrule=workspace 3 silent, ^(discord)$
+#for_window [class:discord"] move window to workspace $WORKSPACE_LEFT_3
+windowrule=workspace 3 silent, ^(Mattermost)$
 
 # Workspace 4
-windowrule=workspace 4 silent, ^(Spotify)$
-# On Wayland Spotify opens without a class.
-windowrule=workspace 4 silent, title:^(Spotify)$
+windowrule=workspace 4 silent,title:^(Signal.*)$
+windowrule=workspace 4 silent,title:^(WhatsApp.*)$
+windowrule=workspace 4 silent,^(Hexchat)$
 
 # Workspace 5
-windowrule=workspace 5 silent, ^(Zulip)$
-windowrule=workspace 5 silent, ^(Slack)$
-windowrule=workspace 5 silent, title:^(Tuba)$
+windowrule=workspace 5 silent, ^(Spotify)$
+# On Wayland Spotify opens without a class.
+windowrule=workspace 5 silent, title:^(Spotify)$
+
+# Workspace 6
+windowrule=workspace 6 silent, ^(Zulip)$
+windowrule=workspace 6 silent, ^(Slack)$
+windowrule=workspace 6 silent, title:^(Tuba)$
 
 # Center
 windowrule=monitor desc:{{ index .monitors .monitors.selected "center" "name" }}, ^(Code)$
