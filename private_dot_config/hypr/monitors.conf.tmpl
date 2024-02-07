@@ -1,18 +1,18 @@
 # See https://wiki.hyprland.org/Configuring/Monitors/
 monitor=,preferred,auto,1
 
-monitor=desc:{{ index .monitors .monitors.selected "left" "name" }}, {{ index .monitors .monitors.selected "left" "mode" }}, {{ index .monitors .monitors.selected "left" "position" }}, {{ index .monitors .monitors.selected "left" "scale" }}, transform, 1
-monitor=desc:{{ index .monitors .monitors.selected "center" "name" }}, {{ index .monitors .monitors.selected "center" "mode" }}, {{ index .monitors .monitors.selected "center" "position" }}, {{ index .monitors .monitors.selected "center" "scale" }}
-monitor=desc:{{ index .monitors .monitors.selected "right" "name" }}, {{ index .monitors .monitors.selected "right" "mode" }}, {{ index .monitors .monitors.selected "right" "position" }}, {{ index .monitors .monitors.selected "right" "scale" }}, transform, 3
+monitor=desc:{{ index .monitors .monitors.selected "left" "name" }}, {{ index .monitors .monitors.selected "left" "mode" }}, {{ index .monitors .monitors.selected "left" "position" }}, {{ index .monitors .monitors.selected "left" "scale" }}, transform, {{ index .monitors .monitors.selected "left" "transform" }}
+monitor=desc:{{ index .monitors .monitors.selected "center" "name" }}, {{ index .monitors .monitors.selected "center" "mode" }}, {{ index .monitors .monitors.selected "center" "position" }}, {{ index .monitors .monitors.selected "center" "scale" }}, transform, {{ index .monitors .monitors.selected "center" "transform" }}
+monitor=desc:{{ index .monitors .monitors.selected "right" "name" }}, {{ index .monitors .monitors.selected "right" "mode" }}, {{ index .monitors .monitors.selected "right" "position" }}, {{ index .monitors .monitors.selected "right" "scale" }}, transform, {{ index .monitors .monitors.selected "right" "transform" }}
 monitor=desc:{{ index .monitors .monitors.selected "laptop" "name" }}, {{ index .monitors .monitors.selected "laptop" "mode" }}, {{ index .monitors .monitors.selected "laptop" "position" }}, {{ index .monitors .monitors.selected "laptop" "scale" }}
 
 monitor=desc:{{ .monitors.home.tv.name }}, disable
 
-exec = swaybg --output "{{ index .monitors .monitors.selected "left" "name" }}" --image ~/.config/wallpapers/dark/1440x2560/jon-snow.jpg --mode fill
-exec = swaybg --output "{{ index .monitors .monitors.selected "center" "name" }}" --image ~/.config/wallpapers/dark/2560x1440/jaime-lannister.jpg --mode fill
-exec = swaybg --output "{{ index .monitors .monitors.selected "right" "name" }}" --image ~/.config/wallpapers/dark/1440x2560/tyrion-lannister.jpg --mode fill
+exec = swaybg --output "{{ index .monitors .monitors.selected "left" "name" }}" --image {{ index .monitors .monitors.selected "left" "background" }} --mode fill
+exec = swaybg --output "{{ index .monitors .monitors.selected "center" "name" }}" --image {{ index .monitors .monitors.selected "center" "background" }} --mode fill
+exec = swaybg --output "{{ index .monitors .monitors.selected "right" "name" }}" --image {{ index .monitors .monitors.selected "right" "background" }}--mode fill
 
-exec = swaybg --output "{{ index .monitors .monitors.selected "laptop" "name" }}" --image  ~/.config/wallpapers/dark/2560x1440/jaime-lannister.jpg --mode fill
+exec = swaybg --output "{{ index .monitors .monitors.selected "laptop" "name" }}" --image  {{ index .monitors .monitors.selected "laptop" "background" }} --mode fill
 
 
 # Turn on/off laptop with lid.
