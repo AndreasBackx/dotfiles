@@ -28,11 +28,11 @@ wrappers_directory="$HOME/.bin/wrappers"
 rm -rf $wrappers_directory
 mkdir -p $wrappers_directory
 
-if [[ $CHEZMOI_DATA_MONITORS_SELECTED == "home" ]]; then
-  set -A WRAPPERS ${(kv)X_WRAPPERS}
-else
+# if [[ $CHEZMOI_DATA_MONITORS_SELECTED == "home" ]]; then
+#   set -A WRAPPERS ${(kv)X_WRAPPERS}
+# else
   set -A WRAPPERS ${(kv)WAYLAND_WRAPPERS}
-fi
+# fi
 
 for key value in ${(kv)WRAPPERS}; do
   CONTENTS="#!/usr/bin/env zsh
