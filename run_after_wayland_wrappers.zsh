@@ -11,6 +11,7 @@ declare -A WAYLAND_WRAPPERS=(
   [mattermost-desktop]="mattermost-desktop $wayland_args"
   [obsidian]="obsidian $wayland_args || flatpak run --socket=wayland md.obsidian.Obsidian $wayland_args"
   # [tuba]="tuba || flatpak run --socket=wayland dev.geopjr.Tuba $wayland_args"
+  [code]="code $wayland_args"
   [signal-desktop]="signal-desktop $wayland_args"
   [spotify]="spotify $wayland_args || flatpak run --socket=wayland com.spotify.Client $wayland_args"
   [zulip]="zulip $wayland_args || flatpak run --socket=wayland org.zulip.Zulip $wayland_args"
