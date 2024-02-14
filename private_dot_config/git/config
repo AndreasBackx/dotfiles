@@ -1,66 +1,69 @@
 [core]
-	autocrlf = input
-    editor = vim
+autocrlf = input
+editor = vim
 
 [commit]
-	gpgsign = true
+gpgsign = true
 
 [gpg]
-    format = ssh
+format = ssh
 
 [filter "media"]
-    clean = git-media-clean %f
-    smudge = git-media-smudge %f
+clean = git-media-clean %f
+smudge = git-media-smudge %f
 
 [push]
-	default = current
+default = current
 
 [pull]
-	rebase = true
+rebase = true
 
 [alias]
-    stash-rename = "!_() { rev=$(git rev-parse $1) && git stash drop $1 || exit 1 ; git diff-index --quiet HEAD; s=$?; [ $s != 0 ] && git stash save \"tmp stash from stash-rename\"; git stash apply $rev && shift && git stash save \"$@\" && [ $s != 0 ] && git stash pop stash@{1}; }; _"
-    lg1 = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
-    lg2 = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all
-    lg = !"git lg1"
-    amend = commit --amend --no-edit
-    fix = "!f() { git commit --fixup $1; GIT_SEQUENCE_EDITOR=touch git rebase -i $1^^ --autosquash --autostash; }; f"
-    latest = "!f() { git fetch -ap; git reset --hard \"origin/$(git rev-parse --abbrev-ref HEAD)\"; }; f"
-    nah = "!git reset --hard && git clean -df"
-    puff = push --force-with-lease
-    wip = "!f() { git add -A && git commit -m \"WIP\" --no-verify; }; f"
-    sync = "!f() { git pull --rebase && git push; }; f"
-    recent = "!f() { git checkout `git branch -v --sort=-committerdate | fzf | sed 's/^[* ]*//g' | cut -d ' ' -f 1`; }; f"
-    # Allow for `git git push`.
-    git = !exec git
+stash-rename = "!_() { rev=$(git rev-parse $1) && git stash drop $1 || exit 1 ; git diff-index --quiet HEAD; s=$?; [ $s != 0 ] && git stash save \"tmp stash from stash-rename\"; git stash apply $rev && shift && git stash save \"$@\" && [ $s != 0 ] && git stash pop stash@{1}; }; _"
+lg1 = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
+lg2 = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all
+lg = !"git lg1"
+amend = commit --amend --no-edit
+fix = "!f() { git commit --fixup $1; GIT_SEQUENCE_EDITOR=touch git rebase -i $1^^ --autosquash --autostash; }; f"
+latest = "!f() { git fetch -ap; git reset --hard \"origin/$(git rev-parse --abbrev-ref HEAD)\"; }; f"
+nah = "!git reset --hard && git clean -df"
+puff = push --force-with-lease
+wip = "!f() { git add -A && git commit -m \"WIP\" --no-verify; }; f"
+sync = "!f() { git pull --rebase && git push; }; f"
+recent = "!f() { git checkout $(git branch -v --sort=-committerdate | fzf | sed 's/^[* ]*//g' | cut -d ' ' -f 1); }; f"
+# Allow for `git git push`.
+git = !exec git
 
 [include]
-    # Only exists on Linux.
-    path = /home/andreas/.config/git/linux
-    path = /home/andreasbackx/.config/git/linux
-    # Only exists on MacOS
-    path = /Users/Andreas/.config/git/macos
-    path = /Users/andreasbackx/.config/git/macos
-    # Includes private settings (e.g.: work).
-    path = ~/.config/git/private
+# Only exists on Linux.
+path = /home/andreas/.config/git/linux
+path = /home/andreasbackx/.config/git/linux
+# Only exists on MacOS
+path = /Users/Andreas/.config/git/macos
+path = /Users/andreasbackx/.config/git/macos
+# Includes private settings (e.g.: work).
+path = ~/.config/git/private
 
 [filter "lfs"]
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge --skip -- %f
-	process = git-lfs filter-process --skip
-	required = true
+clean = git-lfs clean -- %f
+smudge = git-lfs smudge --skip -- %f
+process = git-lfs filter-process --skip
+required = true
 
 [diff]
-    colorMoved = default
+colorMoved = default
+
+[diff]
+external = difft
 
 [pager]
-    diff = delta
-    log = delta
-    reflog = delta
-    show = delta
+diff = delta
+log = delta
+reflog = delta
+show = delta
 
 [delta]
-    side-by-side = true
+side-by-side = true
 
 [init]
-	defaultBranch = main
+defaultBranch = main

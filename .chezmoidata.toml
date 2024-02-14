@@ -31,13 +31,13 @@ name = "Lenovo Group Limited Y32p-30 U1HMF6PT"
 mode = "3840x2160@144Hz"
 position = "0x0"
 scale = "1.25"
-transform = 0
-background = "~/.config/wallpapers/dark/2560x1440/jaime-lannister.jpg"
+transform = 1
+background = "~/.config/wallpapers/dark/1440x2560/jon-snow.jpg"
 
 [monitors.home.center]
 name = "Lenovo Group Limited Y32p-30 U1HMF6PN"
 mode = "3840x2160@144Hz"
-position = "3072x0"
+position = "1728x672"
 scale = "1.25"
 transform = 0
 background = "~/.config/wallpapers/dark/2560x1440/jaime-lannister.jpg"
