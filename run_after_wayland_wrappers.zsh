@@ -4,9 +4,12 @@ set -o errexit -o nounset
 
 source $HOME/.config/.variables
 
-wayland_args="--enable-features=WaylandWindowDecorations --ozone-platform-hint=auto"
+# --enable-features=WaylandWindowDecorations --ozone-platform-hint=auto
+wayland_args="--enable-features=UseOzonePlatform --ozone-platform=wayland"
 
 declare -A WAYLAND_WRAPPERS=(
+  [code]="code $wayland_args"
+  [code-fb]="code-fb $wayland_args"
   [discord]="discord $wayland_args || Discord $wayland_args || flatpak run --socket=wayland com.discordapp.Discord $wayland_args"
   [mattermost-desktop]="mattermost-desktop $wayland_args"
   [obsidian]="obsidian $wayland_args || flatpak run --socket=wayland md.obsidian.Obsidian $wayland_args"
@@ -33,7 +36,7 @@ mkdir -p $wrappers_directory
 #   set -A WRAPPERS ${(kv)X_WRAPPERS}
 # else
   set -A WRAPPERS ${(kv)WAYLAND_WRAPPERS}
-# fi
+# ficc
 
 for key value in ${(kv)WRAPPERS}; do
   CONTENTS="#!/usr/bin/env zsh
