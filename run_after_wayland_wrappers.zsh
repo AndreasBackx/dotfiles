@@ -16,7 +16,7 @@ declare -A WAYLAND_WRAPPERS=(
   # [tuba]="tuba || flatpak run --socket=wayland dev.geopjr.Tuba $wayland_args"
   [code]="code $wayland_args"
   [signal-desktop]="signal-desktop $wayland_args"
-  [spotify]="spotify $wayland_args || flatpak run --socket=wayland com.spotify.Client $wayland_args"
+  [spotify]="spotify $wayland_args --force-device-scale-factor=1.25 || flatpak run --socket=wayland com.spotify.Client $wayland_args --force-device-scale-factor=1.25"
   [zulip]="zulip $wayland_args || flatpak run --socket=wayland org.zulip.Zulip $wayland_args"
 )
 declare -A X_WRAPPERS=(
