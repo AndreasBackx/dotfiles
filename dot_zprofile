@@ -76,7 +76,7 @@ fi
 export VISUAL=nvim
 export EDITOR="$VISUAL"
 
-export BROWSER="/usr/bin/firefox"
+export BROWSER="/usr/bin/google-chrome"
 
 # Otherwise IntelliJ won't run on Sway.
 # https://youtrack.jetbrains.com/issue/IDEA-153134
