@@ -49,7 +49,7 @@ if [[ \$(which $key) == "\$FILE_PATH" ]]; then
     notify-send \"Tried recursively running $key wrapper, exiting...\" --urgency=critical
     exit 1
 fi
-$value
+$value \$@
 "
 
   to="$wrappers_directory/$key"
