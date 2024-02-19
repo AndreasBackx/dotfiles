@@ -6,24 +6,31 @@ mode = "3840x2160@60Hz"
 position = "0x0"
 scale = "1.25"
 # scale = "1.27525528811"
+transform = 1
+background = "~/.config/wallpapers/dark/1440x2560/jon-snow.jpg"
 
 [monitors.work.center]
 name = "Acer Technologies XV340CK P T5Y000013E00"
 mode = "3440x1440@144Hz"
 position = "1728x786"
 scale = "1"
+transform = 0
+background = "~/.config/wallpapers/dark/2560x1440/jaime-lannister.jpg"
 
 [monitors.work.right]
 name = "Dell Inc. DELL U2515H 9X2VY6A80A8L"
 mode = "2560x1440@60Hz"
 position = "5168x226"
 scale = "1"
+transform = 3
+background = "~/.config/wallpapers/dark/1440x2560/jon-snow.jpg"
 
 [monitors.work.laptop]
 name = "Samsung Display Corp. 0x4193"
 mode = "2880x1800@90Hz"
 position = "2648x2226"
 scale = "1.8"
+background = "~/.config/wallpapers/dark/2560x1440/jaime-lannister.jpg"
 
 [monitors.home]
 [monitors.home.left]
