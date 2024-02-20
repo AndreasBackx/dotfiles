@@ -10,7 +10,7 @@ monitor=desc:{{ .monitors.home.tv.name }}, disable
 
 exec = swaybg --output "{{ index .monitors .monitors.selected "left" "name" }}" --image {{ index .monitors .monitors.selected "left" "background" }} --mode fill
 exec = swaybg --output "{{ index .monitors .monitors.selected "center" "name" }}" --image {{ index .monitors .monitors.selected "center" "background" }} --mode fill
-exec = swaybg --output "{{ index .monitors .monitors.selected "right" "name" }}" --image {{ index .monitors .monitors.selected "right" "background" }}--mode fill
+exec = swaybg --output "{{ index .monitors .monitors.selected "right" "name" }}" --image {{ index .monitors .monitors.selected "right" "background" }} --mode fill
 
 exec = swaybg --output "{{ index .monitors .monitors.selected "laptop" "name" }}" --image  {{ index .monitors .monitors.selected "laptop" "background" }} --mode fill
 
