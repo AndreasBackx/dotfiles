@@ -50,9 +50,9 @@ transform = 0
 background = "~/.config/wallpapers/dark/2560x1440/jaime-lannister.jpg"
 
 [monitors.home.right]
-name = "Dell Inc. DELL U2515H 9X2VY4B101BL"
+name = "Acer Technologies XF270HU T78EE0048521"
 mode = "2560x1440@60Hz"
-position = "4000x0"
+position = "4800x0"
 scale = "1"
 transform = 3
 background = "~/.config/wallpapers/dark/1440x2560/tyrion-lannister.jpg"
