@@ -26,6 +26,7 @@
 #
 # Changed to work with Wayland and made it escape HTML entities using Python.
 
+# shellcheck source=./utils.zsh
 source ~/.bin/utils.zsh
 
 # Where to save the emojis file.
@@ -38,7 +39,7 @@ function notify() {
 }
 
 function download() {
-    notify $(basename "$0") 'Downloading all emoji for your pleasure'
+    notify "$(basename "$0")" 'Downloading all emoji for your pleasure'
 
     curl https://unicode.org/emoji/charts/full-emoji-list.html |
         grep -Po "class='(chars|name)'>\K[^<]+" |
@@ -46,16 +47,17 @@ function download() {
         python -c 'import html, sys; print(html.unescape(sys.stdin.read()))' |
         tee "$EMOJI_FILE"
 
-    notify $(basename "$0") "We're all set!"
+    notify "$(basename "$0")" "We're all set!"
 }
 
+# shellcheck disable=SC2120
 function display() {
-    emoji=$(cat "$EMOJI_FILE" | grep -v '#' | grep -v '^[[:space:]]*$')
-    line=$(echo "$emoji" | rofi -dmenu -i -p emoji $@) #-kb-custom-1 Ctrl+c $@)
+    emoji=$(grep -v '#' "$EMOJI_FILE" | grep -v '^[[:blank:]]*$')
+    line=$(echo "$emoji" | rofi -dmenu -i -p emoji "$@") #-kb-custom-1 Ctrl+c $@)
     exit_code=$?
 
-    line=($line)
-    emoji_char="${line[0]}"
+    IFS=$'\t' read -r -a line_parts <<<"$line"
+    emoji_char="${line_parts[0]}"
 
     if [ $exit_code == 0 ]; then
         # sleep 0.25 # Delay pasting so the text-entry can come active
@@ -92,5 +94,4 @@ if [ ! -f "$EMOJI_FILE" ]; then
     download
 fi
 
-# display displays :)
 display
