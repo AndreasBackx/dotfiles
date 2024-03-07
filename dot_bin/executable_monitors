@@ -37,6 +37,8 @@ from typing import List
 
 import click
 
+sys.exit(0)
+
 FEATURES = {
     "input_source": {
         "value": "60",
