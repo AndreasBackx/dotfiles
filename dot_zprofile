@@ -142,6 +142,9 @@ export MOZ_ENABLE_WAYLAND=1
 export ELECTRON_OZONE_PLATFORM_HINT="wayland"
 export OBSIDIAN_USE_WAYLAND=1
 
+# Thicker fonts
+export FREETYPE_PROPERTIES="cff:no-stem-darkening=0 autofitter:no-stem-darkening=0"
+
 ## EXEC ###
 if [ -z "$DISPLAY" ] && [ -n "$XDG_VTNR" ] && [ "$XDG_VTNR" -eq 1 ]; then
   exec sway >/var/log/sway.log 2>&1
