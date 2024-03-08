@@ -44,7 +44,7 @@ background = "~/.config/wallpapers/dark/1440x2560/jon-snow.jpg"
 [monitors.home.center]
 name = "Dell Inc. AW3225QF GZ00YZ3"
 mode = "3840x2160@120Hz"
-position = "1728x672"
+position = "1728x1025"
 scale = "1.25"
 transform = 0
 background = "~/.config/wallpapers/dark/2560x1440/jaime-lannister.jpg"

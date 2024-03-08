@@ -13,7 +13,7 @@ bindswitch --locked lid:on output {{ index .monitors .monitors.selected "laptop"
 exec_always --no-startup-id swayidle -d \
     timeout 10 'if pgrep swaylock; then swaymsg "output * dpms off"; fi'\
         resume 'if pgrep swaylock; then swaymsg "output * dpms on"; fi' \
-    timeout 3600 'lock' \
+    timeout 300 'lock' \
     timeout 3602 'swaymsg "output * dpms off"' \
         resume 'swaymsg "output * dpms on"' \
     before-sleep 'lock' >> /var/log/swayidle.log
