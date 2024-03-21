@@ -67,3 +67,6 @@ side-by-side = true
 
 [init]
 defaultBranch = main
+
+[user]
+signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIxRpuUyWKbNo4dopWoovkq5i9mqM9zSrbIMx+n/zuBz
