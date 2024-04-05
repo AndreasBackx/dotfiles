@@ -52,21 +52,31 @@ required = true
 
 [diff]
 colorMoved = default
-
-[diff]
 external = difft
 
-[pager]
-diff = delta
-log = delta
-reflog = delta
-show = delta
+[difftool]
+prompt = false
 
-[delta]
-side-by-side = true
+[difftool "difftastic"]
+cmd = difft "$LOCAL" "$REMOTE"
+
+[pager]
+difftool = true
+
+# Delta does not support difftastic yet:
+# https://github.com/dandavison/delta/issues/535#issuecomment-1682577098
+#[pager]
+#diff = delta
+#log = delta
+#reflog = delta
+#show = delta
+
+#[delta]
+#side-by-side = true
 
 [init]
 defaultBranch = main
 
 [user]
+name = "Andreas Backx"
 signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIxRpuUyWKbNo4dopWoovkq5i9mqM9zSrbIMx+n/zuBz

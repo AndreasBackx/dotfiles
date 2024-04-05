@@ -1,4 +1,9 @@
+environment = "home"
+gpu = "unknown"
+
 [monitors]
+selected = "home"
+
 [monitors.work]
 [monitors.work.left]
 name = "Dell Inc. DELL U3219Q F2XWXV2"
