@@ -365,6 +365,9 @@
             "on-scroll-down": "hyprctl dispatch workspace m-1",
             "on-scroll-up": "hyprctl dispatch workspace m+1"
         },
+        "tray": {
+            "spacing": 12
+        },
         "id": "left",
         "layer": "top",
         "modules-center": [],
@@ -373,7 +376,7 @@
             "hyprland/submap",
             "hyprland/window"
         ],
-        "modules-right": ["custom/brightness", "clock"],
+        "modules-right": ["custom/brightness", "clock", "tray"],
         "output": ["{{ index .monitors .monitors.selected "left" "name" }}"],
         "position": "bottom"
     },
