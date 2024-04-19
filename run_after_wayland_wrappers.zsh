@@ -18,6 +18,8 @@ declare -A WAYLAND_WRAPPERS=(
   [signal-desktop]="flatpak run --socket=wayland org.signal.Signal $wayland_args || signal-desktop $wayland_args"
   [spotify]="spotify $wayland_args --force-device-scale-factor=1.25 || flatpak run --socket=wayland com.spotify.Client $wayland_args --force-device-scale-factor=1.25"
   [zulip]="zulip $wayland_args || flatpak run --socket=wayland org.zulip.Zulip $wayland_args"
+  [google-chrome]="google-chrome $wayland_args"
+  [google-chrome-stable]="google-chrome-stable $wayland_args"
 )
 declare -A X_WRAPPERS=(
   [discord]="discord || Discord || flatpak run com.discordapp.Discord"
