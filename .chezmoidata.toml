@@ -10,7 +10,6 @@ name = "Dell Inc. DELL U3219Q F2XWXV2"
 mode = "3840x2160@60Hz"
 position = "0x0"
 scale = "1.25"
-# scale = "1.27525528811"
 transform = 1
 background = "~/.config/wallpapers/dark/1440x2560/jon-snow.jpg"
 

@@ -1,5 +1,5 @@
-{{- $environment := promptStringOnce . "home" "Is this a work or home machine?" -}}
-{{- $location := promptStringOnce . "home" "Are you at work or home?" -}}
+{{- $environment := promptStringOnce . "home" "Is this a work or home machine" -}}
+{{- $location := promptStringOnce . "home" "Are you at work or home" -}}
 
 [data]
 environment = "{{ $environment }}"
