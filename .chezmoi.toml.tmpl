@@ -1,0 +1,16 @@
+{{- $environment := promptStringOnce . "home" "Is this a work or home machine?" -}}
+{{- $location := promptStringOnce . "home" "Are you at work or home?" -}}
+
+[data]
+environment = "{{ $environment }}"
+
+[data.monitors]
+selected = "{{ $location }}"
+
+[edit]
+    command = "code"
+    args = ["--wait"]
+
+[git]
+    autoCommit = true
+    autoPush = true

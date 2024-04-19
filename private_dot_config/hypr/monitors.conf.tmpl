@@ -1,25 +1,33 @@
+{{ define "monitor_cmd" -}}
+desc:{{ index . "name" }}
+{{- if index . "disable" -}}
+, disable
+{{- else -}}
+, {{ index . "mode" }}, {{ index . "position" }}
+{{- if index . "scale" -}}
+, {{ index . "scale" }}
+{{- end -}}
+{{- if index . "transform" -}}
+, transform, {{ index . "transform" }}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
 # See https://wiki.hyprland.org/Configuring/Monitors/
 monitor=,preferred,auto,1
 
-monitor=desc:{{ index .monitors .monitors.selected "left" "name" }}, {{ index .monitors .monitors.selected "left" "mode" }}, {{ index .monitors .monitors.selected "left" "position" }}, {{ index .monitors .monitors.selected "left" "scale" }}, transform, {{ index .monitors .monitors.selected "left" "transform" }}
-monitor=desc:{{ index .monitors .monitors.selected "center" "name" }}, {{ index .monitors .monitors.selected "center" "mode" }}, {{ index .monitors .monitors.selected "center" "position" }}, {{ index .monitors .monitors.selected "center" "scale" }}, transform, {{ index .monitors .monitors.selected "center" "transform" }}
-monitor=desc:{{ index .monitors .monitors.selected "right" "name" }}, {{ index .monitors .monitors.selected "right" "mode" }}, {{ index .monitors .monitors.selected "right" "position" }}, {{ index .monitors .monitors.selected "right" "scale" }}, transform, {{ index .monitors .monitors.selected "right" "transform" }}
-monitor=desc:{{ index .monitors .monitors.selected "laptop" "name" }}, {{ index .monitors .monitors.selected "laptop" "mode" }}, {{ index .monitors .monitors.selected "laptop" "position" }}, {{ index .monitors .monitors.selected "laptop" "scale" }}
+{{ $selected_monitors := index .monitors .monitors.selected -}}
+{{- range $selected_monitor_position, $selected_monitor := $selected_monitors -}}
+# {{ $selected_monitor_position }}
+monitor={{ template "monitor_cmd" $selected_monitor }}
+{{ if index $selected_monitor "background" -}}
+exec = swaybg --output "{{ index $selected_monitor "name" }}" --image {{ index $selected_monitor "background" }} --mode fill
+{{ end -}}
+{{ if index $selected_monitor "has_lid" -}}
+# Turn on when lid opens.
+bindl = , switch:off:Lid Switch,exec,hyprctl keyword monitor "{{ template "monitor_cmd" $selected_monitor }}"
+# Turn off when lid closes.
+bindl = , switch:on:Lid Switch,exec,hyprctl keyword monitor "desc:{{ index $selected_monitor "name" }}, disable"
+{{ end }}
+{{ end -}}
 
-monitor=desc:{{ .monitors.home.tv.name }}, disable
-
-exec = swaybg --output "{{ index .monitors .monitors.selected "left" "name" }}" --image {{ index .monitors .monitors.selected "left" "background" }} --mode fill
-
-{{ if index .monitors .monitors.selected "center" "background" -}}
-exec = swaybg --output "{{ index .monitors .monitors.selected "center" "name" }}" --image {{ index .monitors .monitors.selected "center" "background" }} --mode fill
-{{- end }}
-
-exec = swaybg --output "{{ index .monitors .monitors.selected "right" "name" }}" --image {{ index .monitors .monitors.selected "right" "background" }} --mode fill
-
-exec = swaybg --output "{{ index .monitors .monitors.selected "laptop" "name" }}" --image  {{ index .monitors .monitors.selected "laptop" "background" }} --mode fill
-
-
-# Turn on/off laptop with lid.
-bindl = , switch:off:Lid Switch,exec,hyprctl keyword monitor "desc:{{ index .monitors .monitors.selected "laptop" "name" }}, {{ index .monitors .monitors.selected "laptop" "mode" }}, {{ index .monitors .monitors.selected "laptop" "position" }}, {{ index .monitors .monitors.selected "laptop" "scale" }}"
-# trigger when the switch is turning on
-bindl = , switch:on:Lid Switch,exec,hyprctl keyword monitor "desc:{{ index .monitors .monitors.selected "laptop" "name" }}, disable"

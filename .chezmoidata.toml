@@ -36,6 +36,7 @@ mode = "2880x1800@90Hz"
 position = "2648x2226"
 scale = "1.8"
 background = "~/.config/wallpapers/dark/2560x1440/jaime-lannister.jpg"
+has_lid = true
 
 [monitors.home]
 [monitors.home.left]
@@ -68,9 +69,11 @@ name = "LG Electronics LG TV 0x01010101"
 mode = "3840x2160@120Hz"
 position = "6560x0"
 scale = "1.5"
+disable = true
 
 [monitors.home.laptop]
 name = "LG Display 0x0662"
 mode = "1920x1080@60Hz"
 position = "3181x1905"
 scale = "1"
+has_lid = true
