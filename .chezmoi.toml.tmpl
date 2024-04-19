@@ -1,8 +1,10 @@
 {{- $environment := promptStringOnce . "home" "Is this a work or home machine" -}}
 {{- $location := promptStringOnce . "home" "Are you at work or home" -}}
+{{- $gpu := promptStringOnce . "unknown" "Are you using amd or nvidia" -}}
 
 [data]
 environment = "{{ $environment }}"
+gpu = "{{ $gpu }}"
 
 [data.monitors]
 selected = "{{ $location }}"
