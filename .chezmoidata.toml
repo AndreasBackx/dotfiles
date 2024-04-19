@@ -11,7 +11,7 @@ mode = "3840x2160@60Hz"
 position = "0x0"
 scale = "1.25"
 transform = 1
-background = "~/.config/wallpapers/dark/1440x2560/jon-snow.jpg"
+background = "~/.config/wallpapers/dark/2160x3840/ren-ran-HG5QX-GXV5A-unsplash.jpg"
 
 [monitors.work.center]
 name = "Acer Technologies XV340CK P T5Y000013E00"
@@ -27,7 +27,7 @@ mode = "2560x1440@60Hz"
 position = "5168x226"
 scale = "1"
 transform = 3
-background = "~/.config/wallpapers/dark/1440x2560/tyrion-lannister.jpg"
+background = "~/.config/wallpapers/dark/2160x3840/eberhard-grossgasteiger-7ZxpAr4cZ-U-unsplash.jpg"
 
 [monitors.work.laptop]
 name = "Samsung Display Corp. 0x4193"
@@ -44,7 +44,7 @@ mode = "3840x2160@144Hz"
 position = "0x0"
 scale = "1.25"
 transform = 1
-background = "~/.config/wallpapers/dark/1440x2560/jon-snow.jpg"
+background = "~/.config/wallpapers/dark/2160x3840/ren-ran-HG5QX-GXV5A-unsplash.jpg"
 
 [monitors.home.center]
 name = "Dell Inc. AW3225QF GZ00YZ3"
@@ -61,7 +61,7 @@ mode = "3840x2160@144Hz"
 position = "4800x0"
 scale = "1.25"
 transform = 3
-background = "~/.config/wallpapers/dark/1440x2560/tyrion-lannister.jpg"
+background = "~/.config/wallpapers/dark/2160x3840/eberhard-grossgasteiger-7ZxpAr4cZ-U-unsplash.jpg"
 
 [monitors.home.tv]
 name = "LG Electronics LG TV 0x01010101"
