@@ -370,7 +370,9 @@
         },
         "id": "left",
         "layer": "top",
-        "modules-center": [],
+        "modules-center": [
+            "custom/spotify",
+        ],
         "modules-left": [
             "hyprland/workspaces",
             "hyprland/submap",
@@ -378,7 +380,14 @@
         ],
         "modules-right": ["custom/brightness", "clock", "tray"],
         "output": ["{{ index .monitors .monitors.selected "left" "name" }}"],
-        "position": "bottom"
+        "position": "bottom",
+        "custom/spotify": {
+            "exec": "spotifatius monitor",
+            "format": "{}",
+            "on-click-right": "spotifatius toggle-liked",
+            "restart-interval": 1,
+            "return-type": "json"
+        }
     },
     {
         "clock": {
