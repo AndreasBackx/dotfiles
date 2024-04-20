@@ -49,7 +49,7 @@ background = "~/.config/wallpapers/dark/2160x3840/ren-ran-HG5QX-GXV5A-unsplash.j
 [monitors.home.center]
 name = "Dell Inc. AW3225QF GZ00YZ3"
 mode = "3840x2160@120Hz"
-position = "1728x1025"
+position = "1728x865"
 scale = "1.25"
 transform = 0
 # background = "~/.config/wallpapers/dark/2560x1440/jaime-lannister.jpg"
