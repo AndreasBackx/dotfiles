@@ -12,3 +12,4 @@ echo "Execute $0..."
 [ -L ~/.tmux.conf ] ||
   ln -s ~/.tmux/.tmux.conf ~/.tmux.conf
 
+touch ~/.config/.secrets
