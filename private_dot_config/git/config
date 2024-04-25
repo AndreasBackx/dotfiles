@@ -79,4 +79,5 @@ defaultBranch = main
 
 [user]
 name = "Andreas Backx"
+email = "andreas@backx.org"
 signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIxRpuUyWKbNo4dopWoovkq5i9mqM9zSrbIMx+n/zuBz

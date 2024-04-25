@@ -23,20 +23,6 @@ selected = "home"
 
 ## Unstaged File Templates
 
-`.config/.local-variables`
-```zsh
-#!/usr/bin/env zsh
-
-# Optionally name the location of your shell environment.
-export ENV_LOCATION=""
-
-# If you want to disable the monitors cli.
-# export DISABLE_MONITORS="yes"
-
-# Borg backup settings.
-export BORG_REPO=""
-export BORG_BASE_DIR=""
-```
 
 `.config/.secrets`
 ```zsh
@@ -60,7 +46,6 @@ export GITHUB_TOKEN=""
 
 ```zsh
 touch ~/.config/.secrets
-touch ~/.config/.local-variables
 
 # Homebrew
 git clone https://github.com/Homebrew/brew ~/.homebrew

@@ -1,7 +1,6 @@
 #!/usr/bin/env zsh
 
 source ~/.config/.variables
-source ~/.config/.local-variables
 
 function replace_monitors() {
     sed "s/@MONITOR_LEFT/$MONITOR_LEFT/" $1 |

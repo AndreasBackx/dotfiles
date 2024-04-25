@@ -195,7 +195,6 @@ dmypy.json
 
 .cfg
 .config/.secrets
-.config/.local-variables
 
 # These are generated
 .config/i3/config
