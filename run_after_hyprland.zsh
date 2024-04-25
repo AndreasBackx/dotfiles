@@ -10,3 +10,6 @@ cmp --silent $from $to || (
     echo "$from changed, copying to $to..."
     sudo cp $from $to
 )
+
+hyprland_log="/var/log/hyprland.log"
+[ ! -f "$hyprland_log" ] && sudo touch "$hyprland_log" && sudo chown $USER:$GROUP "$hyprland_log"
