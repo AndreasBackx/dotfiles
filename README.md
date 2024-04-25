@@ -1,28 +1,10 @@
 
 # Dotfiles
 
-This repository contains most if not all of the changes made to my machines that run Arch Linux, Fedora, Ubuntu, or CentOS, but primarily Arch Linux as it's what I use on my personal computers. It should support both sway and i3.
-
-## Example `~/.config/chezmoi/chezmoi.toml`
-
-```toml
-[data]
-[data.monitors]
-selected = "home"
-
-[edit]
-    command = "code"
-    args = ["--wait"]
-
-[git]
-    autoCommit = true
-    autoPush = true
-```
-
+This repository contains most if not all of the changes made to my machines that run Arch Linux, Fedora, Ubuntu, or CentOS, but primarily Fedora as it's what I use on my personal computers. It should support both Hyprland primarily, though past versions used Sway and i3.
 
 
 ## Unstaged File Templates
-
 
 `.config/.secrets`
 ```zsh
@@ -72,10 +54,6 @@ sudo chmod a+rw /dev/i2c-*
 # Or after quick logout
 sudo chgrp i2c /dev/i2c-*
 
-# oh-my-tmux
-git clone git@github.com:gpakosz/.tmux.git
-ln -s -f .tmux/.tmux.conf
-
 # delta
 ## Arch Linux
 paru -S git-delta
@@ -89,21 +67,21 @@ brew install git-delta
 ## Arch linux
 paru -S bat
 ## Fedora
-sudo dnf install rust-bat
+sudo dnf install bat
 ## Debian
 sudo apt-get install rust-bat
 ## MacOS
 brew install bat
 ## Other: https://github.com/sharkdp/bat#installation
 
-# lsd
+# eza
 ## Arch linux
-paru -S lsd
+paru -S eza
 ## Fedora
-sudo dnf install lsd
+sudo dnf install eza
 ## MacOS
-brew install lsd
-## Other: https://github.com/Peltoche/lsd#installation
+brew install eza
+## Other: https://github.com/eza-community/eza
 
 # duf
 ## Arch Linux
@@ -142,15 +120,4 @@ sudo dnf install hyperfine
 ## MacOS
 brew install hyperfine
 ## Other: https://github.com/sharkdp/hyperfine#installation
-```
-
-### gammastep
-
-Make sure gammastep, gammastep-gtk, and geoclue are installed. Then add the following to `/etc/geoclue/geoclue.conf`:
-
-```ini
-[gammastep]
-allowed=true
-system=false
-users=
 ```
