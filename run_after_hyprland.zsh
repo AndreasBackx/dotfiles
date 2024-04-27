@@ -12,4 +12,7 @@ cmp --silent $from $to || (
 )
 
 hyprland_log="/var/log/hyprland.log"
-[ ! -f "$hyprland_log" ] && sudo touch "$hyprland_log" && sudo chown $USER:$GROUP "$hyprland_log"
+if [ ! -f "$hyprland_log" ]; then
+    echo "$hyprland_log does not exist, creating it and setting ownership..."
+    sudo touch "$hyprland_log" && sudo chown $USER:$GROUP "$hyprland_log"
+fi
