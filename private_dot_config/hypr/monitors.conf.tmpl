@@ -1,14 +1,19 @@
 {{ define "monitor_cmd" -}}
-desc:{{ index . "name" }}
-{{- if index . "disable" -}}
+{{ $environment_monitor := or (index .monitor .environment) .monitor -}}
+{{ $scale := pluck "scale" $environment_monitor .monitor | first -}}
+{{ $transform := pluck "transform" $environment_monitor .monitor | first -}}
+
+desc:{{ index .monitor "name" }}
+{{- if (pluck "disable" $environment_monitor .monitor | first) -}}
 , disable
 {{- else -}}
-, {{ index . "mode" }}, {{ index . "position" }}
-{{- if index . "scale" -}}
-, {{ index . "scale" }}
+, {{ pluck "mode" $environment_monitor .monitor | first -}}
+, {{ pluck "position" $environment_monitor .monitor | first -}}
+{{- if $scale -}}
+, {{ $scale -}}
 {{- end -}}
-{{- if index . "transform" -}}
-, transform, {{ index . "transform" }}
+{{- if $transform -}}
+, transform, {{ $transform -}}
 {{- end -}}
 {{- end -}}
 {{- end -}}
@@ -16,16 +21,17 @@ desc:{{ index . "name" }}
 # See https://wiki.hyprland.org/Configuring/Monitors/
 monitor=,preferred,auto,1
 
+{{ $environment := .environment -}}
 {{ $selected_monitors := index .monitors .monitors.selected -}}
 {{- range $selected_monitor_position, $selected_monitor := $selected_monitors -}}
 # {{ $selected_monitor_position }}
-monitor={{ template "monitor_cmd" $selected_monitor }}
+monitor={{ template "monitor_cmd" dict "monitor" $selected_monitor "environment" $environment }}
 {{ if index $selected_monitor "background" -}}
 exec = swaybg --output "{{ index $selected_monitor "name" }}" --image {{ index $selected_monitor "background" }} --mode fill
 {{ end -}}
 {{ if index $selected_monitor "has_lid" -}}
 # Turn on when lid opens.
-bindl = , switch:off:Lid Switch,exec,hyprctl keyword monitor "{{ template "monitor_cmd" $selected_monitor }}"
+bindl = , switch:off:Lid Switch,exec,hyprctl keyword monitor "{{ template "monitor_cmd" dict "monitor" $selected_monitor "environment" $environment }}"
 # Turn off when lid closes.
 bindl = , switch:on:Lid Switch,exec,hyprctl keyword monitor "desc:{{ index $selected_monitor "name" }}, disable"
 {{ end }}

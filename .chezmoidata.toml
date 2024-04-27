@@ -62,6 +62,12 @@ scale = "1.25"
 transform = 3
 background = "~/.config/wallpapers/dark/2160x3840/eberhard-grossgasteiger-7ZxpAr4cZ-U-unsplash.jpg"
 
+[monitors.home.right.home]
+mode = "3840x2160@120Hz"
+
+[monitors.home.right.work]
+mode = "3840x2160@144Hz"
+
 [monitors.home.tv]
 name = "LG Electronics LG TV 0x01010101"
 mode = "3840x2160@120Hz"
