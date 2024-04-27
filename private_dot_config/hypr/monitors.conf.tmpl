@@ -3,7 +3,7 @@
 {{ $scale := pluck "scale" $environment_monitor .monitor | first -}}
 {{ $transform := pluck "transform" $environment_monitor .monitor | first -}}
 
-desc:{{ index .monitor "name" }}
+desc:{{ pluck "name" $environment_monitor .monitor | first -}}
 {{- if (pluck "disable" $environment_monitor .monitor | first) -}}
 , disable
 {{- else -}}
