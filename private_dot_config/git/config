@@ -1,6 +1,5 @@
 [core]
 autocrlf = input
-editor = vim
 
 [commit]
 gpgsign = true
