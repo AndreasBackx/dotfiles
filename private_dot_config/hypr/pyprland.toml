@@ -1,0 +1,10 @@
+[pyprland]
+plugins = ["scratchpads"]
+
+[scratchpads.dropterm]
+animation = "fromTop"
+command = "kitty --class kitty-dropterm"
+class = "kitty-dropterm"
+size = "100% 350px"
+# max_size = "2160px 100%"
+margin = 0
