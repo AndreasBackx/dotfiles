@@ -24,6 +24,9 @@ monitor=,preferred,auto,1
 {{ $environment := .environment -}}
 {{ $selected_monitors := index .monitors .monitors.selected -}}
 {{- range $selected_monitor_position, $selected_monitor := $selected_monitors -}}
+{{- if not (kindIs "map" $selected_monitor) -}}
+    {{ continue }}
+{{- end -}}
 # {{ $selected_monitor_position }}
 monitor={{ template "monitor_cmd" dict "monitor" $selected_monitor "environment" $environment }}
 {{ if index $selected_monitor "background" -}}

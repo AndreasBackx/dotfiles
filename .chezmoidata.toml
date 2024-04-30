@@ -5,6 +5,9 @@ gpu = "unknown"
 selected = "home"
 
 [monitors.work]
+screen_timeout = 360
+lock_timeout = 300
+
 [monitors.work.left]
 name = "Dell Inc. DELL U3219Q F2XWXV2"
 mode = "3840x2160@60Hz"
@@ -38,6 +41,9 @@ background = "~/.config/wallpapers/dark/2560x1440/jaime-lannister.jpg"
 has_lid = true
 
 [monitors.home]
+screen_timeout = 120
+lock_timeout = 300
+
 [monitors.home.left]
 name = "Lenovo Group Limited Y32p-30 U1HMF6PT"
 mode = "3840x2160@144Hz"
