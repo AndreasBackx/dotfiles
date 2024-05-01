@@ -60,9 +60,14 @@ scale = "1.25"
 transform = 0
 color = "#000000"
 
+[monitors.home.center.home]
+mode = "3840x2160@240Hz"
+
+[monitors.home.center.work]
+mode = "3840x2160@120Hz"
+
 [monitors.home.right]
 name = "Lenovo Group Limited Y32p-30 U1HMF6PN"
-mode = "3840x2160@144Hz"
 position = "4800x0"
 scale = "1.25"
 transform = 3
