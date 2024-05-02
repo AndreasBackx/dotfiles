@@ -1,5 +1,4 @@
 {{ define "monitor_cmd" -}}
-<<<<<<< Updated upstream
 {{ $environment_monitor := or (index .monitor .environment) .monitor -}}
 {{ $scale := pluck "scale" $environment_monitor .monitor | first -}}
 {{ $transform := pluck "transform" $environment_monitor .monitor | first -}}
@@ -15,23 +14,6 @@ desc:{{ pluck "name" $environment_monitor .monitor | first -}}
 {{- end -}}
 {{- if $transform -}}
 , transform, {{ $transform -}}
-=======
-desc:{{ index .selected_monitor "name" }}
-{{- if index .selected_monitor "disable" -}}
-, disable
-{{- else -}}
-{{- if and (index .selected_monitor .environment) (index .selected_monitor .environment "mode") -}}
-, {{ index .selected_monitor .environment "mode" }}
-{{- else -}}
-, {{ index .selected_monitor "mode" }}
-{{- end -}}
-, {{ index .selected_monitor "position" }}
-{{- if index .selected_monitor "scale" -}}
-, {{ index .selected_monitor "scale" }}
-{{- end -}}
-{{- if index .selected_monitor "transform" -}}
-, transform, {{ index .selected_monitor "transform" }}
->>>>>>> Stashed changes
 {{- end -}}
 {{- end -}}
 {{- end -}}
@@ -46,21 +28,13 @@ monitor=,preferred,auto,1
     {{ continue }}
 {{- end -}}
 # {{ $selected_monitor_position }}
-<<<<<<< Updated upstream
 monitor={{ template "monitor_cmd" dict "monitor" $selected_monitor "environment" $environment }}
-=======
-monitor={{ template "monitor_cmd" dict "selected_monitor" $selected_monitor "environment" $environment }}
->>>>>>> Stashed changes
 {{ if index $selected_monitor "background" -}}
 exec = swaybg --output "{{ index $selected_monitor "name" }}" --image {{ index $selected_monitor "background" }} --mode fill
 {{ end -}}
 {{ if index $selected_monitor "has_lid" -}}
 # Turn on when lid opens.
-<<<<<<< Updated upstream
 bindl = , switch:off:Lid Switch,exec,hyprctl keyword monitor "{{ template "monitor_cmd" dict "monitor" $selected_monitor "environment" $environment }}"
-=======
-bindl = , switch:off:Lid Switch,exec,hyprctl keyword monitor "{{ template "monitor_cmd" dict "selected_monitor" $selected_monitor "environment" $environment }}"
->>>>>>> Stashed changes
 # Turn off when lid closes.
 bindl = , switch:on:Lid Switch,exec,hyprctl keyword monitor "desc:{{ index $selected_monitor "name" }}, disable"
 {{ end }}
