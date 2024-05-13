@@ -1,12 +1,13 @@
-{{- $environment := promptStringOnce . "home" "Is this a work or home machine" -}}
-{{- $location := promptStringOnce . "home" "Are you at work or home" -}}
-{{- $gpu := promptStringOnce . "unknown" "Are you using amd or nvidia" -}}
-
 [data]
+{{- $environment := promptStringOnce . "environment" "Whose machine is this? [work/personal]" "personal" }}
 environment = "{{ $environment }}"
+{{- $gpu := promptStringOnce . "gpu" "What GPU are you using? [amd/nvidia/other]" "other" }}
 gpu = "{{ $gpu }}"
+{{- $headless := promptBoolOnce . "headless" "Is this a headless machine? [y/n]" false }}
+headless = {{ $headless }}
 
 [data.monitors]
+{{- $location := promptStringOnce . "monitors.selected" "Where are you located? [home/work]" "home" }}
 selected = "{{ $location }}"
 
 [edit]

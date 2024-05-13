@@ -1,9 +1,4 @@
-environment = "home"
-gpu = "unknown"
-
 [monitors]
-selected = "home"
-
 [monitors.work]
 screen_timeout = 360
 lock_timeout = 300
@@ -60,7 +55,7 @@ scale = "1.25"
 transform = 0
 color = "#000000"
 
-[monitors.home.center.home]
+[monitors.home.center.personal]
 mode = "3840x2160@240Hz"
 
 [monitors.home.center.work]
@@ -73,7 +68,7 @@ scale = "1.25"
 transform = 3
 background = "~/.config/wallpapers/dark/2160x3840/eberhard-grossgasteiger-7ZxpAr4cZ-U-unsplash.jpg"
 
-[monitors.home.right.home]
+[monitors.home.right.personal]
 mode = "3840x2160@120Hz"
 
 [monitors.home.right.work]

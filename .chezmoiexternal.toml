@@ -1,46 +1,52 @@
 
 [".oh-my-zsh"]
-    type = "git-repo"
-    url = "git@github.com:ohmyzsh/ohmyzsh.git"
-    refreshPeriod = "168h"
+type = "git-repo"
+url = "git@github.com:ohmyzsh/ohmyzsh.git"
+refreshPeriod = "168h"
 
 [".oh-my-zsh/custom/plugins/zsh-autosuggestions"]
-    type = "git-repo"
-    url = "git@github.com:/zsh-users/zsh-autosuggestions.git"
-    refreshPeriod = "168h"
-    exact = true
+type = "git-repo"
+url = "git@github.com:/zsh-users/zsh-autosuggestions.git"
+refreshPeriod = "168h"
+exact = true
 
 [".oh-my-zsh/custom/plugins/zsh-syntax-highlighting"]
-    type = "git-repo"
-    url = "git@github.com:/zsh-users/zsh-syntax-highlighting.git"
-    refreshPeriod = "168h"
-    exact = true
+type = "git-repo"
+url = "git@github.com:/zsh-users/zsh-syntax-highlighting.git"
+refreshPeriod = "168h"
+exact = true
 
 [".oh-my-zsh/custom/plugins/zsh-completions"]
-    type = "git-repo"
-    url = "git@github.com:/zsh-users/zsh-completions.git"
-    refreshPeriod = "168h"
-    exact = true
+type = "git-repo"
+url = "git@github.com:/zsh-users/zsh-completions.git"
+refreshPeriod = "168h"
+exact = true
+
+[".oh-my-zsh/custom/plugins/fzf-tab"]
+type = "git-repo"
+url = "git@github.com:/Aloxaf/fzf-tab.git"
+refreshPeriod = "168h"
+exact = true
 
 [".oh-my-zsh/custom/themes/spaceship-prompt"]
-    type = "git-repo"
-    url = "git@github.com:/denysdovhan/spaceship-prompt.git"
-    refreshPeriod = "168h"
-    exact = true
+type = "git-repo"
+url = "git@github.com:/denysdovhan/spaceship-prompt.git"
+refreshPeriod = "168h"
+exact = true
 
 [".tmux"]
-    type = "git-repo"
-    url = "git@github.com:/gpakosz/.tmux.git"
-    refreshPeriod = "168h"
-    exact = true
+type = "git-repo"
+url = "git@github.com:/gpakosz/.tmux.git"
+refreshPeriod = "168h"
+exact = true
 
 [".local/share/pyenv"]
-    type = "git-repo"
-    url = "git@github.com:/pyenv/pyenv.git"
-    refreshPeriod = "168h"
+type = "git-repo"
+url = "git@github.com:/pyenv/pyenv.git"
+refreshPeriod = "168h"
 
 [".local/share/pyenv/plugins/pyenv-virtualenv"]
-    type = "git-repo"
-    url = "git@github.com:/pyenv/pyenv-virtualenv.git"
-    refreshPeriod = "168h"
-    exact = true
+type = "git-repo"
+url = "git@github.com:/pyenv/pyenv-virtualenv.git"
+refreshPeriod = "168h"
+exact = true
