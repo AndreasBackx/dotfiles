@@ -5,12 +5,12 @@ general {
 }
 
 listener {
-    timeout = {{ index .monitors .environment "screen_timeout" }}
+    timeout = {{ index .monitors .monitors.selected "screen_timeout" }}
     on-timeout = hyprctl dispatch dpms off        # screen off when timeout has passed
     on-resume = hyprctl dispatch dpms on          # screen on when activity is detected after timeout has fired.
 }
 
 listener {
-    timeout = {{ index .monitors .environment "lock_timeout" }}
+    timeout = {{ index .monitors .monitors.selected "lock_timeout" }}
     on-timeout = loginctl lock-session            # lock screen when timeout has passed
 }
