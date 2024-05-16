@@ -135,7 +135,11 @@
             "clock",
             "tray"
         ],
-        "output": [],
+        "output": [
+        {{ if eq .monitors.selected "work" }}
+        "{{ index .monitors .monitors.selected "center" "name" }}"
+        {{ end }}
+        ],
         "position": "bottom",
         "pulseaudio": {
             "format": "<span color=\"#6E6E6E\">{icon}</span>  {volume}%",
@@ -378,7 +382,19 @@
             "hyprland/submap",
             "hyprland/window"
         ],
-        "modules-right": ["custom/brightness", "clock", "tray"],
+        "modules-right": [
+            {{ if eq .monitors.selected "home" }}
+            "custom/updates",
+            "custom/backup",
+            "custom/headphones",
+            "pulseaudio",
+            "custom/power",
+            "clock",
+            "tray"
+            {{ else }}
+            "clock"
+            {{ end }}
+        ],
         "output": ["{{ index .monitors .monitors.selected "left" "name" }}"],
         "position": "bottom",
         "custom/spotify": {
@@ -387,6 +403,25 @@
             "on-click-right": "spotifatius toggle-liked",
             "restart-interval": 1,
             "return-type": "json"
+        },
+        "pulseaudio": {
+            "format": "<span color=\"#6E6E6E\">{icon}</span>  {volume}%",
+            "format-icons": {
+                "car": "",
+                "default": ["", ""],
+                "handsfree": "",
+                "headphones": "",
+                "headset": "",
+                "muted": "",
+                "phone": "",
+                "portable": ""
+            },
+            "format-muted": "<span color=\"#6E6E6E\">{icon}  {volume}%</span>",
+            "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+            "on-click-right": "pavucontrol",
+            "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-",
+            "on-scroll-up": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+",
+            "scroll-step": 5
         }
     },
     {
