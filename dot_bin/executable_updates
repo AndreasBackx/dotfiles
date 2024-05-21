@@ -66,9 +66,9 @@ function update_package_manager() {
     if is_fedora; then
         # We have to inline the_dnf because of sudo.
         if has_dnf5; then
-            sudo dnf5 $@ upgrade --refresh --assumeyes
+            sudo dnf5 $@ upgrade --refresh --assumeyes --disablerepo="cpe-yum*"
         else
-            sudo dnf $@ upgrade --refresh --assumeyes
+            sudo dnf $@ upgrade --refresh --assumeyes --disablerepo="cpe-yum*"
         fi
     else
         paru -Syu --noconfirm
