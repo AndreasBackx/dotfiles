@@ -4,7 +4,7 @@ set -o errexit -o nounset
 
 source $HOME/.config/.variables
 
-# --enable-features=WaylandWindowDecorations --ozone-platform-hint=auto
+wrappers_directory="$HOME/.bin/wrappers"
 wayland_args="--enable-features=UseOzonePlatform --ozone-platform=wayland"
 
 declare -A WAYLAND_WRAPPERS=(
@@ -22,24 +22,21 @@ declare -A WAYLAND_WRAPPERS=(
   [google-chrome]="google-chrome $wayland_args"
   [google-chrome-stable]="google-chrome-stable $wayland_args"
 )
-declare -A X_WRAPPERS=(
-  [discord]="discord || Discord || flatpak run com.discordapp.Discord"
-  #[mattermost-desktop]="mattermost-desktop"
-  #[obsidian]="obsidian"
-  #[signal-desktop]="signal-desktop"
-  [spotify]="spotify || flatpak run com.spotify.Client"
-  [zulip]="zulip || flatpak run --socket=wayland org.zulip.Zulip"
-)
+set -A WRAPPERS ${(kv)WAYLAND_WRAPPERS}
 
-wrappers_directory="$HOME/.bin/wrappers"
-rm -rf $wrappers_directory
+if [[ $(uname -s) == "Darwin" ]]; then
+  rm -rf $wrappers_directory
+  exit 0
+fi
+
 mkdir -p $wrappers_directory
 
-# if [[ $CHEZMOI_DATA_MONITORS_SELECTED == "home" ]]; then
-#   set -A WRAPPERS ${(kv)X_WRAPPERS}
-# else
-  set -A WRAPPERS ${(kv)WAYLAND_WRAPPERS}
-# ficc
+for file in "$wrappers_directory"/*; do
+  if [[ ! -v WAYLAND_WRAPPERS[$(basename "$file")] ]]; then
+    echo "Deleting old wrapper: $file"
+    rm "$file"
+  fi
+done
 
 for key value in ${(kv)WRAPPERS}; do
   CONTENTS="#!/usr/bin/env zsh
