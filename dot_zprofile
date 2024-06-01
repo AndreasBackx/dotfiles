@@ -106,22 +106,24 @@ PATH="$HOME/.bin/wrappers:$PATH"
 
 if [[ $machine == "Darwin" ]]; then
   # MacOS specific commands.
-  export HOMEBREW_HOME="$HOME/.homebrew"
+  # export HOMEBREW_HOME="$HOME/.homebrew"
 
   # Use GNU utils.
   PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
-  PATH="$HOMEBREW_HOME/bin:$PATH"
+  # Use GNU man.
+  MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
 
+  # `code` Pin ATH
+  PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
+
+  # Homebrew
+  export HOMEBREW_HOME="/opt/homebrew"
+  PATH="$HOMEBREW_HOME/bin:$PATH"
   # Homebrew fzf
   export FZF_BASE="$HOMEBREW_HOME/opt/fzf"
 
-  export GLASSFISH_HOME=/usr/local/opt/glassfish/libexec
-
   # Ignore iTunes play button
   # launchctl unload -w /System/Library/LaunchAgents/com.apple.rcd.plist &> /dev/null
-
-  # Use GNU man.
-  MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
 
   alias flushdns="sudo dscacheutil -flushcache;sudo killall -HUP mDNSResponder"
 fi
