@@ -67,6 +67,10 @@ if [[ "$CHEZMOI_DATA_ENVIRONMENT" != "devserver" ]] && type "pyenv" >/dev/null; 
   eval "$(pyenv virtualenv-init -)"
 fi
 
+if type "zoxide" >/dev/null; then
+  eval "$(zoxide init zsh)"
+fi
+
 # wlroots
 # Use legacy mode for gamma changing for redshift.
 # export WLR_DRM_NO_ATOMIC=1
