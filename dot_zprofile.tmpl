@@ -25,25 +25,13 @@ export DISABLE_AUTO_UPDATE=true
 
 ## Linux / MacOS ##
 machine=$(uname -s)
-if [[ $machine == "Linux" ]]; then
-  # Linux specific commands.
-
-  # Make Electron use gio for trash.
-  # Used for VS Code.
-  export ELECTRON_TRASH="gio"
-
-  export XDG_DATA_HOME="$HOME/.local/share"
-  export XDG_CONFIG_HOME="$HOME/.config"
-  export XDG_STATE_HOME="$HOME/.local/state"
-  export XDG_CACHE_HOME="$HOME/.cache"
-elif [[ $machine == "Darwin" ]]; then
-  export XDG_DATA_HOME="$HOME/Library/Application Support"
-  export XDG_CONFIG_HOME="$HOME/.config"
-  export XDG_STATE_HOME="$HOME/Library/Application Support"
-  export XDG_CACHE_HOME="$HOME/Library/Caches"
-fi
 
 # XDG
+export XDG_DATA_HOME="$HOME/{{ .relative_xdg_data_home}}"
+export XDG_CONFIG_HOME="$HOME/{{ .relative_xdg_config_home }}"
+export XDG_STATE_HOME="$HOME/{{ .relative_xdg_state_home }}"
+export XDG_CACHE_HOME="$HOME/{{ .relative_xdg_cache_home }}"
+
 export CARGO_HOME="$XDG_DATA_HOME"/cargo
 export DOCKER_CONFIG="$XDG_CONFIG_HOME"/docker
 export GNUPGHOME="$XDG_DATA_HOME"/gnupg
@@ -108,7 +96,11 @@ PATH="$HOME/.bin:$PATH"
 PATH="$HOME/.local/bin:$PATH"
 PATH="$HOME/.bin/wrappers:$PATH"
 
-if [[ $machine == "Darwin" ]]; then
+if [[ $machine == "Linux" ]]; then
+  # Make Electron use gio for trash.
+  # Used for VS Code.
+  export ELECTRON_TRASH="gio"
+elif [[ $machine == "Darwin" ]]; then
   # MacOS specific commands.
   # export HOMEBREW_HOME="$HOME/.homebrew"
 

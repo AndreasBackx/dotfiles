@@ -6,6 +6,18 @@ gpu = "{{ $gpu }}"
 {{- $headless := promptBoolOnce . "headless" "Is this a headless machine? [y/n]" false }}
 headless = {{ $headless }}
 
+{{ if eq .chezmoi.os "darwin" -}}
+relative_xdg_data_home = "Library/Application Support"
+relative_xdg_config_home = ".config"
+relative_xdg_state_home = "Library/Application Support"
+relative_xdg_cache_home = "Library/Caches"
+{{- else if eq .chezmoi.os "linux" -}}
+relative_xdg_data_home = ".local/share"
+relative_xdg_config_home = ".config"
+relative_xdg_state_home = ".local/state"
+relative_xdg_cache_home = ".cache"
+{{ end }}
+
 [data.monitors]
 {{- $location := promptStringOnce . "monitors.selected" "Where are you located? [home/work]" "home" }}
 selected = "{{ $location }}"
