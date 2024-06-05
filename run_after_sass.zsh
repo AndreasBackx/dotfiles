@@ -17,4 +17,4 @@ else
     exit 1
 fi
 
-sass ~/.config/waybar/style.{scss,css} || sassc ~/.config/waybar/style.{scss,css}
+"$command" ~/.config/waybar/style.{scss,css}
