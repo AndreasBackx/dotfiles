@@ -62,6 +62,13 @@ function check_live() {
     fi
 }
 
+function update_kitty() {
+    kitty @ goto-layout vertical
+    kitty @ launch --title "Flatpak update" --no-response --dont-take-focus --type window -- updates update --flatpak
+    kitty @ launch --title "Snap update" --no-response --dont-take-focus --type window -- updates update --snap
+    kitty @ launch --title "Package manager update" --no-response --dont-take-focus --type window -- updates update --package-manager
+}
+
 function update_package_manager() {
     if is_fedora; then
         # We have to inline the_dnf because of sudo.
@@ -98,10 +105,7 @@ monitor)
 update)
     case "$2" in
     --kitty)
-        kitty @ goto-layout vertical
-        kitty @ launch --title "Flatpak update" --no-response --dont-take-focus --type window -- updates update --flatpak
-        kitty @ launch --title "Snap update" --no-response --dont-take-focus --type window -- updates update --snap
-        kitty @ launch --title "Package manager update" --no-response --dont-take-focus --type window -- updates update --package-manager
+        update_kitty
         ;;
     --package-manager)
         update_package_manager
@@ -115,7 +119,11 @@ update)
     *)
         # If desktop environment is running.
         if [[ -n "$DESKTOP_SESSION" ]]; then
-            kitty --class updates --detach updates update --kitty
+            if [[ "$TERM" == "xterm-kitty" ]]; then
+                update_kitty
+            else
+                kitty --class updates --detach updates update --kitty
+            fi
         else
             update_package_manager
             update_flatpak
