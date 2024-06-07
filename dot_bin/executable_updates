@@ -4,9 +4,31 @@ set -e
 
 source ~/.bin/utils.zsh
 
+function has_dnf5() {
+    type "dnf5" >/dev/null
+}
+
+function the_dnf() {
+    if has_dnf5; then
+        dnf5 $@
+    else
+        dnf $@
+    fi
+}
+
+function dnf_update_amount() {
+    the_dnf check-update --quiet --disablerepo="cpe-yum*" $@ |
+        # Make sure we only get the first part as that's the updates,
+        # the rest is less accurate. This makes it take the first paragraph.
+        sed "s/Obsoleting Packages//g" |
+        awk -v RS= 'NR==1' |
+        # Count
+        wc -l
+}
+
 function check_cache() {
     if is_fedora; then
-        amount=$(dnf check-update --cacheonly --quiet --disablerepo="cpe-yum*" | wc -l)
+        amount=$(dnf_update_amount --cacheonly)
     else
         amount=$(paru -Qu | wc -l)
     fi
@@ -21,7 +43,7 @@ function check_cache() {
 
 function check_live() {
     if is_fedora; then
-        amount=$(dnf check-update --refresh --quiet --disablerepo="cpe-yum*" | wc -l || echo "-1")
+        amount=$(dnf_update_amount || echo "-1")
     else
         amount=$(
             paru -Syy &>/dev/null
@@ -42,7 +64,12 @@ function check_live() {
 
 function update_package_manager() {
     if is_fedora; then
-        sudo dnf upgrade --refresh --assumeyes
+        # We have to inline the_dnf because of sudo.
+        if has_dnf5; then
+            sudo dnf5 $@ upgrade --refresh --assumeyes --disablerepo="cpe-yum*"
+        else
+            sudo dnf $@ upgrade --refresh --assumeyes --disablerepo="cpe-yum*"
+        fi
     else
         paru -Syu --noconfirm
     fi
@@ -53,7 +80,7 @@ function update_flatpak() {
 }
 
 function update_snap() {
-    snap &> /dev/null && sudo snap refresh
+    snap &>/dev/null && sudo snap refresh
 }
 
 case "$1" in
