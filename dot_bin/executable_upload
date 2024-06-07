@@ -27,11 +27,30 @@ if [[ $types == *image* ]]; then
         wl-paste > $tmpfile
         link=$(px upload "$tmpfile")
     else
-        link=$(wl-paste | imgur.sh)
+        imgur_output=$(wl-paste | imgur.sh)
+        echo "BEFORE"
+        echo "$imgur_output"
+        echo "AFTER"
+        link=$(echo "$imgur_output" | head -1)
+        delete_link=$(echo "$imgur_output" | tail -1)
     fi
 
-    notify-send "🎉 Uploaded to $service_name" "$link copied to clipboard!" --replace-id=$notification_id --category transfer.complete
     echo $link | wl-copy --trim-newline
+    notify_output_lines=($(notify-send "🎉 Uploaded to $service_name" "Link copied to clipboard, click here to delete."  --print-id --replace-id=$notification_id --category transfer.complete --action=default=delete --expire-time 15000 ))
+    notification_id=$notify_output_lines[1]
+    action=$notify_output_lines[2]
+
+    if [[ $action == "default" ]]; then
+        # It means it was clicked.
+        if [[ $CHEZMOI_DATA_ENVIRONMENT == "work" ]]; then
+            notify-send "😫 You cannot delete pixelcloud images." --category transfer.error --replace-id=$notification_id
+        else
+            (
+                xdg-open "$delete_link" && \
+                notify-send "🗑 Opened the delete link!" "Confirm the deletion on Imgur." --replace-id=$notification_id --category transfer.complete
+            ) || notify-send "😫 Could not delete Imgur image!" "The delete link is in your clipboard." --replace-id=$notification_id --category transfer.error
+        fi
+    fi
 else
     if [[ $CHEZMOI_DATA_ENVIRONMENT == "work" ]]; then
         service_name="Pastry"
@@ -63,7 +82,10 @@ else
         if [[ $CHEZMOI_DATA_ENVIRONMENT == "work" ]]; then
             notify-send "😫 You cannot delete pastries." --category transfer.error --replace-id=$notification_id
         else
-            (gh gist delete $to_copy && notify-send "🗑 Deleted GitHub Gist!" "The original link remains in the clipboard." --replace-id=$notification_id --category transfer.complete) || notify-send "😫 Could not delete GitHub Gist!" "Try to delete it manually, it's still in your clipboard." --replace-id=$notification_id --category transfer.complete
+            (
+                gh gist delete $to_copy && \
+                notify-send "🗑 Deleted GitHub Gist!" "The original link remains in the clipboard." --replace-id=$notification_id --category transfer.complete
+            ) || notify-send "😫 Could not delete GitHub Gist!" "Try to delete it manually, it's still in your clipboard." --replace-id=$notification_id --category transfer.error
         fi
     fi
 fi

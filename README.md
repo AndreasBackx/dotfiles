@@ -3,63 +3,45 @@
 
 This repository contains most if not all of the changes made to my machines that run Arch Linux, Fedora, Ubuntu, or CentOS, but primarily Fedora as it's what I use on my personal computers. It should support both Hyprland primarily, though past versions used Sway and i3.
 
+
+## Unstaged File Templates
+
+`.config/.secrets`
+```zsh
+# borg backup
+export BORG_PASSPHRASE=""
+
+# spotifatius
+export RSPOTIFY_CLIENT_ID=""
+export RSPOTIFY_CLIENT_SECRET=""
+
+# spotifycl
+export SPOTIPY_CLIENT_ID=""
+export SPOTIPY_CLIENT_SECRET=""
+export SPOTIPY_REDIRECT_URI="http://localhost"
+
+# GitHub
+export GITHUB_TOKEN=""
+```
+
 ## Installation
 
 ```zsh
-# Packages
+touch ~/.config/.secrets
+
+# Homebrew
+git clone https://github.com/Homebrew/brew ~/.homebrew
+brew update
+
+# fzf
 ## Arch Linux
-paru -S \
-    fzf \
-    git-delta \
-    bat \
-    eza \
-    duf \
-    ripgrep \
-    choose-rust-git \
-    hyperfine
-
+paru -S fzf
 ## Fedora
-sudo dnf copr enable atim/choose
-sudo dnf install -y \
-    fzf \
-    git-delta \
-    bat \
-    eza \
-    # duf \
-    ripgrep \
-    choose \
-    hyperfine
-
+sudo dnf install fzf
+## Debian
+sudo apt-get install fzf
 ## MacOS
-brew install -y \
-    fzf \
-    git-delta \
-    bat \
-    eza \
-    duf \
-    ripgrep \
-    choose-rust \
-    hyperfine
-
-## Ubuntu
-sudo apt-get install -y \
-    fzf \
-    # git-delta \
-    rust-bat \
-    # eza \
-    # duf \
-    ripgrep \
-    choose-rust-git
-    # hyperfine
-
-## Other
-# https://github.com/dandavison/delta#installation
-# https://github.com/sharkdp/bat#installation
-# https://github.com/eza-community/eza
-# https://github.com/muesli/duf#installation
-# https://github.com/BurntSushi/ripgrep#installation
-# https://github.com/theryangeary/choose#compilation-and-installation
-# https://github.com/sharkdp/hyperfine#installation
+brew install fzf
 
 # ddcutil i2c
 sudo groupadd --system i2c
@@ -71,4 +53,71 @@ sudo cp /usr/share/ddcutil/data/45-ddcutil-i2c.rules /etc/udev/rules.d
 sudo chmod a+rw /dev/i2c-*
 # Or after quick logout
 sudo chgrp i2c /dev/i2c-*
+
+# delta
+## Arch Linux
+paru -S git-delta
+## Fedora
+sudo dnf install git-delta
+## MacOS
+brew install git-delta
+## Other: https://github.com/dandavison/delta#installation
+
+# bat
+## Arch linux
+paru -S bat
+## Fedora
+sudo dnf install bat
+## Debian
+sudo apt-get install rust-bat
+## MacOS
+brew install bat
+## Other: https://github.com/sharkdp/bat#installation
+
+# eza
+## Arch linux
+paru -S eza
+## Fedora
+sudo dnf install eza
+## MacOS
+brew install eza
+## Other: https://github.com/eza-community/eza
+
+# duf
+## Arch Linux
+paru -S duf
+## MacOS
+brew install duf
+## Other: https://github.com/muesli/duf#installation
+
+# ripgrep
+## Arch Linux
+paru -S ripgrep
+## Fedora
+sudo dnf install ripgrep
+## Debian
+sudo apt-get install ripgrep
+## MacOS
+brew install ripgrep
+## Other: https://github.com/BurntSushi/ripgrep#installation
+
+# choose
+## Arch Linux
+paru -S choose-rust-git
+## Fedora
+sudo dnf copr enable atim/choose
+sudo dnf install choose
+## MacOS
+brew install choose-rust
+## Other: https://github.com/theryangeary/choose#compilation-and-installation
+
+
+# hyperfine
+## Arch Linux
+paru -S hyperfine
+## Fedora
+sudo dnf install hyperfine
+## MacOS
+brew install hyperfine
+## Other: https://github.com/sharkdp/hyperfine#installation
 ```

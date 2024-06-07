@@ -51,11 +51,6 @@ SPACESHIP_RPROMPT_ORDER+=(
 
 source $HOME/.oh-my-zsh/oh-my-zsh.sh
 compinit -d $XDG_CACHE_HOME/zsh/zcompdump-$ZSH_VERSION
-autoload -Uz compinit
-for dump in ~/.zcompdump(N.mh+24); do
-  compinit
-done
-compinit -C
 
 if type "eza" >/dev/null; then
   alias ls="eza"
