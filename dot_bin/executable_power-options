@@ -3,7 +3,7 @@
 source ~/.bin/utils.zsh
 
 function wait_for_update() {
-    kitty-cwd --single-instance --wait-for-single-instance-window-close -- zsh -c "updates update"
+    kitty-cwd --class updates --single-instance --wait-for-single-instance-window-close -- zsh -c "updates update --kitty"
 }
 
 case "$1" in
