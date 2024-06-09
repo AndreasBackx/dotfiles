@@ -73,7 +73,11 @@ function update_package_manager() {
     if is_fedora; then
         # We have to inline the_dnf because of sudo.
         if has_dnf5; then
-            sudo dnf5 $@ upgrade --refresh --assumeyes --disablerepo="cpe-yum*"
+            extra_args=""
+            if [[ "$CHEZMOI_DATA_ENVIRONMENT" == "work" ]]; then
+                extra_args="--disablerepo=\"cpe-yum*\""
+            fi
+            sudo dnf5 $@ upgrade --refresh --assumeyes $extra_args
         else
             sudo dnf $@ upgrade --refresh --assumeyes --disablerepo="cpe-yum*"
         fi
