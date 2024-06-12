@@ -45,6 +45,7 @@ export RUSTUP_HOME="$XDG_DATA_HOME"/rustup
 export TEXMFVAR=$XDG_CACHE_HOME/texlive/texmf-var
 export WINEPREFIX="$XDG_DATA_HOME"/wine
 export LESSHISTFILE="$XDG_CACHE_HOME"/less/history
+export PNPM_HOME="$XDG_CACHE_HOME"/pnpm
 
 export PYENV_ROOT="$XDG_DATA_HOME/pyenv"
 PATH="$PYENV_ROOT/shims:$PATH"
@@ -130,6 +131,7 @@ PATH="$PATH:$HOME/.local/bin"
 PATH="$PATH:/var/lib/flatpak/exports/bin"
 PATH="$PATH:$HOME/.opam/default/bin"
 PATH="$PATH:$XDG_DATA_HOME/npm/bin/"
+PATH="$PATH:$PNPM_HOME"
 
 # Wayland
 # Firefox new touchpad input support.
