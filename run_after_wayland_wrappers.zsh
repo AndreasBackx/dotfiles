@@ -10,6 +10,8 @@ wayland_args="--enable-features=UseOzonePlatform --ozone-platform=wayland"
 declare -A WAYLAND_WRAPPERS=(
   [code]="code $wayland_args"
   [code-fb]="code-fb $wayland_args"
+  [code-fb-insiders]="code-fb-insiders $wayland_args"
+  [code-fb-dev]="code-fb-dev $wayland_args"
   [discord]="flatpak run --socket=wayland com.discordapp.Discord $wayland_args || discord $wayland_args || Discord $wayland_args"
   [mattermost-desktop]="mattermost-desktop $wayland_args"
   [obsidian]="obsidian $wayland_args || flatpak run --socket=wayland md.obsidian.Obsidian $wayland_args"
