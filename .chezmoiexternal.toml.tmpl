@@ -2,52 +2,64 @@
 [".oh-my-zsh"]
 type = "git-repo"
 url = "git@github.com:ohmyzsh/ohmyzsh.git"
-refreshPeriod = "168h"
+refreshPeriod = "720h"
 
 [".oh-my-zsh/custom/plugins/zsh-autosuggestions"]
 type = "git-repo"
 url = "git@github.com:/zsh-users/zsh-autosuggestions.git"
-refreshPeriod = "168h"
+refreshPeriod = "720h"
 exact = true
 
 [".oh-my-zsh/custom/plugins/zsh-syntax-highlighting"]
 type = "git-repo"
 url = "git@github.com:/zsh-users/zsh-syntax-highlighting.git"
-refreshPeriod = "168h"
+refreshPeriod = "720h"
 exact = true
 
 [".oh-my-zsh/custom/plugins/zsh-completions"]
 type = "git-repo"
 url = "git@github.com:/zsh-users/zsh-completions.git"
-refreshPeriod = "168h"
+refreshPeriod = "720h"
 exact = true
 
 [".oh-my-zsh/custom/plugins/fzf-tab"]
 type = "git-repo"
 url = "git@github.com:/Aloxaf/fzf-tab.git"
-refreshPeriod = "168h"
+refreshPeriod = "720h"
 exact = true
 
 [".oh-my-zsh/custom/themes/spaceship-prompt"]
 type = "git-repo"
 url = "git@github.com:/denysdovhan/spaceship-prompt.git"
-refreshPeriod = "168h"
+refreshPeriod = "720h"
 exact = true
 
 [".tmux"]
 type = "git-repo"
 url = "git@github.com:/gpakosz/.tmux.git"
-refreshPeriod = "168h"
+refreshPeriod = "720h"
 exact = true
 
 ["{{ .relative_xdg_data_home }}/pyenv"]
 type = "git-repo"
 url = "git@github.com:/pyenv/pyenv.git"
-refreshPeriod = "168h"
+refreshPeriod = "720h"
 exact = true
 
 ["{{ .relative_xdg_data_home }}/pyenv/plugins/pyenv-virtualenv"]
 type = "git-repo"
 url = "git@github.com:/pyenv/pyenv-virtualenv.git"
-refreshPeriod = "168h"
+refreshPeriod = "720h"
 exact = true
+
+["{{ .relative_xdg_data_home }}/fonts/meslo-nerd-font"]
+type = "archive"
+url = "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Meslo.tar.xz"
+refreshPeriod = "720h"
+decompress = "xz"
+
+["{{ .relative_xdg_data_home }}/fonts/AppleColorEmoji.ttf"]
+type = "file"
+url = "https://github.com/samuelngs/apple-emoji-linux/releases/latest/download/AppleColorEmoji.ttf"
+refreshPeriod = "720h"
+
