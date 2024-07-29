@@ -45,6 +45,7 @@ windowrule=workspace 6 silent, ^(Slack)$
 windowrule=workspace 6 silent, title:^(Tuba)$
 
 # Center
-windowrule=monitor desc:{{ index .monitors .monitors.selected "center" "name" }}, ^(Code)$
+# Monitor ID 1 is center
+windowrule=monitor 1, ^code(.*)?-url-handler$
 
 # Right
