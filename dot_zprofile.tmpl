@@ -146,9 +146,7 @@ export OBSIDIAN_USE_WAYLAND=1
 export FREETYPE_PROPERTIES="cff:no-stem-darkening=0 autofitter:no-stem-darkening=0"
 
 ## EXEC ###
-if [ -z "$DISPLAY" ] && [ -n "$XDG_VTNR" ] && [ "$XDG_VTNR" -eq 1 ]; then
-  exec sway >/var/log/sway.log 2>&1
-elif [[ -n "$PS1" ]] && [[ -z "$TMUX" ]] && [[ -n "$SSH_CONNECTION" ]]; then
+if [[ -n "$PS1" ]] && [[ -z "$TMUX" ]] && [[ -n "$SSH_CONNECTION" ]]; then
   if [[ $TERM == "xterm-kitty" ]]; then
     tmux attach-session -t ssh_tmux || tmux new-session -s ssh_tmux
   else
