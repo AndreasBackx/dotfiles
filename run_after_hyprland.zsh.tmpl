@@ -1,5 +1,10 @@
 #!/usr/bin/env zsh
 
+{{ if .headless }}
+# We're headless.
+exit 0
+{{ end }}
+
 from=$(realpath ~/.config/hypr/hyprland-shell.desktop)
 to_directory="/usr/share/wayland-sessions"
 to="$to_directory/hyprland-shell.desktop"

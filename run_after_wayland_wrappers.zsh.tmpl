@@ -1,5 +1,10 @@
 #!/usr/bin/env zsh
 
+{{ if .headless }}
+# We're headless.
+exit 0
+{{ end }}
+
 set -o errexit -o nounset
 
 source $HOME/.config/.variables

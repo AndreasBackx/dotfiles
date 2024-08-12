@@ -1,5 +1,10 @@
 #!/usr/bin/env sh
 
+{{ if .headless }}
+# We're headless.
+exit 0
+{{ end }}
+
 set -o errexit -o nounset
 
 from="$HOME/.config/monitors.xml"
@@ -12,4 +17,3 @@ cmp --silent $from $to || (
     echo "$from changed, copying to $to..."
     sudo cp $from $to
 )
-
