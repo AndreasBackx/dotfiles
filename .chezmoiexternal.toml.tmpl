@@ -52,6 +52,7 @@ url = "git@github.com:/pyenv/pyenv-virtualenv.git"
 refreshPeriod = "720h"
 exact = true
 
+{{- if not .headless }}
 ["{{ .relative_xdg_data_home }}/fonts/meslo-nerd-font"]
 type = "archive"
 url = "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Meslo.tar.xz"
@@ -62,4 +63,5 @@ decompress = "xz"
 type = "file"
 url = "https://github.com/samuelngs/apple-emoji-linux/releases/latest/download/AppleColorEmoji.ttf"
 refreshPeriod = "720h"
+{{- end -}}
 
