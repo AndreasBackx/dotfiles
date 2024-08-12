@@ -3,6 +3,10 @@
 # We need to create a symlink to the actual location without a space as I don't
 # want to move the files to a location without spaces.
 
+if [[ $machine != "Darwin" ]]; then
+    exit 0
+fi
+
 mkdir -p "$HOME/.local" # Create the directory if it doesn't exist, ignore if it does.
 if [ ! -d "$HOME/.local/share" ]; then
     set -x
