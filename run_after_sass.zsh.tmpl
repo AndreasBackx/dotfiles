@@ -1,9 +1,9 @@
 #!/usr/bin/env zsh
 
-{{- if .headless -}}
+{{ if .headless }}
 # We're headless.
 exit 0
-{{- end }}
+{{ end }}
 
 set -o errexit -o nounset
 setopt BRACE_CCL
