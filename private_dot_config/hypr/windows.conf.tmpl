@@ -21,28 +21,40 @@ windowrule=float,^(updates)$
 windowrule=workspace 1 silent, ^(thunderbird)$
 
 # Workspace 2
-windowrule=workspace 2 silent, ^(obsidian)$
+windowrule=workspace 2 silent, ^(Spotify(\sPremium)?)$
+# On Wayland Spotify opens without a class.
+windowrule=workspace 2 silent, title:^(Spotify(\sPremium)?)$
 
+{{ if eq .environment "home" }}
 # Workspace 3
 windowrule=workspace 3 silent, ^([dD]iscord)$
 windowrule=workspace 3 silent, ^(com\.discordapp\.Discord)$
-#for_window [class:discord"] move window to workspace $WORKSPACE_LEFT_3
-windowrule=workspace 3 silent, ^(Mattermost)$
 windowrule=workspace 3 silent,title:^(Signal.*)$
+windowrule=workspace 3 silent,title:^(WhatsApp.*)$
 
 # Workspace 4
-windowrule=workspace 4 silent,title:^(WhatsApp.*)$
 windowrule=workspace 4 silent,^(Hexchat)$
+windowrule=workspace 4 silent, ^(Zulip)$
+windowrule=workspace 4 silent, title:^(Tuba)$
+windowrule=workspace 4 silent, ^(Slack)$
+{{ else }}
+# Workspace 3
+windowrule=workspace 3 silent, ^(Mattermost)$
 
-# Workspace 5
-windowrule=workspace 5 silent, ^(Spotify(\sPremium)?)$
-# On Wayland Spotify opens without a class.
-windowrule=workspace 5 silent, title:^(Spotify(\sPremium)?)$
+# Workspace 4
+windowrule=workspace 4 silent, ^([dD]iscord)$
+windowrule=workspace 4 silent, ^(com\.discordapp\.Discord)$
+windowrule=workspace 4 silent,title:^(Signal.*)$
+windowrule=workspace 4 silent,title:^(WhatsApp.*)$
 
-# Workspace 6
-windowrule=workspace 6 silent, ^(Zulip)$
-windowrule=workspace 6 silent, ^(Slack)$
-windowrule=workspace 6 silent, title:^(Tuba)$
+windowrule=workspace 5 silent,^(Hexchat)$
+windowrule=workspace 5 silent, ^(Zulip)$
+windowrule=workspace 5 silent, title:^(Tuba)$
+windowrule=workspace 5 silent, ^(Slack)$
+{{ end }}
+
+# Unused
+#windowrule=workspace 2 silent, ^(obsidian)$
 
 # Center
 # Monitor ID 1 is center
