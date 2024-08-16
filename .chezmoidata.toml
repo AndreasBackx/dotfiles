@@ -36,8 +36,8 @@ background = "~/.config/wallpapers/dark/2560x1440/jaime-lannister.jpg"
 has_lid = true
 
 [monitors.home]
-screen_timeout = 120
-lock_timeout = 7200
+screen_timeout = 7200
+lock_timeout = 300
 
 [monitors.home.left]
 name = "Lenovo Group Limited Y32p-30 U1HMF6PT"
