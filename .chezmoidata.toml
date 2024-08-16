@@ -37,7 +37,7 @@ has_lid = true
 
 [monitors.home]
 screen_timeout = 120
-lock_timeout = 300
+lock_timeout = 7200
 
 [monitors.home.left]
 name = "Lenovo Group Limited Y32p-30 U1HMF6PT"
