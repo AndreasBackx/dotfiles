@@ -28,6 +28,9 @@ exec-once = spotify
 # exec-once = obsidian || md.obsidian.Obsidian
 exec-once = discord
 exec-once = mattermost-desktop
+{{ if eq .environment "work" }}
+exec-once = workchat
+{{ end }}
 # exec-once = zulip
 exec-once = trayscale --hide-window || dev.deedles.Trayscale --hide-window
 exec-once = 1password --silent

@@ -40,6 +40,9 @@ windowrule=workspace 4 silent, ^(Slack)$
 {{ else }}
 # Workspace 3
 windowrule=workspace 3 silent, ^(Mattermost)$
+# This is WorkChat(.desktop), have been failing to override the class ID.
+# Seems to be stable across machines however.
+windowrule=workspace 3 silent, ^(chrome-hondjlkedhnofcgbhifciodpdjfnonjm-Default)$
 
 # Workspace 4
 windowrule=workspace 4 silent, ^([dD]iscord)$

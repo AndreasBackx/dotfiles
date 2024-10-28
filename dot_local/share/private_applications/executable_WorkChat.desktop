@@ -3,7 +3,7 @@
 Version=1.0
 Terminal=false
 Type=Application
-Name=Workplace
+Name=WorkChat
 Exec=/opt/google/chrome/google-chrome --profile-directory=Default --app-id=hondjlkedhnofcgbhifciodpdjfnonjm
 Icon=chrome-hondjlkedhnofcgbhifciodpdjfnonjm-Default
-StartupWMClass=crx_hondjlkedhnofcgbhifciodpdjfnonjm
+StartupWMClass=WorkChat
