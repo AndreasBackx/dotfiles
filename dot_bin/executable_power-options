@@ -6,6 +6,12 @@ function wait_for_update() {
     kitty-cwd --class updates --single-instance --wait-for-single-instance-window-close -- zsh -c "updates update --kitty"
 }
 
+function before_shutdown() {
+    # Chrome does not close properly otherwise.
+    pkill chrome
+    sleep 1
+}
+
 case "$1" in
 logout)
     if is_wayland; then
@@ -15,12 +21,14 @@ logout)
     fi
     ;;
 shutdown | poweroff)
+    before_shutdown
     while true; do
         systemctl poweroff
         sleep 10
     done
     ;;
 restart | reboot)
+    before_shutdown
     while true; do
         systemctl reboot
         sleep 10
