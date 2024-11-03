@@ -69,7 +69,11 @@ fi
 export VISUAL=nvim
 export EDITOR="$VISUAL"
 
+{{ if eq .environment "work" }}
 export BROWSER="/usr/bin/google-chrome"
+{{ else }}
+export BROWSER="/usr/bin/firefox"
+{{ end }}
 
 # Otherwise IntelliJ won't run on Sway.
 # https://youtrack.jetbrains.com/issue/IDEA-153134
