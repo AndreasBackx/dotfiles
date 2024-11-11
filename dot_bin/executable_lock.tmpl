@@ -48,12 +48,10 @@ function after_unlock() {
 
 before_lock &
 
-{{ if eq .monitors.selected "home" }}
 swaylock \
     --color "#000000" \
     --font="Roboto Regular" \
     --scaling fill
-{{ else }}
 # outputs=$(hyprctl monitors -j || swaymsg -t get_outputs)
 # time parset "monitor_left monitor_center monitor_right" ::: \
 #     'source ~/.bin/utils.zsh; get-output-name "{{ index .monitors .monitors.selected "left" "name" }}" "$outputs"' \
@@ -68,7 +66,6 @@ swaylock \
 #     --image "$monitor_right:$file_location_right" \
 #     --font="Roboto Regular" \
 #     --scaling fill
-hyprlock
-{{ end }}
+# hyprlock
 
 after_unlock &
