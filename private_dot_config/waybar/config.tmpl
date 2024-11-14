@@ -136,9 +136,9 @@
             "tray"
         ],
         "output": [
-        {{ if eq .monitors.selected "work" }}
-        "{{ index .monitors .monitors.selected "center" "name" }}"
-        {{ end }}
+            {{ if eq .monitors.selected "work" -}}
+            "{{ index .monitors .monitors.selected "center" "name" }}"
+            {{- end }}
         ],
         "position": "bottom",
         "pulseaudio": {
@@ -375,7 +375,7 @@
         "id": "left",
         "layer": "top",
         "modules-center": [
-            "custom/spotify",
+            "custom/spotify"
         ],
         "modules-left": [
             "hyprland/workspaces",
@@ -383,7 +383,7 @@
             "hyprland/window"
         ],
         "modules-right": [
-            {{ if eq .monitors.selected "home" }}
+            {{ if eq .monitors.selected "home" -}}
             "custom/updates",
             "custom/backup",
             "custom/headphones",
@@ -391,9 +391,9 @@
             "custom/power",
             "clock",
             "tray"
-            {{ else }}
+            {{- else -}}
             "clock"
-            {{ end }}
+            {{- end }}
         ],
         "output": ["{{ index .monitors .monitors.selected "left" "name" }}"],
         "position": "bottom",
