@@ -6,6 +6,7 @@ source ~/.config/.secrets
 
 ## ALIASES ##
 alias config='git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
+# Keep the trailing space as it will pass through aliases to sudo.
 alias sudo="sudo -E "
 
 ZSHENV_WORK="$HOME/.zshenv-work"
