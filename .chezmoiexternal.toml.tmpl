@@ -52,7 +52,7 @@ url = "git@github.com:/pyenv/pyenv-virtualenv.git"
 refreshPeriod = "720h"
 exact = true
 
-{{- if and (not .headless) (ne .chezmoi.os "darwin") -}}
+{{- if and (not .headless) (ne .chezmoi.os "darwin") }}
 ["{{ .relative_xdg_data_home }}/fonts/meslo-nerd-font"]
 type = "archive"
 url = "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Meslo.tar.xz"
