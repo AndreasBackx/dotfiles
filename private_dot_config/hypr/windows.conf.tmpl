@@ -1,66 +1,62 @@
 
 # Disable kitty/terminal shadow.
-windowrule = noshadow,^(kitty)$
+windowrulev2 = noshadow, class:^(kitty)$
 
 # 1Password Always Float
-windowrule=float,^(1Password)$
-windowrule=stayfocused,title:^(Quick Access — 1Password)$
-windowrule=dimaround,title:^(Quick Access — 1Password)$
+windowrulev2 = float, class:^(1Password)$
+windowrulev2 = stayfocused, title:^(Quick Access — 1Password)$
+windowrulev2 = dimaround, title:^(Quick Access — 1Password)$
 
 # Picture in Picture Runelite plugin
-windowrule=float,title:^(Picture in Picture)$
+windowrulev2 = float, title:^(Picture in Picture)$
 
-windowrule=float,^(Gtk_prompt\.py)$
-windowrule=float,^(updates)$
+windowrulev2 = float, class:^(Gtk_prompt\.py)$
+windowrulev2 = float, class:^(updates)$
 
 # Firefox Sharing
 # for_window [title="Firefox — Sharing Indicator"] floating enable; move absolute position 0 0;
 
 # Left
 # Workspace 1
-windowrule=workspace 1 silent, ^(thunderbird)$
+windowrulev2 = workspace 1 silent, class:^(thunderbird)$
 
 # Workspace 2
-windowrule=workspace 2 silent, ^(Spotify(\sPremium)?)$
+windowrulev2 = workspace 2 silent, class:^(Spotify(\sPremium)?)$
 # On Wayland Spotify opens without a class.
-windowrule=workspace 2 silent, title:^(Spotify(\sPremium)?)$
+windowrulev2 = workspace 2 silent, initialTitle:^(Spotify(\sPremium)?)$
 
 {{ if eq .environment "home" }}
 # Workspace 3
-windowrule=workspace 3 silent, ^([dD]iscord)$
-windowrule=workspace 3 silent, ^(com\.discordapp\.Discord)$
-windowrule=workspace 3 silent,title:^(Signal.*)$
-windowrule=workspace 3 silent,title:^(WhatsApp.*)$
+windowrulev2 = workspace 3 silent, class:^([dD]iscord)$
+windowrulev2 = workspace 3 silent, class:^(com\.discordapp\.Discord)$
+windowrulev2 = workspace 3 silent, title:^(Signal.*)$
+windowrulev2 = workspace 3 silent, title:^(WhatsApp.*)$
 
 # Workspace 4
-windowrule=workspace 4 silent,^(Hexchat)$
-windowrule=workspace 4 silent, ^(Zulip)$
-windowrule=workspace 4 silent, title:^(Tuba)$
-windowrule=workspace 4 silent, ^(Slack)$
+windowrulev2 = workspace 4 silent, class:^(Hexchat)$
+windowrulev2 = workspace 4 silent, class:^(Zulip)$
+windowrulev2 = workspace 4 silent, title:^(Tuba)$
+windowrulev2 = workspace 4 silent, class:^(Slack)$
 {{ else }}
 # Workspace 3
-windowrule=workspace 3 silent, ^(Mattermost)$
+windowrulev2 = workspace 3 silent, class:^(Mattermost)$
 # This is WorkChat(.desktop), have been failing to override the class ID.
 # Seems to be stable across machines however.
-windowrule=workspace 3 silent, ^(chrome-hondjlkedhnofcgbhifciodpdjfnonjm-Default)$
+windowrulev2 = workspace 3 silent, class:^(chrome-hondjlkedhnofcgbhifciodpdjfnonjm-Default)$
 
 # Workspace 4
-windowrule=workspace 4 silent, ^([dD]iscord)$
-windowrule=workspace 4 silent, ^(com\.discordapp\.Discord)$
-windowrule=workspace 4 silent,title:^(Signal.*)$
-windowrule=workspace 4 silent,title:^(WhatsApp.*)$
+windowrulev2 = workspace 4 silent, class:^([dD]iscord)$
+windowrulev2 = workspace 4 silent, class:^(com\.discordapp\.Discord)$
+windowrulev2 = workspace 4 silent, title:^(Signal.*)$
+windowrulev2 = workspace 4 silent, title:^(WhatsApp.*)$
 
-windowrule=workspace 5 silent,^(Hexchat)$
-windowrule=workspace 5 silent, ^(Zulip)$
-windowrule=workspace 5 silent, title:^(Tuba)$
-windowrule=workspace 5 silent, ^(Slack)$
+windowrulev2 = workspace 5 silent, class:^(Hexchat)$
+windowrulev2 = workspace 5 silent, class:^(Zulip)$
+windowrulev2 = workspace 5 silent, title:^(Tuba)$
+windowrulev2 = workspace 5 silent, class:^(Slack)$
 {{ end }}
 
-# Unused
-#windowrule=workspace 2 silent, ^(obsidian)$
-
 # Center
-# Monitor ID 1 is center
-windowrule=monitor 1, ^code(.*)?-url-handler$
+windowrulev2 = workspace 101, class:^code(.*)?(-url-handler)?$
 
 # Right
