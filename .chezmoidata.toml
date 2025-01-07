@@ -72,7 +72,7 @@ background = "~/.config/wallpapers/dark/2160x3840/eberhard-grossgasteiger-7ZxpAr
 mode = "3840x2160@120Hz"
 
 [monitors.home.right.work]
-mode = "3840x2160@144Hz"
+mode = "3840x2160@120Hz"
 
 [monitors.home.tv]
 name = "LG Electronics LG TV 0x01010101"
