@@ -28,7 +28,7 @@ transform = 3
 background = "~/.config/wallpapers/dark/2160x3840/eberhard-grossgasteiger-7ZxpAr4cZ-U-unsplash.jpg"
 
 [monitors.work.laptop]
-name = "Samsung Display Corp. 0x4193"
+name = "Lenovo Group Limited 0x4149"
 mode = "2880x1800@90Hz"
 position = "2648x2226"
 scale = "1.8"
@@ -82,8 +82,9 @@ scale = "1.5"
 disable = true
 
 [monitors.home.laptop]
-name = "LG Display 0x0662"
-mode = "1920x1080@60Hz"
+name = "Lenovo Group Limited 0x4149"
+mode = "2880x1800@90Hz"
 position = "3181x1905"
-scale = "1"
+scale = "1.8"
+background = "~/.config/wallpapers/dark/2560x1440/jaime-lannister.jpg"
 has_lid = true

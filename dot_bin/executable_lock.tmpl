@@ -48,13 +48,9 @@ function after_unlock() {
 
 before_lock &
 
-{{ if eq .monitors.selected "home" }}
 swaylock \
     --color "#000000" \
     --font="Roboto Regular" \
     --scaling fill
-{{ else }}
-hyprlock
-{{ end }}
 
 after_unlock &
