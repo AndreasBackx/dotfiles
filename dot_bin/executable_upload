@@ -10,7 +10,7 @@ on_error() {
     exit 1
 }
 
-# trap 'on_error ${funcstack[1]}:$LINENO' ERR
+trap 'on_error ${funcstack[1]}:$LINENO' ERR
 
 types=$(wl-paste --list-types)
 if [[ $types == *image* ]]; then
