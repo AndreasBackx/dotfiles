@@ -49,7 +49,6 @@ background = "~/.config/wallpapers/dark/2160x3840/ren-ran-HG5QX-GXV5A-unsplash.j
 
 [monitors.home.center]
 name = "Dell Inc. AW3225QF GZ00YZ3"
-mode = "3840x2160@240Hz"
 position = "1728x865"
 scale = "1.25"
 transform = 0
@@ -72,7 +71,7 @@ background = "~/.config/wallpapers/dark/2160x3840/eberhard-grossgasteiger-7ZxpAr
 mode = "3840x2160@120Hz"
 
 [monitors.home.right.work]
-mode = "3840x2160@120Hz"
+mode = "3840x2160@144Hz"
 
 [monitors.home.tv]
 name = "LG Electronics LG TV 0x01010101"
