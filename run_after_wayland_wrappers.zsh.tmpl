@@ -23,7 +23,7 @@ declare -A WAYLAND_WRAPPERS=(
   # [tuba]="tuba || flatpak run --socket=wayland dev.geopjr.Tuba $wayland_args"
   # Doesn't support copying.
   # [1password]="1password $wayland_args"
-  [signal-desktop]="flatpak run --socket=wayland org.signal.Signal $wayland_args || signal-desktop $wayland_args"
+  [signal-desktop]="flatpak run --socket=wayland org.signal.Signal --password-store=\"gnome-libsecret\" $wayland_args || signal-desktop --password-store=\"gnome-libsecret\" $wayland_args"
   [spotify]="spotify $wayland_args || flatpak run --socket=wayland com.spotify.Client $wayland_args"
   [zulip]="zulip $wayland_args || flatpak run --socket=wayland org.zulip.Zulip $wayland_args"
   [google-chrome]="google-chrome $wayland_args"
