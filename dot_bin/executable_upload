@@ -1,19 +1,17 @@
 #!/usr/bin/env zsh
 
+set -x
 set -eo pipefail
 
 source ~/.config/.secrets
 source ~/.config/.variables
 
-# If not in a terminal
-if [[ ! -t 1 ]]; then
-    on_error() {
-        notify-send "An error occured! ☹" "Error at $1" --category transfer.error
-        exit 1
-    }
+on_error() {
+    notify-send "An error occured! ☹" "Error at $1" --category transfer.error
+    exit 1
+}
 
-    trap 'on_error ${funcstack[1]}:$LINENO' ERR
-fi
+trap 'on_error ${funcstack[1]}:$LINENO' ERR
 
 types=$(wl-paste --list-types)
 if [[ $types == *image* ]]; then
