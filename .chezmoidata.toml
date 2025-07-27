@@ -41,6 +41,7 @@ lock_timeout = 300
 
 [monitors.home.left]
 name = "Lenovo Group Limited Y32p-30 U1HMF6PT"
+serial_number = "U1HMF6PT"
 mode = "3840x2160@144Hz"
 position = "0x0"
 scale = "1.25"
@@ -49,6 +50,7 @@ background = "~/.config/wallpapers/dark/2160x3840/ren-ran-HG5QX-GXV5A-unsplash.j
 
 [monitors.home.center]
 name = "Dell Inc. AW3225QF GZ00YZ3"
+serial_number = "GZ00YZ3"
 position = "1728x865"
 scale = "1.25"
 transform = 0
@@ -62,6 +64,7 @@ mode = "3840x2160@120Hz"
 
 [monitors.home.right]
 name = "Lenovo Group Limited Y32p-30 U1HMF6PN"
+serial_number = "U1HMF6PN"
 position = "4800x0"
 scale = "1.25"
 transform = 3

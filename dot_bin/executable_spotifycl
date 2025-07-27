@@ -200,6 +200,7 @@ class Spotifycl:
             username=username,
             scope="user-library-read,user-library-modify",
             cache_path=cache_path,
+            redirect_uri="http://127.0.0.1:8000",
         )
         self.spotify = Spotify(auth=auth)
 
