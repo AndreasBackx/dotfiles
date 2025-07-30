@@ -16,13 +16,15 @@
             "signal": 8
         },
         "custom/brightness": {
-            "exec": "monitors brightness --display center",
+            "exec": "minos get --output-format simple --brightness --serial {{ index .monitors .monitors.selected "center" "serial_number" }}",
             "format": "<span color=\"#6E6E6E\"></span>  {}",
-            "interval": 2,
-            "on-click": "monitors brightness toggle",
-            "on-scroll-down": "monitors brightness down",
-            "on-scroll-up": "monitors brightness up",
-            "tooltip": false
+            "on-click": "minos set --brightness 100%",
+            "on-click-right": "minos set --brightness 0%",
+            "on-scroll-down": "minos set --brightness -25%",
+            "on-scroll-up": "minos set --brightness +25%",
+            "tooltip": false,
+            "interval": "once",
+            "exec-on-event": true
         },
         "custom/headphones": {
             "exec": "headphones status",
@@ -190,13 +192,15 @@
             "signal": 8
         },
         "custom/brightness": {
-            "exec": "minos get --serial {{ index .monitors .monitors.selected "center" "serial_number" }}",
+            "exec": "minos get --output-format simple --brightness --serial {{ index .monitors .monitors.selected "center" "serial_number" }}",
             "format": "<span color=\"#6E6E6E\"></span>  {}",
-            "interval": 2,
-            "on-click": "monitors brightness toggle",
-            "on-scroll-down": "minos set --brightness -25% --serial {{ index .monitors .monitors.selected "center" "serial_number" }}",
-            "on-scroll-uo": "minos set --brightness +25% --serial {{ index .monitors .monitors.selected "center" "serial_number" }}",
-            "tooltip": false
+            "on-click": "minos set --brightness 100%",
+            "on-click-right": "minos set --brightness 0%",
+            "on-scroll-down": "minos set --brightness -25%",
+            "on-scroll-up": "minos set --brightness +25%",
+            "tooltip": false,
+            "interval": "once",
+            "exec-on-event": true
         },
         "custom/headphones": {
             "exec": "headphones status",
@@ -345,8 +349,8 @@
             "format": "<span color=\"#6E6E6E\"></span>  {}",
             "on-click": "minos set --brightness 100%",
             "on-click-right": "minos set --brightness 0%",
-            "on-scroll-down": "minos set --brightness -25% --serial {{ index .monitors .monitors.selected "left" "serial_number" }}",
-            "on-scroll-up": "minos set --brightness +25% --serial {{ index .monitors .monitors.selected "left" "serial_number" }}",
+            "on-scroll-down": "minos set --brightness -25%",
+            "on-scroll-up": "minos set --brightness +25%",
             "tooltip": false,
             "interval": "once",
             "exec-on-event": true
@@ -433,13 +437,15 @@
             "tooltip": false
         },
         "custom/brightness": {
-            "exec": "monitors brightness --display right",
+            "exec": "minos get --output-format simple --brightness --serial {{ index .monitors .monitors.selected "right" "serial_number" }}",
             "format": "<span color=\"#6E6E6E\"></span>  {}",
-            "interval": 2,
-            "on-click": "monitors brightness toggle",
-            "on-scroll-down": "monitors brightness down",
-            "on-scroll-up": "monitors brightness up",
-            "tooltip": false
+            "on-click": "minos set --brightness 100%",
+            "on-click-right": "minos set --brightness 0%",
+            "on-scroll-down": "minos set --brightness -25%",
+            "on-scroll-up": "minos set --brightness +25%",
+            "tooltip": false,
+            "interval": "once",
+            "exec-on-event": true
         },
         "height": 40,
         "hyprland/submap": {
