@@ -1,6 +1,11 @@
 source ~/.bin/hg_commit.zsh
 source ~/.bin/taste_tester.zsh
 
+MASTER_ZSHRC="/usr/facebook/ops/rc/master.zshrc"
+if [[ -f "$MASTER_ZSHRC" ]]; then
+  source "$MASTER_ZSHRC"
+fi
+
 ## OH MY ZSH ##
 plugins=(
   fzf
