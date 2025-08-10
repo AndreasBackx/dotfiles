@@ -14,11 +14,14 @@ windowrulev2 = float, class:^(Zoom.*)$
 windowrulev2 = move onscreen cursor -10 -10, class:^(Zoom.*)$
 windowrulev2 = size 300 201, title:^(menu window)$, class:^(Zoom.*)$
 
-# Picture in Picture Runelite plugin
-windowrulev2 = float, title:^(Picture in Picture)$
-
 windowrulev2 = float, class:^(Gtk_prompt\.py)$
 windowrulev2 = float, class:^(updates)$
+
+# Picture in Picture
+windowrulev2 = float, title:^(Picture-in-Picture)$
+windowrulev2 = keepaspectratio on, floating:1 && title:^(Picture-in-Picture)
+windowrulev2 = size 800 450, floating:1 && title:^(Picture-in-Picture)
+windowrulev2 = opacity 0.10 1.0, pinned:1
 
 # Firefox Sharing
 # for_window [title="Firefox — Sharing Indicator"] floating enable; move absolute position 0 0;
