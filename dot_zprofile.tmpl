@@ -60,6 +60,10 @@ if type "zoxide" >/dev/null; then
   eval "$(zoxide init zsh)"
 fi
 
+if type "atuin" >/dev/null; then
+  eval "$(atuin init zsh)"
+fi
+
 # wlroots
 # Use legacy mode for gamma changing for redshift.
 # export WLR_DRM_NO_ATOMIC=1
