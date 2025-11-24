@@ -12,17 +12,17 @@ transform = 1
 background = "~/.config/wallpapers/dark/2160x3840/ren-ran-HG5QX-GXV5A-unsplash.jpg"
 
 [monitors.work.center]
-name = "Acer Technologies XV340CK P T5Y000013E00"
-mode = "3440x1440@144Hz"
+name = "Dell Inc. DELL U4025QW 1WM5M04"
+mode = "5120x2160@120Hz"
 position = "1728x786"
-scale = "1"
+scale = "1.25"
 transform = 0
 background = "~/.config/wallpapers/dark/2560x1440/jaime-lannister.jpg"
 
 [monitors.work.right]
 name = "Dell Inc. DELL U2515H 9X2VY6A80A8L"
 mode = "2560x1440@60Hz"
-position = "5168x226"
+position = "5824x226"
 scale = "1"
 transform = 3
 background = "~/.config/wallpapers/dark/2160x3840/eberhard-grossgasteiger-7ZxpAr4cZ-U-unsplash.jpg"
