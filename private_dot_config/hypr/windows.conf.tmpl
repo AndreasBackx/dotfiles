@@ -50,9 +50,8 @@ windowrulev2 = workspace 4 silent, class:^(Slack)$
 {{ else }}
 # Workspace 3
 windowrulev2 = workspace 3 silent, class:^(Mattermost)$
-# This is WorkChat(.desktop), have been failing to override the class ID.
-# Seems to be stable across machines however.
-windowrulev2 = workspace 3 silent, class:^(chrome-hondjlkedhnofcgbhifciodpdjfnonjm-Default)$
+windowrulev2 = workspace 3 silent, initialTitle:^(Workchat)$
+windowrulev2 = workspace 3 silent, initialTitle:^(Google Chat)$
 
 # Workspace 4
 windowrulev2 = workspace 4 silent, class:^([dD]iscord)$
