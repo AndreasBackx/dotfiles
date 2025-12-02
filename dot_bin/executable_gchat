@@ -1,0 +1,2 @@
+#!/usr/bin/env zsh
+gtk-launch "Google Chat.desktop"
