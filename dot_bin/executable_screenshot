@@ -2,6 +2,10 @@
 
 set -eo pipefail
 
-grim -g "$(slurp)" - | wl-copy
+if type "wayshot" >/dev/null; then
+    wayshot -g --clipboard
+else
+    grim -g "$(slurp)" - | wl-copy
+fi
 
 notify-send "📸 Screenshot saved to clipboard!" "Press Super+Shift+C to upload." --category transfer.complete
