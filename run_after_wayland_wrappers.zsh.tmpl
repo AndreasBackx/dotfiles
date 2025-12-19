@@ -28,6 +28,7 @@ declare -A WAYLAND_WRAPPERS=(
   [zulip]="zulip $wayland_args || flatpak run --socket=wayland org.zulip.Zulip $wayland_args"
   [google-chrome]="google-chrome $wayland_args"
   [google-chrome-stable]="google-chrome-stable $wayland_args"
+  [bolt]="flatpak run com.adamcake.Bolt $wayland_args"
 )
 set -A WRAPPERS ${(kv)WAYLAND_WRAPPERS}
 
