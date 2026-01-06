@@ -4,13 +4,26 @@ windowrulev2 = noshadow, class:^(kitty)$
 
 # 1Password Always Float
 windowrulev2 = float, class:^(1password)$
-#windowrulev2 = stayfocused, title:^(Quick Access — 1Password)$
-#windowrulev2 = dimaround, title:^(Quick Access — 1Password)$
+windowrulev2 = stayfocused, title:^(Quick Access — 1Password)$
+windowrulev2 = dimaround, title:^(Quick Access — 1Password)$
+
+# Bolt Always Float
+windowrulev2 = float, class:^(com.adamcake.Bolt)$
+
+# RuneLite Launcher
+windowrulev2 = float, title:^(RuneLite\sLauncher)$
+windowrulev2 = center, title:^(RuneLite\sLauncher)$
+windowrulev2 = pin, title:^(RuneLite\sLauncher)$
+# Commented because silent is not supported
+#windowrulev2 = monitor 1, title:^(RuneLite\sLauncher)$
+
+# RuneLite
+#windowrulev2 = monitor 1, title:^(RuneLite)$
 
 # 1Password menu windows
 # All Zoom Windows to be floating except for the meeting one which has the title meeting.
 windowrulev2 = float, class:^(Zoom.*)$
-#windowrulev2 = stayfocused, title:^(menu window)$, class:^(Zoom.*)$
+#windowrulev2 = stayfocused, title:^(menu window)$, class: ^(Zoom.*)$
 windowrulev2 = move onscreen cursor -10 -10, class:^(Zoom.*)$
 windowrulev2 = size 300 201, title:^(menu window)$, class:^(Zoom.*)$
 
