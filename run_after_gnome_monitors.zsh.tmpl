@@ -12,27 +12,27 @@ to="/var/lib/gdm/.config/monitors.xml"
 
 function perform_copy() {
     to_dir=$(dirname $to)
-    echo "Creating directory $to_dir..."
+    >&2 echo "Creating directory $to_dir..."
     sudo mkdir -p $to_dir
-    echo "Changing folder permission $to_dir..."
+    >&2 echo "Changing folder permission $to_dir..."
     sudo chmod 755 $to_dir
-    echo "Changing folder ownership $to_dir..."
+    >&2 echo "Changing folder ownership $to_dir..."
     sudo chown $(id -u gdm):$(id -g gdm) $to_dir
 
-    echo "Copying $from to $to..."
+    >&2 echo "Copying $from to $to..."
     sudo cp $from $to
-    echo "Setting ownership to gdm..."
+    >&2 echo "Setting ownership to gdm..."
     sudo chown $(id -u gdm):$(id -g gdm) $to
-    echo "Setting file permissions..."
+    >&2 echo "Setting file permissions..."
     sudo chmod 644 $to
 }
 
 if [ ! -f "$from" ]; then
-    echo "$from does not exist."
+    >&2 echo "$from does not exist."
 elif sudo test ! -f "$to"; then
-    echo "$to does not exist."
+    >&2 echo "$to does not exist."
     perform_copy
 elif ! sudo cmp --silent $from $to; then
-    echo "$from changed."
+    >&2 echo "$from changed."
     perform_copy
 fi
