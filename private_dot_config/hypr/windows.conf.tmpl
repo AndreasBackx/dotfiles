@@ -10,12 +10,13 @@ windowrulev2 = dimaround, title:^(Quick Access — 1Password)$
 # Bolt Always Float
 windowrulev2 = float, class:^(com.adamcake.Bolt)$
 
-# RuneLite Launcher
-windowrulev2 = float, title:^(RuneLite\sLauncher)$
-windowrulev2 = center, title:^(RuneLite\sLauncher)$
-windowrulev2 = pin, title:^(RuneLite\sLauncher)$
+# RuneLite Launcher / HDOS Launcher
+windowrulev2 = float, title:^(RuneLite\sLauncher)|(HDOS)$
+windowrulev2 = center, title:^(RuneLite\sLauncher)|(HDOS)$
+windowrulev2 = pin, title:^(RuneLite\sLauncher)|(HDOS)$
 # Commented because silent is not supported
-#windowrulev2 = monitor 1, title:^(RuneLite\sLauncher)$
+#windowrulev2 = monitor 1, title:^(RuneLite\sLauncher)|(HDOS)$
+windowrulev2 = tile, class:^(hdos-Main)$
 
 # RuneLite
 #windowrulev2 = monitor 1, title:^(RuneLite)$
