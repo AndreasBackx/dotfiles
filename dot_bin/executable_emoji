@@ -46,8 +46,8 @@ function download() {
         paste - - |
         python -c 'import html, sys; print(html.unescape(sys.stdin.read()))' |
         # Make all emojis show in colour by adding U+FE0F.
-        # See https://en.wikipedia.org/wiki/Variation_Selectors_(Unicode_block)
-        sed 's/^\([^  ]*\)/\1<fe0f>/' |
+        # See https://en.wikipedia.org/wiki/Variation_Selectors_(Uqnicode_block)
+        sed 's/^\([^\t]*\)\t/\1'$'\uFE0F''\t/ |
         tee "$EMOJI_FILE"
 
     notify "$(basename "$0")" "We're all set!"
