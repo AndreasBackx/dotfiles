@@ -39,12 +39,21 @@ fi
 
 mkdir -p $wrappers_directory
 
-for file in "$wrappers_directory"/*; do
-  if [[ ! -v WAYLAND_WRAPPERS[$(basename "$file")] ]]; then
-    echo "Deleting old wrapper: $file"
-    rm "$file"
-  fi
-done
+# Ignore empty directories
+if [[ -z "
+$(ls -A "$wrappers_directory")" ]]; then
+  echo "No wrappers to process, exiting..."
+  exit 0
+fi
+
+if [[ -n "$(ls -A "$wrappers_directory")" ]]; then
+  for file in "$wrappers_directory"/*; do
+    if [[ ! -v WAYLAND_WRAPPERS[$(basename "$file")] ]]; then
+      echo "Deleting old wrapper: $file"
+      rm "$file"
+    fi
+  done
+fi
 
 for key value in ${(kv)WRAPPERS}; do
   CONTENTS="#!/usr/bin/env zsh
