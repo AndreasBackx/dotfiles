@@ -26,12 +26,12 @@ function before_lock() {
     fi
 
     # Pause notifications
-    makoctl set-mode dnd
+    makoctl mode -a dnd
 }
 
 function after_unlock() {
     # Resume notifications
-    makoctl set-mode default &
+    makoctl mode -r dnd &
 
     if [[ "$spotify_status" == "playing" ]]; then
         spotifycl play &
