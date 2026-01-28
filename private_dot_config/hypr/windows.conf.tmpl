@@ -1,85 +1,309 @@
 
 # Disable kitty/terminal shadow.
-windowrulev2 = noshadow, class:^(kitty)$
+windowrule {
+	name = noshadow-kitty
+	match:class = ^(kitty)$
+
+	no_shadow = on
+}
 
 # 1Password Always Float
-windowrulev2 = float, class:^(1password)$
-windowrulev2 = stayfocused, title:^(Quick Access — 1Password)$
-windowrulev2 = dimaround, title:^(Quick Access — 1Password)$
+windowrule {
+	name = float-1password
+	match:class = ^(1password)$
+
+	float = on
+}
+windowrule {
+	name = 1password-quickaccess-stayfocused
+	match:title = ^(Quick Access — 1Password)$
+
+	stay_focused = on
+}
+windowrule {
+	name = 1password-quickaccess-dim
+	match:title = ^(Quick Access — 1Password)$
+
+	dim_around = on
+}
 
 # Bolt Always Float
-windowrulev2 = float, class:^(com.adamcake.Bolt)$
+windowrule {
+	name = float-bolt
+	match:class = ^(com.adamcake.Bolt)$
+
+	float = on
+}
 
 # RuneLite Launcher / HDOS Launcher
-windowrulev2 = float, title:^(RuneLite\sLauncher)|(HDOS)$
-windowrulev2 = center, title:^(RuneLite\sLauncher)|(HDOS)$
-windowrulev2 = pin, title:^(RuneLite\sLauncher)|(HDOS)$
+windowrule {
+	name = runelite-launcher-float
+	match:title = ^(RuneLite\sLauncher)|(HDOS)$
+
+	float = on
+}
+windowrule {
+	name = runelite-launcher-center
+	match:title = ^(RuneLite\sLauncher)|(HDOS)$
+
+	center = on
+}
+windowrule {
+	name = runelite-launcher-pin
+	match:title = ^(RuneLite\sLauncher)|(HDOS)$
+
+	pin = on
+}
 # Commented because silent is not supported
-#windowrulev2 = monitor 1, title:^(RuneLite\sLauncher)|(HDOS)$
-windowrulev2 = tile, class:^(hdos-Main)$
+#windowrule {
+#  name = runelite-launcher-monitor
+#  match:title = ^(RuneLite\sLauncher)|(HDOS)$
+#
+#  monitor = 1
+#}
+windowrule {
+	name = hdos-main-tile
+	match:class = ^(hdos-Main)$
+
+	tile = on
+}
 
 # RuneLite
-#windowrulev2 = monitor 1, title:^(RuneLite)$
+#windowrule {
+#  name = runelite-monitor
+#  match:title = ^(RuneLite)$
+#
+#  monitor = 1
+#}
 
 # 1Password menu windows
 # All Zoom Windows to be floating except for the meeting one which has the title meeting.
-windowrulev2 = float, class:^(Zoom.*)$
-#windowrulev2 = stayfocused, title:^(menu window)$, class: ^(Zoom.*)$
-windowrulev2 = move onscreen cursor -10 -10, class:^(Zoom.*)$
-windowrulev2 = size 300 201, title:^(menu window)$, class:^(Zoom.*)$
+windowrule {
+	name = zoom-float
+	match:class = ^(Zoom.*)$
 
-windowrulev2 = float, class:^(Gtk_prompt\.py)$
-windowrulev2 = float, class:^(updates)$
+	float = on
+}
+#windowrule {
+#  name = zoom-menu-stayfocused
+#  match:title = ^(menu window)$
+#  match:class = ^(Zoom.*)$
+#
+#  stay_focused = on
+#}
+windowrule {
+	name = zoom-move-to-cursor
+	match:class = ^(Zoom.*)$
+
+	move = (cursor_x-10) (cursor_y-10)
+}
+windowrule {
+	name = zoom-menu-size
+	match:title = ^(menu window)$
+	match:class = ^(Zoom.*)$
+
+	size = 300 201
+}
+
+windowrule {
+	name = gtk-prompt-float
+	match:class = ^(Gtk_prompt\.py)$
+
+	float = on
+}
+windowrule {
+	name = updates-float
+	match:class = ^(updates)$
+
+	float = on
+}
 
 # Picture in Picture
-windowrulev2 = float, title:^(Picture-in-Picture)$
-windowrulev2 = keepaspectratio on, floating:1 && title:^(Picture-in-Picture)
-windowrulev2 = size 800 450, floating:1 && title:^(Picture-in-Picture)
-windowrulev2 = opacity 0.10 1.0, pinned:1
+windowrule {
+	name = picture-in-picture-float
+	match:title = ^(Picture-in-Picture)$
+
+	float = on
+}
+windowrule {
+	name = picture-in-picture-keep-aspect
+	match:float = true
+	match:title = ^(Picture-in-Picture)$
+
+	keep_aspect_ratio = on
+}
+windowrule {
+	name = picture-in-picture-size
+	match:float = true
+	match:title = ^(Picture-in-Picture)$
+
+	size = 800 450
+}
+windowrule {
+	name = picture-in-picture-opacity
+	match:pin = true
+
+	opacity = 0.10 1.0
+}
 
 # Firefox Sharing
 # for_window [title="Firefox — Sharing Indicator"] floating enable; move absolute position 0 0;
 
 # Left
 # Workspace 1
-windowrulev2 = workspace 1 silent, class:^(thunderbird)$
+windowrule {
+	name = workspace-1-thunderbird
+	match:class = ^(thunderbird)$
+
+	workspace = 1 silent
+}
 
 # Workspace 2
-windowrulev2 = workspace 2 silent, class:^(Spotify(\sPremium)?)$
+windowrule {
+	name = workspace-2-spotify
+	match:class = ^(Spotify(\sPremium)?)$
+
+	workspace = 2 silent
+}
 # On Wayland Spotify opens without a class.
-windowrulev2 = workspace 2 silent, initialTitle:^(Spotify(\sPremium)?)$
+windowrule {
+	name = workspace-2-spotify-initialtitle
+	match:initial_title = ^(Spotify(\sPremium)?)$
+
+	workspace = 2 silent
+}
 
 {{ if eq .environment "home" }}
 # Workspace 3
-windowrulev2 = workspace 3 silent, class:^([dD]iscord)$
-windowrulev2 = workspace 3 silent, class:^(com\.discordapp\.Discord)$
-windowrulev2 = workspace 3 silent, title:^(Signal.*)$
-windowrulev2 = workspace 3 silent, title:^(WhatsApp.*)$
+windowrule {
+	name = workspace-3-discord
+	match:class = ^([dD]iscord)$
+
+	workspace = 3 silent
+}
+windowrule {
+	name = workspace-3-discord-com
+	match:class = ^(com\.discordapp\.Discord)$
+
+	workspace = 3 silent
+}
+windowrule {
+	name = workspace-3-signal
+	match:title = ^(Signal.*)$
+
+	workspace = 3 silent
+}
+windowrule {
+	name = workspace-3-whatsapp
+	match:title = ^(WhatsApp.*)$
+
+	workspace = 3 silent
+}
 
 # Workspace 4
-windowrulev2 = workspace 4 silent, class:^(Hexchat)$
-windowrulev2 = workspace 4 silent, class:^(Zulip)$
-windowrulev2 = workspace 4 silent, title:^(Tuba)$
-windowrulev2 = workspace 4 silent, class:^(Slack)$
+windowrule {
+	name = workspace-4-hexchat
+	match:class = ^(Hexchat)$
+
+	workspace = 4 silent
+}
+windowrule {
+	name = workspace-4-zulip
+	match:class = ^(Zulip)$
+
+	workspace = 4 silent
+}
+windowrule {
+	name = workspace-4-tuba
+	match:title = ^(Tuba)$
+
+	workspace = 4 silent
+}
+windowrule {
+	name = workspace-4-slack
+	match:class = ^(Slack)$
+
+	workspace = 4 silent
+}
 {{ else }}
 # Workspace 3
-windowrulev2 = workspace 3 silent, class:^(Mattermost)$
-windowrulev2 = workspace 3 silent, initialTitle:^(Workchat)$
-windowrulev2 = workspace 3 silent, initialTitle:^(Google Chat)$
+windowrule {
+	name = workspace-3-mattermost
+	match:class = ^(Mattermost)$
+
+	workspace = 3 silent
+}
+windowrule {
+	name = workspace-3-workchat
+	match:initial_title = ^(Workchat)$
+
+	workspace = 3 silent
+}
+windowrule {
+	name = workspace-3-googlechat
+	match:initial_title = ^(Google Chat)$
+
+	workspace = 3 silent
+}
 
 # Workspace 4
-windowrulev2 = workspace 4 silent, class:^([dD]iscord)$
-windowrulev2 = workspace 4 silent, class:^(com\.discordapp\.Discord)$
-windowrulev2 = workspace 4 silent, title:^(Signal.*)$
-windowrulev2 = workspace 4 silent, title:^(WhatsApp.*)$
+windowrule {
+	name = workspace-4-discord
+	match:class = ^([dD]iscord)$
 
-windowrulev2 = workspace 5 silent, class:^(Hexchat)$
-windowrulev2 = workspace 5 silent, class:^(Zulip)$
-windowrulev2 = workspace 5 silent, title:^(Tuba)$
-windowrulev2 = workspace 5 silent, class:^(Slack)$
+	workspace = 4 silent
+}
+windowrule {
+	name = workspace-4-discord-com
+	match:class = ^(com\.discordapp\.Discord)$
+
+	workspace = 4 silent
+}
+windowrule {
+	name = workspace-4-signal
+	match:title = ^(Signal.*)$
+
+	workspace = 4 silent
+}
+windowrule {
+	name = workspace-4-whatsapp
+	match:title = ^(WhatsApp.*)$
+
+	workspace = 4 silent
+}
+
+windowrule {
+	name = workspace-5-hexchat
+	match:class = ^(Hexchat)$
+
+	workspace = 5 silent
+}
+windowrule {
+	name = workspace-5-zulip
+	match:class = ^(Zulip)$
+
+	workspace = 5 silent
+}
+windowrule {
+	name = workspace-5-tuba
+	match:title = ^(Tuba)$
+
+	workspace = 5 silent
+}
+windowrule {
+	name = workspace-5-slack
+	match:class = ^(Slack)$
+
+	workspace = 5 silent
+}
 {{ end }}
 
 # Center
-windowrulev2 = workspace 101, class:^code(.*)?(-url-handler)?$
+windowrule {
+	name = workspace-101-code
+	match:class = ^code(.*)?(-url-handler)?$
+
+	workspace = 101
+}
 
 # Right
