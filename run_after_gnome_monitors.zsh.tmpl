@@ -29,10 +29,12 @@ function perform_copy() {
 
 if [ ! -f "$from" ]; then
     >&2 echo "$from does not exist."
-elif sudo test ! -f "$to"; then
+elif test ! -f "$to"; then
     >&2 echo "$to does not exist."
     perform_copy
-elif ! sudo cmp --silent $from $to; then
+elif ! cmp --silent $from $to; then
     >&2 echo "$from changed."
     perform_copy
+else
+    >&2 echo "$from == $to"
 fi

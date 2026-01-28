@@ -1,3 +1,43 @@
+# Disable kitty/terminal shadow.
+windowrule {
+	name = noshadow-kitty
+	match:class = ^(kitty)$
+
+	no_shadow = on
+}
+
+# Floats for small utility apps
+windowrule {
+	name = Float
+	match:class = ^(1password)|(com.adamcake.Bolt)$
+
+	float = on
+}
+
+windowrule {
+	name = 1password-quickaccess
+	match:title = ^(Quick Access — 1Password)$
+
+	stay_focused = on
+	dim_around = on
+}
+windowrule {
+	name = kitty-noshadow
+	match:class = ^(kitty)$
+
+	no_shadow = on
+}
+
+# RuneLite Launcher / HDOS Launcher
+windowrule {
+	name = rs-launcher
+	match:title = ^(RuneLite\sLauncher)|(HDOS)$
+
+	float = on
+	center = on
+	pin = on
+
+}
 
 # Disable kitty/terminal shadow.
 windowrule {
@@ -7,60 +47,31 @@ windowrule {
 	no_shadow = on
 }
 
-# 1Password Always Float
+# Floats for small utility apps
 windowrule {
-	name = float-1password
-	match:class = ^(1password)$
+	name = float-1password-bolt
+	match:class = ^(1password)|(com.adamcake.Bolt)$
 
 	float = on
 }
+
 windowrule {
-	name = 1password-quickaccess-stayfocused
+	name = 1password-quickaccess
 	match:title = ^(Quick Access — 1Password)$
 
 	stay_focused = on
-}
-windowrule {
-	name = 1password-quickaccess-dim
-	match:title = ^(Quick Access — 1Password)$
-
 	dim_around = on
-}
-
-# Bolt Always Float
-windowrule {
-	name = float-bolt
-	match:class = ^(com.adamcake.Bolt)$
-
-	float = on
 }
 
 # RuneLite Launcher / HDOS Launcher
 windowrule {
-	name = runelite-launcher-float
+	name = runelite-launcher
 	match:title = ^(RuneLite\sLauncher)|(HDOS)$
 
 	float = on
-}
-windowrule {
-	name = runelite-launcher-center
-	match:title = ^(RuneLite\sLauncher)|(HDOS)$
-
 	center = on
-}
-windowrule {
-	name = runelite-launcher-pin
-	match:title = ^(RuneLite\sLauncher)|(HDOS)$
-
 	pin = on
 }
-# Commented because silent is not supported
-#windowrule {
-#  name = runelite-launcher-monitor
-#  match:title = ^(RuneLite\sLauncher)|(HDOS)$
-#
-#  monitor = 1
-#}
 windowrule {
 	name = hdos-main-tile
 	match:class = ^(hdos-Main)$
@@ -68,75 +79,37 @@ windowrule {
 	tile = on
 }
 
-# RuneLite
-#windowrule {
-#  name = runelite-monitor
-#  match:title = ^(RuneLite)$
-#
-#  monitor = 1
-#}
-
-# 1Password menu windows
-# All Zoom Windows to be floating except for the meeting one which has the title meeting.
+# 1Password menu windows / Zoom helpers
 windowrule {
-	name = zoom-float
+	name = zoom
 	match:class = ^(Zoom.*)$
 
 	float = on
-}
-#windowrule {
-#  name = zoom-menu-stayfocused
-#  match:title = ^(menu window)$
-#  match:class = ^(Zoom.*)$
-#
-#  stay_focused = on
-#}
-windowrule {
-	name = zoom-move-to-cursor
-	match:class = ^(Zoom.*)$
-
 	move = (cursor_x-10) (cursor_y-10)
 }
 windowrule {
 	name = zoom-menu-size
-	match:title = ^(menu window)$
 	match:class = ^(Zoom.*)$
+	match:title = ^(menu window)$
 
 	size = 300 201
 }
 
+# small floats: prompts, update dialogs
 windowrule {
-	name = gtk-prompt-float
-	match:class = ^(Gtk_prompt\.py)$
-
-	float = on
-}
-windowrule {
-	name = updates-float
-	match:class = ^(updates)$
+	name = floats-others
+	match:class = ^(Gtk_prompt\.py)|(updates)$
 
 	float = on
 }
 
 # Picture in Picture
 windowrule {
-	name = picture-in-picture-float
+	name = picture-in-picture
 	match:title = ^(Picture-in-Picture)$
 
 	float = on
-}
-windowrule {
-	name = picture-in-picture-keep-aspect
-	match:float = true
-	match:title = ^(Picture-in-Picture)$
-
 	keep_aspect_ratio = on
-}
-windowrule {
-	name = picture-in-picture-size
-	match:float = true
-	match:title = ^(Picture-in-Picture)$
-
 	size = 800 450
 }
 windowrule {
@@ -145,9 +118,6 @@ windowrule {
 
 	opacity = 0.10 1.0
 }
-
-# Firefox Sharing
-# for_window [title="Firefox — Sharing Indicator"] floating enable; move absolute position 0 0;
 
 # Left
 # Workspace 1
@@ -177,51 +147,27 @@ windowrule {
 # Workspace 3
 windowrule {
 	name = workspace-3-discord
-	match:class = ^([dD]iscord)$
+	match:class = ^([dD]iscord)|(com\.discordapp\.Discord)$
 
 	workspace = 3 silent
 }
 windowrule {
-	name = workspace-3-discord-com
-	match:class = ^(com\.discordapp\.Discord)$
-
-	workspace = 3 silent
-}
-windowrule {
-	name = workspace-3-signal
-	match:title = ^(Signal.*)$
-
-	workspace = 3 silent
-}
-windowrule {
-	name = workspace-3-whatsapp
-	match:title = ^(WhatsApp.*)$
+	name = workspace-3-msgs
+	match:title = ^(Signal.*)|(WhatsApp.*)$
 
 	workspace = 3 silent
 }
 
 # Workspace 4
 windowrule {
-	name = workspace-4-hexchat
-	match:class = ^(Hexchat)$
-
-	workspace = 4 silent
-}
-windowrule {
-	name = workspace-4-zulip
-	match:class = ^(Zulip)$
+	name = workspace-4-comm
+	match:class = ^(Hexchat)|(Zulip)|(Slack)$
 
 	workspace = 4 silent
 }
 windowrule {
 	name = workspace-4-tuba
 	match:title = ^(Tuba)$
-
-	workspace = 4 silent
-}
-windowrule {
-	name = workspace-4-slack
-	match:class = ^(Slack)$
 
 	workspace = 4 silent
 }
@@ -234,14 +180,8 @@ windowrule {
 	workspace = 3 silent
 }
 windowrule {
-	name = workspace-3-workchat
-	match:initial_title = ^(Workchat)$
-
-	workspace = 3 silent
-}
-windowrule {
-	name = workspace-3-googlechat
-	match:initial_title = ^(Google Chat)$
+	name = workspace-3-initialmsgs
+	match:initial_title = ^(Workchat)|(Google Chat)$
 
 	workspace = 3 silent
 }
@@ -249,50 +189,26 @@ windowrule {
 # Workspace 4
 windowrule {
 	name = workspace-4-discord
-	match:class = ^([dD]iscord)$
+	match:class = ^([dD]iscord)|(com\.discordapp\.Discord)$
 
 	workspace = 4 silent
 }
 windowrule {
-	name = workspace-4-discord-com
-	match:class = ^(com\.discordapp\.Discord)$
-
-	workspace = 4 silent
-}
-windowrule {
-	name = workspace-4-signal
-	match:title = ^(Signal.*)$
-
-	workspace = 4 silent
-}
-windowrule {
-	name = workspace-4-whatsapp
-	match:title = ^(WhatsApp.*)$
+	name = workspace-4-msgs
+	match:title = ^(Signal.*)|(WhatsApp.*)$
 
 	workspace = 4 silent
 }
 
 windowrule {
-	name = workspace-5-hexchat
-	match:class = ^(Hexchat)$
-
-	workspace = 5 silent
-}
-windowrule {
-	name = workspace-5-zulip
-	match:class = ^(Zulip)$
+	name = workspace-5-comm
+	match:class = ^(Hexchat)|(Zulip)|(Slack)$
 
 	workspace = 5 silent
 }
 windowrule {
 	name = workspace-5-tuba
 	match:title = ^(Tuba)$
-
-	workspace = 5 silent
-}
-windowrule {
-	name = workspace-5-slack
-	match:class = ^(Slack)$
 
 	workspace = 5 silent
 }
