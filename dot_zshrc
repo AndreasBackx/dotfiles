@@ -11,6 +11,7 @@ plugins=(
   fzf
   zsh-autosuggestions
   zsh-syntax-highlighting
+  cont
 )
 
 ZSH_THEME="spaceship"
@@ -43,6 +44,7 @@ SPACESHIP_PROMPT_ORDER+=(
 )
 SPACESHIP_RPROMPT_ORDER=(
   taste_tester
+  cont
 )
 
 if [[ -z "$TMUX" ]]; then
