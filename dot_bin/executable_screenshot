@@ -3,7 +3,7 @@
 set -eo pipefail
 
 if type "wayshot" >/dev/null; then
-    wayshot - -g --clipboard
+    wayshot -g --clipboard -
 else
     grim -g "$(slurp)" - | wl-copy
 fi
