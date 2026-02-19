@@ -82,3 +82,9 @@ fi
 alias irssi=irssi --config="$XDG_CONFIG_HOME"/irssi/config --home="$XDG_DATA_HOME"/irssi
 alias svn="svn --config-dir $XDG_CONFIG_HOME/subversion"
 alias wget=wget --hsts-file="$XDG_DATA_HOME/wget-hsts"
+
+# kilo
+export PATH=/home/andreas/.kilo/bin:$PATH
+
+# opencode
+export PATH=/home/andreas/.opencode/bin:$PATH
