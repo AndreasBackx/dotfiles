@@ -216,10 +216,10 @@ windowrule {
 
 # Center
 windowrule {
-	name = workspace-101-code
+	name = monitor-center-code
 	match:class = ^code(.*)?(-url-handler)?$
 
-	workspace = 101
+	monitor = desc:{{ index .monitors .monitors.selected "center" "name" }}
 }
 
 # Right
