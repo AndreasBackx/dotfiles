@@ -5,14 +5,17 @@
 exit 0
 {{ end }}
 
-set -o errexit -o nounset
+set -o errexit -o nounset -o pipefail
 
-source $HOME/.config/.variables
+source "$HOME/.config/.variables"
 
 wrappers_directory="$HOME/.bin/wrappers"
 wayland_args="--enable-features=UseOzonePlatform --ozone-platform=wayland"
+path_without_wrappers="$PATH"
+path_without_wrappers="${path_without_wrappers//"$wrappers_directory:"/}"
+path_without_wrappers="${path_without_wrappers//":$wrappers_directory"/}"
 
-declare -A WAYLAND_WRAPPERS=(
+typeset -A wayland_wrappers=(
   [code]="code $wayland_args"
   [code-fb]="code-fb $wayland_args"
   [code-fb-insiders]="code-fb-insiders $wayland_args"
@@ -30,49 +33,118 @@ declare -A WAYLAND_WRAPPERS=(
   [google-chrome-stable]="google-chrome-stable $wayland_args"
   [bolt]="flatpak run com.adamcake.Bolt $wayland_args"
 )
-set -A WRAPPERS ${(kv)WAYLAND_WRAPPERS}
 
-if [[ $(uname -s) == "Darwin" ]]; then
-  rm -rf $wrappers_directory
-  exit 0
-fi
+function command_tokens_available() {
+  local -a tokens
+  tokens=("$@")
 
-mkdir -p $wrappers_directory
+  if (( ${#tokens} == 0 )); then
+    return 1
+  fi
 
-# Ignore empty directories
-if [[ -z "
-$(ls -A "$wrappers_directory")" ]]; then
-  echo "No wrappers to process, exiting..."
-  exit 0
-fi
+  local executable
+  executable="${tokens[1]}"
 
-if [[ -n "$(ls -A "$wrappers_directory")" ]]; then
-  for file in "$wrappers_directory"/*; do
-    if [[ ! -v WAYLAND_WRAPPERS[$(basename "$file")] ]]; then
-      echo "Deleting old wrapper: $file"
-      rm "$file"
+  if [[ "$executable" == /* ]]; then
+    [[ -x "$executable" ]]
+    return
+  fi
+
+  if [[ "$executable" == "flatpak" ]]; then
+    if ! command -v flatpak >/dev/null 2>&1; then
+      return 1
     fi
+
+    if [[ "${tokens[2]-}" != "run" ]]; then
+      return 0
+    fi
+
+    local app_id=""
+    local token
+    for token in "${tokens[@]:3}"; do
+      if [[ "$token" == -* ]]; then
+        continue
+      fi
+      app_id="$token"
+      break
+    done
+
+    if [[ -z "$app_id" ]]; then
+      return 1
+    fi
+
+    flatpak info "$app_id" >/dev/null 2>&1
+    return
+  fi
+
+  PATH="$path_without_wrappers" command -v "$executable" >/dev/null 2>&1
+}
+
+function wrapper_target_available() {
+  local command_line="$1"
+  local -a tokens current_tokens
+  tokens=("${(z)command_line}")
+  current_tokens=()
+
+  local token
+  for token in "${tokens[@]}"; do
+    if [[ "$token" == "||" ]]; then
+      if command_tokens_available "${current_tokens[@]}"; then
+        return 0
+      fi
+      current_tokens=()
+      continue
+    fi
+    current_tokens+=("$token")
   done
+
+  if command_tokens_available "${current_tokens[@]}"; then
+    return 0
+  fi
+
+  return 1
+}
+
+typeset -A active_wrappers
+for key value in ${(kv)wayland_wrappers}; do
+  if wrapper_target_available "$value"; then
+    active_wrappers[$key]="$value"
+  fi
+done
+
+if [[ "$(uname -s)" == "Darwin" ]]; then
+  rm -rf "$wrappers_directory"
+  exit 0
 fi
 
-for key value in ${(kv)WRAPPERS}; do
-  CONTENTS="#!/usr/bin/env zsh
+mkdir -p "$wrappers_directory"
 
-FILE_PATH="\${0:a}"
-PARENT_DIR="\${FILE_PATH:h}"
+for file in "$wrappers_directory"/*(N); do
+  wrapper_name="${file:t}"
+  if [[ -z "${active_wrappers[$wrapper_name]-}" ]]; then
+    echo "Deleting old wrapper: $file"
+    rm "$file"
+  fi
+done
+
+for key value in ${(kv)active_wrappers}; do
+  contents="#!/usr/bin/env zsh
+
+FILE_PATH=\"\${0:a}\"
+PARENT_DIR=\"\${FILE_PATH:h}\"
 export PATH=\${PATH//\$PARENT_DIR:/:}
 
-if [[ \$(which $key) == "\$FILE_PATH" ]]; then
+if [[ \$(command -v $key) == \"\$FILE_PATH\" ]]; then
     notify-send \"Tried recursively running $key wrapper, exiting...\" --urgency=critical
     exit 1
 fi
-$value \$@
+$value \"\$@\"
 "
 
   to="$wrappers_directory/$key"
-  cmp --silent <(echo $CONTENTS) $to || (
+  if [[ ! -f "$to" ]] || ! cmp --silent <(print -r -- "$contents") "$to"; then
     echo "$key wrapper changed, copying to $to..."
-    echo $CONTENTS > $to
-    chmod +x $to
-  )
+    print -r -- "$contents" > "$to"
+    chmod +x "$to"
+  fi
 done

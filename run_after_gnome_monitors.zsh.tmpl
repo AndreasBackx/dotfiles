@@ -1,38 +1,44 @@
-#!/usr/bin/env sh
+#!/usr/bin/env zsh
 
 {{ if .headless }}
 # We're headless.
 exit 0
 {{ end }}
 
-set -o errexit -o nounset
+set -o errexit -o nounset -o pipefail
 
 from="$HOME/.config/monitors.xml"
 to="/var/lib/gdm/.config/monitors.xml"
 
 function perform_copy() {
-    to_dir=$(dirname $to)
+    local to_dir
+    to_dir=$(dirname "$to")
     >&2 echo "Creating directory $to_dir..."
-    sudo mkdir -p $to_dir
+    sudo mkdir -p "$to_dir"
     >&2 echo "Changing folder permission $to_dir..."
-    sudo chmod 755 $to_dir
+    sudo chmod 755 "$to_dir"
     >&2 echo "Changing folder ownership $to_dir..."
-    sudo chown $(id -u gdm):$(id -g gdm) $to_dir
+    sudo chown "$(id -u gdm):$(id -g gdm)" "$to_dir"
 
     >&2 echo "Copying $from to $to..."
-    sudo cp $from $to
+    sudo cp "$from" "$to"
     >&2 echo "Setting ownership to gdm..."
-    sudo chown $(id -u gdm):$(id -g gdm) $to
+    sudo chown "$(id -u gdm):$(id -g gdm)" "$to"
     >&2 echo "Setting file permissions..."
-    sudo chmod 644 $to
+    sudo chmod 644 "$to"
 }
+
+if ! id -u gdm >/dev/null 2>&1; then
+    >&2 echo "gdm user does not exist, skipping monitor sync."
+    exit 0
+fi
 
 if [ ! -f "$from" ]; then
     >&2 echo "$from does not exist."
 elif test ! -f "$to"; then
     >&2 echo "$to does not exist."
     perform_copy
-elif ! cmp --silent $from $to; then
+elif ! cmp --silent "$from" "$to"; then
     >&2 echo "$from changed."
     perform_copy
 else

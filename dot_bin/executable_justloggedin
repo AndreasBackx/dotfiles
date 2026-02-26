@@ -1,8 +1,23 @@
 #!/usr/bin/env zsh
 
+set -o errexit -o nounset -o pipefail
+
 # If it's been more than 10 seconds since login, return exit code 1.
 # As then they did not just log in.
-if [[ $(($(date +%s) - $(last --time-format iso | grep andreas | grep 'still logged in' | head -1 | awk '{print $4}' | xargs -I {} date -d {} '+%s'))) -gt 10 ]]; then
+last_login_iso=$(last --time-format iso "$USER" | awk '/still logged in/ {print $4; exit}')
+
+if [[ -z "$last_login_iso" ]]; then
     exit 1
 fi
+
+last_login_epoch=$(date -d "$last_login_iso" '+%s' 2>/dev/null || true)
+
+if [[ -z "$last_login_epoch" ]]; then
+    exit 1
+fi
+
+if (( $(date +%s) - last_login_epoch > 10 )); then
+    exit 1
+fi
+
 exit 0

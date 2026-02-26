@@ -1,7 +1,9 @@
 ## SOURCING ##
 
 source ~/.config/.variables
-source ~/.config/.secrets
+if [[ "${CHEZMOI_DATA_HEADLESS:-false}" != "true" ]] && [[ -f ~/.config/.secrets ]]; then
+    source ~/.config/.secrets
+fi
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 [ -f /usr/share/nvm/init-nvm.sh ] && source /usr/share/nvm/init-nvm.sh
@@ -140,8 +142,8 @@ PATH="$PATH:/var/lib/flatpak/exports/bin"
 PATH="$PATH:$HOME/.opam/default/bin"
 PATH="$PATH:$XDG_DATA_HOME/npm/bin/"
 PATH="$PATH:$PNPM_HOME"
-PATH="$PATH:/home/andreas/.kilo/bin"
-PATH="$PATH:/home/andreas/.opencode/bin"
+PATH="$PATH:$HOME/.kilo/bin"
+PATH="$PATH:$HOME/.opencode/bin"
 
 # Wayland
 # Firefox new touchpad input support.

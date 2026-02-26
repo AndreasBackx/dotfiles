@@ -3,6 +3,10 @@
 # We need to create a symlink to the actual location without a space as I don't
 # want to move the files to a location without spaces.
 
+set -o errexit -o nounset -o pipefail
+
+machine=$(uname -s)
+
 if [[ $machine != "Darwin" ]]; then
     exit 0
 fi

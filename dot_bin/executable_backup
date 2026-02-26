@@ -7,7 +7,9 @@ SCRIPT_DIR=$(dirname "$0")
 source "$SCRIPT_DIR/utils.zsh"
 
 source "$SCRIPT_DIR/../.config/.variables"
-source "$SCRIPT_DIR/../.config/.secrets"
+if [[ -f "$SCRIPT_DIR/../.config/.secrets" ]]; then
+    source "$SCRIPT_DIR/../.config/.secrets"
+fi
 
 function is_environment_setup() {
     if [[ -z "${BORG_REPO}" || -z "${BORG_BASE_DIR}" ]]; then
@@ -54,7 +56,7 @@ function start_backup() {
     echo "Creating backup..."
     /usr/bin/borg create \
         ::'{hostname}-{now:%Y-%m-%dT%H:%M:%S}' \
-        /home/andreas \
+        "$HOME" \
         /etc \
         /var \
         /usr/local \
@@ -66,7 +68,7 @@ function start_backup() {
         --one-file-system \
         --debug \
         --stats \
-        --exclude-from "/home/andreas/.config/borg/excludefile"
+        --exclude-from "$HOME/.config/borg/excludefile"
 
     echo "Pruning backup..."
     /usr/bin/borg prune \

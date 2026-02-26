@@ -1,12 +1,26 @@
-
 # Dotfiles
 
-This repository contains most if not all of the changes made to my machines that run Arch Linux, Fedora, Ubuntu, or CentOS, but primarily Fedora as it's what I use on my personal computers. It should support both Hyprland primarily, though past versions used Sway and i3.
+This repository contains my dotfiles managed with Chezmoi. It is mainly used on Fedora and Arch Linux, with support for Ubuntu, CentOS, and macOS.
 
-## Installation
+## Quickstart
 
 ```zsh
-# Packages
+# 1) Install chezmoi and git first.
+# https://www.chezmoi.io/install/
+
+# 2) Initialize and apply.
+chezmoi init https://github.com/AndreasBackx/dotfiles.git
+chezmoi apply
+
+# 3) Run the built-in dependency check.
+dot-doctor
+```
+
+`chezmoi apply` will ask setup questions (environment, GPU, headless, monitor profile) and render templates accordingly.
+
+## Core packages
+
+```zsh
 ## Arch Linux
 paru -S \
     fzf \
@@ -25,12 +39,11 @@ sudo dnf install -y \
     git-delta \
     bat \
     eza \
-    # duf \
     ripgrep \
     choose \
     hyperfine
 
-## MacOS
+## macOS
 brew install -y \
     fzf \
     git-delta \
@@ -44,31 +57,45 @@ brew install -y \
 ## Ubuntu
 sudo apt-get install -y \
     fzf \
-    # git-delta \
     rust-bat \
-    # eza \
-    # duf \
     ripgrep \
     choose-rust-git
-    # hyperfine
+```
 
-## Other
-# https://github.com/dandavison/delta#installation
-# https://github.com/sharkdp/bat#installation
-# https://github.com/eza-community/eza
-# https://github.com/muesli/duf#installation
-# https://github.com/BurntSushi/ripgrep#installation
-# https://github.com/theryangeary/choose#compilation-and-installation
-# https://github.com/sharkdp/hyperfine#installation
+## Desktop extras (Wayland)
 
-# ddcutil i2c
+These are expected by scripts and config for Hyprland/Waybar setups:
+
+- `minos`
+- `waybar`
+- `wireplumber` (`wpctl`)
+- `kitty`
+- `rofi` / `rofi-wayland`
+- `sass` or `sassc`
+
+## Validation and troubleshooting
+
+```zsh
+# Dry run without applying.
+chezmoi apply --dry-run --verbose
+
+# Check your system dependencies.
+dot-doctor
+```
+
+Common issues:
+
+- Missing wrappers: run `chezmoi apply` again after installing required desktop tools.
+- Missing secrets: check `~/.config/.secrets` and your secrets provider setup.
+- Headless mode: desktop checks are skipped and 1Password-backed secrets are not loaded.
+
+## ddcutil access (if needed)
+
+```zsh
 sudo groupadd --system i2c
 sudo usermod $(whoami) -aG i2c
 sudo cp /usr/share/ddcutil/data/45-ddcutil-i2c.rules /etc/udev/rules.d
 
-# Or change the permissions
-# For current boot
+# Temporary permissions for current boot:
 sudo chmod a+rw /dev/i2c-*
-# Or after quick logout
-sudo chgrp i2c /dev/i2c-*
 ```

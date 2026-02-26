@@ -1,0 +1,127 @@
+#!/usr/bin/env zsh
+
+set -o errexit -o nounset -o pipefail
+
+variables_file="$HOME/.config/.variables"
+if [[ -f "$variables_file" ]]; then
+    source "$variables_file"
+fi
+
+headless="${CHEZMOI_DATA_HEADLESS:-false}"
+missing_required=0
+
+function has_command() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+function print_result() {
+    level="$1"
+    shift
+    message="$*"
+    printf '[%s] %s\n' "$level" "$message"
+}
+
+function hint_for() {
+    cmd="$1"
+    case "$cmd" in
+    chezmoi)
+        echo "https://www.chezmoi.io/install/"
+        ;;
+    jq)
+        echo "Install package: jq"
+        ;;
+    kitty)
+        echo "Install package: kitty"
+        ;;
+    minos)
+        echo "Install minos and ensure it is in PATH"
+        ;;
+    waybar)
+        echo "Install package: waybar"
+        ;;
+    wpctl)
+        echo "Install package: wireplumber"
+        ;;
+    rofi)
+        echo "Install package: rofi-wayland (or rofi)"
+        ;;
+    hyprctl)
+        echo "Install package: hyprland"
+        ;;
+    op)
+        echo "Install 1Password CLI: https://developer.1password.com/docs/cli/get-started/"
+        ;;
+    borg)
+        echo "Install package: borgbackup"
+        ;;
+    sass)
+        echo "Install package: sass or sassc"
+        ;;
+    *)
+        echo "Install package: $cmd"
+        ;;
+    esac
+}
+
+function check_required() {
+    cmd="$1"
+    if has_command "$cmd"; then
+        print_result ok "$cmd"
+        return
+    fi
+
+    print_result missing "$cmd ($(hint_for "$cmd"))"
+    missing_required=$((missing_required + 1))
+}
+
+function check_optional() {
+    cmd="$1"
+    if has_command "$cmd"; then
+        print_result ok "$cmd"
+    else
+        print_result warn "$cmd missing ($(hint_for "$cmd"))"
+    fi
+}
+
+print_result info "Checking required base tools"
+check_required chezmoi
+check_required git
+check_required zsh
+check_required jq
+
+if [[ "$headless" == "true" ]]; then
+    print_result info "Headless mode detected, skipping desktop checks"
+else
+    print_result info "Checking required desktop tools"
+    check_required minos
+    check_required waybar
+    check_required wpctl
+
+    if has_command sass || has_command sassc; then
+        print_result ok "sass/sassc"
+    else
+        print_result missing "sass/sassc ($(hint_for sass))"
+        missing_required=$((missing_required + 1))
+    fi
+
+    print_result info "Checking optional desktop tools"
+    check_optional hyprctl
+    check_optional kitty
+    check_optional rofi
+    check_optional flatpak
+    check_optional op
+    check_optional borg
+fi
+
+if has_command dnf5 || has_command dnf || has_command paru || has_command apt-get; then
+    print_result ok "Package manager"
+else
+    print_result warn "No known package manager detected"
+fi
+
+if (( missing_required > 0 )); then
+    print_result fail "Missing required tools: $missing_required"
+    exit 1
+fi
+
+print_result ok "System looks ready"
