@@ -1,6 +1,12 @@
 source ~/.bin/hg_commit.zsh
 source ~/.bin/taste_tester.zsh
 
+SPACESHIP_VCS_SECTION="git"
+if type "jj-starship" >/dev/null; then
+  source ~/.bin/vcs.zsh
+  SPACESHIP_VCS_SECTION="vcs"
+fi
+
 MASTER_ZSHRC="/usr/facebook/ops/rc/master.zshrc"
 if [[ -f "$MASTER_ZSHRC" ]]; then
   source "$MASTER_ZSHRC"
@@ -23,7 +29,7 @@ SPACESHIP_TIME_SHOW="true"
 SPACESHIP_TIME_FORMAT="[%T]"
 SPACESHIP_PROMPT_ORDER=(
   dir # Current directory section
-  git # Git section (git_branch + git_status)
+  $SPACESHIP_VCS_SECTION # VCS section (jj with git fallback)
   hg_commit
   golang # Go section
   rust   # Rust section
