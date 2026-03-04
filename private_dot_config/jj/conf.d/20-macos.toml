@@ -1,0 +1,4 @@
+--when.platforms = ["macos"]
+
+[signing.backends.ssh]
+program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"

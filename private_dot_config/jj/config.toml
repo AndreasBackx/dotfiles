@@ -1,0 +1,22 @@
+#:schema https://docs.jj-vcs.dev/latest/config-schema.json
+
+[user]
+name = "Andreas Backx"
+email = "andreas@backx.org"
+
+[working-copy]
+eol-conversion = "input"
+
+[signing]
+behavior = "drop"
+backend = "ssh"
+key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIxRpuUyWKbNo4dopWoovkq5i9mqM9zSrbIMx+n/zuBz"
+
+[git]
+sign-on-push = true
+
+[ui]
+diff-formatter = ["difft", "$left", "$right"]
+
+[revset-aliases]
+"trunk()" = "main@origin"
