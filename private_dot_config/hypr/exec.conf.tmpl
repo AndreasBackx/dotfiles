@@ -5,9 +5,10 @@ exec-once = waybar
 exec-once = hypridle
 exec-once = pypr
 
-# Required for screen sharing
-# https://gist.github.com/PowerBall253/2dea6ddf6974ba4e5d26c3139ffb7580
-exec-once=dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+# Required for screen sharing and user service environment propagation.
+# In UWSM sessions, finalize marks readiness and exports compositor vars.
+# In legacy sessions, fall back to direct import.
+exec-once = sh -lc 'uwsm finalize || dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP'
 # Required for unlocking the login keyring on login
 exec-once = gnome-keyring-daemon --start --components=secrets
 
