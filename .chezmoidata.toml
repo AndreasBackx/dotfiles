@@ -1,6 +1,6 @@
 [monitors]
 [monitors.work]
-screen_timeout = 360
+screen_timeout = 3600
 lock_timeout = 300
 
 [monitors.work.left]
