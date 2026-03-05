@@ -1,49 +1,50 @@
+{{- $t := .themes.rubecula -}}
 font_family MesloLGM Nerd Font Mono
 font_size 11.50
 
-cursor #F8F8F0
-cursor_text_color #E5E5E5
+cursor {{ $t.cursor }}
+cursor_text_color {{ $t.cursor_text_color }}
 cursor_shape beam
 
 scrollback_lines 100000
 
 url_style single
-url_color #e5e5e5
+url_color {{ $t.url_color }}
 
 tab_bar_style separator
 
-selection_background #CCC47A
+selection_background {{ $t.selection_background }}
 
-foreground #e5e5e5
-background #1c1c1c
+foreground {{ $t.foreground }}
+background {{ $t.background }}
 
 window_padding_width 4.0
 background_opacity 0.8
 
 # black dark/light
-color0 #797c6a
-color8 #797c6a
+color0 {{ $t.color0 }}
+color8 {{ $t.color8 }}
 # red dark/light
-color1 #e52e71
-color9 #e52e71
+color1 {{ $t.color1 }}
+color9 {{ $t.color9 }}
 # green dark/light
-color2 #9ccc3d
-color10 #9ccc3d
+color2 {{ $t.color2 }}
+color10 {{ $t.color10 }}
 # yellow dark/light
-color3 #ccc47a
-color11 #ccc47a
+color3 {{ $t.color3 }}
+color11 {{ $t.color11 }}
 # blue dark/light
-color4 #6d8fd9
-color12 #6d8fd9
+color4 {{ $t.color4 }}
+color12 {{ $t.color12 }}
 # magenta dark/light
-color5 #a082d9
-color13 #a082d9
+color5 {{ $t.color5 }}
+color13 {{ $t.color13 }}
 # cyan dark/light
-color6 #6cc7d9
-color14 #6cc7d9
+color6 {{ $t.color6 }}
+color14 {{ $t.color14 }}
 # white dark/light
-color7 #e5e5e5
-color15 #e5e5e5
+color7 {{ $t.color7 }}
+color15 {{ $t.color15 }}
 
 # MacOS
 macos_thicken_font 0.50
