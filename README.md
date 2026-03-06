@@ -64,14 +64,13 @@ sudo apt-get install -y \
 
 ## Desktop extras (Wayland)
 
-These are expected by scripts and config for Hyprland/Waybar setups:
+These are expected by scripts and config for Hyprland/Eww setups:
 
 - `minos`
-- `waybar`
+- `eww`
 - `wireplumber` (`wpctl`)
 - `kitty`
 - `rofi` / `rofi-wayland`
-- `sass` or `sassc`
 
 ## Validation and troubleshooting
 

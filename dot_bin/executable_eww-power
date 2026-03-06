@@ -1,0 +1,35 @@
+#!/usr/bin/env zsh
+
+set -euo pipefail
+
+render() {
+    print '(box :orientation "v" :spacing 8'
+    print '  (label :class "panel-title" :text "Power (test mode)")'
+    print '  (button :class "panel-button" :onclick "eww-power action logout" "logout")'
+    print '  (button :class "panel-button" :onclick "eww-power action suspend" "suspend")'
+    print '  (button :class "panel-button" :onclick "eww-power action hibernate" "hibernate")'
+    print '  (button :class "panel-button" :onclick "eww-power action reboot" "reboot")'
+    print '  (button :class "panel-button" :onclick "eww-power action shutdown" "shutdown")'
+    print '  (button :class "panel-button" :onclick "eww-power action update-reboot" "update + reboot")'
+    print '  (button :class "panel-button" :onclick "eww-power action update-shutdown" "update + shutdown")'
+    print '  (button :class "panel-button danger" :onclick "eww-bar close-panels" "close")'
+    print ')'
+}
+
+action() {
+    local selected="$1"
+    notify-send "Power test" "Selected: ${selected}" --expire-time 1800
+}
+
+case "${1:-render}" in
+render)
+    render
+    ;;
+action)
+    action "${2:?action required}"
+    ;;
+*)
+    echo "Usage: $0 {render|action}"
+    exit 2
+    ;;
+esac

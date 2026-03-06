@@ -1,0 +1,57 @@
+#!/usr/bin/env zsh
+
+set -euo pipefail
+
+panels=(panel-network panel-bluetooth panel-audio panel-brightness panel-power)
+bars=(bar-left bar-center bar-right)
+
+close_panels() {
+    local panel
+    for panel in "${panels[@]}"; do
+        eww close "$panel" >/dev/null 2>&1 || true
+    done
+}
+
+toggle_panel() {
+    local name="$1"
+    local target="panel-${name}"
+
+    if eww active-windows | grep -q "^${target}$"; then
+        eww close "$target"
+        return
+    fi
+
+    close_panels
+    eww open "$target"
+}
+
+open_bars() {
+    local bar
+    for bar in "${bars[@]}"; do
+        eww open "$bar" >/dev/null 2>&1 || true
+    done
+}
+
+case "${1:-start}" in
+start)
+    eww daemon
+    open_bars
+    ;;
+reload)
+    eww reload
+    open_bars
+    ;;
+stop)
+    eww close-all
+    ;;
+toggle)
+    toggle_panel "${2:?usage: eww-bar toggle <network|bluetooth|audio|brightness|power>}"
+    ;;
+close-panels)
+    close_panels
+    ;;
+*)
+    echo "Usage: $0 {start|reload|stop|toggle|close-panels}"
+    exit 2
+    ;;
+esac

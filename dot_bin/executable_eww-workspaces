@@ -1,0 +1,365 @@
+#!/usr/bin/env zsh
+
+set -euo pipefail
+
+hyprctl_json() {
+    local target="$1"
+    local output
+
+    if command -v timeout >/dev/null 2>&1; then
+        output="$(timeout 0.15s hyprctl -j "$target" 2>/dev/null || true)"
+    else
+        output="$(hyprctl -j "$target" 2>/dev/null || true)"
+    fi
+
+    if [[ -z "$output" ]]; then
+        return 1
+    fi
+
+    print -r -- "$output"
+}
+
+trim_spaces() {
+    local value="$1"
+    value="${value#"${value%%[![:space:]]*}"}"
+    value="${value%"${value##*[![:space:]]}"}"
+    print -r -- "$value"
+}
+
+truncate_title() {
+    print -r -- "$1" | cut -c1-90
+}
+
+render() {
+    local active_id
+    local base
+    local base_arg
+    local active_workspace_json
+    local workspaces_json
+    local monitors_json
+    local i
+    local ws_id
+    local class
+    local visible_ids
+    local populated_ids
+    local visible_match
+    local window_count
+
+    base_arg="${1:-auto}"
+
+    active_workspace_json="$(hyprctl_json activeworkspace || true)"
+    active_id="$(jq -r '.id // 1' <<<"${active_workspace_json:-{}}" 2>/dev/null || true)"
+    if [[ -z "$active_id" || "$active_id" == "null" ]]; then
+        active_id=1
+    fi
+
+    workspaces_json="$(hyprctl_json workspaces || true)"
+    if [[ -z "$workspaces_json" ]]; then
+        workspaces_json='[]'
+    fi
+
+    if [[ "$base_arg" == "auto" ]]; then
+        if (( active_id >= 100 )); then
+            base=$(( (active_id / 100) * 100 ))
+        else
+            base=0
+        fi
+    else
+        base="$base_arg"
+    fi
+
+    monitors_json="$(hyprctl_json monitors || true)"
+    if [[ -z "$monitors_json" ]]; then
+        monitors_json='[]'
+    fi
+    visible_ids=$(jq -r --argjson base "$base" '[.[] | .activeWorkspace.id | select(. > $base and . <= ($base + 12))] | join(" ")' <<<"$monitors_json" 2>/dev/null || true)
+    populated_ids=$(jq -r '[.[] | select((.windows // 0) > 0) | .id] | join(" ")' <<<"$workspaces_json" 2>/dev/null || true)
+
+    print -n '(box :class "workspace-row" :orientation "h" :spacing 1 :hexpand true :homogeneous true :space-evenly false'
+    for i in {1..12}; do
+        ws_id=$((base + i))
+        class="workspace-btn"
+        if [[ " ${populated_ids} " == *" ${ws_id} "* ]]; then
+            window_count=1
+        else
+            window_count=0
+        fi
+
+        if [[ " ${visible_ids} " == *" ${ws_id} "* ]]; then
+            visible_match=1
+        else
+            visible_match=0
+        fi
+
+        if (( ws_id == active_id || visible_match == 1 )); then
+            class+=" shown"
+        fi
+
+        if (( ws_id != active_id && visible_match == 0 && window_count == 0 )); then
+            continue
+        fi
+
+        print -n " (button :class \"${class}\" :hexpand true :onclick \"hyprctl dispatch workspace ${ws_id}\" \"${i}\")"
+    done
+    print ')'
+}
+
+window_title() {
+    local active_window_json
+    local title
+    active_window_json="$(hyprctl_json activewindow || true)"
+    if [[ -z "$active_window_json" ]]; then
+        print -r -- "Desktop"
+        return
+    fi
+
+    title="$(jq -r '.title // "Desktop"' <<<"$active_window_json" 2>/dev/null || true)"
+    title="$(trim_spaces "${title//$'\r'/ }")"
+    title="$(trim_spaces "${title//$'\n'/ }")"
+
+    if [[ -z "$title" || "$title" == "null" ]]; then
+        print -r -- "Desktop"
+        return
+    fi
+
+    truncate_title "$title"
+}
+
+window_title_from_payload() {
+    local payload="$1"
+    local title
+
+    if [[ -z "$payload" ]]; then
+        return 1
+    fi
+
+    if [[ "$payload" == *,* ]]; then
+        title="${payload#*,}"
+    else
+        if [[ "$payload" == 0x* ]]; then
+            return 1
+        fi
+        title="$payload"
+    fi
+
+    title=${title//$'\r'/ }
+    title=${title//$'\n'/ }
+    title="$(trim_spaces "$title")"
+
+    if [[ -z "$title" || "$title" == "null" ]]; then
+        return 1
+    fi
+
+    truncate_title "$title"
+}
+
+should_handle_event() {
+    local mode="$1"
+    local event="$2"
+
+    case "$mode" in
+    render)
+        case "$event" in
+        workspace|workspacev2|focusedmon|focusedmonv2|openwindow|closewindow|movewindow)
+            return 0
+            ;;
+        esac
+        ;;
+    window)
+        case "$event" in
+        activewindow|activewindowv2|windowtitle|windowtitlev2|focusedmon|focusedmonv2)
+            return 0
+            ;;
+        esac
+        ;;
+    esac
+
+    return 1
+}
+
+socket_path() {
+    local runtime_dir
+    runtime_dir="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+
+    if [[ -z "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]]; then
+        return 1
+    fi
+
+    print -r -- "${runtime_dir}/hypr/${HYPRLAND_INSTANCE_SIGNATURE}/.socket2.sock"
+}
+
+emit_once() {
+    local mode
+    mode="$1"
+
+    case "$mode" in
+    render)
+        render "${2:-auto}"
+        ;;
+    window)
+        window_title
+        ;;
+    *)
+        return 1
+        ;;
+    esac
+}
+
+listen_updates() {
+    local mode
+    local arg
+    local initial_output
+    local last_window
+    local next_output
+    local sock
+    local line
+    local event
+    local payload
+
+    mode="$1"
+    arg="${2:-auto}"
+    last_window=""
+
+    initial_output="$(emit_once "$mode" "$arg" || true)"
+    if [[ -n "$initial_output" ]]; then
+        print -r -- "$initial_output"
+    fi
+
+    if [[ "$mode" == "window" ]]; then
+        last_window="$initial_output"
+    fi
+
+    while true; do
+        sock="$(socket_path 2>/dev/null || true)"
+
+        if [[ -n "$sock" && -S "$sock" ]] && command -v nc >/dev/null 2>&1; then
+            while true; do
+                if ! IFS= read -r -t 2 line; then
+                    if [[ "$mode" == "window" ]]; then
+                        next_output="$(window_title)"
+                        if [[ -n "$next_output" && "$next_output" != "$last_window" ]]; then
+                            print -r -- "$next_output"
+                            last_window="$next_output"
+                        fi
+                    fi
+                    continue
+                fi
+
+                event="${line%%>>*}"
+                payload="${line#*>>}"
+
+                if ! should_handle_event "$mode" "$event"; then
+                    continue
+                fi
+
+                if [[ "$mode" == "window" ]]; then
+                    if [[ "$event" == "windowtitle" || "$event" == "windowtitlev2" || "$event" == "activewindow" ]]; then
+                        next_output="$(window_title_from_payload "$payload" || true)"
+                    else
+                        next_output=""
+                    fi
+
+                    if [[ -z "$next_output" ]]; then
+                        next_output="$(window_title)"
+                    fi
+
+                    if [[ -n "$next_output" && "$next_output" != "$last_window" ]]; then
+                        print -r -- "$next_output"
+                        last_window="$next_output"
+                    fi
+                else
+                    next_output="$(render "$arg" || true)"
+                    if [[ -n "$next_output" ]]; then
+                        print -r -- "$next_output"
+                    fi
+                fi
+            done < <(nc -U "$sock" 2>/dev/null) || true
+
+            sleep 0.2
+            continue
+        fi
+
+        if [[ -n "$sock" && -S "$sock" ]] && command -v socat >/dev/null 2>&1; then
+            while true; do
+                if ! IFS= read -r -t 2 line; then
+                    if [[ "$mode" == "window" ]]; then
+                        next_output="$(window_title)"
+                        if [[ -n "$next_output" && "$next_output" != "$last_window" ]]; then
+                            print -r -- "$next_output"
+                            last_window="$next_output"
+                        fi
+                    fi
+                    continue
+                fi
+
+                event="${line%%>>*}"
+                payload="${line#*>>}"
+
+                if ! should_handle_event "$mode" "$event"; then
+                    continue
+                fi
+
+                if [[ "$mode" == "window" ]]; then
+                    if [[ "$event" == "windowtitle" || "$event" == "windowtitlev2" || "$event" == "activewindow" ]]; then
+                        next_output="$(window_title_from_payload "$payload" || true)"
+                    else
+                        next_output=""
+                    fi
+
+                    if [[ -z "$next_output" ]]; then
+                        next_output="$(window_title)"
+                    fi
+
+                    if [[ -n "$next_output" && "$next_output" != "$last_window" ]]; then
+                        print -r -- "$next_output"
+                        last_window="$next_output"
+                    fi
+                else
+                    next_output="$(render "$arg" || true)"
+                    if [[ -n "$next_output" ]]; then
+                        print -r -- "$next_output"
+                    fi
+                fi
+            done < <(socat -u "UNIX-CONNECT:${sock}" - 2>/dev/null) || true
+
+            sleep 0.2
+            continue
+        fi
+
+        sleep 15
+        next_output="$(emit_once "$mode" "$arg" || true)"
+        if [[ -z "$next_output" ]]; then
+            continue
+        fi
+
+        if [[ "$mode" == "window" ]]; then
+            if [[ "$next_output" != "$last_window" ]]; then
+                print -r -- "$next_output"
+                last_window="$next_output"
+            fi
+        else
+            print -r -- "$next_output"
+        fi
+    done
+}
+
+case "${1:-render}" in
+render)
+    render "${2:-auto}"
+    ;;
+window)
+    window_title
+    ;;
+listen)
+    if [[ $# -lt 2 ]]; then
+        echo "Usage: $0 listen {render|window} [arg]"
+        exit 2
+    fi
+
+    listen_updates "$2" "${3:-auto}"
+    ;;
+*)
+    echo "Usage: $0 {render|window|listen}"
+    exit 2
+    ;;
+esac

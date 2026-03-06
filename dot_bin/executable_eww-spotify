@@ -1,0 +1,55 @@
+#!/usr/bin/env zsh
+
+set -euo pipefail
+
+monitor() {
+    spotifatius monitor 2>/dev/null | while IFS= read -r line; do
+        [[ -z "$line" ]] && continue
+        if ! jq -e . >/dev/null 2>&1 <<<"$line"; then
+            continue
+        fi
+
+        local text
+        text=$(jq -r '.text // ""' <<<"$line")
+        text=${text//$'\n'/ }
+        if [[ -z "$text" ]]; then
+            echo "Spotify"
+        else
+            echo "$text"
+        fi
+    done
+}
+
+monitor_tooltip() {
+    spotifatius monitor 2>/dev/null | while IFS= read -r line; do
+        [[ -z "$line" ]] && continue
+        if ! jq -e . >/dev/null 2>&1 <<<"$line"; then
+            continue
+        fi
+
+        local text
+        text=$(jq -r '.tooltip // .text // ""' <<<"$line")
+        text=${text//$'\n'/ }
+        if [[ -z "$text" ]]; then
+            echo "Spotify"
+        else
+            echo "$text"
+        fi
+    done
+}
+
+case "${1:-monitor}" in
+monitor)
+    monitor
+    ;;
+monitor-tooltip)
+    monitor_tooltip
+    ;;
+toggle-liked)
+    spotifatius toggle-liked
+    ;;
+*)
+    echo "Usage: $0 {monitor|monitor-tooltip|toggle-liked}"
+    exit 2
+    ;;
+esac

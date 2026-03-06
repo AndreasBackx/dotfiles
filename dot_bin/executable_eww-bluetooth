@@ -1,0 +1,188 @@
+#!/usr/bin/env zsh
+
+set -euo pipefail
+
+escape_for_yuck() {
+    local value="$1"
+    value=${value//\\/\\\\}
+    value=${value//\"/\\\"}
+    print -r -- "$value"
+}
+
+powered() {
+    local value
+    value=$(bluetoothctl show 2>/dev/null | awk '/Powered:/ {print $2; exit}' || true)
+    if [[ -z "$value" ]]; then
+        echo "no"
+    else
+        echo "$value"
+    fi
+}
+
+connected_devices() {
+    bluetoothctl devices Connected 2>/dev/null || true
+}
+
+status() {
+    icon
+}
+
+state() {
+    local is_powered first_connected
+    is_powered=$(powered)
+
+    if [[ "$is_powered" != "yes" ]]; then
+        echo "off"
+        return
+    fi
+
+    first_connected=$(connected_devices | awk 'NR == 1 {print}')
+    if [[ -n "$first_connected" ]]; then
+        echo "connected"
+    else
+        echo "on"
+    fi
+}
+
+icon() {
+    local is_powered first_connected
+    is_powered=$(powered)
+
+    if [[ "$is_powered" != "yes" ]]; then
+        echo "󰂲"
+        return
+    fi
+
+    first_connected=$(connected_devices | awk 'NR == 1 {print}')
+    if [[ -n "$first_connected" ]]; then
+        echo "󰂱"
+    else
+        echo "󰂯"
+    fi
+}
+
+text() {
+    echo ""
+}
+
+tooltip() {
+    local is_powered
+    local devices
+    local count
+    local first_name
+
+    is_powered=$(powered)
+    if [[ "$is_powered" != "yes" ]]; then
+        echo "Bluetooth: off"
+        return
+    fi
+
+    devices=$(connected_devices)
+    count=$(wc -l <<<"$devices" | awk '{print $1}')
+
+    if [[ -z "$devices" || "$count" -eq 0 ]]; then
+        echo "On, no device"
+        return
+    fi
+
+    first_name=$(awk 'NR == 1 {sub(/^Device [^ ]+ /, ""); print; exit}' <<<"$devices")
+    if (( count == 1 )); then
+        echo "Connected: ${first_name}"
+    else
+        echo "Connected: ${first_name} (+$((count - 1)) more)"
+    fi
+}
+
+render_devices() {
+    local line mac name class connected
+    connected=$(connected_devices)
+    while IFS= read -r line; do
+        [[ -z "$line" ]] && continue
+        mac=$(awk '{print $2}' <<<"$line")
+        name=$(cut -d ' ' -f 3- <<<"$line")
+        class="panel-button"
+
+        if [[ "$connected" == *"$mac"* ]]; then
+            class+=" occupied"
+            print "(button :class \"${class}\" :onclick \"eww-bluetooth disconnect ${mac}\" \"$(escape_for_yuck "$name")\")"
+        else
+            print "(button :class \"${class}\" :onclick \"eww-bluetooth connect ${mac}\" \"$(escape_for_yuck "$name")\")"
+        fi
+    done < <(bluetoothctl devices)
+}
+
+render() {
+    local is_powered
+    is_powered=$(powered)
+
+    print '(box :orientation "v" :spacing 8'
+    print '  (label :class "panel-title" :text "Bluetooth")'
+    print "  (label :text \"$(escape_for_yuck "$(status)")\")"
+    print '  (box :class "panel-row" :orientation "h" :spacing 8'
+    print '    (button :class "panel-button" :onclick "eww-bluetooth toggle-power" "toggle power")'
+    print '    (button :class "panel-button" :onclick "bluetoothctl scan on" "scan on")'
+    print '    (button :class "panel-button" :onclick "bluetoothctl scan off" "scan off"))'
+
+    if [[ "$is_powered" == "yes" ]]; then
+        print '  (label :class "panel-section-title" :text "Known devices")'
+        print '  (box :orientation "v" :spacing 6'
+        render_devices
+        print '  )'
+    else
+        print '  (label :text "adapter is powered off")'
+    fi
+
+    print ')'
+}
+
+toggle_power() {
+    if [[ "$(powered)" == "yes" ]]; then
+        bluetoothctl power off
+    else
+        bluetoothctl power on
+    fi
+}
+
+connect_device() {
+    local mac="$1"
+    bluetoothctl connect "$mac" || true
+}
+
+disconnect_device() {
+    local mac="$1"
+    bluetoothctl disconnect "$mac" || true
+}
+
+case "${1:-status}" in
+status)
+    status
+    ;;
+icon)
+    icon
+    ;;
+text)
+    text
+    ;;
+tooltip)
+    tooltip
+    ;;
+state)
+    state
+    ;;
+render)
+    render
+    ;;
+toggle-power)
+    toggle_power
+    ;;
+connect)
+    connect_device "${2:?mac required}"
+    ;;
+disconnect)
+    disconnect_device "${2:?mac required}"
+    ;;
+*)
+    echo "Usage: $0 {status|icon|text|tooltip|state|render|toggle-power|connect|disconnect}"
+    exit 2
+    ;;
+esac

@@ -1,0 +1,191 @@
+(defpoll workspaces_left_fallback :interval "15s" "~/.bin/eww-workspaces render 0")
+(defpoll workspaces_center_fallback :interval "15s" "~/.bin/eww-workspaces render 100")
+(defpoll workspaces_right_fallback :interval "15s" "~/.bin/eww-workspaces render 200")
+(defpoll active_window_fallback :interval "3s" "~/.bin/eww-workspaces window")
+
+(deflisten workspaces_left :initial "" "~/.bin/eww-workspaces listen render 0")
+(deflisten workspaces_center :initial "" "~/.bin/eww-workspaces listen render 100")
+(deflisten workspaces_right :initial "" "~/.bin/eww-workspaces listen render 200")
+(deflisten active_window :initial "" "~/.bin/eww-workspaces listen window")
+(defpoll clock_text :interval "1s" "date '+%a %d %b %H:%M'")
+(defpoll clock_tooltip :interval "1s" "date '+%a %d %b %Y %H:%M:%S %Z'")
+(deflisten spotify_text :initial "Spotify" "~/.bin/eww-spotify monitor")
+(deflisten spotify_tooltip :initial "Spotify" "~/.bin/eww-spotify monitor-tooltip")
+
+(defpoll audio_icon :interval "2s" "~/.bin/eww-audio icon")
+(defpoll audio_text :interval "2s" "~/.bin/eww-audio text")
+(defpoll audio_tooltip :interval "2s" "~/.bin/eww-audio tooltip")
+(defpoll audio_panel :interval "3s" "~/.bin/eww-audio render")
+
+(defpoll network_icon :interval "3s" "~/.bin/eww-network icon")
+(defpoll network_tooltip :interval "3s" "~/.bin/eww-network tooltip")
+(defpoll network_state :interval "3s" "~/.bin/eww-network state")
+(defpoll network_panel :interval "5s" "~/.bin/eww-network render")
+
+(defpoll bluetooth_icon :interval "3s" "~/.bin/eww-bluetooth icon")
+(defpoll bluetooth_tooltip :interval "3s" "~/.bin/eww-bluetooth tooltip")
+(defpoll bluetooth_state :interval "3s" "~/.bin/eww-bluetooth state")
+(defpoll bluetooth_panel :interval "5s" "~/.bin/eww-bluetooth render")
+
+(defpoll brightness_icon :interval "3s" "~/.bin/eww-brightness icon")
+(defpoll brightness_text :interval "3s" "~/.bin/eww-brightness text")
+(defpoll brightness_tooltip :interval "3s" "~/.bin/eww-brightness tooltip")
+(defpoll brightness_panel :interval "5s" "~/.bin/eww-brightness render")
+
+(defpoll power_panel :interval "10s" "~/.bin/eww-power render")
+
+(defwidget workspace-segment [content]
+  (box :class "workspace-segment" :hexpand true
+    (literal :content content)))
+
+(defwidget title-segment []
+  (box :class "title-segment" :hexpand false
+    (label :class "window-title"
+           :text {active_window != "" ? active_window : active_window_fallback}
+           :limit-width 68
+           :show-truncated true
+           :wrap false)))
+
+(defwidget center-segment []
+  (eventbox :onscroll "if [ '{}' == 'up' ]; then playerctl next; else playerctl previous; fi"
+            :onclick "playerctl play-pause"
+            :onrightclick "~/.bin/eww-spotify toggle-liked"
+            :tooltip spotify_tooltip
+            :cursor "pointer"
+    (box :class "center-segment"
+      (label :class "spotify-text"
+             :text spotify_text
+             :limit-width 54
+             :show-truncated true
+             :wrap false))))
+
+(defwidget system-segment []
+  (box :class "system-segment" :spacing 1 :hexpand false :homogeneous false :space-evenly false
+    (eventbox :onscroll "if [ '{}' == 'up' ]; then ~/.bin/eww-network toggle-network; else ~/.bin/eww-network toggle-network; fi"
+              :onclick "~/.bin/eww-bar toggle network"
+              :onrightclick "~/.bin/eww-network connections"
+              :tooltip network_tooltip
+              :cursor "pointer"
+              :hexpand false :halign "start"
+      (button :class "bar-button bar-item icon-only net-${network_state}"
+        (box :class "bar-item-content icon-only" :hexpand true :halign "center" :valign "center"
+          (label :class "item-icon item-icon-only" :text network_icon :width 16 :halign "center" :valign "center" :xalign 0.5 :yalign 0.5))))
+    (eventbox :onclick "~/.bin/eww-bar toggle bluetooth"
+              :onrightclick "~/.bin/eww-bluetooth toggle-power"
+              :tooltip bluetooth_tooltip
+              :cursor "pointer"
+              :hexpand false :halign "start"
+      (button :class "bar-button bar-item icon-only bt-${bluetooth_state}"
+        (box :class "bar-item-content icon-only" :hexpand true :halign "center" :valign "center"
+          (label :class "item-icon item-icon-only" :text bluetooth_icon :width 16 :halign "center" :valign "center" :xalign 0.5 :yalign 0.5))))
+    (eventbox :onscroll "if [ '{}' == 'up' ]; then ~/.bin/eww-brightness up; else ~/.bin/eww-brightness down; fi"
+              :onclick "~/.bin/eww-brightness set 100"
+              :onmiddleclick "~/.bin/eww-bar toggle brightness"
+              :onrightclick "~/.bin/eww-brightness set 0"
+              :tooltip brightness_tooltip
+              :cursor "pointer"
+              :hexpand false :halign "start"
+      (button :class "bar-button bar-item with-text"
+        (box :class "bar-item-content with-text" :hexpand true :halign "center" :valign "center"
+          (label :class "item-icon" :text brightness_icon :width 16 :xalign 0.5 :yalign 0.5)
+          (label :class "item-text" :text brightness_text))))
+    (eventbox :onscroll "if [ '{}' == 'up' ]; then ~/.bin/eww-audio up; else ~/.bin/eww-audio down; fi; eww update audio_icon=\"$(~/.bin/eww-audio icon)\" audio_text=\"$(~/.bin/eww-audio text)\" audio_tooltip=\"$(~/.bin/eww-audio tooltip)\""
+              :onclick "~/.bin/eww-audio toggle-mute; eww update audio_icon=\"$(~/.bin/eww-audio icon)\" audio_text=\"$(~/.bin/eww-audio text)\" audio_tooltip=\"$(~/.bin/eww-audio tooltip)\""
+              :onmiddleclick "~/.bin/eww-bar toggle audio"
+              :onrightclick "pavucontrol"
+              :tooltip audio_tooltip
+              :cursor "pointer"
+              :hexpand false :halign "start"
+      (button :class "bar-button bar-item with-text"
+        (box :class "bar-item-content with-text" :hexpand true :halign "center" :valign "center"
+          (label :class "item-icon" :text audio_icon :width 16 :xalign 0.5 :yalign 0.5)
+          (label :class "item-text" :text audio_text))))
+    (box :class "bar-item with-text" :hexpand false :halign "start" :tooltip "CPU usage"
+      (box :class "bar-item-content with-text" :hexpand true :halign "center" :valign "center"
+        (label :text " ${round(EWW_CPU.avg, 0)}%")))
+    (box :class "bar-item with-text" :hexpand false :halign "start" :tooltip "Memory usage"
+      (box :class "bar-item-content with-text" :hexpand true :halign "center" :valign "center"
+        (label :text " ${round(EWW_RAM.used_mem_perc, 0)}%")))
+    (eventbox :onclick "~/.bin/eww-bar toggle power"
+              :tooltip "Power options"
+              :cursor "pointer"
+              :hexpand false :halign "start"
+      (button :class "bar-button bar-item icon-only"
+        (box :class "bar-item-content icon-only" :hexpand true :halign "center" :valign "center"
+          (label :class "item-icon item-icon-only" :text "⏻" :width 16 :halign "center" :valign "center" :xalign 0.5 :yalign 0.5))))
+    (box :class "clock bar-item" :hexpand false :halign "start" :tooltip clock_tooltip
+      (label :text clock_text))))
+
+(defwidget bar-root [workspace_content]
+  (centerbox :class "bar-root" :orientation "h"
+    (box :class "left-side" :halign "start" :hexpand true :spacing 6 :homogeneous false :space-evenly false
+      (workspace-segment :content workspace_content)
+      (title-segment))
+    (box :class "center-side" :halign "center" :hexpand false
+      (center-segment))
+    (box :class "right-side" :halign "end" :hexpand true
+      (system-segment))))
+
+(defwindow bar-left
+  :monitor 0
+  :stacking "fg"
+  :geometry (geometry :x "0px" :y "0px" :width "100%" :height "38px" :anchor "bottom center")
+  :reserve (struts :distance "38px" :side "bottom")
+  :exclusive true
+  (bar-root :workspace_content {workspaces_left != "" ? workspaces_left : workspaces_left_fallback}))
+
+(defwindow bar-center
+  :monitor 1
+  :stacking "fg"
+  :geometry (geometry :x "0px" :y "0px" :width "100%" :height "38px" :anchor "bottom center")
+  :reserve (struts :distance "38px" :side "bottom")
+  :exclusive true
+  (bar-root :workspace_content {workspaces_center != "" ? workspaces_center : workspaces_center_fallback}))
+
+(defwindow bar-right
+  :monitor 2
+  :stacking "fg"
+  :geometry (geometry :x "0px" :y "0px" :width "100%" :height "38px" :anchor "bottom center")
+  :reserve (struts :distance "38px" :side "bottom")
+  :exclusive true
+  (bar-root :workspace_content {workspaces_right != "" ? workspaces_right : workspaces_right_fallback}))
+
+(defwindow panel-network
+  :monitor 1
+  :stacking "fg"
+  :geometry (geometry :x "12px" :y "56px" :width "420px" :height "360px" :anchor "bottom right")
+  :exclusive false
+  (box :class "panel"
+    (literal :content network_panel)))
+
+(defwindow panel-audio
+  :monitor 1
+  :stacking "fg"
+  :geometry (geometry :x "12px" :y "56px" :width "420px" :height "360px" :anchor "bottom right")
+  :exclusive false
+  (box :class "panel"
+    (literal :content audio_panel)))
+
+(defwindow panel-bluetooth
+  :monitor 1
+  :stacking "fg"
+  :geometry (geometry :x "12px" :y "56px" :width "420px" :height "360px" :anchor "bottom right")
+  :exclusive false
+  (box :class "panel"
+    (literal :content bluetooth_panel)))
+
+(defwindow panel-brightness
+  :monitor 1
+  :stacking "fg"
+  :geometry (geometry :x "12px" :y "56px" :width "360px" :height "220px" :anchor "bottom right")
+  :exclusive false
+  (box :class "panel"
+    (literal :content brightness_panel)))
+
+(defwindow panel-power
+  :monitor 1
+  :stacking "fg"
+  :geometry (geometry :x "12px" :y "56px" :width "280px" :height "320px" :anchor "bottom right")
+  :exclusive false
+  (box :class "panel"
+    (literal :content power_panel)))

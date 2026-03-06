@@ -1,0 +1,226 @@
+#!/usr/bin/env zsh
+
+set -euo pipefail
+
+escape_for_yuck() {
+    local value="$1"
+    value=${value//\\/\\\\}
+    value=${value//\"/\\\"}
+    print -r -- "$value"
+}
+
+escape_for_shell_single() {
+    print -r -- "${1//\'/'\\''}"
+}
+
+active_device_line() {
+    nmcli -t -f DEVICE,TYPE,STATE,CONNECTION device status | awk -F: '$3 == "connected" {print; exit}'
+}
+
+status() {
+    icon
+}
+
+state() {
+    local line type
+    line=$(active_device_line)
+    if [[ -z "$line" ]]; then
+        echo "offline"
+        return
+    fi
+
+    IFS=':' read -r _device type _state _connection <<<"$line"
+    if [[ "$type" == "ethernet" ]]; then
+        echo "wired"
+    elif [[ "$type" == "wifi" ]]; then
+        echo "wifi"
+    else
+        echo "online"
+    fi
+}
+
+icon() {
+    local line type
+    line=$(active_device_line)
+
+    if [[ -z "$line" ]]; then
+        echo "󰖪"
+        return
+    fi
+
+    IFS=':' read -r _device type _state _connection <<<"$line"
+    if [[ "$type" == "ethernet" ]]; then
+        echo "󰈀"
+    elif [[ "$type" == "wifi" ]]; then
+        echo "󰖩"
+    else
+        echo "󰈁"
+    fi
+}
+
+text() {
+    echo ""
+}
+
+wifi_signal() {
+    nmcli -t -f IN-USE,SIGNAL dev wifi list --rescan no 2>/dev/null | awk -F: '$1 == "*" {print $2; exit}'
+}
+
+tooltip() {
+    local net_state line device type connection signal
+    net_state=$(nmcli networking 2>/dev/null || echo "disabled")
+
+    if [[ "$net_state" != "enabled" ]]; then
+        echo "Offline"
+        return
+    fi
+
+    line=$(active_device_line)
+    if [[ -z "$line" ]]; then
+        echo "Offline"
+        return
+    fi
+
+    IFS=':' read -r device type _state connection <<<"$line"
+
+    if [[ "$type" == "wifi" ]]; then
+        signal=$(wifi_signal)
+        if [[ -n "$signal" ]]; then
+            echo "Wi-Fi: ${connection} (${signal}%)"
+        else
+            echo "Wi-Fi: ${connection}"
+        fi
+    elif [[ "$type" == "ethernet" ]]; then
+        echo "Ethernet: ${device}"
+    else
+        echo "Online: ${connection}"
+    fi
+}
+
+render_wifi_list() {
+    local row in_use ssid signal security escaped_ssid escaped_cmd_ssid
+    nmcli -t -f IN-USE,SSID,SIGNAL,SECURITY dev wifi list | while IFS=: read -r in_use ssid signal security; do
+        [[ -z "$ssid" ]] && continue
+        escaped_ssid=$(escape_for_yuck "$ssid")
+        escaped_cmd_ssid=$(escape_for_shell_single "$ssid")
+
+        if [[ "$in_use" == "*" ]]; then
+            print "(button :class \"panel-button occupied\" :onclick \"eww-network disconnect-wifi\" \"${escaped_ssid} (${signal}%)\")"
+        else
+            if [[ -n "$security" ]]; then
+                print "(button :class \"panel-button\" :onclick \"eww-network connect-wifi '${escaped_cmd_ssid}'\" \"${escaped_ssid} (${signal}% 🔒)\")"
+            else
+                print "(button :class \"panel-button\" :onclick \"eww-network connect-wifi '${escaped_cmd_ssid}'\" \"${escaped_ssid} (${signal}%)\")"
+            fi
+        fi
+    done
+}
+
+render_wired_status() {
+    local line device connection state
+    line=$(nmcli -t -f DEVICE,TYPE,STATE,CONNECTION device status | awk -F: '$2 == "ethernet" {print; exit}')
+
+    if [[ -z "$line" ]]; then
+        echo "no ethernet device"
+        return
+    fi
+
+    IFS=':' read -r device _type state connection <<<"$line"
+    connection=${connection//\"/}
+
+    if [[ "$state" == "connected" ]]; then
+        echo "${device}: ${connection}"
+    else
+        echo "${device}: ${state}"
+    fi
+}
+
+render() {
+    local net_state wired
+    net_state=$(nmcli networking)
+    wired=$(escape_for_yuck "$(render_wired_status)")
+
+    print '(box :orientation "v" :spacing 8'
+    print '  (label :class "panel-title" :text "Network")'
+    print "  (label :text \"$(escape_for_yuck "$(status)")\")"
+    print '  (label :class "panel-section-title" :text "Wired")'
+    print "  (label :text \"${wired}\")"
+    print '  (box :class "panel-row" :orientation "h" :spacing 8'
+    print '    (button :class "panel-button" :onclick "eww-network toggle-network" "toggle networking")'
+    print '    (button :class "panel-button" :onclick "nm-connection-editor || nmtui" "connections"))'
+    print '  (label :class "panel-section-title" :text "Wi-Fi")'
+    if [[ "$net_state" == "enabled" ]]; then
+        print '  (box :orientation "v" :spacing 6'
+        render_wifi_list
+        print '  )'
+    else
+        print '  (label :text "networking disabled")'
+    fi
+    print ')'
+}
+
+toggle_networking() {
+    if [[ "$(nmcli networking)" == "enabled" ]]; then
+        nmcli networking off
+    else
+        nmcli networking on
+    fi
+}
+
+connections_editor() {
+    nm-connection-editor || nmtui
+}
+
+connect_wifi() {
+    local ssid="$1"
+    if nmcli dev wifi connect "$ssid"; then
+        notify-send "Wi-Fi" "Connected to ${ssid}" --expire-time 2000
+    else
+        notify-send "Wi-Fi" "Could not connect to ${ssid}" --expire-time 2500 -u normal
+    fi
+}
+
+disconnect_wifi() {
+    local wifi_device
+    wifi_device=$(nmcli -t -f DEVICE,TYPE,STATE device status | awk -F: '$2 == "wifi" && $3 == "connected" {print $1; exit}')
+    if [[ -n "$wifi_device" ]]; then
+        nmcli device disconnect "$wifi_device"
+    fi
+}
+
+case "${1:-status}" in
+status)
+    status
+    ;;
+icon)
+    icon
+    ;;
+text)
+    text
+    ;;
+tooltip)
+    tooltip
+    ;;
+state)
+    state
+    ;;
+render)
+    render
+    ;;
+toggle-network)
+    toggle_networking
+    ;;
+connect-wifi)
+    connect_wifi "${2:?SSID required}"
+    ;;
+disconnect-wifi)
+    disconnect_wifi
+    ;;
+connections)
+    connections_editor
+    ;;
+*)
+    echo "Usage: $0 {status|icon|text|tooltip|state|render|toggle-network|connect-wifi|disconnect-wifi|connections}"
+    exit 2
+    ;;
+esac

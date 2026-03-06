@@ -13,13 +13,17 @@ if [[ $(uname -s) == "Darwin" ]]; then
     exit 0
 fi
 
+if [[ ! -f ~/.config/waybar/style.scss ]]; then
+    exit 0
+fi
+
 if type "sass" >/dev/null; then
     command="sass"
 elif type "sassc" >/dev/null; then
     command="sassc"
 else
-    echo "Install SASS or SASSC to compile the Waybar SCSS style file."
-    exit 1
+    echo "Skipping Waybar SCSS compile: sass/sassc not installed."
+    exit 0
 fi
 
 "$command" ~/.config/waybar/style.{scss,css}

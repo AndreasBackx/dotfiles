@@ -1,0 +1,193 @@
+#!/usr/bin/env zsh
+
+set -euo pipefail
+
+status() {
+    local icon_value text_value
+    icon_value=$(icon)
+    text_value=$(text)
+    echo "${icon_value} ${text_value}"
+}
+
+volume_raw() {
+    wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null || true
+}
+
+volume_percent() {
+    local raw
+    raw=$(volume_raw)
+    if [[ -z "$raw" ]]; then
+        echo "n/a"
+        return
+    fi
+
+    awk '{print int($2 * 100)}' <<<"$raw"
+}
+
+sink_name() {
+    wpctl status 2>/dev/null | awk '
+      /Sinks:/{in_sinks=1; next}
+      /Sources:/{in_sinks=0}
+      in_sinks && /\*/ {
+        line=$0
+        sub(/.*\*/, "", line)
+        sub(/^[[:space:]]+/, "", line)
+        sub(/[[:space:]]*\[vol:.*$/, "", line)
+        print line
+        exit
+      }
+    ' || true
+}
+
+icon() {
+    local raw volume
+    raw=$(volume_raw)
+    if [[ -z "$raw" ]]; then
+        echo "󰝟"
+        return
+    fi
+
+    volume=$(awk '{print int($2 * 100)}' <<<"$raw")
+    if [[ "$raw" == *"MUTED"* ]]; then
+        echo "󰝟"
+    elif (( volume < 30 )); then
+        echo ""
+    elif (( volume < 70 )); then
+        echo ""
+    else
+        echo ""
+    fi
+}
+
+text() {
+    local volume
+    volume=$(volume_percent)
+    if [[ "$volume" == "n/a" ]]; then
+        echo "n/a"
+    else
+        echo "${volume}%"
+    fi
+}
+
+tooltip() {
+    local raw volume muted sink
+    raw=$(volume_raw)
+    if [[ -z "$raw" ]]; then
+        echo "Volume: unavailable"
+        return
+    fi
+
+    volume=$(volume_percent)
+    if [[ "$raw" == *"MUTED"* ]]; then
+        muted="yes"
+    else
+        muted="no"
+    fi
+
+    sink=$(sink_name)
+    if [[ -n "$sink" ]]; then
+        echo "Volume: ${volume}% (muted: ${muted}) - ${sink}"
+    else
+        echo "Volume: ${volume}% (muted: ${muted})"
+    fi
+}
+
+render_sinks() {
+    local line id name class
+    wpctl status | awk '
+      /Sinks:/{in_sinks=1; next}
+      /Sources:/{in_sinks=0}
+      in_sinks && /[0-9]+\./ {print}
+    ' | while IFS= read -r line; do
+        id=$(sed -E 's/[^0-9]*([0-9]+)\..*/\1/' <<<"$line")
+        name=$(sed -E 's/^[^0-9]*[0-9]+\.\s*//' <<<"$line")
+        name=$(sed -E 's/[[:space:]]*\[vol:.*$//' <<<"$name")
+        name=$(sed -E 's/[[:space:]]+$//' <<<"$name")
+        class="panel-button"
+        if [[ "$line" == *"*"* ]]; then
+            class+=" occupied"
+        fi
+        name=${name//\"/\\\"}
+        print "(button :class \"${class}\" :onclick \"eww-audio set-sink ${id}\" \"${name}\")"
+    done
+}
+
+render_sources() {
+    local line id name class
+    wpctl status | awk '
+      /Sources:/{in_sources=1; next}
+      /Filters:/{in_sources=0}
+      in_sources && /[0-9]+\./ {print}
+    ' | while IFS= read -r line; do
+        id=$(sed -E 's/[^0-9]*([0-9]+)\..*/\1/' <<<"$line")
+        name=$(sed -E 's/^[^0-9]*[0-9]+\.\s*//' <<<"$line")
+        name=$(sed -E 's/[[:space:]]*\[vol:.*$//' <<<"$name")
+        name=$(sed -E 's/[[:space:]]+$//' <<<"$name")
+        class="panel-button"
+        if [[ "$line" == *"*"* ]]; then
+            class+=" occupied"
+        fi
+        name=${name//\"/\\\"}
+        print "(button :class \"${class}\" :onclick \"eww-audio set-source ${id}\" \"${name}\")"
+    done
+}
+
+render() {
+    local current
+    current=$(status)
+
+    print '(box :orientation "v" :spacing 8'
+    print '  (label :class "panel-title" :text "PipeWire")'
+    print "  (label :text \"${current}\")"
+    print '  (box :class "panel-row" :orientation "h" :spacing 8'
+    print '    (button :class "panel-button" :onclick "eww-audio down" "-5%")'
+    print '    (button :class "panel-button" :onclick "eww-audio up" "+5%")'
+    print '    (button :class "panel-button" :onclick "eww-audio toggle-mute" "mute")'
+    print '    (button :class "panel-button" :onclick "pavucontrol" "pavucontrol"))'
+    print '  (label :class "panel-section-title" :text "Sinks")'
+    print '  (box :orientation "v" :spacing 6'
+    render_sinks
+    print '  )'
+    print '  (label :class "panel-section-title" :text "Sources")'
+    print '  (box :orientation "v" :spacing 6'
+    render_sources
+    print '  )'
+    print ')'
+}
+
+case "${1:-status}" in
+status)
+    status
+    ;;
+icon)
+    icon
+    ;;
+text)
+    text
+    ;;
+tooltip)
+    tooltip
+    ;;
+render)
+    render
+    ;;
+up)
+    wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+
+    ;;
+down)
+    wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
+    ;;
+toggle-mute)
+    wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+    ;;
+set-sink)
+    wpctl set-default "${2:?sink id required}"
+    ;;
+set-source)
+    wpctl set-default "${2:?source id required}"
+    ;;
+*)
+    echo "Usage: $0 {status|icon|text|tooltip|render|up|down|toggle-mute|set-sink|set-source}"
+    exit 2
+    ;;
+esac

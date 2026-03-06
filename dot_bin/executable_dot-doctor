@@ -36,11 +36,17 @@ function hint_for() {
     minos)
         echo "Install minos and ensure it is in PATH"
         ;;
-    waybar)
-        echo "Install package: waybar"
+    eww)
+        echo "Install package: eww"
         ;;
     wpctl)
         echo "Install package: wireplumber"
+        ;;
+    nmcli)
+        echo "Install package: NetworkManager"
+        ;;
+    bluetoothctl)
+        echo "Install package: bluez"
         ;;
     rofi)
         echo "Install package: rofi-wayland (or rofi)"
@@ -94,21 +100,16 @@ if [[ "$headless" == "true" ]]; then
 else
     print_result info "Checking required desktop tools"
     check_required minos
-    check_required waybar
+    check_required eww
     check_required wpctl
-
-    if has_command sass || has_command sassc; then
-        print_result ok "sass/sassc"
-    else
-        print_result missing "sass/sassc ($(hint_for sass))"
-        missing_required=$((missing_required + 1))
-    fi
 
     print_result info "Checking optional desktop tools"
     check_optional hyprctl
     check_optional kitty
     check_optional rofi
     check_optional flatpak
+    check_optional nmcli
+    check_optional bluetoothctl
     check_optional op
     check_optional borg
 fi
