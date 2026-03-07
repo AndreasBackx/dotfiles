@@ -75,7 +75,7 @@ render() {
     visible_ids=$(jq -r --argjson base "$base" '[.[] | .activeWorkspace.id | select(. > $base and . <= ($base + 12))] | join(" ")' <<<"$monitors_json" 2>/dev/null || true)
     populated_ids=$(jq -r '[.[] | select((.windows // 0) > 0) | .id] | join(" ")' <<<"$workspaces_json" 2>/dev/null || true)
 
-    print -n '(box :class "workspace-row" :orientation "h" :spacing 1 :hexpand true :homogeneous true :space-evenly false'
+    print -n '(box :class "workspace-row" :orientation "h" :spacing 1 :hexpand true :space-evenly false'
     for i in {1..12}; do
         ws_id=$((base + i))
         class="workspace-btn"

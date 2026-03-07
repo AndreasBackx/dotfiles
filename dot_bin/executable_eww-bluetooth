@@ -44,6 +44,22 @@ state() {
     fi
 }
 
+panel_state() {
+    local current_state
+    current_state=$(state)
+    case "$current_state" in
+    off)
+        echo "low"
+        ;;
+    connected)
+        echo "success"
+        ;;
+    *)
+        echo "normal"
+        ;;
+    esac
+}
+
 icon() {
     local is_powered first_connected
     is_powered=$(powered)
@@ -115,9 +131,9 @@ render() {
     local is_powered
     is_powered=$(powered)
 
-    print '(box :orientation "v" :spacing 8'
+    print '(box :orientation "v" :spacing 8 :class "panel-state-normal"'
     print '  (label :class "panel-title" :text "Bluetooth")'
-    print "  (label :text \"$(escape_for_yuck "$(status)")\")"
+    print "  (label :class \"panel-status\" :text \"$(escape_for_yuck "$(tooltip)")\")"
     print '  (box :class "panel-row" :orientation "h" :spacing 8'
     print '    (button :class "panel-button" :onclick "eww-bluetooth toggle-power" "toggle power")'
     print '    (button :class "panel-button" :onclick "bluetoothctl scan on" "scan on")'
@@ -169,6 +185,9 @@ tooltip)
 state)
     state
     ;;
+panel-state)
+    panel_state
+    ;;
 render)
     render
     ;;
@@ -182,7 +201,7 @@ disconnect)
     disconnect_device "${2:?mac required}"
     ;;
 *)
-    echo "Usage: $0 {status|icon|text|tooltip|state|render|toggle-power|connect|disconnect}"
+    echo "Usage: $0 {status|icon|text|tooltip|state|panel-state|render|toggle-power|connect|disconnect}"
     exit 2
     ;;
 esac

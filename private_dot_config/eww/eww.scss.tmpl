@@ -1,26 +1,33 @@
 {{- $t := .themes.rubecula -}}
+$mako-bg: #1c1c1c;
+$mako-bg-low: #141414;
+$mako-layer: #242424;
+$mako-border: #404040;
+$mako-text: #cecece;
+
 * {
   all: unset;
   font-family: monospace, "MesloLGM Nerd Font";
   font-size: 14px;
-  color: {{ $t.foreground }};
+  color: $mako-text;
 }
 
-.bar-root {
-  margin: 0;
-  padding: 0;
-  color: {{ $t.foreground }};
-  background: {{ $t.background }};
-  border-top: none;
-}
-
+.bar-root,
 .left-side,
 .center-side,
 .right-side,
 .workspace-segment,
 .title-segment,
 .system-segment {
-  background: {{ $t.background }};
+  background: $mako-bg;
+  color: $mako-text;
+}
+
+.bar-root {
+  margin: 0;
+  padding: 0;
+  min-height: 56px;
+  border-top: 1px solid $mako-layer;
 }
 
 .left-side,
@@ -30,31 +37,20 @@
 }
 
 .left-side,
-.center-side {
+.center-side,
+.workspace-segment,
+.title-segment,
+.window-title,
+.system-segment {
   min-width: 0;
-}
-
-.right-side {
-  padding-right: 6px;
-}
-
-.center-side {
-  padding: 0;
 }
 
 .left-side {
   padding-left: 6px;
 }
 
-.workspace-btn {
-  min-width: 0;
-  min-height: 0;
-  padding: 4px 12px 3px 12px;
-  border: none;
-  border-bottom: 3px solid transparent;
-  background: transparent;
-  color: {{ $t.foreground }};
-  transition: border-color 120ms ease, color 120ms ease, background-color 120ms ease;
+.right-side {
+  padding-right: 6px;
 }
 
 .workspace-row,
@@ -62,26 +58,50 @@
   min-width: 0;
 }
 
+.workspace-row {
+  min-height: 56px;
+}
+
+.workspace-btn {
+  min-width: 0;
+  min-height: 56px;
+  padding: 0 10px;
+  margin: 0;
+  border: none;
+  border-bottom: 2px solid $mako-bg;
+  border-radius: 0;
+  background: transparent;
+  color: #8a8a8a;
+  transition: color 120ms ease, background-color 120ms ease;
+}
+
 .workspace-btn.shown {
-  border-bottom-color: {{ $t.foreground }};
-  color: {{ $t.foreground }};
+  border-bottom-color: $mako-text;
+  color: $mako-text;
+}
+
+.workspace-btn:hover,
+.bar-button:hover,
+.bar-item:hover,
+.panel-button:hover {
+  background: $mako-layer;
 }
 
 .window-title {
-  color: {{ $t.foreground }};
-  padding: 0 12px 0 16px;
+  color: $mako-text;
+  padding: 0 12px 0 14px;
 }
 
 .spotify-text {
-  color: {{ $t.foreground }};
-  padding: 0 32px;
+  color: $mako-text;
+  padding: 0 26px;
 }
 
 .bar-item {
   min-width: 0;
-  padding: 0 12px;
+  padding: 0 11px;
   border: none;
-  border-radius: 4px;
+  border-radius: 3px;
   background: transparent;
   transition: background-color 120ms ease, color 120ms ease;
 }
@@ -93,7 +113,7 @@
 
 .bar-item.with-text {
   padding: 0 10px;
-  min-width: 44px;
+  min-width: 52px;
 }
 
 .bar-item-content {
@@ -105,7 +125,7 @@
 }
 
 .bar-item-content.with-text {
-  min-width: 36px;
+  min-width: 38px;
 }
 
 .item-icon {
@@ -122,81 +142,168 @@
   min-width: 0;
 }
 
-.title-segment {
-  min-width: 0;
-}
-
-.window-title {
-  margin-left: 0;
-}
-
 .bar-button {
   min-width: 0;
   min-height: 0;
   padding: 0;
   border: none;
   background: transparent;
-  color: {{ $t.foreground }};
+  color: $mako-text;
 }
 
-.workspace-btn:hover,
-.bar-button:hover,
-.bar-item:hover {
-  background: {{ $t.color0 }};
-  color: {{ $t.color3 }};
-}
-
-.bar-item.bt-off {
-  color: {{ $t.color0 }};
-}
-
+.bar-item.bt-off,
 .bar-item.net-offline {
-  color: {{ $t.color0 }};
+  color: #7a7a7a;
 }
 
-.clock {
+.clock,
+.tray-segment {
   border: none;
   background: transparent;
 }
 
-.clock:hover {
-  border: none;
+.bar-center-trigger {
+  min-height: 14px;
+  background: transparent;
+}
+
+.bar-center-shell {
+  background: $mako-bg;
+  min-height: 56px;
+  margin-top: 0;
+  opacity: 1;
+  transition: margin-top 220ms ease, opacity 220ms ease;
+}
+
+.bar-center-hide-shell {
+  min-height: 56px;
+  background: transparent;
+}
+
+.bar-center-shell-hiding {
+  margin-top: 56px;
+  opacity: 0.01;
+}
+
+.tray-segment {
+  padding: 0 8px;
+}
+
+.tray-segment > widget > image,
+.tray-segment image {
+  -gtk-icon-transform: scale(0.9);
+}
+
+menu {
+  all: unset;
+  background: $mako-bg;
+  color: $mako-text;
+  border: 1px solid $mako-border;
+  border-radius: 3px;
+  padding: 4px;
+}
+
+menu menuitem {
+  all: unset;
+  padding: 6px 10px;
+  color: $mako-text;
+  background: transparent;
+  border-radius: 2px;
+}
+
+menu menuitem:hover,
+menu menuitem:focus {
+  background: $mako-layer;
+  color: $mako-text;
+}
+
+menu separator {
+  background: $mako-layer;
+  min-height: 1px;
+  margin: 3px 2px;
 }
 
 .panel {
-  background: {{ $t.background }};
-  border: 1px solid {{ $t.color6 }};
-  border-radius: 10px;
-  padding: 10px;
-  color: {{ $t.foreground }};
-  font-family: "MesloLGM Nerd Font Mono";
+  background: $mako-bg;
+  border: 1px solid $mako-border;
+  border-radius: 3px;
+  padding: 12px;
+  color: $mako-text;
+  font-family: "MesloLGM Nerd Font Mono", monospace;
   font-size: 13px;
 }
 
+.panel.state-low {
+  background: $mako-bg-low;
+  border-color: $mako-layer;
+  color: #9a9a9a;
+}
+
+.panel.state-normal {
+  border-color: $mako-border;
+}
+
+.panel.state-critical {
+  border-color: {{ $t.color1 }};
+}
+
+.panel.state-success {
+  border-color: {{ $t.color10 }};
+}
+
+.panel-state-low {
+  color: #9a9a9a;
+}
+
+.panel-state-normal {
+  color: $mako-text;
+}
+
+.panel-state-critical {
+  color: {{ $t.color1 }};
+}
+
+.panel-state-success {
+  color: {{ $t.color10 }};
+}
+
 .panel-title {
-  color: {{ $t.color6 }};
+  color: $mako-text;
   font-size: 14px;
   margin-bottom: 8px;
 }
 
 .panel-section-title {
-  color: {{ $t.color3 }};
+  color: #b6b6b6;
   margin-top: 8px;
+  margin-bottom: 2px;
+}
+
+.panel-status {
+  color: #b0b0b0;
+  margin-bottom: 4px;
+}
+
+.panel-row {
+  margin-bottom: 2px;
 }
 
 .panel-button {
-  background: {{ $t.background }};
-  border: none;
-  border-radius: 6px;
-  padding: 4px 7px;
+  background: transparent;
+  border: 1px solid $mako-layer;
+  border-radius: 3px;
+  padding: 4px 8px;
 }
 
-.panel-button:hover {
-  background: {{ $t.color0 }};
-  color: {{ $t.foreground }};
+.panel-button.occupied {
+  border-color: $mako-border;
+}
+
+.panel-button.danger {
+  border-color: {{ $t.color1 }};
 }
 
 .panel-button.danger:hover {
-  background: {{ $t.color0 }};
-  color: {{ $t.foreground }};
+  background: $mako-layer;
+  color: $mako-text;
 }

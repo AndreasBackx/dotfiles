@@ -17,7 +17,7 @@ status() {
 }
 
 icon() {
-    echo "󰃟"
+    echo "󰃠"
 }
 
 text() {
@@ -32,12 +32,22 @@ tooltip() {
     echo "Brightness: ${value}%"
 }
 
+panel_state() {
+    local value
+    value=$(get_brightness)
+    if (( value <= 5 )); then
+        echo "low"
+    else
+        echo "normal"
+    fi
+}
+
 render() {
     local value
     value=$(get_brightness)
-    print '(box :orientation "v" :spacing 8'
+    print '(box :orientation "v" :spacing 8 :class "panel-state-normal"'
     print '  (label :class "panel-title" :text "Brightness")'
-    print "  (label :text \"󰃟 ${value}%\")"
+    print "  (label :class \"panel-status\" :text \"󰃠 ${value}%\")"
     print '  (box :class "panel-row" :orientation "h" :spacing 8'
     print '    (button :class "panel-button" :onclick "eww-brightness down" "-10%")'
     print '    (button :class "panel-button" :onclick "eww-brightness up" "+10%"))'
@@ -63,6 +73,9 @@ text)
 tooltip)
     tooltip
     ;;
+panel-state)
+    panel_state
+    ;;
 render)
     render
     ;;
@@ -76,7 +89,7 @@ set)
     minos set --brightness "${2:?brightness required}%"
     ;;
 *)
-    echo "Usage: $0 {status|icon|text|tooltip|render|up|down|set}"
+    echo "Usage: $0 {status|icon|text|tooltip|panel-state|render|up|down|set}"
     exit 2
     ;;
 esac

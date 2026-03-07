@@ -92,6 +92,21 @@ tooltip() {
     fi
 }
 
+panel_state() {
+    local raw
+    raw=$(volume_raw)
+    if [[ -z "$raw" ]]; then
+        echo "critical"
+        return
+    fi
+
+    if [[ "$raw" == *"MUTED"* ]]; then
+        echo "low"
+    else
+        echo "normal"
+    fi
+}
+
 render_sinks() {
     local line id name class
     wpctl status | awk '
@@ -136,9 +151,9 @@ render() {
     local current
     current=$(status)
 
-    print '(box :orientation "v" :spacing 8'
+    print '(box :orientation "v" :spacing 8 :class "panel-state-normal"'
     print '  (label :class "panel-title" :text "PipeWire")'
-    print "  (label :text \"${current}\")"
+    print "  (label :class \"panel-status\" :text \"${current}\")"
     print '  (box :class "panel-row" :orientation "h" :spacing 8'
     print '    (button :class "panel-button" :onclick "eww-audio down" "-5%")'
     print '    (button :class "panel-button" :onclick "eww-audio up" "+5%")'
@@ -168,6 +183,9 @@ text)
 tooltip)
     tooltip
     ;;
+panel-state)
+    panel_state
+    ;;
 render)
     render
     ;;
@@ -187,7 +205,7 @@ set-source)
     wpctl set-default "${2:?source id required}"
     ;;
 *)
-    echo "Usage: $0 {status|icon|text|tooltip|render|up|down|toggle-mute|set-sink|set-source}"
+    echo "Usage: $0 {status|icon|text|tooltip|panel-state|render|up|down|toggle-mute|set-sink|set-source}"
     exit 2
     ;;
 esac

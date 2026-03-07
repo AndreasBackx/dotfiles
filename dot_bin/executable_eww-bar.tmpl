@@ -3,13 +3,39 @@
 set -euo pipefail
 
 panels=(panel-network panel-bluetooth panel-audio panel-brightness panel-power)
-bars=(bar-left bar-center bar-right)
+bars=(bar-left bar-right)
+home_center_name='{{ index .monitors.home.center "name" }}'
+home_center_serial='{{ index .monitors.home.center "serial_number" }}'
+
+hide_pid_file="${XDG_RUNTIME_DIR:-/tmp}/eww-center-hide.pid"
+hide_token_file="${XDG_RUNTIME_DIR:-/tmp}/eww-center-hide.token"
+hide_anim_delay=0.24
+hide_reveal_kick_delay=0.03
 
 close_panels() {
     local panel
     for panel in "${panels[@]}"; do
         eww close "$panel" >/dev/null 2>&1 || true
     done
+}
+
+window_is_open() {
+    local target="$1"
+    eww active-windows 2>/dev/null | grep -q "^${target}:\|^${target}$"
+}
+
+open_window() {
+    local target="$1"
+    if ! window_is_open "$target"; then
+        eww open "$target" >/dev/null 2>&1 || true
+    fi
+}
+
+close_window() {
+    local target="$1"
+    if window_is_open "$target"; then
+        eww close "$target" >/dev/null 2>&1 || true
+    fi
 }
 
 toggle_panel() {
@@ -25,6 +51,14 @@ toggle_panel() {
     eww open "$target"
 }
 
+center_autohide_enabled() {
+    local monitors
+    monitors="$(hyprctl monitors all 2>/dev/null || true)"
+    [[ -n "$monitors" ]] || return 1
+    [[ "$monitors" == *"$home_center_name"* ]] || return 1
+    [[ -z "$home_center_serial" || "$monitors" == *"$home_center_serial"* ]]
+}
+
 open_bars() {
     local bar
     for bar in "${bars[@]}"; do
@@ -32,14 +66,110 @@ open_bars() {
     done
 }
 
+open_center_windows() {
+    if center_autohide_enabled; then
+        close_window bar-center
+        eww update center_bar_auto=true >/dev/null 2>&1 || true
+        eww update center_bar_hiding=false >/dev/null 2>&1 || true
+        close_window bar-center-home
+        close_window bar-center-hide
+        open_window bar-center-trigger
+        return
+    fi
+
+    eww update center_bar_hiding=false >/dev/null 2>&1 || true
+    close_window bar-center-home
+    close_window bar-center-hide
+    close_window bar-center-trigger
+    eww update center_bar_auto=false >/dev/null 2>&1 || true
+    open_window bar-center
+}
+
+cancel_center_hide() {
+    local hide_pid
+    if [[ -f "$hide_pid_file" ]]; then
+        hide_pid=$(<"$hide_pid_file")
+        if [[ -n "$hide_pid" ]]; then
+            kill "$hide_pid" >/dev/null 2>&1 || true
+        fi
+        rm -f "$hide_pid_file"
+    fi
+    rm -f "$hide_token_file"
+}
+
+center_show() {
+    if ! center_autohide_enabled; then
+        eww update center_bar_auto=false >/dev/null 2>&1 || true
+        return
+    fi
+    cancel_center_hide
+    eww update center_bar_hiding=false >/dev/null 2>&1 || true
+    close_window bar-center-hide
+    close_window bar-center-trigger
+    open_window bar-center-home
+}
+
+center_hide() {
+    if ! center_autohide_enabled; then
+        eww update center_bar_auto=false >/dev/null 2>&1 || true
+        return
+    fi
+    cancel_center_hide
+    eww update center_bar_hiding=false >/dev/null 2>&1 || true
+    open_window bar-center-hide
+    sleep "$hide_reveal_kick_delay"
+    close_window bar-center-home
+    eww update center_bar_hiding=true >/dev/null 2>&1 || true
+    sleep "$hide_anim_delay"
+    close_window bar-center-hide
+    open_window bar-center-trigger
+}
+
+center_hide_delayed() {
+    if ! center_autohide_enabled; then
+        eww update center_bar_auto=false >/dev/null 2>&1 || true
+        return
+    fi
+    local delay token
+    delay="${1:-0.32}"
+    cancel_center_hide
+    token="$$-$RANDOM-$RANDOM"
+    printf '%s' "$token" > "$hide_token_file"
+    (
+        local current_token
+        sleep "$delay"
+        [[ -f "$hide_token_file" ]] || exit 0
+        current_token=$(<"$hide_token_file")
+        [[ "$current_token" == "$token" ]] || exit 0
+        eww update center_bar_hiding=false >/dev/null 2>&1 || true
+        open_window bar-center-hide
+        sleep "$hide_reveal_kick_delay"
+        [[ -f "$hide_token_file" ]] || exit 0
+        current_token=$(<"$hide_token_file")
+        [[ "$current_token" == "$token" ]] || exit 0
+        close_window bar-center-home
+        eww update center_bar_hiding=true >/dev/null 2>&1 || true
+        sleep "$hide_anim_delay"
+        [[ -f "$hide_token_file" ]] || exit 0
+        current_token=$(<"$hide_token_file")
+        [[ "$current_token" == "$token" ]] || exit 0
+        close_window bar-center-hide
+        open_window bar-center-trigger
+        rm -f "$hide_pid_file" "$hide_token_file"
+    ) &
+    printf '%s' "$!" > "$hide_pid_file"
+}
+
 case "${1:-start}" in
 start)
     eww daemon
     open_bars
+    open_center_windows
     ;;
 reload)
     eww reload
     open_bars
+    open_center_windows
     ;;
 stop)
     eww close-all
@@ -50,8 +180,17 @@ toggle)
 close-panels)
     close_panels
     ;;
+center-show)
+    center_show
+    ;;
+center-hide)
+    center_hide
+    ;;
+center-hide-delayed)
+    center_hide_delayed "${2:-0.32}"
+    ;;
 *)
-    echo "Usage: $0 {start|reload|stop|toggle|close-panels}"
+    echo "Usage: $0 {start|reload|stop|toggle|close-panels|center-show|center-hide|center-hide-delayed [delay]}"
     exit 2
     ;;
 esac

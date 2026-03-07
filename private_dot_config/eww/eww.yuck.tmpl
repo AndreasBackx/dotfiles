@@ -1,3 +1,12 @@
+{{- $isHome := eq .monitors.selected "home" -}}
+{{- $leftMonitor := 0 -}}
+{{- $centerMonitor := 1 -}}
+{{- $rightMonitor := 2 -}}
+{{- if $isHome -}}
+{{- $centerMonitor = 2 -}}
+{{- $rightMonitor = 1 -}}
+{{- end -}}
+
 (defpoll workspaces_left_fallback :interval "15s" "~/.bin/eww-workspaces render 0")
 (defpoll workspaces_center_fallback :interval "15s" "~/.bin/eww-workspaces render 100")
 (defpoll workspaces_right_fallback :interval "15s" "~/.bin/eww-workspaces render 200")
@@ -20,19 +29,27 @@
 (defpoll network_icon :interval "3s" "~/.bin/eww-network icon")
 (defpoll network_tooltip :interval "3s" "~/.bin/eww-network tooltip")
 (defpoll network_state :interval "3s" "~/.bin/eww-network state")
+(defpoll network_panel_state :interval "3s" "~/.bin/eww-network panel-state")
 (defpoll network_panel :interval "5s" "~/.bin/eww-network render")
 
 (defpoll bluetooth_icon :interval "3s" "~/.bin/eww-bluetooth icon")
 (defpoll bluetooth_tooltip :interval "3s" "~/.bin/eww-bluetooth tooltip")
 (defpoll bluetooth_state :interval "3s" "~/.bin/eww-bluetooth state")
+(defpoll bluetooth_panel_state :interval "3s" "~/.bin/eww-bluetooth panel-state")
 (defpoll bluetooth_panel :interval "5s" "~/.bin/eww-bluetooth render")
 
 (defpoll brightness_icon :interval "3s" "~/.bin/eww-brightness icon")
 (defpoll brightness_text :interval "3s" "~/.bin/eww-brightness text")
 (defpoll brightness_tooltip :interval "3s" "~/.bin/eww-brightness tooltip")
+(defpoll brightness_panel_state :interval "3s" "~/.bin/eww-brightness panel-state")
 (defpoll brightness_panel :interval "5s" "~/.bin/eww-brightness render")
 
+(defpoll audio_panel_state :interval "3s" "~/.bin/eww-audio panel-state")
+(defpoll power_panel_state :interval "10s" "~/.bin/eww-power panel-state")
 (defpoll power_panel :interval "10s" "~/.bin/eww-power render")
+
+(defvar center_bar_auto false)
+(defvar center_bar_hiding false)
 
 (defwidget workspace-segment [content]
   (box :class "workspace-segment" :hexpand true
@@ -59,8 +76,12 @@
              :show-truncated true
              :wrap false))))
 
-(defwidget system-segment []
-  (box :class "system-segment" :spacing 1 :hexpand false :homogeneous false :space-evenly false
+(defwidget tray-segment []
+  (box :class "tray-segment bar-item icon-only" :hexpand false :halign "start" :tooltip "System tray"
+    (systray :spacing 8 :icon-size 15 :prepend-new true)))
+
+(defwidget system-segment [show_tray]
+  (box :class "system-segment" :spacing 1 :hexpand false :space-evenly false
     (eventbox :onscroll "if [ '{}' == 'up' ]; then ~/.bin/eww-network toggle-network; else ~/.bin/eww-network toggle-network; fi"
               :onclick "~/.bin/eww-bar toggle network"
               :onrightclick "~/.bin/eww-network connections"
@@ -100,12 +121,12 @@
         (box :class "bar-item-content with-text" :hexpand true :halign "center" :valign "center"
           (label :class "item-icon" :text audio_icon :width 16 :xalign 0.5 :yalign 0.5)
           (label :class "item-text" :text audio_text))))
-    (box :class "bar-item with-text" :hexpand false :halign "start" :tooltip "CPU usage"
+    (box :class "bar-item with-text" :hexpand false :halign "start" :tooltip "CPU usage" :visible {EWW_CPU.avg >= 90}
       (box :class "bar-item-content with-text" :hexpand true :halign "center" :valign "center"
         (label :text " ${round(EWW_CPU.avg, 0)}%")))
-    (box :class "bar-item with-text" :hexpand false :halign "start" :tooltip "Memory usage"
+    (box :class "bar-item with-text" :hexpand false :halign "start" :tooltip "Memory usage" :visible {EWW_RAM.used_mem_perc >= 90}
       (box :class "bar-item-content with-text" :hexpand true :halign "center" :valign "center"
-        (label :text " ${round(EWW_RAM.used_mem_perc, 0)}%")))
+        (label :text " ${round(EWW_RAM.used_mem / 1073741824, 1)}GiB")))
     (eventbox :onclick "~/.bin/eww-bar toggle power"
               :tooltip "Power options"
               :cursor "pointer"
@@ -114,78 +135,118 @@
         (box :class "bar-item-content icon-only" :hexpand true :halign "center" :valign "center"
           (label :class "item-icon item-icon-only" :text "⏻" :width 16 :halign "center" :valign "center" :xalign 0.5 :yalign 0.5))))
     (box :class "clock bar-item" :hexpand false :halign "start" :tooltip clock_tooltip
-      (label :text clock_text))))
+      (label :text clock_text))
+    (tray-segment :visible show_tray)))
 
-(defwidget bar-root [workspace_content]
+(defwidget bar-root [workspace_content show_tray]
   (centerbox :class "bar-root" :orientation "h"
-    (box :class "left-side" :halign "start" :hexpand true :spacing 6 :homogeneous false :space-evenly false
+    (box :class "left-side" :halign "start" :hexpand true :spacing 6 :space-evenly false
       (workspace-segment :content workspace_content)
       (title-segment))
     (box :class "center-side" :halign "center" :hexpand false
       (center-segment))
     (box :class "right-side" :halign "end" :hexpand true
-      (system-segment))))
+      (system-segment :show_tray show_tray))))
 
 (defwindow bar-left
-  :monitor 0
+  :monitor {{ $leftMonitor }}
   :stacking "fg"
-  :geometry (geometry :x "0px" :y "0px" :width "100%" :height "38px" :anchor "bottom center")
-  :reserve (struts :distance "38px" :side "bottom")
+  :geometry (geometry :x "0px" :y "0px" :width "100%" :height "56px" :anchor "bottom center")
+  :reserve (struts :distance "56px" :side "bottom")
   :exclusive true
-  (bar-root :workspace_content {workspaces_left != "" ? workspaces_left : workspaces_left_fallback}))
+  (bar-root :workspace_content {workspaces_left != "" ? workspaces_left : workspaces_left_fallback}
+            :show_tray true))
 
 (defwindow bar-center
-  :monitor 1
+  :monitor {{ $centerMonitor }}
   :stacking "fg"
-  :geometry (geometry :x "0px" :y "0px" :width "100%" :height "38px" :anchor "bottom center")
-  :reserve (struts :distance "38px" :side "bottom")
+  :geometry (geometry :x "0px" :y "0px" :width "100%" :height "56px" :anchor "bottom center")
+  :reserve (struts :distance "56px" :side "bottom")
   :exclusive true
-  (bar-root :workspace_content {workspaces_center != "" ? workspaces_center : workspaces_center_fallback}))
+  (bar-root :workspace_content {workspaces_center != "" ? workspaces_center : workspaces_center_fallback}
+            :show_tray false))
+
+(defwindow bar-center-home
+  :monitor {{ $centerMonitor }}
+  :stacking "fg"
+  :namespace "eww-center-popup"
+  :geometry (geometry :x "0px" :y "0px" :width "100%" :height "56px" :anchor "bottom center")
+  :reserve (struts :distance "0px" :side "bottom")
+  :exclusive false
+  (eventbox :onhover "~/.bin/eww-bar center-show"
+            :onhoverlost "~/.bin/eww-bar center-hide-delayed 0.32"
+    (box :class "bar-center-shell"
+      (bar-root :workspace_content {workspaces_center != "" ? workspaces_center : workspaces_center_fallback}
+                :show_tray false))))
+
+(defwindow bar-center-hide
+  :monitor {{ $centerMonitor }}
+  :stacking "fg"
+  :namespace "eww-center-hide"
+  :geometry (geometry :x "0px" :y "0px" :width "100%" :height "56px" :anchor "bottom center")
+  :reserve (struts :distance "0px" :side "bottom")
+  :exclusive false
+  (eventbox :onhover "~/.bin/eww-bar center-show"
+    (box :class "bar-center-hide-shell"
+      (box :class {center_bar_hiding ? "bar-center-shell bar-center-shell-hiding" : "bar-center-shell"}
+        (bar-root :workspace_content {workspaces_center != "" ? workspaces_center : workspaces_center_fallback}
+                  :show_tray false)))))
+
+(defwindow bar-center-trigger
+  :monitor {{ $centerMonitor }}
+  :stacking "fg"
+  :namespace "eww-center-trigger"
+  :geometry (geometry :x "0px" :y "0px" :width "100%" :height "14px" :anchor "bottom center")
+  :exclusive false
+  (eventbox :visible center_bar_auto
+            :onhover "~/.bin/eww-bar center-show"
+    (box :class "bar-center-trigger")))
 
 (defwindow bar-right
-  :monitor 2
+  :monitor {{ $rightMonitor }}
   :stacking "fg"
-  :geometry (geometry :x "0px" :y "0px" :width "100%" :height "38px" :anchor "bottom center")
-  :reserve (struts :distance "38px" :side "bottom")
+  :geometry (geometry :x "0px" :y "0px" :width "100%" :height "56px" :anchor "bottom center")
+  :reserve (struts :distance "56px" :side "bottom")
   :exclusive true
-  (bar-root :workspace_content {workspaces_right != "" ? workspaces_right : workspaces_right_fallback}))
+  (bar-root :workspace_content {workspaces_right != "" ? workspaces_right : workspaces_right_fallback}
+            :show_tray false))
 
 (defwindow panel-network
-  :monitor 1
+  :monitor {{ $centerMonitor }}
   :stacking "fg"
   :geometry (geometry :x "12px" :y "56px" :width "420px" :height "360px" :anchor "bottom right")
   :exclusive false
-  (box :class "panel"
+  (box :class "panel panel-network state-${network_panel_state}"
     (literal :content network_panel)))
 
 (defwindow panel-audio
-  :monitor 1
+  :monitor {{ $centerMonitor }}
   :stacking "fg"
   :geometry (geometry :x "12px" :y "56px" :width "420px" :height "360px" :anchor "bottom right")
   :exclusive false
-  (box :class "panel"
+  (box :class "panel panel-audio state-${audio_panel_state}"
     (literal :content audio_panel)))
 
 (defwindow panel-bluetooth
-  :monitor 1
+  :monitor {{ $centerMonitor }}
   :stacking "fg"
   :geometry (geometry :x "12px" :y "56px" :width "420px" :height "360px" :anchor "bottom right")
   :exclusive false
-  (box :class "panel"
+  (box :class "panel panel-bluetooth state-${bluetooth_panel_state}"
     (literal :content bluetooth_panel)))
 
 (defwindow panel-brightness
-  :monitor 1
+  :monitor {{ $centerMonitor }}
   :stacking "fg"
   :geometry (geometry :x "12px" :y "56px" :width "360px" :height "220px" :anchor "bottom right")
   :exclusive false
-  (box :class "panel"
+  (box :class "panel panel-brightness state-${brightness_panel_state}"
     (literal :content brightness_panel)))
 
 (defwindow panel-power
-  :monitor 1
+  :monitor {{ $centerMonitor }}
   :stacking "fg"
   :geometry (geometry :x "12px" :y "56px" :width "280px" :height "320px" :anchor "bottom right")
   :exclusive false
-  (box :class "panel"
+  (box :class "panel panel-power state-${power_panel_state}"
     (literal :content power_panel)))

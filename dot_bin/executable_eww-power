@@ -3,33 +3,38 @@
 set -euo pipefail
 
 render() {
-    print '(box :orientation "v" :spacing 8'
-    print '  (label :class "panel-title" :text "Power (test mode)")'
-    print '  (button :class "panel-button" :onclick "eww-power action logout" "logout")'
-    print '  (button :class "panel-button" :onclick "eww-power action suspend" "suspend")'
-    print '  (button :class "panel-button" :onclick "eww-power action hibernate" "hibernate")'
-    print '  (button :class "panel-button" :onclick "eww-power action reboot" "reboot")'
-    print '  (button :class "panel-button" :onclick "eww-power action shutdown" "shutdown")'
-    print '  (button :class "panel-button" :onclick "eww-power action update-reboot" "update + reboot")'
-    print '  (button :class "panel-button" :onclick "eww-power action update-shutdown" "update + shutdown")'
+    print '(box :orientation "v" :spacing 10 :class "panel-state-normal"'
+    print '  (label :class "panel-title" :text "Power")'
+    print '  (label :class "panel-section-title" :text "Session")'
+    print '  (box :class "panel-row" :orientation "h" :spacing 8'
+    print '    (button :class "panel-button" :onclick "power-options logout" "logout")'
+    print '    (button :class "panel-button" :onclick "power-options suspend" "suspend")'
+    print '    (button :class "panel-button" :onclick "power-options hibernate" "hibernate"))'
+    print '  (label :class "panel-section-title" :text "System")'
+    print '  (box :class "panel-row" :orientation "h" :spacing 8'
+    print '    (button :class "panel-button" :onclick "power-options reboot" "reboot")'
+    print '    (button :class "panel-button danger" :onclick "power-options shutdown" "shutdown"))'
+    print '  (label :class "panel-section-title" :text "After updates")'
+    print '  (box :class "panel-row" :orientation "h" :spacing 8'
+    print '    (button :class "panel-button" :onclick "power-options update-reboot" "update + reboot")'
+    print '    (button :class "panel-button" :onclick "power-options update-shutdown" "update + shutdown"))'
     print '  (button :class "panel-button danger" :onclick "eww-bar close-panels" "close")'
     print ')'
 }
 
-action() {
-    local selected="$1"
-    notify-send "Power test" "Selected: ${selected}" --expire-time 1800
+panel_state() {
+    echo "normal"
 }
 
 case "${1:-render}" in
 render)
     render
     ;;
-action)
-    action "${2:?action required}"
+panel-state)
+    panel_state
     ;;
 *)
-    echo "Usage: $0 {render|action}"
+    echo "Usage: $0 {render|panel-state}"
     exit 2
     ;;
 esac

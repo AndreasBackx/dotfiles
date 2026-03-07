@@ -39,6 +39,23 @@ state() {
     fi
 }
 
+panel_state() {
+    local net_state line
+    net_state=$(nmcli networking 2>/dev/null || echo "disabled")
+    if [[ "$net_state" != "enabled" ]]; then
+        echo "low"
+        return
+    fi
+
+    line=$(active_device_line)
+    if [[ -z "$line" ]]; then
+        echo "low"
+        return
+    fi
+
+    echo "normal"
+}
+
 icon() {
     local line type
     line=$(active_device_line)
@@ -140,9 +157,9 @@ render() {
     net_state=$(nmcli networking)
     wired=$(escape_for_yuck "$(render_wired_status)")
 
-    print '(box :orientation "v" :spacing 8'
+    print '(box :orientation "v" :spacing 8 :class "panel-state-normal"'
     print '  (label :class "panel-title" :text "Network")'
-    print "  (label :text \"$(escape_for_yuck "$(status)")\")"
+    print "  (label :class \"panel-status\" :text \"$(escape_for_yuck "$(tooltip)")\")"
     print '  (label :class "panel-section-title" :text "Wired")'
     print "  (label :text \"${wired}\")"
     print '  (box :class "panel-row" :orientation "h" :spacing 8'
@@ -204,6 +221,9 @@ tooltip)
 state)
     state
     ;;
+panel-state)
+    panel_state
+    ;;
 render)
     render
     ;;
@@ -220,7 +240,7 @@ connections)
     connections_editor
     ;;
 *)
-    echo "Usage: $0 {status|icon|text|tooltip|state|render|toggle-network|connect-wifi|disconnect-wifi|connections}"
+    echo "Usage: $0 {status|icon|text|tooltip|state|panel-state|render|toggle-network|connect-wifi|disconnect-wifi|connections}"
     exit 2
     ;;
 esac
