@@ -46,17 +46,19 @@ render() {
     local value
     value=$(get_brightness)
     print '(box :orientation "v" :spacing 8 :class "panel-state-normal"'
-    print '  (label :class "panel-title" :text "Brightness")'
+    print '  (box :class "panel-header" :orientation "h" :spacing 8 :space-evenly false'
+    print '    (label :class "panel-title" :hexpand true :xalign 0 :text "Brightness")'
+    print '    (button :class "panel-button panel-close" :onclick "~/.bin/eww-bar close-panel brightness" "x"))'
     print "  (label :class \"panel-status\" :text \"󰃠 ${value}%\")"
     print '  (box :class "panel-row" :orientation "h" :spacing 8'
-    print '    (button :class "panel-button" :onclick "eww-brightness down" "-10%")'
-    print '    (button :class "panel-button" :onclick "eww-brightness up" "+10%"))'
+    print '    (button :class "panel-button" :onclick "~/.bin/eww-bar schedule-panel-close brightness; eww-brightness down" "-10%")'
+    print '    (button :class "panel-button" :onclick "~/.bin/eww-bar schedule-panel-close brightness; eww-brightness up" "+10%"))'
     print '  (box :class "panel-row" :orientation "h" :spacing 8'
-    print '    (button :class "panel-button" :onclick "eww-brightness set 0" "0")'
-    print '    (button :class "panel-button" :onclick "eww-brightness set 25" "25")'
-    print '    (button :class "panel-button" :onclick "eww-brightness set 50" "50")'
-    print '    (button :class "panel-button" :onclick "eww-brightness set 75" "75")'
-    print '    (button :class "panel-button" :onclick "eww-brightness set 100" "100"))'
+    print '    (button :class "panel-button" :onclick "~/.bin/eww-bar schedule-panel-close brightness; eww-brightness set 0" "0")'
+    print '    (button :class "panel-button" :onclick "~/.bin/eww-bar schedule-panel-close brightness; eww-brightness set 25" "25")'
+    print '    (button :class "panel-button" :onclick "~/.bin/eww-bar schedule-panel-close brightness; eww-brightness set 50" "50")'
+    print '    (button :class "panel-button" :onclick "~/.bin/eww-bar schedule-panel-close brightness; eww-brightness set 75" "75")'
+    print '    (button :class "panel-button" :onclick "~/.bin/eww-bar schedule-panel-close brightness; eww-brightness set 100" "100"))'
     print ')'
 }
 

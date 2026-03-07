@@ -181,7 +181,7 @@ $mako-text: #cecece;
 }
 
 .bar-center-shell-hiding {
-  margin-top: 56px;
+  margin-top: 57px;
   opacity: 0.01;
 }
 
@@ -195,7 +195,6 @@ $mako-text: #cecece;
 }
 
 menu {
-  all: unset;
   background: $mako-bg;
   color: $mako-text;
   border: 1px solid $mako-border;
@@ -204,7 +203,6 @@ menu {
 }
 
 menu menuitem {
-  all: unset;
   padding: 6px 10px;
   color: $mako-text;
   background: transparent;
@@ -221,6 +219,20 @@ menu separator {
   background: $mako-layer;
   min-height: 1px;
   margin: 3px 2px;
+}
+
+tooltip {
+  background: $mako-bg-low;
+  border: 1px solid $mako-border;
+  border-radius: 4px;
+  color: $mako-text;
+  margin-bottom: 10px;
+  padding: 0;
+}
+
+tooltip label {
+  color: $mako-text;
+  padding: 6px 9px;
 }
 
 .panel {
@@ -270,6 +282,9 @@ menu separator {
 .panel-title {
   color: $mako-text;
   font-size: 14px;
+}
+
+.panel-header {
   margin-bottom: 8px;
 }
 
@@ -295,6 +310,11 @@ menu separator {
   padding: 4px 8px;
 }
 
+.panel-button.panel-close {
+  min-width: 22px;
+  padding: 4px 6px;
+}
+
 .panel-button.occupied {
   border-color: $mako-border;
 }
@@ -306,4 +326,11 @@ menu separator {
 .panel-button.danger:hover {
   background: $mako-layer;
   color: $mako-text;
+}
+
+.spotify-text.spotify-paused,
+.spotify-text.spotify-stopped,
+.center-segment.spotify-paused,
+.center-segment.spotify-stopped {
+  color: #7a7a7a;
 }

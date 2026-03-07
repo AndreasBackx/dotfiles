@@ -120,9 +120,9 @@ render_devices() {
 
         if [[ "$connected" == *"$mac"* ]]; then
             class+=" occupied"
-            print "(button :class \"${class}\" :onclick \"eww-bluetooth disconnect ${mac}\" \"$(escape_for_yuck "$name")\")"
+            print "(button :class \"${class}\" :onclick \"~/.bin/eww-bar schedule-panel-close bluetooth; eww-bluetooth disconnect ${mac}\" \"$(escape_for_yuck "$name")\")"
         else
-            print "(button :class \"${class}\" :onclick \"eww-bluetooth connect ${mac}\" \"$(escape_for_yuck "$name")\")"
+            print "(button :class \"${class}\" :onclick \"~/.bin/eww-bar schedule-panel-close bluetooth; eww-bluetooth connect ${mac}\" \"$(escape_for_yuck "$name")\")"
         fi
     done < <(bluetoothctl devices)
 }
@@ -132,12 +132,14 @@ render() {
     is_powered=$(powered)
 
     print '(box :orientation "v" :spacing 8 :class "panel-state-normal"'
-    print '  (label :class "panel-title" :text "Bluetooth")'
+    print '  (box :class "panel-header" :orientation "h" :spacing 8 :space-evenly false'
+    print '    (label :class "panel-title" :hexpand true :xalign 0 :text "Bluetooth")'
+    print '    (button :class "panel-button panel-close" :onclick "~/.bin/eww-bar close-panel bluetooth" "x"))'
     print "  (label :class \"panel-status\" :text \"$(escape_for_yuck "$(tooltip)")\")"
     print '  (box :class "panel-row" :orientation "h" :spacing 8'
-    print '    (button :class "panel-button" :onclick "eww-bluetooth toggle-power" "toggle power")'
-    print '    (button :class "panel-button" :onclick "bluetoothctl scan on" "scan on")'
-    print '    (button :class "panel-button" :onclick "bluetoothctl scan off" "scan off"))'
+    print '    (button :class "panel-button" :onclick "~/.bin/eww-bar schedule-panel-close bluetooth; eww-bluetooth toggle-power" "toggle power")'
+    print '    (button :class "panel-button" :onclick "~/.bin/eww-bar schedule-panel-close bluetooth; bluetoothctl scan on" "scan on")'
+    print '    (button :class "panel-button" :onclick "~/.bin/eww-bar schedule-panel-close bluetooth; bluetoothctl scan off" "scan off"))'
 
     if [[ "$is_powered" == "yes" ]]; then
         print '  (label :class "panel-section-title" :text "Known devices")'

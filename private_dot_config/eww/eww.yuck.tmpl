@@ -20,6 +20,7 @@
 (defpoll clock_tooltip :interval "1s" "date '+%a %d %b %Y %H:%M:%S %Z'")
 (deflisten spotify_text :initial "Spotify" "~/.bin/eww-spotify monitor")
 (deflisten spotify_tooltip :initial "Spotify" "~/.bin/eww-spotify monitor-tooltip")
+(deflisten spotify_state :initial "paused" "~/.bin/eww-spotify monitor-state")
 
 (defpoll audio_icon :interval "2s" "~/.bin/eww-audio icon")
 (defpoll audio_text :interval "2s" "~/.bin/eww-audio text")
@@ -69,22 +70,22 @@
             :onrightclick "~/.bin/eww-spotify toggle-liked"
             :tooltip spotify_tooltip
             :cursor "pointer"
-    (box :class "center-segment"
-      (label :class "spotify-text"
+    (box :class "center-segment spotify-${spotify_state}"
+      (label :class "spotify-text spotify-${spotify_state}"
              :text spotify_text
              :limit-width 54
              :show-truncated true
              :wrap false))))
 
 (defwidget tray-segment []
-  (box :class "tray-segment bar-item icon-only" :hexpand false :halign "start" :tooltip "System tray"
+  (box :class "tray-segment bar-item icon-only" :hexpand false :halign "start"
     (systray :spacing 8 :icon-size 15 :prepend-new true)))
 
 (defwidget system-segment [show_tray]
   (box :class "system-segment" :spacing 1 :hexpand false :space-evenly false
     (eventbox :onscroll "if [ '{}' == 'up' ]; then ~/.bin/eww-network toggle-network; else ~/.bin/eww-network toggle-network; fi"
               :onclick "~/.bin/eww-bar toggle network"
-              :onrightclick "~/.bin/eww-network connections"
+              :onrightclick "~/.bin/eww-bar touch-panel network; ~/.bin/eww-network connections"
               :tooltip network_tooltip
               :cursor "pointer"
               :hexpand false :halign "start"
@@ -92,7 +93,7 @@
         (box :class "bar-item-content icon-only" :hexpand true :halign "center" :valign "center"
           (label :class "item-icon item-icon-only" :text network_icon :width 16 :halign "center" :valign "center" :xalign 0.5 :yalign 0.5))))
     (eventbox :onclick "~/.bin/eww-bar toggle bluetooth"
-              :onrightclick "~/.bin/eww-bluetooth toggle-power"
+              :onrightclick "~/.bin/eww-bar touch-panel bluetooth; ~/.bin/eww-bluetooth toggle-power"
               :tooltip bluetooth_tooltip
               :cursor "pointer"
               :hexpand false :halign "start"
@@ -113,7 +114,7 @@
     (eventbox :onscroll "if [ '{}' == 'up' ]; then ~/.bin/eww-audio up; else ~/.bin/eww-audio down; fi; eww update audio_icon=\"$(~/.bin/eww-audio icon)\" audio_text=\"$(~/.bin/eww-audio text)\" audio_tooltip=\"$(~/.bin/eww-audio tooltip)\""
               :onclick "~/.bin/eww-audio toggle-mute; eww update audio_icon=\"$(~/.bin/eww-audio icon)\" audio_text=\"$(~/.bin/eww-audio text)\" audio_tooltip=\"$(~/.bin/eww-audio tooltip)\""
               :onmiddleclick "~/.bin/eww-bar toggle audio"
-              :onrightclick "pavucontrol"
+              :onrightclick "~/.bin/eww-bar touch-panel audio; pavucontrol"
               :tooltip audio_tooltip
               :cursor "pointer"
               :hexpand false :halign "start"
@@ -216,37 +217,47 @@
   :stacking "fg"
   :geometry (geometry :x "12px" :y "56px" :width "420px" :height "360px" :anchor "bottom right")
   :exclusive false
-  (box :class "panel panel-network state-${network_panel_state}"
-    (literal :content network_panel)))
+  (eventbox :onhover "~/.bin/eww-bar touch-panel network"
+            :onhoverlost "~/.bin/eww-bar schedule-panel-close network 0.8"
+    (box :class "panel panel-network state-${network_panel_state}"
+      (literal :content network_panel))))
 
 (defwindow panel-audio
   :monitor {{ $centerMonitor }}
   :stacking "fg"
   :geometry (geometry :x "12px" :y "56px" :width "420px" :height "360px" :anchor "bottom right")
   :exclusive false
-  (box :class "panel panel-audio state-${audio_panel_state}"
-    (literal :content audio_panel)))
+  (eventbox :onhover "~/.bin/eww-bar touch-panel audio"
+            :onhoverlost "~/.bin/eww-bar schedule-panel-close audio 0.8"
+    (box :class "panel panel-audio state-${audio_panel_state}"
+      (literal :content audio_panel))))
 
 (defwindow panel-bluetooth
   :monitor {{ $centerMonitor }}
   :stacking "fg"
   :geometry (geometry :x "12px" :y "56px" :width "420px" :height "360px" :anchor "bottom right")
   :exclusive false
-  (box :class "panel panel-bluetooth state-${bluetooth_panel_state}"
-    (literal :content bluetooth_panel)))
+  (eventbox :onhover "~/.bin/eww-bar touch-panel bluetooth"
+            :onhoverlost "~/.bin/eww-bar schedule-panel-close bluetooth 0.8"
+    (box :class "panel panel-bluetooth state-${bluetooth_panel_state}"
+      (literal :content bluetooth_panel))))
 
 (defwindow panel-brightness
   :monitor {{ $centerMonitor }}
   :stacking "fg"
   :geometry (geometry :x "12px" :y "56px" :width "360px" :height "220px" :anchor "bottom right")
   :exclusive false
-  (box :class "panel panel-brightness state-${brightness_panel_state}"
-    (literal :content brightness_panel)))
+  (eventbox :onhover "~/.bin/eww-bar touch-panel brightness"
+            :onhoverlost "~/.bin/eww-bar schedule-panel-close brightness 0.8"
+    (box :class "panel panel-brightness state-${brightness_panel_state}"
+      (literal :content brightness_panel))))
 
 (defwindow panel-power
   :monitor {{ $centerMonitor }}
   :stacking "fg"
   :geometry (geometry :x "12px" :y "56px" :width "280px" :height "320px" :anchor "bottom right")
   :exclusive false
-  (box :class "panel panel-power state-${power_panel_state}"
-    (literal :content power_panel)))
+  (eventbox :onhover "~/.bin/eww-bar touch-panel power"
+            :onhoverlost "~/.bin/eww-bar schedule-panel-close power 0.8"
+    (box :class "panel panel-power state-${power_panel_state}"
+      (literal :content power_panel))))

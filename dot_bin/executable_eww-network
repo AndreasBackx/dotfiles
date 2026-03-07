@@ -122,12 +122,12 @@ render_wifi_list() {
         escaped_cmd_ssid=$(escape_for_shell_single "$ssid")
 
         if [[ "$in_use" == "*" ]]; then
-            print "(button :class \"panel-button occupied\" :onclick \"eww-network disconnect-wifi\" \"${escaped_ssid} (${signal}%)\")"
+            print "(button :class \"panel-button occupied\" :onclick \"~/.bin/eww-bar schedule-panel-close network; eww-network disconnect-wifi\" \"${escaped_ssid} (${signal}%)\")"
         else
             if [[ -n "$security" ]]; then
-                print "(button :class \"panel-button\" :onclick \"eww-network connect-wifi '${escaped_cmd_ssid}'\" \"${escaped_ssid} (${signal}% 🔒)\")"
+                print "(button :class \"panel-button\" :onclick \"~/.bin/eww-bar schedule-panel-close network; eww-network connect-wifi '${escaped_cmd_ssid}'\" \"${escaped_ssid} (${signal}% 🔒)\")"
             else
-                print "(button :class \"panel-button\" :onclick \"eww-network connect-wifi '${escaped_cmd_ssid}'\" \"${escaped_ssid} (${signal}%)\")"
+                print "(button :class \"panel-button\" :onclick \"~/.bin/eww-bar schedule-panel-close network; eww-network connect-wifi '${escaped_cmd_ssid}'\" \"${escaped_ssid} (${signal}%)\")"
             fi
         fi
     done
@@ -158,13 +158,15 @@ render() {
     wired=$(escape_for_yuck "$(render_wired_status)")
 
     print '(box :orientation "v" :spacing 8 :class "panel-state-normal"'
-    print '  (label :class "panel-title" :text "Network")'
+    print '  (box :class "panel-header" :orientation "h" :spacing 8 :space-evenly false'
+    print '    (label :class "panel-title" :hexpand true :xalign 0 :text "Network")'
+    print '    (button :class "panel-button panel-close" :onclick "~/.bin/eww-bar close-panel network" "x"))'
     print "  (label :class \"panel-status\" :text \"$(escape_for_yuck "$(tooltip)")\")"
     print '  (label :class "panel-section-title" :text "Wired")'
     print "  (label :text \"${wired}\")"
     print '  (box :class "panel-row" :orientation "h" :spacing 8'
-    print '    (button :class "panel-button" :onclick "eww-network toggle-network" "toggle networking")'
-    print '    (button :class "panel-button" :onclick "nm-connection-editor || nmtui" "connections"))'
+    print '    (button :class "panel-button" :onclick "~/.bin/eww-bar schedule-panel-close network; eww-network toggle-network" "toggle networking")'
+    print '    (button :class "panel-button" :onclick "~/.bin/eww-bar schedule-panel-close network; nm-connection-editor || nmtui" "connections"))'
     print '  (label :class "panel-section-title" :text "Wi-Fi")'
     if [[ "$net_state" == "enabled" ]]; then
         print '  (box :orientation "v" :spacing 6'

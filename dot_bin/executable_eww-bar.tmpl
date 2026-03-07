@@ -3,6 +3,7 @@
 set -euo pipefail
 
 panels=(panel-network panel-bluetooth panel-audio panel-brightness panel-power)
+panel_names=(network bluetooth audio brightness power)
 bars=(bar-left bar-right)
 home_center_name='{{ index .monitors.home.center "name" }}'
 home_center_serial='{{ index .monitors.home.center "serial_number" }}'
@@ -10,13 +11,62 @@ home_center_serial='{{ index .monitors.home.center "serial_number" }}'
 hide_pid_file="${XDG_RUNTIME_DIR:-/tmp}/eww-center-hide.pid"
 hide_token_file="${XDG_RUNTIME_DIR:-/tmp}/eww-center-hide.token"
 hide_anim_delay=0.24
-hide_reveal_kick_delay=0.03
+hide_reveal_kick_delay=0.01
+panel_idle_delay=5
+
+panel_name() {
+    local name="${1:?panel name required}"
+    name=${name#panel-}
+
+    case "$name" in
+    network | bluetooth | audio | brightness | power)
+        print -r -- "$name"
+        ;;
+    *)
+        echo "Unknown panel: $name" >&2
+        return 1
+        ;;
+    esac
+}
+
+panel_target() {
+    print -r -- "panel-$(panel_name "$1")"
+}
+
+panel_pid_file() {
+    print -r -- "${XDG_RUNTIME_DIR:-/tmp}/eww-panel-$(panel_name "$1").pid"
+}
+
+panel_token_file() {
+    print -r -- "${XDG_RUNTIME_DIR:-/tmp}/eww-panel-$(panel_name "$1").token"
+}
 
 close_panels() {
-    local panel
-    for panel in "${panels[@]}"; do
-        eww close "$panel" >/dev/null 2>&1 || true
+    local name
+    for name in "${panel_names[@]}"; do
+        close_panel "$name"
     done
+}
+
+cancel_panel_close() {
+    local name pid_file token_file panel_pid
+    name=$(panel_name "$1") || return 1
+    pid_file=$(panel_pid_file "$name")
+    token_file=$(panel_token_file "$name")
+
+    if [[ -f "$pid_file" ]]; then
+        panel_pid=$(<"$pid_file")
+        if [[ -n "$panel_pid" ]]; then
+            kill "$panel_pid" >/dev/null 2>&1 || true
+        fi
+        rm -f "$pid_file"
+    fi
+
+    rm -f "$token_file"
+}
+
+touch_panel() {
+    cancel_panel_close "$1"
 }
 
 window_is_open() {
@@ -38,17 +88,52 @@ close_window() {
     fi
 }
 
-toggle_panel() {
-    local name="$1"
-    local target="panel-${name}"
+close_panel() {
+    local name target
+    name=$(panel_name "$1") || return 1
+    target=$(panel_target "$name")
+    cancel_panel_close "$name"
+    close_window "$target"
+}
 
-    if eww active-windows | grep -q "^${target}$"; then
-        eww close "$target"
+schedule_panel_close() {
+    local name delay token pid_file token_file target
+    name=$(panel_name "$1") || return 1
+    delay="${2:-$panel_idle_delay}"
+    target=$(panel_target "$name")
+    pid_file=$(panel_pid_file "$name")
+    token_file=$(panel_token_file "$name")
+
+    cancel_panel_close "$name"
+    token="$$-$RANDOM-$RANDOM"
+    printf '%s' "$token" > "$token_file"
+
+    (
+        local current_token
+        sleep "$delay"
+        [[ -f "$token_file" ]] || exit 0
+        current_token=$(<"$token_file")
+        [[ "$current_token" == "$token" ]] || exit 0
+        close_window "$target"
+        rm -f "$pid_file" "$token_file"
+    ) &
+
+    printf '%s' "$!" > "$pid_file"
+}
+
+toggle_panel() {
+    local name target
+    name=$(panel_name "$1") || return 1
+    target=$(panel_target "$name")
+
+    if window_is_open "$target"; then
+        close_panel "$name"
         return
     fi
 
     close_panels
     eww open "$target"
+    schedule_panel_close "$name"
 }
 
 center_autohide_enabled() {
@@ -180,6 +265,15 @@ toggle)
 close-panels)
     close_panels
     ;;
+close-panel)
+    close_panel "${2:?usage: eww-bar close-panel <network|bluetooth|audio|brightness|power>}"
+    ;;
+touch-panel)
+    touch_panel "${2:?usage: eww-bar touch-panel <network|bluetooth|audio|brightness|power>}"
+    ;;
+schedule-panel-close)
+    schedule_panel_close "${2:?usage: eww-bar schedule-panel-close <name> [delay]}" "${3:-$panel_idle_delay}"
+    ;;
 center-show)
     center_show
     ;;
@@ -190,7 +284,7 @@ center-hide-delayed)
     center_hide_delayed "${2:-0.32}"
     ;;
 *)
-    echo "Usage: $0 {start|reload|stop|toggle|close-panels|center-show|center-hide|center-hide-delayed [delay]}"
+    echo "Usage: $0 {start|reload|stop|toggle|close-panels|close-panel|touch-panel|schedule-panel-close|center-show|center-hide|center-hide-delayed [delay]}"
     exit 2
     ;;
 esac

@@ -38,6 +38,29 @@ monitor_tooltip() {
     done
 }
 
+monitor_state() {
+    spotifatius monitor 2>/dev/null | while IFS= read -r line; do
+        [[ -z "$line" ]] && continue
+        if ! jq -e . >/dev/null 2>&1 <<<"$line"; then
+            continue
+        fi
+
+        jq -r '
+            def normalize_class:
+                if . == null then []
+                elif type == "array" then .
+                else [.] end;
+
+            (.class | normalize_class) as $class
+            | if ($class | index("playing")) != null then "playing"
+              elif ($class | index("paused")) != null then "paused"
+              elif ($class | index("stopped")) != null then "stopped"
+              else (.state // "paused")
+              end
+        ' <<<"$line"
+    done
+}
+
 case "${1:-monitor}" in
 monitor)
     monitor
@@ -45,11 +68,14 @@ monitor)
 monitor-tooltip)
     monitor_tooltip
     ;;
+monitor-state)
+    monitor_state
+    ;;
 toggle-liked)
     spotifatius toggle-liked
     ;;
 *)
-    echo "Usage: $0 {monitor|monitor-tooltip|toggle-liked}"
+    echo "Usage: $0 {monitor|monitor-tooltip|monitor-state|toggle-liked}"
     exit 2
     ;;
 esac
