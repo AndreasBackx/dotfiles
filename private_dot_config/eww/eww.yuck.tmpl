@@ -1,11 +1,9 @@
-{{- $isHome := eq .monitors.selected "home" -}}
-{{- $leftMonitor := 0 -}}
-{{- $centerMonitor := 1 -}}
-{{- $rightMonitor := 2 -}}
-{{- if $isHome -}}
-{{- $centerMonitor = 2 -}}
-{{- $rightMonitor = 1 -}}
-{{- end -}}
+{{- $leftMonitorParts := splitList " " (index .monitors .monitors.selected "left" "name") -}}
+{{- $centerMonitorParts := splitList " " (index .monitors .monitors.selected "center" "name") -}}
+{{- $rightMonitorParts := splitList " " (index .monitors .monitors.selected "right" "name") -}}
+{{- $leftMonitor := index $leftMonitorParts 3 | printf "%q" -}}
+{{- $centerMonitor := index $centerMonitorParts 2 | printf "%q" -}}
+{{- $rightMonitor := index $rightMonitorParts 3 | printf "%q" -}}
 
 (defpoll workspaces_left_fallback :interval "15s" "~/.bin/eww-workspaces render 0")
 (defpoll workspaces_center_fallback :interval "15s" "~/.bin/eww-workspaces render 100")
