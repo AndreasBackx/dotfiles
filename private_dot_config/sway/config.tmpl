@@ -24,8 +24,8 @@ exec --no-startup-id kanshi
 include ~/.config/sway/base
 
 ### Brightness
-bindsym XF86MonBrightnessUp exec minos set --brightness +25%
-bindsym XF86MonBrightnessDown exec minos set --brightness -25%
+bindsym XF86MonBrightnessUp exec minos set --minimal --brightness +25%
+bindsym XF86MonBrightnessDown exec minos set --minimal --brightness -25%
 
 ### Media
 bindsym --locked Ctrl+Alt+Tab exec "pamixer --toggle-mute; dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause"

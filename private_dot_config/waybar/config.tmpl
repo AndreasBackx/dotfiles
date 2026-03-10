@@ -16,12 +16,12 @@
             "signal": 8
         },
         "custom/brightness": {
-            "exec": "minos get --output-format simple --brightness --serial {{ index .monitors .monitors.selected "center" "serial_number" }}",
+            "exec": "minos get --minimal --brightness --serial {{ index .monitors .monitors.selected "center" "serial_number" }}",
             "format": "<span color=\"#6E6E6E\"></span>  {}",
-            "on-click": "minos set --brightness 100%",
-            "on-click-right": "minos set --brightness 0%",
-            "on-scroll-down": "minos set --brightness -25%",
-            "on-scroll-up": "minos set --brightness +25%",
+            "on-click": "minos set --minimal --brightness 100%",
+            "on-click-right": "minos set --minimal --brightness 0%",
+            "on-scroll-down": "minos set --minimal --brightness -25%",
+            "on-scroll-up": "minos set --minimal --brightness +25%",
             "tooltip": false,
             "interval": "once",
             "exec-on-event": true
@@ -192,12 +192,12 @@
             "signal": 8
         },
         "custom/brightness": {
-            "exec": "minos get --output-format simple --brightness --serial {{ index .monitors .monitors.selected "center" "serial_number" }}",
+            "exec": "minos get --minimal --brightness --serial {{ index .monitors .monitors.selected "center" "serial_number" }}",
             "format": "<span color=\"#6E6E6E\"></span>  {}",
-            "on-click": "minos set --brightness 100%",
-            "on-click-right": "minos set --brightness 0%",
-            "on-scroll-down": "minos set --brightness -25%",
-            "on-scroll-up": "minos set --brightness +25%",
+            "on-click": "minos set --minimal --brightness 100%",
+            "on-click-right": "minos set --minimal --brightness 0%",
+            "on-scroll-down": "minos set --minimal --brightness -25%",
+            "on-scroll-up": "minos set --minimal --brightness +25%",
             "tooltip": false,
             "interval": "once",
             "exec-on-event": true
@@ -345,12 +345,12 @@
             "tooltip": false
         },
         "custom/brightness": {
-            "exec": "minos get --output-format simple --brightness --serial {{ index .monitors .monitors.selected "left" "serial_number" }}",
+            "exec": "minos get --minimal --brightness --serial {{ index .monitors .monitors.selected "left" "serial_number" }}",
             "format": "<span color=\"#6E6E6E\"></span>  {}",
-            "on-click": "minos set --brightness 100%",
-            "on-click-right": "minos set --brightness 0%",
-            "on-scroll-down": "minos set --brightness -25%",
-            "on-scroll-up": "minos set --brightness +25%",
+            "on-click": "minos set --minimal --brightness 100%",
+            "on-click-right": "minos set --minimal --brightness 0%",
+            "on-scroll-down": "minos set --minimal --brightness -25%",
+            "on-scroll-up": "minos set --minimal --brightness +25%",
             "tooltip": false,
             "interval": "once",
             "exec-on-event": true
@@ -437,12 +437,12 @@
             "tooltip": false
         },
         "custom/brightness": {
-            "exec": "minos get --output-format simple --brightness --serial {{ index .monitors .monitors.selected "right" "serial_number" }}",
+            "exec": "minos get --minimal --brightness --serial {{ index .monitors .monitors.selected "right" "serial_number" }}",
             "format": "<span color=\"#6E6E6E\"></span>  {}",
-            "on-click": "minos set --brightness 100%",
-            "on-click-right": "minos set --brightness 0%",
-            "on-scroll-down": "minos set --brightness -25%",
-            "on-scroll-up": "minos set --brightness +25%",
+            "on-click": "minos set --minimal --brightness 100%",
+            "on-click-right": "minos set --minimal --brightness 0%",
+            "on-scroll-down": "minos set --minimal --brightness -25%",
+            "on-scroll-up": "minos set --minimal --brightness +25%",
             "tooltip": false,
             "interval": "once",
             "exec-on-event": true

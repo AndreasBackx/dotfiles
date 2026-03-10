@@ -3,13 +3,63 @@
 set -euo pipefail
 
 get_brightness() {
-    local value
-    value=$(minos get --output-format simple --brightness 2>/dev/null | awk 'NR == 1 {gsub(/%/, "", $1); print int($1)}')
+    local raw value
+    local -a values
+
+    raw=$(minos get --minimal --brightness 2>/dev/null || true)
+    values=(${(@f)$(printf '%s\n' "$raw" | awk '/Brightness:/ {gsub(/%/, "", $2); print int($2)}')})
+
+    value=$(select_brightness_value "${values[@]}")
+
     if [[ -z "$value" ]]; then
         echo 0
     else
         echo "$value"
     fi
+}
+
+select_brightness_value() {
+    local -a values
+    values=("$@")
+
+    if (( ${#values[@]} >= 2 )); then
+        echo "${values[2]}"
+    elif (( ${#values[@]} >= 1 )); then
+        echo "${values[1]}"
+    else
+        echo 0
+    fi
+}
+
+clamp_brightness() {
+    local value="$1"
+
+    if (( value < 0 )); then
+        echo 0
+    elif (( value > 100 )); then
+        echo 100
+    else
+        echo "$value"
+    fi
+}
+
+panel_markup() {
+    local value="$1"
+    print '(box :orientation "v" :spacing 8 :class "panel-state-normal"'
+    print '  (box :class "panel-header" :orientation "h" :spacing 8 :space-evenly false'
+    print '    (label :class "panel-title" :hexpand true :xalign 0 :text "Brightness")'
+    print '    (button :class "panel-button panel-close" :onclick "~/.bin/eww-bar close-panel brightness" "x"))'
+    print "  (label :class \"panel-status\" :text \"󰃠 ${value}%\")"
+    print '  (box :class "panel-row" :orientation "h" :spacing 8'
+    print '    (button :class "panel-button" :onclick "~/.bin/eww-bar schedule-panel-close brightness; eww-brightness down" "-10%")'
+    print '    (button :class "panel-button" :onclick "~/.bin/eww-bar schedule-panel-close brightness; eww-brightness up" "+10%"))'
+    print '  (box :class "panel-row" :orientation "h" :spacing 8'
+    print '    (button :class "panel-button" :onclick "~/.bin/eww-bar schedule-panel-close brightness; eww-brightness set 0" "0")'
+    print '    (button :class "panel-button" :onclick "~/.bin/eww-bar schedule-panel-close brightness; eww-brightness set 25" "25")'
+    print '    (button :class "panel-button" :onclick "~/.bin/eww-bar schedule-panel-close brightness; eww-brightness set 50" "50")'
+    print '    (button :class "panel-button" :onclick "~/.bin/eww-bar schedule-panel-close brightness; eww-brightness set 75" "75")'
+    print '    (button :class "panel-button" :onclick "~/.bin/eww-bar schedule-panel-close brightness; eww-brightness set 100" "100"))'
+    print ')'
 }
 
 status() {
@@ -45,21 +95,49 @@ panel_state() {
 render() {
     local value
     value=$(get_brightness)
-    print '(box :orientation "v" :spacing 8 :class "panel-state-normal"'
-    print '  (box :class "panel-header" :orientation "h" :spacing 8 :space-evenly false'
-    print '    (label :class "panel-title" :hexpand true :xalign 0 :text "Brightness")'
-    print '    (button :class "panel-button panel-close" :onclick "~/.bin/eww-bar close-panel brightness" "x"))'
-    print "  (label :class \"panel-status\" :text \"󰃠 ${value}%\")"
-    print '  (box :class "panel-row" :orientation "h" :spacing 8'
-    print '    (button :class "panel-button" :onclick "~/.bin/eww-bar schedule-panel-close brightness; eww-brightness down" "-10%")'
-    print '    (button :class "panel-button" :onclick "~/.bin/eww-bar schedule-panel-close brightness; eww-brightness up" "+10%"))'
-    print '  (box :class "panel-row" :orientation "h" :spacing 8'
-    print '    (button :class "panel-button" :onclick "~/.bin/eww-bar schedule-panel-close brightness; eww-brightness set 0" "0")'
-    print '    (button :class "panel-button" :onclick "~/.bin/eww-bar schedule-panel-close brightness; eww-brightness set 25" "25")'
-    print '    (button :class "panel-button" :onclick "~/.bin/eww-bar schedule-panel-close brightness; eww-brightness set 50" "50")'
-    print '    (button :class "panel-button" :onclick "~/.bin/eww-bar schedule-panel-close brightness; eww-brightness set 75" "75")'
-    print '    (button :class "panel-button" :onclick "~/.bin/eww-bar schedule-panel-close brightness; eww-brightness set 100" "100"))'
-    print ')'
+    panel_markup "$value"
+}
+
+refresh_with_value() {
+    local value="$1"
+    local panel_state panel_content
+
+    if (( value <= 5 )); then
+        panel_state="low"
+    else
+        panel_state="normal"
+    fi
+    panel_content=$(panel_markup "$value")
+
+    eww update \
+        brightness_icon="$(icon)" \
+        brightness_text="${value}%" \
+        brightness_tooltip="Brightness: ${value}%" \
+        brightness_panel_state="$panel_state" \
+        brightness_panel="$panel_content"
+}
+
+refresh() {
+    refresh_with_value "$(get_brightness)"
+}
+
+refresh_after_relative_set() {
+    local step="$1"
+    local current value
+    shift
+
+    current=$(get_brightness)
+    "$@" || return
+    value=$(clamp_brightness $(( current + step )))
+    refresh_with_value "$value"
+}
+
+refresh_after_absolute_set() {
+    local target="$1"
+    shift
+
+    "$@" || return
+    refresh_with_value "$(clamp_brightness "$target")"
 }
 
 case "${1:-status}" in
@@ -81,17 +159,20 @@ panel-state)
 render)
     render
     ;;
+refresh)
+    refresh
+    ;;
 up)
-    minos set --brightness +10%
+    refresh_after_relative_set 10 minos set --minimal --brightness +10%
     ;;
 down)
-    minos set --brightness -10%
+    refresh_after_relative_set -10 minos set --minimal --brightness -10%
     ;;
 set)
-    minos set --brightness "${2:?brightness required}%"
+    refresh_after_absolute_set "${2:?brightness required}" minos set --minimal --brightness "${2:?brightness required}%"
     ;;
 *)
-    echo "Usage: $0 {status|icon|text|tooltip|panel-state|render|up|down|set}"
+    echo "Usage: $0 {status|icon|text|tooltip|panel-state|render|refresh|up|down|set}"
     exit 2
     ;;
 esac
