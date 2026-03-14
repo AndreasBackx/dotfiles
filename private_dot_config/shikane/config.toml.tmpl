@@ -1,0 +1,24 @@
+{{- $location := .monitors.selected -}}
+{{- $profileLabels := index .monitor_profile_labels $location -}}
+{{- $monitors := index .monitors $location -}}
+{{- range $profileId, $label := $profileLabels }}
+[[profile]]
+name = "{{ $profileId }}"
+
+{{ range $role, $monitor := $monitors -}}
+{{- if kindIs "map" $monitor }}
+[[profile.output]]
+search = ["d={{ index $monitor "name" }}"{{ if index $monitor "serial_number" }}, "s={{ index $monitor "serial_number" }}"{{ end }}]
+enable = {{ if has $profileId (index $monitor "profiles" | default (list)) }}true{{ else }}false{{ end }}
+{{- if has $profileId (index $monitor "profiles" | default (list)) }}
+mode = "{{ index $monitor "mode" }}"
+position = "{{ index $monitor "position" | replace "x" "," }}"
+scale = {{ index $monitor "scale" }}
+{{- if and (hasKey $monitor "transform") (ne (printf "%v" (index $monitor "transform")) "0") }}
+transform = "{{ if eq (printf "%v" (index $monitor "transform")) "1" }}90{{ else if eq (printf "%v" (index $monitor "transform")) "2" }}180{{ else if eq (printf "%v" (index $monitor "transform")) "3" }}270{{ else }}normal{{ end }}"
+{{- end }}
+{{- end }}
+
+{{- end }}
+{{ end -}}
+{{ end -}}

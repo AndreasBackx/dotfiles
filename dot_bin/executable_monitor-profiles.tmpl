@@ -1,0 +1,33 @@
+#!/usr/bin/env zsh
+
+set -o errexit -o nounset -o pipefail
+
+case "$1" in
+selection)
+{{- $location := .monitors.selected }}
+{{- $labels := index .monitor_profile_labels $location }}
+    selection=$(cat <<'EOF' | rofi -dmenu -i -window-title "monitor profiles"
+{{- range $profileId, $label := $labels }}
+{{ $label }}
+{{- end }}
+EOF
+)
+
+    case "$selection" in
+    {{- range $profileId, $label := $labels }}
+    '{{ $label }}')
+        shikanectl switch {{ $profileId }}
+        ;;
+    {{- end }}
+    '')
+        exit 0
+        ;;
+    esac
+    ;;
+*)
+    echo "Usage: $0 selection"
+    exit 2
+    ;;
+esac
+
+exit 0

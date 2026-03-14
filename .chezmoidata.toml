@@ -1,4 +1,13 @@
 [monitors]
+[monitor_profile_labels.home]
+desk = "Desk"
+living_room = "Living Room"
+desk_living_room = "Desk + Living Room"
+
+[monitor_profile_labels.work]
+desk = "Desk"
+desk_laptop = "Desk + Laptop"
+
 [monitors.work]
 screen_timeout = 3600
 lock_timeout = 300
@@ -10,6 +19,7 @@ position = "0x0"
 scale = "1.25"
 transform = 1
 background = "~/.config/wallpapers/dark/2160x3840/ren-ran-HG5QX-GXV5A-unsplash.jpg"
+profiles = ["desk", "desk_laptop"]
 
 [monitors.work.center]
 name = "Dell Inc. DELL U4025QW 1WM5M04"
@@ -18,6 +28,7 @@ position = "1728x642"
 scale = "1.25"
 transform = 0
 background = "~/.config/wallpapers/dark/2560x1440/jaime-lannister.jpg"
+profiles = ["desk", "desk_laptop"]
 
 [monitors.work.right]
 name = "Dell Inc. DELL U2515H 9X2VY6A80A8L"
@@ -26,6 +37,7 @@ position = "5824x150"
 scale = "1"
 transform = 3
 background = "~/.config/wallpapers/dark/2160x3840/eberhard-grossgasteiger-7ZxpAr4cZ-U-unsplash.jpg"
+profiles = ["desk", "desk_laptop"]
 
 [monitors.work.laptop]
 name = "Lenovo Group Limited 0x4149"
@@ -34,6 +46,7 @@ position = "3776x2370"
 scale = "1.8"
 background = "~/.config/wallpapers/dark/2560x1440/jaime-lannister.jpg"
 has_lid = true
+profiles = ["desk_laptop"]
 
 [monitors.home]
 screen_timeout = 300
@@ -47,41 +60,35 @@ position = "0x0"
 scale = "1.25"
 transform = 1
 background = "~/.config/wallpapers/dark/2160x3840/ren-ran-HG5QX-GXV5A-unsplash.jpg"
+profiles = ["desk", "desk_living_room"]
 
 [monitors.home.center]
 name = "Dell Inc. AW3225QF GZ00YZ3"
 serial_number = "GZ00YZ3"
+mode = "3840x2160@120Hz"
 position = "1728x865"
 scale = "1.25"
 transform = 0
 color = "#000000"
-
-[monitors.home.center.personal]
-mode = "3840x2160@240Hz"
-
-[monitors.home.center.work]
-mode = "3840x2160@120Hz"
+profiles = ["desk", "desk_living_room"]
 
 [monitors.home.right]
 name = "Lenovo Group Limited Y32p-30 U1HMF6PN"
 serial_number = "U1HMF6PN"
+mode = "3840x2160@144Hz"
 position = "4800x0"
 scale = "1.25"
 transform = 3
 background = "~/.config/wallpapers/dark/2160x3840/eberhard-grossgasteiger-7ZxpAr4cZ-U-unsplash.jpg"
-
-[monitors.home.right.personal]
-mode = "3840x2160@120Hz"
-
-[monitors.home.right.work]
-mode = "3840x2160@144Hz"
+profiles = ["desk", "desk_living_room"]
 
 [monitors.home.tv]
 name = "LG Electronics LG TV 0x01010101"
-mode = "3840x2160@120Hz"
+mode = "3840x2160@60Hz"
 position = "6560x0"
 scale = "1.5"
 disable = true
+profiles = ["living_room", "desk_living_room"]
 
 [monitors.home.laptop]
 name = "Lenovo Group Limited 0x4149"

@@ -4,6 +4,7 @@ exec = justloggedin || notify-send 'Hyprland reloaded!' --expire-time 2500 -u no
 exec-once = eww-bar start
 exec-once = hypridle
 exec-once = pypr
+exec-once = sh -lc 'pkill shikane; shikane >/tmp/shikane.log 2>&1 &'
 
 # Required for screen sharing and user service environment propagation.
 # In UWSM sessions, finalize marks readiness and exports compositor vars.
