@@ -5,18 +5,24 @@ set -o errexit -o nounset -o pipefail
 case "$1" in
 selection)
 {{- $location := .monitors.selected }}
-{{- $labels := index .monitor_profile_labels $location }}
+{{- $profiles := index (index .monitors $location) "profile_settings" }}
     selection=$(cat <<'EOF' | rofi -dmenu -i -window-title "monitor profiles"
-{{- range $profileId, $label := $labels }}
-{{ $label }}
+{{- range $profileId, $settings := $profiles }}
+{{ index $settings "label" }}
 {{- end }}
 EOF
 )
 
     case "$selection" in
-    {{- range $profileId, $label := $labels }}
-    '{{ $label }}')
+    {{- range $profileId, $settings := $profiles }}
+    '{{ index $settings "label" }}')
         shikanectl switch {{ $profileId }}
+        {{- if index $settings "audio_sink" }}
+        wpctl set-default "{{ index $settings "audio_sink" }}"
+        {{- end }}
+        {{- if index $settings "audio_source" }}
+        wpctl set-default "{{ index $settings "audio_source" }}"
+        {{- end }}
         ;;
     {{- end }}
     '')

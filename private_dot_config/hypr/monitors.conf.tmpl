@@ -27,6 +27,9 @@ monitor=,preferred,auto,1
 {{- if not (kindIs "map" $selected_monitor) -}}
     {{ continue }}
 {{- end -}}
+{{- if not (hasKey $selected_monitor "name") -}}
+    {{ continue }}
+{{- end -}}
 # {{ $selected_monitor_position }}
 monitor={{ template "monitor_cmd" dict "monitor" $selected_monitor "environment" $environment }}
 {{ if index $selected_monitor "background" -}}
@@ -39,4 +42,3 @@ bindl = , switch:off:Lid Switch,exec,hyprctl keyword monitor "{{ template "monit
 bindl = , switch:on:Lid Switch,exec,hyprctl keyword monitor "desc:{{ index $selected_monitor "name" }}, disable"
 {{ end }}
 {{ end -}}
-

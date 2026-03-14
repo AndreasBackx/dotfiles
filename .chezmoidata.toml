@@ -1,17 +1,14 @@
 [monitors]
-[monitor_profile_labels.home]
-desk = "Desk"
-living_room = "Living Room"
-desk_living_room = "Desk + Living Room"
-
-[monitor_profile_labels.work]
-desk = "Desk"
-desk_laptop = "Desk + Laptop"
-
 [monitors.work]
 screen_timeout = 3600
 lock_timeout = 300
 default_profile = "desk"
+
+[monitors.work.profile_settings.desk]
+label = "Desk"
+
+[monitors.work.profile_settings.desk_laptop]
+label = "Desk + Laptop"
 
 [monitors.work.left]
 name = "Dell Inc. DELL U3219Q F2XWXV2"
@@ -57,7 +54,16 @@ profiles = ["desk_laptop"]
 screen_timeout = 300
 lock_timeout = 600
 default_profile = "desk"
-shikane_profiles = ["desk", "living_room"]
+
+[monitors.home.profile_settings.desk]
+label = "Desk"
+audio_sink = "alsa_output.usb-FiiO_DigiHug_USB_Audio-01.analog-stereo"
+audio_source = "alsa_input.usb-BLUE_MICROPHONE_Blue_Snowball_201305-00.analog-stereo"
+
+[monitors.home.profile_settings.living_room]
+label = "Living Room"
+audio_sink = "raop_sink.Sonos-38420BD3AE96.local.10.10.10.31.7000"
+audio_source = "alsa_input.usb-BLUE_MICROPHONE_Blue_Snowball_201305-00.analog-stereo"
 
 [monitors.home.left]
 name = "Lenovo Group Limited Y32p-30 U1HMF6PT"
