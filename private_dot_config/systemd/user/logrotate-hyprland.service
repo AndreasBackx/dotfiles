@@ -1,0 +1,6 @@
+[Unit]
+Description=Rotate Hyprland user log
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/logrotate -s %h/.local/state/logrotate-hyprland.status %h/.config/logrotate/hyprland

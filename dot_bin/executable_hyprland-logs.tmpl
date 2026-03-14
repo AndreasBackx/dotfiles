@@ -17,3 +17,6 @@ journalctl --user -u wayland-wm@hyprland.desktop.service -n 40 --no-pager
 
 printf '\nRecent crash reports:\n'
 ls -1t "$HOME/.cache/hyprland"/hyprlandCrashReport*.txt 2>/dev/null || printf 'No crash reports found.\n'
+
+printf '\nRotation config:\n'
+printf '%s\n' "$HOME/.config/logrotate/hyprland"
