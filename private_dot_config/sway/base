@@ -10,7 +10,7 @@ set $UP                 k
 set $RIGHT              l
 
 # Terminal
-set $TERM               kitty-cwd
+set $TERM               ghostty
 
 # Monitors
 set $MONITOR_LEFT_X     "0"

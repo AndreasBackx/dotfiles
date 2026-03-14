@@ -1,0 +1,34 @@
+{{- $t := .themes.rubecula -}}
+font-family = "MesloLGM Nerd Font Mono"
+font-size = 11.5
+
+foreground = {{ $t.foreground }}
+background = {{ $t.background }}
+background-opacity = {{ $t.transparency }}
+
+selection-background = {{ $t.selection_background }}
+cursor-color = {{ $t.cursor }}
+cursor-text = {{ $t.cursor_text_color }}
+cursor-style = bar
+
+palette = 0={{ $t.color0 }}
+palette = 1={{ $t.color1 }}
+palette = 2={{ $t.color2 }}
+palette = 3={{ $t.color3 }}
+palette = 4={{ $t.color4 }}
+palette = 5={{ $t.color5 }}
+palette = 6={{ $t.color6 }}
+palette = 7={{ $t.color7 }}
+palette = 8={{ $t.color8 }}
+palette = 9={{ $t.color9 }}
+palette = 10={{ $t.color10 }}
+palette = 11={{ $t.color11 }}
+palette = 12={{ $t.color12 }}
+palette = 13={{ $t.color13 }}
+palette = 14={{ $t.color14 }}
+palette = 15={{ $t.color15 }}
+
+keybind = ctrl+shift+c=copy_to_clipboard
+keybind = ctrl+shift+v=paste_from_clipboard
+keybind = cmd+k=reset
+keybind = ctrl+shift+l=reset

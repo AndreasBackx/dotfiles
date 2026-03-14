@@ -1,7 +1,9 @@
 #!/bin/zsh
 
-touch /var/log/hyprland.log
-chown {{ .chezmoi.username }}:{{ .chezmoi.group }} /var/log/hyprland.log
+hyprland_log_dir="${XDG_STATE_HOME:-$HOME/.local/state}/hyprland"
+hyprland_log="$hyprland_log_dir/hyprland.log"
+
+mkdir -p "$hyprland_log_dir"
 
 [ $(whoami) = {{ .chezmoi.username }} ] || exec su -c $0 {{ .chezmoi.username }}
 
@@ -18,4 +20,4 @@ if [ "x$XDG_SESSION_TYPE" = "xwayland" ] &&
     fi
 fi
 
-exec /usr/bin/start-hyprland $@ >/var/log/hyprland.log 2>&1
+exec /usr/bin/start-hyprland "$@" >>"$hyprland_log" 2>&1

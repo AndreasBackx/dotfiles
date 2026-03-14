@@ -6,6 +6,13 @@ windowrule {
 	no_shadow = on
 }
 
+windowrule {
+	name = noshadow-ghostty
+	match:class = ^(com\.mitchellh\.ghostty)$
+
+	no_shadow = on
+}
+
 # Floats for small utility apps
 windowrule {
 	name = Float
@@ -28,6 +35,13 @@ windowrule {
 	no_shadow = on
 }
 
+windowrule {
+	name = ghostty-noshadow
+	match:class = ^(com\.mitchellh\.ghostty)$
+
+	no_shadow = on
+}
+
 # RuneLite Launcher / HDOS Launcher
 windowrule {
 	name = rs-launcher
@@ -43,6 +57,13 @@ windowrule {
 windowrule {
 	name = noshadow-kitty
 	match:class = ^(kitty)$
+
+	no_shadow = on
+}
+
+windowrule {
+	name = noshadow-ghostty-dup
+	match:class = ^(com\.mitchellh\.ghostty)$
 
 	no_shadow = on
 }

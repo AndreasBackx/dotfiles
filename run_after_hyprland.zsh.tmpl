@@ -29,9 +29,5 @@ copy_desktop_entry() {
 copy_desktop_entry "hyprland-shell.desktop"
 copy_desktop_entry "hyprland-uwsm.desktop"
 
-hyprland_log="/var/log/hyprland.log"
-if [ ! -f "$hyprland_log" ]; then
-    user_group=$(id -gn "$USER")
-    >&2 echo "$hyprland_log does not exist, creating it and setting ownership..."
-    sudo touch "$hyprland_log" && sudo chown "$USER:$user_group" "$hyprland_log"
-fi
+hyprland_log_dir="${XDG_STATE_HOME:-$HOME/.local/state}/hyprland"
+mkdir -p "$hyprland_log_dir"

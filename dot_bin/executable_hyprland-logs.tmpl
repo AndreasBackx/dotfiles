@@ -1,0 +1,19 @@
+#!/usr/bin/env sh
+
+set -eu
+
+hyprland_log_dir="${XDG_STATE_HOME:-$HOME/.local/state}/hyprland"
+hyprland_log="$hyprland_log_dir/hyprland.log"
+
+printf 'Hyprland file log: %s\n' "$hyprland_log"
+if [ -f "$hyprland_log" ]; then
+    ls -lh "$hyprland_log"
+else
+    printf 'Log file does not exist yet.\n'
+fi
+
+printf '\nRecent UWSM journal:\n'
+journalctl --user -u wayland-wm@hyprland.desktop.service -n 40 --no-pager
+
+printf '\nRecent crash reports:\n'
+ls -1t "$HOME/.cache/hyprland"/hyprlandCrashReport*.txt 2>/dev/null || printf 'No crash reports found.\n'
