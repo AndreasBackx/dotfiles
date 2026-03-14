@@ -1,24 +1,54 @@
 {{- $location := .monitors.selected -}}
-{{- $profileLabels := index .monitor_profile_labels $location -}}
 {{- $monitors := index .monitors $location -}}
-{{- range $profileId, $label := $profileLabels }}
+{{- $profileNames := index $monitors "shikane_profiles" | default (list "desk") -}}
+{{- $orderedRoles := list "left" "center" "right" "tv" -}}
+{{- define "shikane_search" -}}[{{- range $index, $term := index . "shikane_search" -}}{{- if gt $index 0 }}, {{ end -}}"{{ $term }}"{{- end -}}]{{- end -}}
+{{- define "shikane_transform" -}}{{- $transform := printf "%v" (index . "transform") -}}{{- if eq $transform "1" -}}90{{- else if eq $transform "2" -}}180{{- else if eq $transform "3" -}}270{{- else -}}normal{{- end -}}{{- end -}}
+{{- range $profileId := $profileNames }}
 [[profile]]
 name = "{{ $profileId }}"
 
-{{ range $role, $monitor := $monitors -}}
+{{- if eq $profileId "living_room" }}
+{{- $tv := index $monitors "tv" }}
+[[profile.output]]
+search = {{ template "shikane_search" $tv }}
+enable = true
+mode = "best"
+
+{{- range $role := list "left" "center" "right" }}
+{{- $monitor := index $monitors $role }}
 {{- if kindIs "map" $monitor }}
 [[profile.output]]
-search = ["d={{ index $monitor "name" }}"{{ if index $monitor "serial_number" }}, "s={{ index $monitor "serial_number" }}"{{ end }}]
-enable = {{ if has $profileId (index $monitor "profiles" | default (list)) }}true{{ else }}false{{ end }}
-{{- if has $profileId (index $monitor "profiles" | default (list)) }}
+search = {{ template "shikane_search" $monitor }}
+enable = false
 mode = "{{ index $monitor "mode" }}"
 position = "{{ index $monitor "position" | replace "x" "," }}"
 scale = {{ index $monitor "scale" }}
 {{- if and (hasKey $monitor "transform") (ne (printf "%v" (index $monitor "transform")) "0") }}
-transform = "{{ if eq (printf "%v" (index $monitor "transform")) "1" }}90{{ else if eq (printf "%v" (index $monitor "transform")) "2" }}180{{ else if eq (printf "%v" (index $monitor "transform")) "3" }}270{{ else }}normal{{ end }}"
+transform = "{{ template "shikane_transform" $monitor }}"
+{{- end }}
+
+{{- end }}
+{{- end }}
+{{- else }}
+{{- range $role := $orderedRoles }}
+{{- $monitor := index $monitors $role }}
+{{- if kindIs "map" $monitor }}
+[[profile.output]]
+search = {{ template "shikane_search" $monitor }}
+enable = {{ if has $profileId (index $monitor "profiles" | default (list)) }}true{{ else }}false{{ end }}
+{{- if has $profileId (index $monitor "profiles" | default (list)) }}
+mode = "{{ index $monitor "mode" }}"
+{{- if ne $role "tv" }}
+position = "{{ index $monitor "position" | replace "x" "," }}"
+scale = {{ index $monitor "scale" }}
+{{- if and (hasKey $monitor "transform") (ne (printf "%v" (index $monitor "transform")) "0") }}
+transform = "{{ template "shikane_transform" $monitor }}"
+{{- end }}
 {{- end }}
 {{- end }}
 
 {{- end }}
-{{ end -}}
+{{- end }}
+{{- end }}
 {{ end -}}
