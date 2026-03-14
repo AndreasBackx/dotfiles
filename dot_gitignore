@@ -198,8 +198,6 @@ dmypy.json
 
 # These are generated
 .config/i3/config
-.config/kanshi/config
 .config/sway/variables
 .config/waybar/config
 .config/waybar/style.css
-

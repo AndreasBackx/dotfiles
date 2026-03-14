@@ -11,6 +11,7 @@ desk_laptop = "Desk + Laptop"
 [monitors.work]
 screen_timeout = 3600
 lock_timeout = 300
+default_profile = "desk"
 
 [monitors.work.left]
 name = "Dell Inc. DELL U3219Q F2XWXV2"
@@ -51,6 +52,7 @@ profiles = ["desk_laptop"]
 [monitors.home]
 screen_timeout = 300
 lock_timeout = 600
+default_profile = "desk"
 
 [monitors.home.left]
 name = "Lenovo Group Limited Y32p-30 U1HMF6PT"
@@ -84,10 +86,10 @@ profiles = ["desk", "desk_living_room"]
 
 [monitors.home.tv]
 name = "LG Electronics LG TV 0x01010101"
+serial_number = "0x01010101"
 mode = "3840x2160@60Hz"
-position = "6560x0"
+position = "1984x-575"
 scale = "1.5"
-disable = true
 profiles = ["living_room", "desk_living_room"]
 
 [monitors.home.laptop]
@@ -101,6 +103,7 @@ has_lid = true
 [themes.rubecula]
 name = "rubecula"
 background = "#1c1c1c"
+transparency = 0.8
 foreground = "#e5e5e5"
 cursor = "#F8F8F0"
 cursor_text_color = "#E5E5E5"

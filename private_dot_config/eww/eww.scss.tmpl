@@ -4,6 +4,7 @@ $mako-bg-low: #141414;
 $mako-layer: #242424;
 $mako-border: #404040;
 $mako-text: #cecece;
+$bar-bg: rgba(28, 28, 28, {{ $t.transparency }});
 
 * {
   all: unset;
@@ -13,13 +14,8 @@ $mako-text: #cecece;
 }
 
 .bar-root,
-.left-side,
-.center-side,
-.right-side,
-.workspace-segment,
-.title-segment,
-.system-segment {
-  background: $mako-bg;
+.bar-center-shell {
+  background: $bar-bg;
   color: $mako-text;
 }
 
@@ -27,13 +23,13 @@ $mako-text: #cecece;
   margin: 0;
   padding: 0;
   min-height: 56px;
-  border-top: 1px solid $mako-layer;
 }
 
 .left-side,
 .center-side,
 .right-side {
   min-width: 1px;
+  background: transparent;
 }
 
 .left-side,
@@ -43,6 +39,13 @@ $mako-text: #cecece;
 .window-title,
 .system-segment {
   min-width: 0;
+}
+
+.workspace-segment,
+.title-segment,
+.system-segment {
+  background: transparent;
+  color: $mako-text;
 }
 
 .left-side {
@@ -168,7 +171,6 @@ $mako-text: #cecece;
 }
 
 .bar-center-shell {
-  background: $mako-bg;
   min-height: 56px;
   margin-top: 0;
   opacity: 1;

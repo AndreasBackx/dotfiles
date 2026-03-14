@@ -2,6 +2,14 @@
 
 set -euo pipefail
 
+class_string() {
+    jq -r '
+        .class // empty
+        | if type == "array" then join(" ") else . end
+        | ascii_downcase
+    ' 2>/dev/null || true
+}
+
 monitor() {
     spotifatius monitor 2>/dev/null | while IFS= read -r line; do
         [[ -z "$line" ]] && continue
@@ -9,13 +17,15 @@ monitor() {
             continue
         fi
 
-        local text
+        local text class_json
         text=$(jq -r '.text // ""' <<<"$line")
         text=${text//$'\n'/ }
-        if [[ -z "$text" ]]; then
-            echo "Spotify"
-        else
+        class_json=$(class_string <<<"$line")
+
+        if [[ "$class_json" == *playing* ]] && [[ -n "$text" ]]; then
             echo "$text"
+        else
+            echo ""
         fi
     done
 }
@@ -27,13 +37,15 @@ monitor_tooltip() {
             continue
         fi
 
-        local text
+        local text class_json
         text=$(jq -r '.tooltip // .text // ""' <<<"$line")
         text=${text//$'\n'/ }
-        if [[ -z "$text" ]]; then
-            echo "Spotify"
-        else
+        class_json=$(class_string <<<"$line")
+
+        if [[ "$class_json" == *playing* ]] && [[ -n "$text" ]]; then
             echo "$text"
+        else
+            echo ""
         fi
     done
 }

@@ -19,8 +19,6 @@ exec_always --no-startup-id swayidle -d \
     before-sleep 'lock' >> /var/log/swayidle.log
 exec_always --no-startup-id pgrep -x "waycorner" > /dev/null || waycorner
 exec_always --no-startup-id pgrep -x "xsettingsd" > /dev/null || xsettingsd
-exec --no-startup-id kanshi
-
 include ~/.config/sway/base
 
 ### Brightness
@@ -35,7 +33,7 @@ bindsym --locked XF86AudioPrev exec "dbus-send --print-reply --dest=org.mpris.Me
 bindsym --locked XF86AudioNext exec "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next"
 
 # Reload
-bindsym $mod+Shift+c exec "sway-config && swaymsg reload && pkill kanshi; kanshi"
+bindsym $mod+Shift+c exec "swaymsg reload"
 
 # Notifications
 bindsym Ctrl+Space exec makoctl dismiss

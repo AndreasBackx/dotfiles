@@ -5,6 +5,9 @@ set -euo pipefail
 panels=(panel-network panel-bluetooth panel-audio panel-brightness panel-power)
 panel_names=(network bluetooth audio brightness power)
 bars=(bar-left bar-right)
+left_serial='{{ index .monitors .monitors.selected "left" "serial_number" }}'
+center_serial='{{ index .monitors .monitors.selected "center" "serial_number" }}'
+right_serial='{{ index .monitors .monitors.selected "right" "serial_number" }}'
 home_center_name='{{ index .monitors.home.center "name" }}'
 home_center_serial='{{ index .monitors.home.center "serial_number" }}'
 
@@ -74,11 +77,50 @@ window_is_open() {
     eww active-windows 2>/dev/null | grep -q "^${target}:\|^${target}$"
 }
 
+monitor_connector_for_serial() {
+    local serial="${1:?monitor serial required}"
+
+    hyprctl -j monitors all 2>/dev/null | jq -r --arg serial "$serial" '.[] | select(.serial == $serial) | .name' | head -n1
+}
+
+monitor_connector_required() {
+    local serial="${1:?monitor serial required}"
+    local label="${2:-monitor}"
+    local connector
+
+    connector=$(monitor_connector_for_serial "$serial")
+
+    if [[ -z "$connector" || "$connector" == "null" ]]; then
+        echo "Could not resolve ${label} serial ${serial} to a connector" >&2
+        return 1
+    fi
+
+    print -r -- "$connector"
+}
+
 open_window() {
     local target="$1"
     if ! window_is_open "$target"; then
         eww open "$target" >/dev/null 2>&1 || true
     fi
+}
+
+open_window_on_screen() {
+    local target="${1:?window required}"
+    local screen="${2:?screen required}"
+    if ! window_is_open "$target"; then
+        eww open "$target" --screen "$screen" >/dev/null 2>&1 || true
+    fi
+}
+
+open_window_for_serial() {
+    local target="${1:?window required}"
+    local serial="${2:?serial required}"
+    local label="${3:-$target}"
+    local connector
+
+    connector=$(monitor_connector_required "$serial" "$label") || return 1
+    open_window_on_screen "$target" "$connector"
 }
 
 close_window() {
@@ -132,7 +174,7 @@ toggle_panel() {
     fi
 
     close_panels
-    eww open "$target"
+    open_window_for_serial "$target" "$center_serial" "center"
     schedule_panel_close "$name"
 }
 
@@ -145,10 +187,8 @@ center_autohide_enabled() {
 }
 
 open_bars() {
-    local bar
-    for bar in "${bars[@]}"; do
-        eww open "$bar" >/dev/null 2>&1 || true
-    done
+    open_window_for_serial bar-left "$left_serial" "left"
+    open_window_for_serial bar-right "$right_serial" "right"
 }
 
 open_center_windows() {
@@ -158,7 +198,7 @@ open_center_windows() {
         eww update center_bar_hiding=false >/dev/null 2>&1 || true
         close_window bar-center-home
         close_window bar-center-hide
-        open_window bar-center-trigger
+    open_window_for_serial bar-center-trigger "$center_serial" "center"
         return
     fi
 
@@ -167,7 +207,7 @@ open_center_windows() {
     close_window bar-center-hide
     close_window bar-center-trigger
     eww update center_bar_auto=false >/dev/null 2>&1 || true
-    open_window bar-center
+    open_window_for_serial bar-center "$center_serial" "center"
 }
 
 cancel_center_hide() {
@@ -191,7 +231,7 @@ center_show() {
     eww update center_bar_hiding=false >/dev/null 2>&1 || true
     close_window bar-center-hide
     close_window bar-center-trigger
-    open_window bar-center-home
+    open_window_for_serial bar-center-home "$center_serial" "center"
 }
 
 center_hide() {
@@ -201,13 +241,13 @@ center_hide() {
     fi
     cancel_center_hide
     eww update center_bar_hiding=false >/dev/null 2>&1 || true
-    open_window bar-center-hide
+    open_window_for_serial bar-center-hide "$center_serial" "center"
     sleep "$hide_reveal_kick_delay"
     close_window bar-center-home
     eww update center_bar_hiding=true >/dev/null 2>&1 || true
     sleep "$hide_anim_delay"
     close_window bar-center-hide
-    open_window bar-center-trigger
+    open_window_for_serial bar-center-trigger "$center_serial" "center"
 }
 
 center_hide_delayed() {
@@ -227,7 +267,7 @@ center_hide_delayed() {
         current_token=$(<"$hide_token_file")
         [[ "$current_token" == "$token" ]] || exit 0
         eww update center_bar_hiding=false >/dev/null 2>&1 || true
-        open_window bar-center-hide
+        open_window_for_serial bar-center-hide "$center_serial" "center"
         sleep "$hide_reveal_kick_delay"
         [[ -f "$hide_token_file" ]] || exit 0
         current_token=$(<"$hide_token_file")
@@ -239,7 +279,7 @@ center_hide_delayed() {
         current_token=$(<"$hide_token_file")
         [[ "$current_token" == "$token" ]] || exit 0
         close_window bar-center-hide
-        open_window bar-center-trigger
+        open_window_for_serial bar-center-trigger "$center_serial" "center"
         rm -f "$hide_pid_file" "$hide_token_file"
     ) &
     printf '%s' "$!" > "$hide_pid_file"
