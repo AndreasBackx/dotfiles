@@ -104,17 +104,8 @@ shikane_search = ["m=LG TV", "s=0x01010101", "v=LG Electronics"]
 serial_number = "0x01010101"
 mode = "3840x2160@60Hz"
 position = "1984x-575"
-scale = "1.5"
+scale = "2"
 profiles = ["living_room", "desk_living_room"]
-
-[monitors.home.laptop]
-name = "Lenovo Group Limited 0x4149"
-shikane_search = ["m=0x4149", "v=Lenovo Group Limited"]
-mode = "2880x1800@90Hz"
-position = "3181x1905"
-scale = "1.8"
-background = "~/.config/wallpapers/dark/2560x1440/jaime-lannister.jpg"
-has_lid = true
 
 [themes.rubecula]
 name = "rubecula"

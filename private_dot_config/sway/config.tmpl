@@ -4,10 +4,12 @@ output "{{ index .monitors .monitors.selected "left" "name" }}" mode {{ index .m
 output "{{ index .monitors .monitors.selected "center" "name" }}" mode {{ index .monitors .monitors.selected "center" "mode" }} pos {{ index .monitors .monitors.selected "center" "position" | replace "x" " " }} bg ~/.config/wallpapers/dark/2560x1440/jaime-lannister.jpg fill
 output "{{ index .monitors .monitors.selected "right" "name" }}" mode {{ index .monitors .monitors.selected "right" "mode" }} pos {{ index .monitors .monitors.selected "right" "position" | replace "x" " " }} bg ~/.config/wallpapers/dark/1440x2560/tyrion-lannister.jpg fill transform 90
 
+{{- if hasKey (index .monitors .monitors.selected) "laptop" }}
 output "{{ index .monitors .monitors.selected "laptop" "name" }}" mode {{ index .monitors .monitors.selected "laptop" "mode" }} pos {{ index .monitors .monitors.selected "laptop" "position" | replace "x" " " }} bg ~/.config/wallpapers/dark/2560x1440/jaime-lannister.jpg fill
 
 bindswitch --locked lid:off output {{ index .monitors .monitors.selected "laptop" "name" }} enable
 bindswitch --locked lid:on output {{ index .monitors .monitors.selected "laptop" "name" }} disable
+{{- end }}
 
 ### Idle configuration
 exec_always --no-startup-id swayidle -d \

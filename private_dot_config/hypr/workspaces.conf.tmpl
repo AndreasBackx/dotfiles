@@ -37,6 +37,7 @@ workspace=210,monitor:desc:{{ index .monitors .monitors.selected "right" "name" 
 workspace=211,monitor:desc:{{ index .monitors .monitors.selected "right" "name" }}
 workspace=212,monitor:desc:{{ index .monitors .monitors.selected "right" "name" }}
 
+{{- if hasKey (index .monitors .monitors.selected) "laptop" }}
 workspace=301,monitor:desc:{{ index .monitors .monitors.selected "laptop" "name" }}, default:true
 workspace=302,monitor:desc:{{ index .monitors .monitors.selected "laptop" "name" }}
 workspace=303,monitor:desc:{{ index .monitors .monitors.selected "laptop" "name" }}
@@ -49,6 +50,7 @@ workspace=309,monitor:desc:{{ index .monitors .monitors.selected "laptop" "name"
 workspace=310,monitor:desc:{{ index .monitors .monitors.selected "laptop" "name" }}
 workspace=311,monitor:desc:{{ index .monitors .monitors.selected "laptop" "name" }}
 workspace=312,monitor:desc:{{ index .monitors .monitors.selected "laptop" "name" }}
+{{- end }}
 
 # Bindings
 
@@ -138,6 +140,7 @@ bind = $mainMod ALT SHIFT, Equal, movetoworkspacesilent, 212
 
 # Laptop
 
+{{- if hasKey (index .monitors .monitors.selected) "laptop" }}
 bind = $mainMod MOD2, 1, workspace, 301
 bind = $mainMod MOD2, 2, workspace, 302
 bind = $mainMod MOD2, 3, workspace, 303
@@ -163,3 +166,4 @@ bind = $mainMod MOD2 SHIFT, 9, movetoworkspacesilent, 309
 bind = $mainMod MOD2 SHIFT, 0, movetoworkspacesilent, 310
 bind = $mainMod MOD2 SHIFT, Minus, movetoworkspacesilent, 311
 bind = $mainMod MOD2 SHIFT, Equal, movetoworkspacesilent, 312
+{{- end }}
