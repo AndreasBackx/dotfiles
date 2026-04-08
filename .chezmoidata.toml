@@ -107,6 +107,13 @@ position = "1984x-575"
 scale = "2"
 profiles = ["living_room", "desk_living_room"]
 
+[monitors.home.laptop]
+name = "LG Display 0x07C6"
+serial_number = ""
+mode = "2880x1800@120"
+position = "0x0"
+scale = "1.67"
+
 [themes.rubecula]
 name = "rubecula"
 background = "#1c1c1c"
