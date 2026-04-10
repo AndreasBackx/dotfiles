@@ -18,6 +18,7 @@ home_center_serial='{{ index .monitors.home.center "serial_number" }}'
 hide_pid_file="${XDG_RUNTIME_DIR:-/tmp}/eww-center-hide.pid"
 hide_token_file="${XDG_RUNTIME_DIR:-/tmp}/eww-center-hide.token"
 center_state_file="${XDG_RUNTIME_DIR:-/tmp}/eww-center.state"
+tooltip_target_file="${XDG_RUNTIME_DIR:-/tmp}/eww-bar-tooltip.target"
 hide_anim_delay=0.24
 hide_reveal_kick_delay=0.01
 initial_autohide_delay=1.2
@@ -52,6 +53,18 @@ panel_name() {
 
 panel_target() {
     print -r -- "panel-$(panel_name "$1")"
+}
+
+tooltip_target_name() {
+    case "${1:?tooltip target required}" in
+    spotify | network | bluetooth | brightness | audio | cpu | memory | battery | power | clock)
+        print -r -- "$1"
+        ;;
+    *)
+        echo "Unknown tooltip target: $1" >&2
+        return 1
+        ;;
+    esac
 }
 
 panel_pid_file() {
@@ -149,6 +162,135 @@ open_window_for_serial() {
 
     connector=$(monitor_connector_required "$serial" "$description" "$label") || return 1
     open_window_on_screen "$target" "$connector"
+}
+
+tooltip_text() {
+    local target
+    target=$(tooltip_target_name "$1") || return 1
+
+    case "$target" in
+    spotify)
+        ~/.bin/eww-spotify tooltip 2>/dev/null || true
+        ;;
+    network)
+        ~/.bin/eww-network tooltip 2>/dev/null || true
+        ;;
+    bluetooth)
+        ~/.bin/eww-bluetooth tooltip 2>/dev/null || true
+        ;;
+    brightness)
+        ~/.bin/eww-brightness tooltip 2>/dev/null || true
+        ;;
+    audio)
+        ~/.bin/eww-audio tooltip 2>/dev/null || true
+        ;;
+    battery)
+        ~/.bin/eww-battery tooltip 2>/dev/null || true
+        ;;
+    clock)
+        date '+%a %d %b %Y %H:%M:%S %Z'
+        ;;
+    cpu)
+        print -r -- 'CPU usage'
+        ;;
+    memory)
+        print -r -- 'Memory usage'
+        ;;
+    power)
+        print -r -- 'Power options'
+        ;;
+    esac
+}
+
+cursor_monitor_json() {
+    local cursor_json monitors_json
+
+    cursor_json=$(hyprctl -j cursorpos 2>/dev/null) || return 1
+    monitors_json=$(hyprctl -j monitors all 2>/dev/null) || return 1
+
+    jq -cn --argjson cursor "$cursor_json" --argjson monitors "$monitors_json" '
+        $monitors
+        | map(select(.disabled == false and $cursor.x >= .x and $cursor.x < (.x + .width) and $cursor.y >= .y and $cursor.y < (.y + .height)))
+        | .[0]
+    '
+}
+
+tooltip_width_for_text() {
+    local text="$1"
+    local line max_length=0 length width
+
+    while IFS= read -r line; do
+        length=${#line}
+        if (( length > max_length )); then
+            max_length=$length
+        fi
+    done <<< "$text"
+
+    width=$(( (max_length * 8) + 26 ))
+    if (( width < 96 )); then
+        width=96
+    elif (( width > 420 )); then
+        width=420
+    fi
+
+    print -r -- "$width"
+}
+
+tooltip_screen_and_offset() {
+    local monitor_json width cursor_x monitor_x monitor_width offset max_offset screen
+
+    width="${1:?tooltip width required}"
+    monitor_json=$(cursor_monitor_json) || return 1
+
+    screen=$(jq -r '.name // empty' <<< "$monitor_json")
+    cursor_x=$(hyprctl -j cursorpos 2>/dev/null | jq -r '.x')
+    monitor_x=$(jq -r '.x' <<< "$monitor_json")
+    monitor_width=$(jq -r '.width' <<< "$monitor_json")
+
+    [[ -n "$screen" ]] || return 1
+
+    offset=$(( cursor_x - monitor_x - (width / 2) ))
+    if (( offset < 12 )); then
+        offset=12
+    fi
+
+    max_offset=$(( monitor_width - width - 12 ))
+    if (( max_offset < 12 )); then
+        max_offset=12
+    fi
+    if (( offset > max_offset )); then
+        offset=$max_offset
+    fi
+
+    print -r -- "$screen"
+    print -r -- "${offset}px"
+}
+
+tooltip_show() {
+    local target text width screen offset
+
+    target=$(tooltip_target_name "$1") || return 1
+    text=$(tooltip_text "$target")
+    [[ -n "$text" ]] || {
+        tooltip_hide
+        return 0
+    }
+
+    width=$(tooltip_width_for_text "$text")
+    {
+        IFS= read -r screen
+        IFS= read -r offset
+    } < <(tooltip_screen_and_offset "$width") || return 1
+
+    print -r -- "$target" > "$tooltip_target_file"
+    eww update bar_tooltip_text="$text" >/dev/null 2>&1 || true
+    close_window bar-tooltip
+    eww open bar-tooltip --screen "$screen" --arg tooltip_x="$offset" --arg tooltip_width="${width}px" >/dev/null 2>&1 || true
+}
+
+tooltip_hide() {
+    close_window bar-tooltip
+    rm -f "$tooltip_target_file"
 }
 
 monitor_present() {
@@ -260,6 +402,8 @@ toggle_panel() {
     name=$(panel_name "$1") || return 1
     target=$(panel_target "$name")
 
+    tooltip_hide
+
     if window_is_open "$target"; then
         close_panel "$name"
         return
@@ -305,6 +449,7 @@ open_center_windows() {
     local target_serial target_name
     target_serial=$(center_target_serial)
     target_name=$(center_target_name)
+    tooltip_hide
 
     if center_autohide_enabled; then
         close_window bar-center
@@ -352,6 +497,7 @@ center_show() {
         return
     fi
     cancel_center_hide
+    tooltip_hide
     if [[ "$(center_state)" == "visible" ]]; then
         return
     fi
@@ -373,6 +519,7 @@ center_hide() {
         return
     fi
     cancel_center_hide
+    tooltip_hide
     set_center_state hiding
     eww update center_bar_hiding=false >/dev/null 2>&1 || true
     open_window_for_serial bar-center-hide "$(center_target_serial)" "$(center_target_name)" "center"
@@ -402,6 +549,7 @@ center_hide_delayed() {
         [[ -f "$hide_token_file" ]] || exit 0
         current_token=$(<"$hide_token_file")
         [[ "$current_token" == "$token" ]] || exit 0
+        tooltip_hide
         set_center_state hiding
         eww update center_bar_hiding=false >/dev/null 2>&1 || true
         open_window_for_serial bar-center-hide "$(center_target_serial)" "$(center_target_name)" "center"
@@ -437,8 +585,15 @@ reload)
     open_center_windows
     ;;
 stop)
+    tooltip_hide
     eww close-all
     rm -f "$hide_pid_file" "$hide_token_file" "$center_state_file"
+    ;;
+tooltip-show)
+    tooltip_show "${2:?usage: eww-bar tooltip-show <spotify|network|bluetooth|brightness|audio|cpu|memory|battery|power|clock>}"
+    ;;
+tooltip-hide)
+    tooltip_hide
     ;;
 toggle)
     toggle_panel "${2:?usage: eww-bar toggle <network|bluetooth|audio|brightness|power>}"
@@ -465,7 +620,7 @@ center-hide-delayed)
     center_hide_delayed "${2:-0.32}"
     ;;
 *)
-    echo "Usage: $0 {start|reload|stop|toggle|close-panels|close-panel|touch-panel|schedule-panel-close|center-show|center-hide|center-hide-delayed [delay]}"
+    echo "Usage: $0 {start|reload|stop|toggle|close-panels|close-panel|touch-panel|schedule-panel-close|center-show|center-hide|center-hide-delayed [delay]|tooltip-show <target>|tooltip-hide}"
     exit 2
     ;;
 esac

@@ -45,6 +45,8 @@
 (defpoll power_panel_state :interval "10s" "~/.bin/eww-power panel-state")
 (defpoll power_panel :interval "10s" "~/.bin/eww-power render")
 
+(defvar bar_tooltip_text "")
+
 (defvar center_bar_auto false)
 (defvar center_bar_hiding false)
 (defvar center_bar_tray false)
@@ -66,7 +68,8 @@
             :onscroll "if [ '{}' == 'up' ]; then playerctl next; else playerctl previous; fi"
             :onclick "playerctl play-pause"
             :onrightclick "~/.bin/eww-spotify toggle-liked"
-            :tooltip {spotify_tooltip != "" ? spotify_tooltip : ""}
+            :onhover "~/.bin/eww-bar tooltip-show spotify"
+            :onhoverlost "~/.bin/eww-bar tooltip-hide"
             :cursor "pointer"
     (box :class "center-segment spotify-${spotify_state}"
       (label :class "spotify-text spotify-${spotify_state}"
@@ -79,12 +82,20 @@
   (box :class "tray-segment bar-item icon-only" :hexpand false :halign "start"
     (systray :spacing 8 :icon-size 15 :prepend-new true)))
 
+(defwidget bar-tooltip-window []
+  (box :class "bar-tooltip-window"
+    (label :class "bar-tooltip-label"
+           :text bar_tooltip_text
+           :xalign 0
+           :wrap true)))
+
 (defwidget system-segment [show_tray]
   (box :class "system-segment" :spacing 1 :hexpand false :space-evenly false
     (eventbox :onscroll "if [ '{}' == 'up' ]; then ~/.bin/eww-network toggle-network; else ~/.bin/eww-network toggle-network; fi"
               :onclick "~/.bin/eww-bar toggle network"
               :onrightclick "~/.bin/eww-bar touch-panel network; ~/.bin/eww-network connections"
-              :tooltip network_tooltip
+              :onhover "~/.bin/eww-bar tooltip-show network"
+              :onhoverlost "~/.bin/eww-bar tooltip-hide"
               :cursor "pointer"
               :hexpand false :halign "start"
       (button :class "bar-button bar-item icon-only net-${network_state}"
@@ -92,7 +103,8 @@
           (label :class "item-icon item-icon-only" :text network_icon :width 16 :halign "center" :valign "center" :xalign 0.5 :yalign 0.5))))
     (eventbox :onclick "~/.bin/eww-bar toggle bluetooth"
               :onrightclick "~/.bin/eww-bar touch-panel bluetooth; ~/.bin/eww-bluetooth toggle-power"
-              :tooltip bluetooth_tooltip
+              :onhover "~/.bin/eww-bar tooltip-show bluetooth"
+              :onhoverlost "~/.bin/eww-bar tooltip-hide"
               :cursor "pointer"
               :hexpand false :halign "start"
       (button :class "bar-button bar-item icon-only bt-${bluetooth_state}"
@@ -102,7 +114,8 @@
               :onclick "~/.bin/eww-brightness set 100"
               :onmiddleclick "~/.bin/eww-bar toggle brightness"
               :onrightclick "~/.bin/eww-brightness set 0"
-              :tooltip brightness_tooltip
+              :onhover "~/.bin/eww-bar tooltip-show brightness"
+              :onhoverlost "~/.bin/eww-bar tooltip-hide"
               :cursor "pointer"
               :hexpand false :halign "start"
       (button :class "bar-button bar-item with-text"
@@ -113,32 +126,45 @@
               :onclick "~/.bin/eww-audio toggle-mute; eww update audio_icon=\"$(~/.bin/eww-audio icon)\" audio_text=\"$(~/.bin/eww-audio text)\" audio_tooltip=\"$(~/.bin/eww-audio tooltip)\""
               :onmiddleclick "~/.bin/eww-bar toggle audio"
               :onrightclick "~/.bin/eww-bar touch-panel audio; pavucontrol"
-              :tooltip audio_tooltip
+              :onhover "~/.bin/eww-bar tooltip-show audio"
+              :onhoverlost "~/.bin/eww-bar tooltip-hide"
               :cursor "pointer"
               :hexpand false :halign "start"
       (button :class "bar-button bar-item with-text"
         (box :class "bar-item-content with-text" :hexpand true :halign "center" :valign "center"
           (label :class "item-icon" :text audio_icon :width 16 :xalign 0.5 :yalign 0.5)
           (label :class "item-text" :text audio_text))))
-    (box :class "bar-item with-text" :hexpand false :halign "start" :tooltip "CPU usage" :visible {EWW_CPU.avg >= 90}
-      (box :class "bar-item-content with-text" :hexpand true :halign "center" :valign "center"
-        (label :text " ${round(EWW_CPU.avg, 0)}%")))
-    (box :class "bar-item with-text" :hexpand false :halign "start" :tooltip "Memory usage" :visible {EWW_RAM.used_mem_perc >= 90}
-      (box :class "bar-item-content with-text" :hexpand true :halign "center" :valign "center"
-        (label :text " ${round(EWW_RAM.used_mem / 1073741824, 1)}GiB")))
-    (box :class "bar-item with-text battery-${battery_state}" :hexpand false :halign "start" :tooltip battery_tooltip :visible {battery_text != ""}
-      (box :class "bar-item-content with-text" :hexpand true :halign "center" :valign "center"
-        (label :class "item-icon" :text battery_icon :width 16 :xalign 0.5 :yalign 0.5)
-        (label :class "item-text" :text battery_text)))
+    (eventbox :visible {EWW_CPU.avg >= 90}
+              :onhover "~/.bin/eww-bar tooltip-show cpu"
+              :onhoverlost "~/.bin/eww-bar tooltip-hide"
+      (box :class "bar-item with-text" :hexpand false :halign "start"
+        (box :class "bar-item-content with-text" :hexpand true :halign "center" :valign "center"
+          (label :text " ${round(EWW_CPU.avg, 0)}%"))))
+    (eventbox :visible {EWW_RAM.used_mem_perc >= 90}
+              :onhover "~/.bin/eww-bar tooltip-show memory"
+              :onhoverlost "~/.bin/eww-bar tooltip-hide"
+      (box :class "bar-item with-text" :hexpand false :halign "start"
+        (box :class "bar-item-content with-text" :hexpand true :halign "center" :valign "center"
+          (label :text " ${round(EWW_RAM.used_mem / 1073741824, 1)}GiB"))))
+    (eventbox :visible {battery_text != ""}
+              :onhover "~/.bin/eww-bar tooltip-show battery"
+              :onhoverlost "~/.bin/eww-bar tooltip-hide"
+      (box :class "bar-item with-text battery-${battery_state}" :hexpand false :halign "start"
+        (box :class "bar-item-content with-text" :hexpand true :halign "center" :valign "center"
+          (label :class "item-icon" :text battery_icon :width 16 :xalign 0.5 :yalign 0.5)
+          (label :class "item-text" :text battery_text))))
     (eventbox :onclick "~/.bin/eww-bar toggle power"
-              :tooltip "Power options"
+              :onhover "~/.bin/eww-bar tooltip-show power"
+              :onhoverlost "~/.bin/eww-bar tooltip-hide"
               :cursor "pointer"
               :hexpand false :halign "start"
       (button :class "bar-button bar-item icon-only"
         (box :class "bar-item-content icon-only" :hexpand true :halign "center" :valign "center"
           (label :class "item-icon item-icon-only" :text "⏻" :width 16 :halign "center" :valign "center" :xalign 0.5 :yalign 0.5))))
-    (box :class "clock bar-item" :hexpand false :halign "start" :tooltip clock_tooltip
-      (label :text clock_text))
+    (eventbox :onhover "~/.bin/eww-bar tooltip-show clock"
+              :onhoverlost "~/.bin/eww-bar tooltip-hide"
+      (box :class "clock bar-item" :hexpand false :halign "start"
+        (label :text clock_text)))
     (tray-segment :visible show_tray)))
 
 (defwidget bar-root [workspace_content show_tray]
@@ -210,6 +236,14 @@
   :exclusive true
   (bar-root :workspace_content {workspaces_right != "" ? workspaces_right : workspaces_right_fallback}
             :show_tray false))
+
+(defwindow bar-tooltip [tooltip_x tooltip_width]
+  :stacking "overlay"
+  :focusable "none"
+  :namespace "eww-bar-tooltip"
+  :geometry (geometry :x tooltip_x :y "74px" :width tooltip_width :height "1px" :anchor "bottom left")
+  :exclusive false
+  (bar-tooltip-window))
 
 (defwindow panel-network
   :stacking "fg"

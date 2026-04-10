@@ -73,6 +73,29 @@ monitor_state() {
     done
 }
 
+tooltip() {
+    local playback_status title artist album
+
+    playback_status=$(playerctl -p spotify status 2>/dev/null || true)
+    [[ "$playback_status" == "Playing" ]] || {
+        echo ""
+        return 0
+    }
+
+    title=$(playerctl -p spotify metadata xesam:title 2>/dev/null || true)
+    artist=$(playerctl -p spotify metadata xesam:artist 2>/dev/null | paste -sd ', ' - || true)
+    album=$(playerctl -p spotify metadata xesam:album 2>/dev/null || true)
+
+    [[ -n "$title" ]] || {
+        echo ""
+        return 0
+    }
+
+    print -r -- "$title"
+    [[ -n "$artist" ]] && print -r -- "$artist"
+    [[ -n "$album" ]] && print -r -- "$album"
+}
+
 case "${1:-monitor}" in
 monitor)
     monitor
@@ -83,11 +106,14 @@ monitor-tooltip)
 monitor-state)
     monitor_state
     ;;
+tooltip)
+    tooltip
+    ;;
 toggle-liked)
     spotifatius toggle-liked
     ;;
 *)
-    echo "Usage: $0 {monitor|monitor-tooltip|monitor-state|toggle-liked}"
+    echo "Usage: $0 {monitor|monitor-tooltip|monitor-state|tooltip|toggle-liked}"
     exit 2
     ;;
 esac
