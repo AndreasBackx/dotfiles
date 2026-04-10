@@ -117,6 +117,7 @@ serial_number = ""
 mode = "2880x1800@120"
 position = "0x0"
 scale = "1.67"
+vrr = 1
 profiles = ["laptop"]
 
 [themes.rubecula]
