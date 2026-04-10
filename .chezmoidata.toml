@@ -65,6 +65,9 @@ label = "Living Room"
 audio_sink = "raop_sink.Sonos-38420BD3AE96.local.10.10.10.31.7000"
 audio_source = "alsa_input.usb-BLUE_MICROPHONE_Blue_Snowball_201305-00.analog-stereo"
 
+[monitors.home.profile_settings.laptop]
+label = "Laptop"
+
 [monitors.home.left]
 name = "Lenovo Group Limited Y32p-30 U1HMF6PT"
 shikane_search = ["m=Y32p-30", "s=U1HMF6PT", "v=Lenovo Group Limited"]
@@ -109,10 +112,12 @@ profiles = ["living_room", "desk_living_room"]
 
 [monitors.home.laptop]
 name = "LG Display 0x07C6"
+shikane_search = ["m=0x07C6", "v=LG Display"]
 serial_number = ""
 mode = "2880x1800@120"
 position = "0x0"
 scale = "1.67"
+profiles = ["laptop"]
 
 [themes.rubecula]
 name = "rubecula"

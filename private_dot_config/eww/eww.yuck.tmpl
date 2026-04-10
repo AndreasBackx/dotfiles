@@ -42,6 +42,7 @@
 
 (defvar center_bar_auto false)
 (defvar center_bar_hiding false)
+(defvar center_bar_tray false)
 
 (defwidget workspace-segment [content]
   (box :class "workspace-segment" :hexpand true
@@ -157,7 +158,7 @@
   :reserve (struts :distance "56px" :side "bottom")
   :exclusive true
   (bar-root :workspace_content {workspaces_center != "" ? workspaces_center : workspaces_center_fallback}
-            :show_tray false))
+            :show_tray center_bar_tray))
 
 (defwindow bar-center-home
   :stacking "fg"
@@ -169,7 +170,7 @@
             :onhoverlost "~/.bin/eww-bar center-hide-delayed 0.32"
     (box :class "bar-center-shell"
       (bar-root :workspace_content {workspaces_center != "" ? workspaces_center : workspaces_center_fallback}
-                :show_tray false))))
+                :show_tray center_bar_tray))))
 
 (defwindow bar-center-hide
   :stacking "fg"
@@ -181,7 +182,7 @@
     (box :class "bar-center-hide-shell"
       (box :class {center_bar_hiding ? "bar-center-shell bar-center-shell-hiding" : "bar-center-shell"}
         (bar-root :workspace_content {workspaces_center != "" ? workspaces_center : workspaces_center_fallback}
-                  :show_tray false)))))
+                  :show_tray center_bar_tray)))))
 
 (defwindow bar-center-trigger
   :stacking "fg"

@@ -8,6 +8,10 @@ bars=(bar-left bar-right)
 left_serial='{{ index .monitors .monitors.selected "left" "serial_number" }}'
 center_serial='{{ index .monitors .monitors.selected "center" "serial_number" }}'
 right_serial='{{ index .monitors .monitors.selected "right" "serial_number" }}'
+left_name='{{ index .monitors .monitors.selected "left" "name" }}'
+center_name='{{ index .monitors .monitors.selected "center" "name" }}'
+right_name='{{ index .monitors .monitors.selected "right" "name" }}'
+laptop_name='{{ index .monitors .monitors.selected "laptop" "name" | default "" }}'
 home_center_name='{{ index .monitors.home.center "name" }}'
 home_center_serial='{{ index .monitors.home.center "serial_number" }}'
 
@@ -77,6 +81,12 @@ window_is_open() {
     eww active-windows 2>/dev/null | grep -q "^${target}:\|^${target}$"
 }
 
+monitor_connector_for_name() {
+    local description="${1:?monitor name required}"
+
+    hyprctl -j monitors all 2>/dev/null | jq -r --arg description "$description" '.[] | select(.description == $description) | .name' | head -n1
+}
+
 monitor_connector_for_serial() {
     local serial="${1:?monitor serial required}"
 
@@ -84,14 +94,21 @@ monitor_connector_for_serial() {
 }
 
 monitor_connector_required() {
-    local serial="${1:?monitor serial required}"
-    local label="${2:-monitor}"
+    local serial="${1:-}"
+    local description="${2:-}"
+    local label="${3:-monitor}"
     local connector
 
-    connector=$(monitor_connector_for_serial "$serial")
+    if [[ -n "$serial" ]]; then
+        connector=$(monitor_connector_for_serial "$serial")
+    fi
+
+    if [[ -z "$connector" || "$connector" == "null" ]] && [[ -n "$description" ]]; then
+        connector=$(monitor_connector_for_name "$description")
+    fi
 
     if [[ -z "$connector" || "$connector" == "null" ]]; then
-        echo "Could not resolve ${label} serial ${serial} to a connector" >&2
+        echo "Could not resolve ${label} to a connector" >&2
         return 1
     fi
 
@@ -115,12 +132,78 @@ open_window_on_screen() {
 
 open_window_for_serial() {
     local target="${1:?window required}"
-    local serial="${2:?serial required}"
-    local label="${3:-$target}"
+    local serial="${2:-}"
+    local description="${3:-}"
+    local label="${4:-$target}"
     local connector
 
-    connector=$(monitor_connector_required "$serial" "$label") || return 1
+    connector=$(monitor_connector_required "$serial" "$description" "$label") || return 1
     open_window_on_screen "$target" "$connector"
+}
+
+monitor_present() {
+    local serial="${1:-}"
+    local description="${2:-}"
+
+    monitor_connector_required "$serial" "$description" "monitor" >/dev/null 2>&1
+}
+
+center_target_serial() {
+    if monitor_present "$center_serial" "$center_name"; then
+        print -r -- "$center_serial"
+        return
+    fi
+
+    if [[ -n "$laptop_name" ]] && monitor_present "" "$laptop_name"; then
+        print -r -- ""
+        return
+    fi
+
+    print -r -- "$center_serial"
+}
+
+center_target_name() {
+    if monitor_present "$center_serial" "$center_name"; then
+        print -r -- "$center_name"
+        return
+    fi
+
+    if [[ -n "$laptop_name" ]] && monitor_present "" "$laptop_name"; then
+        print -r -- "$laptop_name"
+        return
+    fi
+
+    print -r -- "$center_name"
+}
+
+solo_laptop_center() {
+    [[ -n "$laptop_name" ]] || return 1
+    monitor_present "" "$laptop_name" || return 1
+    monitor_present "$left_serial" "$left_name" && return 1
+    monitor_present "$center_serial" "$center_name" && return 1
+    monitor_present "$right_serial" "$right_name" && return 1
+    return 0
+}
+
+assign_center_workspaces_to_laptop() {
+    local workspace_id
+
+    [[ -n "$laptop_name" ]] || return 1
+
+    for workspace_id in {101..112}; do
+        hyprctl keyword workspace "${workspace_id},monitor:desc:${laptop_name}" >/dev/null 2>&1 || true
+    done
+}
+
+switch_to_center_workspace() {
+    hyprctl dispatch workspace 101 >/dev/null 2>&1 || true
+}
+
+prepare_workspace_layout() {
+    if solo_laptop_center; then
+        assign_center_workspaces_to_laptop
+        switch_to_center_workspace
+    fi
 }
 
 close_window() {
@@ -165,6 +248,7 @@ schedule_panel_close() {
 
 toggle_panel() {
     local name target
+    local target_serial target_name
     name=$(panel_name "$1") || return 1
     target=$(panel_target "$name")
 
@@ -174,7 +258,9 @@ toggle_panel() {
     fi
 
     close_panels
-    open_window_for_serial "$target" "$center_serial" "center"
+    target_serial=$(center_target_serial)
+    target_name=$(center_target_name)
+    open_window_for_serial "$target" "$target_serial" "$target_name" "center"
     schedule_panel_close "$name"
 }
 
@@ -187,27 +273,49 @@ center_autohide_enabled() {
 }
 
 open_bars() {
-    open_window_for_serial bar-left "$left_serial" "left"
-    open_window_for_serial bar-right "$right_serial" "right"
+    close_window bar-left
+    close_window bar-right
+
+    if solo_laptop_center; then
+        return
+    fi
+
+    if monitor_present "$left_serial" "$left_name"; then
+        open_window_for_serial bar-left "$left_serial" "$left_name" "left"
+    fi
+
+    if monitor_present "$right_serial" "$right_name"; then
+        open_window_for_serial bar-right "$right_serial" "$right_name" "right"
+    fi
 }
 
 open_center_windows() {
+    local target_serial target_name
+    target_serial=$(center_target_serial)
+    target_name=$(center_target_name)
+
     if center_autohide_enabled; then
         close_window bar-center
         eww update center_bar_auto=true >/dev/null 2>&1 || true
+        eww update center_bar_tray=false >/dev/null 2>&1 || true
         eww update center_bar_hiding=false >/dev/null 2>&1 || true
         close_window bar-center-home
         close_window bar-center-hide
-    open_window_for_serial bar-center-trigger "$center_serial" "center"
+        open_window_for_serial bar-center-trigger "$target_serial" "$target_name" "center"
         return
     fi
 
     eww update center_bar_hiding=false >/dev/null 2>&1 || true
+    if solo_laptop_center; then
+        eww update center_bar_tray=true >/dev/null 2>&1 || true
+    else
+        eww update center_bar_tray=false >/dev/null 2>&1 || true
+    fi
     close_window bar-center-home
     close_window bar-center-hide
     close_window bar-center-trigger
     eww update center_bar_auto=false >/dev/null 2>&1 || true
-    open_window_for_serial bar-center "$center_serial" "center"
+    open_window_for_serial bar-center "$target_serial" "$target_name" "center"
 }
 
 cancel_center_hide() {
@@ -231,7 +339,7 @@ center_show() {
     eww update center_bar_hiding=false >/dev/null 2>&1 || true
     close_window bar-center-hide
     close_window bar-center-trigger
-    open_window_for_serial bar-center-home "$center_serial" "center"
+    open_window_for_serial bar-center-home "$(center_target_serial)" "$(center_target_name)" "center"
 }
 
 center_hide() {
@@ -241,13 +349,13 @@ center_hide() {
     fi
     cancel_center_hide
     eww update center_bar_hiding=false >/dev/null 2>&1 || true
-    open_window_for_serial bar-center-hide "$center_serial" "center"
+    open_window_for_serial bar-center-hide "$(center_target_serial)" "$(center_target_name)" "center"
     sleep "$hide_reveal_kick_delay"
     close_window bar-center-home
     eww update center_bar_hiding=true >/dev/null 2>&1 || true
     sleep "$hide_anim_delay"
     close_window bar-center-hide
-    open_window_for_serial bar-center-trigger "$center_serial" "center"
+    open_window_for_serial bar-center-trigger "$(center_target_serial)" "$(center_target_name)" "center"
 }
 
 center_hide_delayed() {
@@ -267,7 +375,7 @@ center_hide_delayed() {
         current_token=$(<"$hide_token_file")
         [[ "$current_token" == "$token" ]] || exit 0
         eww update center_bar_hiding=false >/dev/null 2>&1 || true
-        open_window_for_serial bar-center-hide "$center_serial" "center"
+        open_window_for_serial bar-center-hide "$(center_target_serial)" "$(center_target_name)" "center"
         sleep "$hide_reveal_kick_delay"
         [[ -f "$hide_token_file" ]] || exit 0
         current_token=$(<"$hide_token_file")
@@ -279,7 +387,7 @@ center_hide_delayed() {
         current_token=$(<"$hide_token_file")
         [[ "$current_token" == "$token" ]] || exit 0
         close_window bar-center-hide
-        open_window_for_serial bar-center-trigger "$center_serial" "center"
+        open_window_for_serial bar-center-trigger "$(center_target_serial)" "$(center_target_name)" "center"
         rm -f "$hide_pid_file" "$hide_token_file"
     ) &
     printf '%s' "$!" > "$hide_pid_file"
@@ -288,11 +396,13 @@ center_hide_delayed() {
 case "${1:-start}" in
 start)
     eww daemon
+    prepare_workspace_layout
     open_bars
     open_center_windows
     ;;
 reload)
     eww reload
+    prepare_workspace_layout
     open_bars
     open_center_windows
     ;;

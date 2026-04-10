@@ -38,7 +38,7 @@ workspace=211,monitor:desc:{{ index .monitors .monitors.selected "right" "name" 
 workspace=212,monitor:desc:{{ index .monitors .monitors.selected "right" "name" }}
 
 {{- if hasKey (index .monitors .monitors.selected) "laptop" }}
-workspace=301,monitor:desc:{{ index .monitors .monitors.selected "laptop" "name" }}, default:true
+workspace=301,monitor:desc:{{ index .monitors .monitors.selected "laptop" "name" }}
 workspace=302,monitor:desc:{{ index .monitors .monitors.selected "laptop" "name" }}
 workspace=303,monitor:desc:{{ index .monitors .monitors.selected "laptop" "name" }}
 workspace=304,monitor:desc:{{ index .monitors .monitors.selected "laptop" "name" }}
