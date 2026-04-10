@@ -36,6 +36,11 @@
 (defpoll brightness_panel_state :interval "3s" "~/.bin/eww-brightness panel-state")
 (defpoll brightness_panel :interval "5s" "~/.bin/eww-brightness render")
 
+(defpoll battery_icon :interval "15s" "~/.bin/eww-battery icon")
+(defpoll battery_text :interval "15s" "~/.bin/eww-battery text")
+(defpoll battery_tooltip :interval "15s" "~/.bin/eww-battery tooltip")
+(defpoll battery_state :interval "15s" "~/.bin/eww-battery state")
+
 (defpoll audio_panel_state :interval "3s" "~/.bin/eww-audio panel-state")
 (defpoll power_panel_state :interval "10s" "~/.bin/eww-power panel-state")
 (defpoll power_panel :interval "10s" "~/.bin/eww-power render")
@@ -121,6 +126,10 @@
     (box :class "bar-item with-text" :hexpand false :halign "start" :tooltip "Memory usage" :visible {EWW_RAM.used_mem_perc >= 90}
       (box :class "bar-item-content with-text" :hexpand true :halign "center" :valign "center"
         (label :text " ${round(EWW_RAM.used_mem / 1073741824, 1)}GiB")))
+    (box :class "bar-item with-text battery-${battery_state}" :hexpand false :halign "start" :tooltip battery_tooltip :visible {battery_text != ""}
+      (box :class "bar-item-content with-text" :hexpand true :halign "center" :valign "center"
+        (label :class "item-icon" :text battery_icon :width 16 :xalign 0.5 :yalign 0.5)
+        (label :class "item-text" :text battery_text)))
     (eventbox :onclick "~/.bin/eww-bar toggle power"
               :tooltip "Power options"
               :cursor "pointer"
