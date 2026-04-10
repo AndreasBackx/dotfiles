@@ -1,0 +1,353 @@
+#!/usr/bin/env zsh
+
+set -euo pipefail
+
+battery_dir() {
+    local dir type present
+
+    for dir in /sys/class/power_supply/*; do
+        [[ -d "$dir" ]] || continue
+        [[ -f "$dir/type" ]] || continue
+
+        type=$(<"$dir/type")
+        [[ "$type" == "Battery" ]] || continue
+
+        if [[ -f "$dir/present" ]]; then
+            present=$(<"$dir/present")
+            [[ "$present" == "1" ]] || continue
+        fi
+
+        print -r -- "$dir"
+        return 0
+    done
+
+    return 1
+}
+
+battery_name() {
+    local dir
+
+    dir=$(battery_dir) || return 1
+    print -r -- "${dir:t}"
+}
+
+read_battery_file() {
+    local path="$1"
+
+    if [[ -f "$path" ]]; then
+        print -r -- "$(<"$path")"
+    else
+        return 1
+    fi
+}
+
+capacity() {
+    local dir value
+
+    dir=$(battery_dir) || {
+        echo ""
+        return 0
+    }
+
+    value=$(read_battery_file "$dir/capacity" 2>/dev/null || true)
+    print -r -- "$value"
+}
+
+raw_status() {
+    local dir value
+
+    dir=$(battery_dir) || {
+        echo ""
+        return 0
+    }
+
+    value=$(read_battery_file "$dir/status" 2>/dev/null || true)
+    print -r -- "$value"
+}
+
+mains_online() {
+    local dir type online
+
+    for dir in /sys/class/power_supply/*; do
+        [[ -d "$dir" ]] || continue
+        [[ -f "$dir/type" ]] || continue
+
+        type=$(<"$dir/type")
+        [[ "$type" == "Mains" ]] || continue
+        [[ -f "$dir/online" ]] || continue
+
+        online=$(<"$dir/online")
+        if [[ "$online" == "1" ]]; then
+            echo "yes"
+            return 0
+        fi
+    done
+
+    echo "no"
+}
+
+state() {
+    local battery_status lowered
+
+    battery_status=$(raw_status)
+    lowered=${battery_status:l}
+
+    case "$lowered" in
+    charging)
+        echo "charging"
+        ;;
+    discharging)
+        echo "discharging"
+        ;;
+    full)
+        echo "full"
+        ;;
+    "not charging")
+        echo "not-charging"
+        ;;
+    *)
+        if [[ -n "$battery_status" ]]; then
+            echo "unknown"
+        else
+            echo ""
+        fi
+        ;;
+    esac
+}
+
+upower_device() {
+    local name device
+
+    name=$(battery_name) || return 1
+
+    while IFS= read -r device; do
+        [[ "$device" == *"/battery_${name}" ]] || continue
+        print -r -- "$device"
+        return 0
+    done < <(upower -e 2>/dev/null || true)
+
+    return 1
+}
+
+upower_info() {
+    local device
+
+    device=$(upower_device) || return 1
+    upower -i "$device" 2>/dev/null
+}
+
+estimate_line() {
+    local current_state="$1"
+
+    case "$current_state" in
+    charging)
+        upower_info | awk -F: '/time to full:/ {sub(/^[[:space:]]+/, "", $2); print $2; exit}'
+        ;;
+    discharging)
+        upower_info | awk -F: '/time to empty:/ {sub(/^[[:space:]]+/, "", $2); print $2; exit}'
+        ;;
+    *)
+        echo ""
+        ;;
+    esac
+}
+
+format_duration() {
+    local raw="$1"
+    local -a parts
+    local amount unit total_minutes days hours minutes result=""
+
+    [[ -n "$raw" ]] || {
+        echo ""
+        return 0
+    }
+
+    parts=(${=raw})
+    amount="${parts[1]:-}"
+    unit="${parts[2]:-}"
+
+    [[ -n "$amount" && -n "$unit" ]] || {
+        echo ""
+        return 0
+    }
+
+    total_minutes=$(awk -v value="$amount" -v unit="$unit" 'BEGIN {
+        if (unit ~ /^second/) {
+            print int((value / 60) + 0.5)
+        } else if (unit ~ /^minute/) {
+            print int(value + 0.5)
+        } else if (unit ~ /^hour/) {
+            print int((value * 60) + 0.5)
+        } else if (unit ~ /^day/) {
+            print int((value * 1440) + 0.5)
+        }
+    }')
+
+    [[ -n "$total_minutes" ]] || {
+        echo ""
+        return 0
+    }
+
+    if (( total_minutes < 1 )); then
+        total_minutes=1
+    fi
+
+    days=$(( total_minutes / 1440 ))
+    hours=$(( (total_minutes % 1440) / 60 ))
+    minutes=$(( total_minutes % 60 ))
+
+    if (( days > 0 )); then
+        result+="${days}d"
+    fi
+    if (( hours > 0 )); then
+        [[ -n "$result" ]] && result+=" "
+        result+="${hours}h"
+    fi
+    if (( minutes > 0 && days == 0 )); then
+        [[ -n "$result" ]] && result+=" "
+        result+="${minutes}m"
+    fi
+
+    if [[ -z "$result" ]]; then
+        result="${minutes}m"
+    fi
+
+    print -r -- "$result"
+}
+
+thresholds() {
+    local dir start end
+
+    dir=$(battery_dir) || return 1
+    start=$(read_battery_file "$dir/charge_control_start_threshold" 2>/dev/null || true)
+    end=$(read_battery_file "$dir/charge_control_end_threshold" 2>/dev/null || true)
+
+    if [[ -n "$start" && -n "$end" ]]; then
+        print -r -- "${start}%-${end}%"
+    else
+        return 1
+    fi
+}
+
+level_icon() {
+    local value="$1"
+
+    if (( value <= 20 )); then
+        echo ""
+    elif (( value <= 40 )); then
+        echo ""
+    elif (( value <= 60 )); then
+        echo ""
+    elif (( value <= 80 )); then
+        echo ""
+    else
+        echo ""
+    fi
+}
+
+icon() {
+    local value current_state
+
+    value=$(capacity)
+    [[ -n "$value" ]] || {
+        echo ""
+        return 0
+    }
+
+    current_state=$(state)
+    if [[ "$current_state" == "charging" ]]; then
+        echo ""
+    else
+        level_icon "$value"
+    fi
+}
+
+text() {
+    local value
+
+    value=$(capacity)
+    if [[ -n "$value" ]]; then
+        print -r -- "${value}%"
+    else
+        echo ""
+    fi
+}
+
+tooltip() {
+    local value current_state time_line threshold_line
+    local -a lines
+
+    value=$(capacity)
+    [[ -n "$value" ]] || {
+        echo ""
+        return 0
+    }
+
+    current_state=$(state)
+    lines+=("Battery: ${value}%")
+
+    case "$current_state" in
+    charging)
+        lines+=("Charging")
+        time_line=$(format_duration "$(estimate_line "$current_state")")
+        [[ -n "$time_line" ]] && lines+=("${time_line} to full")
+        ;;
+    discharging)
+        lines+=("Discharging")
+        time_line=$(format_duration "$(estimate_line "$current_state")")
+        [[ -n "$time_line" ]] && lines+=("${time_line} left")
+        ;;
+    full)
+        lines+=("Fully charged")
+        ;;
+    not-charging)
+        if [[ "$(mains_online)" == "yes" ]]; then
+            lines+=("Plugged in, not charging")
+            threshold_line=$(thresholds 2>/dev/null || true)
+            [[ -n "$threshold_line" ]] && lines+=("Charge thresholds: ${threshold_line}")
+        else
+            lines+=("Not charging")
+        fi
+        ;;
+    *)
+        lines+=("Status unavailable")
+        ;;
+    esac
+
+    printf '%s\n' "${lines[@]}"
+}
+
+status() {
+    local current_icon current_text
+
+    current_icon=$(icon)
+    current_text=$(text)
+
+    if [[ -n "$current_text" ]]; then
+        print -r -- "${current_icon} ${current_text}"
+    else
+        echo ""
+    fi
+}
+
+case "${1:-status}" in
+status)
+    status
+    ;;
+icon)
+    icon
+    ;;
+text)
+    text
+    ;;
+tooltip)
+    tooltip
+    ;;
+state)
+    state
+    ;;
+*)
+    echo "Usage: $0 {status|icon|text|tooltip|state}"
+    exit 2
+    ;;
+esac

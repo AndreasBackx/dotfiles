@@ -17,9 +17,23 @@ home_center_serial='{{ index .monitors.home.center "serial_number" }}'
 
 hide_pid_file="${XDG_RUNTIME_DIR:-/tmp}/eww-center-hide.pid"
 hide_token_file="${XDG_RUNTIME_DIR:-/tmp}/eww-center-hide.token"
+center_state_file="${XDG_RUNTIME_DIR:-/tmp}/eww-center.state"
 hide_anim_delay=0.24
 hide_reveal_kick_delay=0.01
+initial_autohide_delay=1.2
 panel_idle_delay=5
+
+set_center_state() {
+    printf '%s' "$1" > "$center_state_file"
+}
+
+center_state() {
+    if [[ -f "$center_state_file" ]]; then
+        <"$center_state_file"
+    else
+        print -r -- "unknown"
+    fi
+}
 
 panel_name() {
     local name="${1:?panel name required}"
@@ -117,17 +131,13 @@ monitor_connector_required() {
 
 open_window() {
     local target="$1"
-    if ! window_is_open "$target"; then
-        eww open "$target" >/dev/null 2>&1 || true
-    fi
+    eww open "$target" >/dev/null 2>&1 || true
 }
 
 open_window_on_screen() {
     local target="${1:?window required}"
     local screen="${2:?screen required}"
-    if ! window_is_open "$target"; then
-        eww open "$target" --screen "$screen" >/dev/null 2>&1 || true
-    fi
+    eww open "$target" --screen "$screen" >/dev/null 2>&1 || true
 }
 
 open_window_for_serial() {
@@ -208,9 +218,7 @@ prepare_workspace_layout() {
 
 close_window() {
     local target="$1"
-    if window_is_open "$target"; then
-        eww close "$target" >/dev/null 2>&1 || true
-    fi
+    eww close "$target" >/dev/null 2>&1 || true
 }
 
 close_panel() {
@@ -266,6 +274,10 @@ toggle_panel() {
 
 center_autohide_enabled() {
     local monitors
+    if [[ -n "$laptop_name" && "$(center_target_name)" == "$laptop_name" ]]; then
+        return 0
+    fi
+
     monitors="$(hyprctl monitors all 2>/dev/null || true)"
     [[ -n "$monitors" ]] || return 1
     [[ "$monitors" == *"$home_center_name"* ]] || return 1
@@ -301,7 +313,10 @@ open_center_windows() {
         eww update center_bar_hiding=false >/dev/null 2>&1 || true
         close_window bar-center-home
         close_window bar-center-hide
-        open_window_for_serial bar-center-trigger "$target_serial" "$target_name" "center"
+        close_window bar-center-trigger
+        open_window_for_serial bar-center-home "$target_serial" "$target_name" "center"
+        set_center_state visible
+        center_hide_delayed "$initial_autohide_delay"
         return
     fi
 
@@ -316,6 +331,7 @@ open_center_windows() {
     close_window bar-center-trigger
     eww update center_bar_auto=false >/dev/null 2>&1 || true
     open_window_for_serial bar-center "$target_serial" "$target_name" "center"
+    set_center_state static
 }
 
 cancel_center_hide() {
@@ -336,10 +352,19 @@ center_show() {
         return
     fi
     cancel_center_hide
+    if [[ "$(center_state)" == "visible" ]]; then
+        return
+    fi
+
+    set_center_state visible
     eww update center_bar_hiding=false >/dev/null 2>&1 || true
-    close_window bar-center-hide
-    close_window bar-center-trigger
     open_window_for_serial bar-center-home "$(center_target_serial)" "$(center_target_name)" "center"
+
+    (
+        sleep 0.05
+        close_window bar-center-hide
+        close_window bar-center-trigger
+    ) >/dev/null 2>&1 &
 }
 
 center_hide() {
@@ -348,6 +373,7 @@ center_hide() {
         return
     fi
     cancel_center_hide
+    set_center_state hiding
     eww update center_bar_hiding=false >/dev/null 2>&1 || true
     open_window_for_serial bar-center-hide "$(center_target_serial)" "$(center_target_name)" "center"
     sleep "$hide_reveal_kick_delay"
@@ -356,6 +382,7 @@ center_hide() {
     sleep "$hide_anim_delay"
     close_window bar-center-hide
     open_window_for_serial bar-center-trigger "$(center_target_serial)" "$(center_target_name)" "center"
+    set_center_state hidden
 }
 
 center_hide_delayed() {
@@ -366,6 +393,7 @@ center_hide_delayed() {
     local delay token
     delay="${1:-0.32}"
     cancel_center_hide
+    set_center_state visible
     token="$$-$RANDOM-$RANDOM"
     printf '%s' "$token" > "$hide_token_file"
     (
@@ -374,6 +402,7 @@ center_hide_delayed() {
         [[ -f "$hide_token_file" ]] || exit 0
         current_token=$(<"$hide_token_file")
         [[ "$current_token" == "$token" ]] || exit 0
+        set_center_state hiding
         eww update center_bar_hiding=false >/dev/null 2>&1 || true
         open_window_for_serial bar-center-hide "$(center_target_serial)" "$(center_target_name)" "center"
         sleep "$hide_reveal_kick_delay"
@@ -388,6 +417,7 @@ center_hide_delayed() {
         [[ "$current_token" == "$token" ]] || exit 0
         close_window bar-center-hide
         open_window_for_serial bar-center-trigger "$(center_target_serial)" "$(center_target_name)" "center"
+        set_center_state hidden
         rm -f "$hide_pid_file" "$hide_token_file"
     ) &
     printf '%s' "$!" > "$hide_pid_file"
@@ -408,6 +438,7 @@ reload)
     ;;
 stop)
     eww close-all
+    rm -f "$hide_pid_file" "$hide_token_file" "$center_state_file"
     ;;
 toggle)
     toggle_panel "${2:?usage: eww-bar toggle <network|bluetooth|audio|brightness|power>}"
