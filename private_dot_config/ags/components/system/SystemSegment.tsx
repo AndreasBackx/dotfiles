@@ -7,17 +7,21 @@ import NetworkButton from "./NetworkButton"
 import PowerButton from "./PowerButton"
 import WarningItems from "./WarningItems"
 
-export default function SystemSegment() {
+type SystemSegmentProps = {
+  instanceId: string
+}
+
+export default function SystemSegment({ instanceId }: SystemSegmentProps) {
   return (
     <box class="system-segment" spacing={1}>
-      <NetworkButton />
-      <BluetoothButton />
-      <BrightnessButton />
-      <AudioButton />
+      <NetworkButton instanceId={instanceId} />
+      <BluetoothButton instanceId={instanceId} />
+      <BrightnessButton instanceId={instanceId} />
+      <AudioButton instanceId={instanceId} />
       <WarningItems />
       <BatteryButton />
-      <PowerButton />
-      <ClockButton />
+      <PowerButton instanceId={instanceId} />
+      <ClockButton instanceId={instanceId} />
     </box>
   )
 }

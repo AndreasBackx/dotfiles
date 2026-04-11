@@ -12,7 +12,11 @@ function connectWifi(ssid: string) {
   run(shell(`nmcli d wifi connect '${ssid.replace(/'/g, "'\\''")}'`))
 }
 
-export default function NetworkButton() {
+type NetworkButtonProps = {
+  instanceId: string
+}
+
+export default function NetworkButton({ instanceId }: NetworkButtonProps) {
   const icon = createTextPoll(3000, command("eww-network", "icon"))
   const tooltip = createTextPoll(3000, command("eww-network", "tooltip"))
   const state = createTextPoll(3000, command("eww-network", "state"))
@@ -30,13 +34,14 @@ export default function NetworkButton() {
     ])
     return parseWifiAccessPoints(stdout)
   })
+  const popoverId = `network-popover-${instanceId}`
 
   return (
     <menubutton class="bar-menu-button" tooltipText={tooltip}>
       <box class={state((value) => `bar-item icon-only net-${value}`)}>
         <label class="item-icon item-icon-only" label={icon} />
       </box>
-      <popover $={(self: Gtk.Popover) => attachPopoverHandlers(self)}>
+      <popover $={(self: Gtk.Popover) => attachPopoverHandlers(self, popoverId)}>
         <box class="panel" orientation={Gtk.Orientation.VERTICAL} spacing={8}>
           <label class="panel-title" label="Network" xalign={0} />
           <label class="panel-status" label={tooltip} xalign={0} />

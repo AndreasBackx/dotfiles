@@ -3,13 +3,19 @@ import { Gtk } from "ags/gtk4"
 import { attachPopoverHandlers } from "../../lib/widget-helpers"
 import { BIN, run } from "../../lib/runtime"
 
-export default function PowerButton() {
+type PowerButtonProps = {
+  instanceId: string
+}
+
+export default function PowerButton({ instanceId }: PowerButtonProps) {
+  const popoverId = `power-popover-${instanceId}`
+
   return (
     <menubutton class="bar-menu-button" tooltipText="Power options">
       <box class="bar-item icon-only">
         <label class="item-icon item-icon-only" label="⏻" />
       </box>
-      <popover $={(self: Gtk.Popover) => attachPopoverHandlers(self)}>
+      <popover $={(self: Gtk.Popover) => attachPopoverHandlers(self, popoverId)}>
         <box class="panel" orientation={Gtk.Orientation.VERTICAL} spacing={8}>
           <label class="panel-title" label="Power" xalign={0} />
           <label class="panel-section-title" label="Session" xalign={0} />

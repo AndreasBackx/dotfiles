@@ -8,7 +8,11 @@ import { attachPopoverHandlers } from "../../lib/widget-helpers"
 import { command, createTextPoll, run, shell } from "../../lib/runtime"
 import type { AudioEndpoint } from "../../lib/types"
 
-export default function AudioButton() {
+type AudioButtonProps = {
+  instanceId: string
+}
+
+export default function AudioButton({ instanceId }: AudioButtonProps) {
   const icon = createTextPoll(2000, command("eww-audio", "icon"))
   const text = createTextPoll(2000, command("eww-audio", "text"))
   const tooltip = createTextPoll(2000, command("eww-audio", "tooltip"))
@@ -18,6 +22,7 @@ export default function AudioButton() {
   const sources = createPoll(new Array<AudioEndpoint>(), 5000, async () =>
     parseWpSection(await execAsync(shell("wpctl status")), "Sources"),
   )
+  const popoverId = `audio-popover-${instanceId}`
 
   return (
     <menubutton class="bar-menu-button" tooltipText={tooltip}>
@@ -25,7 +30,7 @@ export default function AudioButton() {
         <label class="item-icon" label={icon} />
         <label class="item-text" label={text} />
       </box>
-      <popover $={(self: Gtk.Popover) => attachPopoverHandlers(self)}>
+      <popover $={(self: Gtk.Popover) => attachPopoverHandlers(self, popoverId)}>
         <box class="panel" orientation={Gtk.Orientation.VERTICAL} spacing={8}>
           <label class="panel-title" label="PipeWire" xalign={0} />
           <label class="panel-status" label={tooltip} xalign={0} />

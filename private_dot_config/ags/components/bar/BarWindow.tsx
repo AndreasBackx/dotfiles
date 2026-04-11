@@ -27,6 +27,8 @@ export default function BarWindow({
 }: BarWindowProps) {
   const position = barPositionForRole(role)
   const geometry = gdkmonitor.get_geometry()
+  const instanceId = `${role}-${gdkmonitor.connector}`
+  const hoverId = `bar-window-${role}-${gdkmonitor.connector}`
 
   return (
     <window
@@ -46,9 +48,9 @@ export default function BarWindow({
         heightRequest={BAR_HEIGHT}
         hexpand
         halign={Gtk.Align.FILL}
-        $={(self) => attachHoverHandlers(self, onHoverEnter, onHoverLeave)}
+        $={(self) => attachHoverHandlers(self, hoverId, onHoverEnter, onHoverLeave)}
       >
-        <BarRoot base={baseForRole(role)} hyprState={hyprState} position={position} />
+        <BarRoot base={baseForRole(role)} hyprState={hyprState} instanceId={instanceId} position={position} />
       </box>
     </window>
   )

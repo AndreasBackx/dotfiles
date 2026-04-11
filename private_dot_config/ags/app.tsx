@@ -9,12 +9,11 @@ import { assignCenterWorkspacesToLaptop, centerAutoHideEnabled, soloLaptopCenter
 import {
   CENTER_HIDE_DELAY_MS,
   INITIAL_AUTOHIDE_DELAY_MS,
-  POINTER_IDLE_HIDE_DELAY_MS,
   WORKSPACE_STRIP_HIDE_DELAY_MS,
   command,
   parseJson,
 } from "./lib/runtime"
-import { setPointerActivityReporter, setPopoverVisibilityReporter } from "./lib/widget-helpers"
+import { closeTrackedPopovers, setHoverReporter, setPopoverVisibilityReporter } from "./lib/widget-helpers"
 import type { HyprState } from "./lib/types"
 
 let requestShowCenter: (() => void) | null = null
@@ -52,19 +51,13 @@ app.start({
 
     let initialAutohideScheduled = false
     let centerHideTimer: ReturnType<typeof timeout> | null = null
-    let pointerIdleTimer: ReturnType<typeof timeout> | null = null
     let workspaceStripTimer: ReturnType<typeof timeout> | null = null
-    let lastPointerActivityAt = Date.now()
-    let openPopoverCount = 0
+    const hoveredSurfaceIds = new Set<string>()
+    const openPopoverIds = new Set<string>()
 
     const cancelCenterHide = () => {
       centerHideTimer?.cancel()
       centerHideTimer = null
-    }
-
-    const cancelPointerIdleHide = () => {
-      pointerIdleTimer?.cancel()
-      pointerIdleTimer = null
     }
 
     const cancelWorkspaceStripHide = () => {
@@ -72,14 +65,16 @@ app.start({
       workspaceStripTimer = null
     }
 
+    const shouldKeepCenterVisible = () => hoveredSurfaceIds.size > 0
+
     const hideCenter = () => {
-      if (openPopoverCount > 0) {
+      if (shouldKeepCenterVisible()) {
         return
       }
 
+      closeTrackedPopovers()
       setCenterVisible(false)
       cancelCenterHide()
-      cancelPointerIdleHide()
     }
 
     const showWorkspaceStrip = () => {
@@ -91,49 +86,19 @@ app.start({
       })
     }
 
-    const schedulePointerIdleHide = (delay = POINTER_IDLE_HIDE_DELAY_MS) => {
-      if (!centerAutoHideEnabled(hyprState.get()) || openPopoverCount > 0 || !centerVisible.get()) {
-        return
-      }
-
-      cancelPointerIdleHide()
-      pointerIdleTimer = timeout(delay, () => {
-        pointerIdleTimer = null
-
-        if (openPopoverCount > 0 || !centerAutoHideEnabled(hyprState.get()) || !centerVisible.get()) {
-          return
-        }
-
-        const idleFor = Date.now() - lastPointerActivityAt
-
-        if (idleFor < POINTER_IDLE_HIDE_DELAY_MS) {
-          schedulePointerIdleHide(POINTER_IDLE_HIDE_DELAY_MS - idleFor)
-          return
-        }
-
-        hideCenter()
-      })
-    }
-
-    const notePointerActivity = () => {
-      lastPointerActivityAt = Date.now()
-
-      if (centerVisible.get()) {
-        schedulePointerIdleHide()
-      }
-    }
-
     const showCenter = () => {
-      notePointerActivity()
       cancelCenterHide()
       cancelWorkspaceStripHide()
       setWorkspaceStripVisible(false)
       setCenterVisible(true)
-      schedulePointerIdleHide()
+    }
+
+    const handleCenterLeave = () => {
+      scheduleCenterHide()
     }
 
     const scheduleCenterHide = (delay = CENTER_HIDE_DELAY_MS) => {
-      if (!centerAutoHideEnabled(hyprState.get()) || openPopoverCount > 0) {
+      if (!centerAutoHideEnabled(hyprState.get()) || shouldKeepCenterVisible()) {
         return
       }
 
@@ -141,14 +106,7 @@ app.start({
       centerHideTimer = timeout(delay, () => {
         centerHideTimer = null
 
-        if (openPopoverCount > 0 || !centerAutoHideEnabled(hyprState.get()) || !centerVisible.get()) {
-          return
-        }
-
-        const idleFor = Date.now() - lastPointerActivityAt
-
-        if (idleFor < POINTER_IDLE_HIDE_DELAY_MS) {
-          schedulePointerIdleHide(POINTER_IDLE_HIDE_DELAY_MS - idleFor)
+        if (!centerAutoHideEnabled(hyprState.get()) || !centerVisible.get() || shouldKeepCenterVisible()) {
           return
         }
 
@@ -158,28 +116,39 @@ app.start({
 
     requestShowCenter = showCenter
     requestShowWorkspaces = showWorkspaceStrip
-    setPointerActivityReporter(notePointerActivity)
-
-    setPopoverVisibilityReporter((open) => {
-      if (open) {
-        openPopoverCount += 1
-        showCenter()
-        cancelPointerIdleHide()
+    setHoverReporter((id, hovered) => {
+      if (hovered) {
+        hoveredSurfaceIds.add(id)
+        cancelCenterHide()
+        if (!centerVisible.get()) {
+          showCenter()
+        }
         return
       }
 
-      openPopoverCount = Math.max(0, openPopoverCount - 1)
+      hoveredSurfaceIds.delete(id)
 
-      if (openPopoverCount === 0) {
+      if (hoveredSurfaceIds.size === 0) {
         scheduleCenterHide()
-        schedulePointerIdleHide()
+      }
+    })
+
+    setPopoverVisibilityReporter((id, open) => {
+      if (open) {
+        openPopoverIds.add(id)
+        showCenter()
+        return
+      }
+
+      openPopoverIds.delete(id)
+
+      if (!shouldKeepCenterVisible()) {
+        scheduleCenterHide()
       }
     })
 
     const proc = subprocess(command("eww-workspaces", "listen", "json"), (stdout) => {
       const nextState = parseJson<HyprState>(stdout, hyprState.get())
-      const previousState = hyprState.get()
-      const workspaceChanged = nextState.activeWorkspaceId !== previousState.activeWorkspaceId
       setHyprState(nextState)
 
       if (soloLaptopCenter(nextState)) {
@@ -191,14 +160,9 @@ app.start({
           initialAutohideScheduled = true
           scheduleCenterHide(INITIAL_AUTOHIDE_DELAY_MS)
         }
-
-        if (workspaceChanged && !centerVisible.get()) {
-          showWorkspaceStrip()
-        }
       } else {
         initialAutohideScheduled = false
         cancelCenterHide()
-        cancelPointerIdleHide()
         cancelWorkspaceStripHide()
         setWorkspaceStripVisible(false)
         setCenterVisible(true)
@@ -208,11 +172,10 @@ app.start({
     onCleanup(() => {
       proc.kill()
       cancelCenterHide()
-      cancelPointerIdleHide()
       cancelWorkspaceStripHide()
       requestShowCenter = null
       requestShowWorkspaces = null
-      setPointerActivityReporter(null)
+      setHoverReporter(null)
       setPopoverVisibilityReporter(null)
     })
 
@@ -226,7 +189,7 @@ app.start({
               centerVisible={centerVisible}
               workspaceStripVisible={workspaceStripVisible}
               showCenter={showCenter}
-              hideCenter={hideCenter}
+              hideCenter={handleCenterLeave}
             />
           </This>
         )}

@@ -5,18 +5,23 @@ import { createPoll } from "ags/time"
 
 import { attachPopoverHandlers } from "../../lib/widget-helpers"
 
-export default function ClockButton() {
+type ClockButtonProps = {
+  instanceId: string
+}
+
+export default function ClockButton({ instanceId }: ClockButtonProps) {
   const time = createPoll("", 1000, () => GLib.DateTime.new_now_local().format("%a %d %b %H:%M") ?? "")
   const tooltip = createPoll("", 1000, () =>
     GLib.DateTime.new_now_local().format("%a %d %b %Y %H:%M:%S %Z") ?? "",
   )
+  const popoverId = `clock-popover-${instanceId}`
 
   return (
     <menubutton class="bar-menu-button" tooltipText={tooltip}>
       <box class="bar-item clock-item">
         <label label={time} />
       </box>
-      <popover $={(self: Gtk.Popover) => attachPopoverHandlers(self)}>
+      <popover $={(self: Gtk.Popover) => attachPopoverHandlers(self, popoverId)}>
         <box class="panel" orientation={Gtk.Orientation.VERTICAL} spacing={8}>
           <Gtk.Calendar />
         </box>

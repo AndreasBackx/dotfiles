@@ -8,7 +8,11 @@ import { attachPopoverHandlers } from "../../lib/widget-helpers"
 import { command, createTextPoll, run } from "../../lib/runtime"
 import type { BluetoothDevice } from "../../lib/types"
 
-export default function BluetoothButton() {
+type BluetoothButtonProps = {
+  instanceId: string
+}
+
+export default function BluetoothButton({ instanceId }: BluetoothButtonProps) {
   const icon = createTextPoll(3000, command("eww-bluetooth", "icon"))
   const tooltip = createTextPoll(3000, command("eww-bluetooth", "tooltip"))
   const state = createTextPoll(3000, command("eww-bluetooth", "state"))
@@ -19,13 +23,14 @@ export default function BluetoothButton() {
     ])
     return parseBluetoothDevices(allDevices, connectedDevices)
   })
+  const popoverId = `bluetooth-popover-${instanceId}`
 
   return (
     <menubutton class="bar-menu-button" tooltipText={tooltip}>
       <box class={state((value) => `bar-item icon-only bt-${value}`)}>
         <label class="item-icon item-icon-only" label={icon} />
       </box>
-      <popover $={(self: Gtk.Popover) => attachPopoverHandlers(self)}>
+      <popover $={(self: Gtk.Popover) => attachPopoverHandlers(self, popoverId)}>
         <box class="panel" orientation={Gtk.Orientation.VERTICAL} spacing={8}>
           <label class="panel-title" label="Bluetooth" xalign={0} />
           <label class="panel-status" label={tooltip} xalign={0} />

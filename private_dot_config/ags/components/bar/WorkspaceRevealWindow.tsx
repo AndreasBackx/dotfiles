@@ -24,6 +24,7 @@ export default function WorkspaceRevealWindow({
 }: WorkspaceRevealWindowProps) {
   const position = barPositionForRole(role)
   const geometry = gdkmonitor.get_geometry()
+  const hoverId = `workspace-reveal-${role}-${gdkmonitor.connector}`
 
   return (
     <window
@@ -44,7 +45,7 @@ export default function WorkspaceRevealWindow({
         widthRequest={geometry.width}
         hexpand
         halign={Gtk.Align.FILL}
-        $={(self) => attachHoverHandlers(self, onHover)}
+        $={(self) => attachHoverHandlers(self, hoverId, onHover)}
       >
         <WorkspaceStrip base={baseForRole(role)} hyprState={hyprState} />
       </box>

@@ -8,7 +8,6 @@ export const BIN = `${HOME}/.bin`
 export const BAR_HEIGHT = 56
 export const CENTER_HIDE_DELAY_MS = 320
 export const INITIAL_AUTOHIDE_DELAY_MS = 1200
-export const POINTER_IDLE_HIDE_DELAY_MS = 1200
 export const WORKSPACE_STRIP_HIDE_DELAY_MS = 300
 
 export function command(name: string, ...args: string[]) {

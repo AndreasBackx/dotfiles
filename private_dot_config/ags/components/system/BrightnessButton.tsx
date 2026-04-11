@@ -3,9 +3,14 @@ import { Gtk } from "ags/gtk4"
 import { attachPopoverHandlers } from "../../lib/widget-helpers"
 import { command, createTextPoll, run } from "../../lib/runtime"
 
-export default function BrightnessButton() {
+type BrightnessButtonProps = {
+  instanceId: string
+}
+
+export default function BrightnessButton({ instanceId }: BrightnessButtonProps) {
   const text = createTextPoll(3000, command("eww-brightness", "text"))
   const tooltip = createTextPoll(3000, command("eww-brightness", "tooltip"))
+  const popoverId = `brightness-popover-${instanceId}`
 
   return (
     <menubutton class="bar-menu-button" tooltipText={tooltip}>
@@ -13,7 +18,7 @@ export default function BrightnessButton() {
         <label class="item-icon" label="󰃠" />
         <label class="item-text" label={text} />
       </box>
-      <popover $={(self: Gtk.Popover) => attachPopoverHandlers(self)}>
+      <popover $={(self: Gtk.Popover) => attachPopoverHandlers(self, popoverId)}>
         <box class="panel" orientation={Gtk.Orientation.VERTICAL} spacing={8}>
           <label class="panel-title" label="Brightness" xalign={0} />
           <box class="panel-row" spacing={8}>

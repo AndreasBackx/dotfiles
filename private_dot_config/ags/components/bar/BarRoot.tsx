@@ -9,10 +9,11 @@ import type { HyprStateAccessor } from "../../lib/types"
 type BarRootProps = {
   base: number
   hyprState: HyprStateAccessor
+  instanceId: string
   position: "top" | "bottom"
 }
 
-export default function BarRoot({ base, hyprState, position }: BarRootProps) {
+export default function BarRoot({ base, hyprState, instanceId, position }: BarRootProps) {
   return (
     <centerbox
       class={`bar-root position-${position}`}
@@ -28,7 +29,7 @@ export default function BarRoot({ base, hyprState, position }: BarRootProps) {
         <SpotifySegment />
       </box>
       <box $type="end" class="right-side" hexpand halign={Gtk.Align.END}>
-        <SystemSegment />
+        <SystemSegment instanceId={instanceId} />
       </box>
     </centerbox>
   )

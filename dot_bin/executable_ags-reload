@@ -10,4 +10,11 @@ mkdir -p "${log_file:h}"
 ags quit --instance dotfiles-bar >/dev/null 2>&1 || true
 sleep 0.2
 
+if pgrep -f '/run/user/.*/ags\.js' >/dev/null 2>&1; then
+  pkill -TERM -f '/run/user/.*/ags\.js' >/dev/null 2>&1 || true
+  sleep 0.2
+fi
+
+: > "$log_file"
+
 ags run --log-file "$log_file" "$app_file" >/dev/null 2>&1 &!
