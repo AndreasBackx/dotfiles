@@ -1,0 +1,21 @@
+import { For } from "ags"
+
+import { workspaceIdsForBase } from "../../lib/bar-logic"
+import type { HyprStateAccessor } from "../../lib/types"
+
+import WorkspaceButton from "./WorkspaceButton"
+
+type WorkspaceStripProps = {
+  base: number
+  hyprState: HyprStateAccessor
+}
+
+export default function WorkspaceStrip({ base, hyprState }: WorkspaceStripProps) {
+  return (
+    <box class="workspace-strip">
+      <For each={hyprState((state) => workspaceIdsForBase(base, state))}>
+        {(id) => <WorkspaceButton base={base} id={id} hyprState={hyprState} />}
+      </For>
+    </box>
+  )
+}

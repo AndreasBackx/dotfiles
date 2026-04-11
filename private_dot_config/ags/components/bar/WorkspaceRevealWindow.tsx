@@ -1,0 +1,53 @@
+import app from "ags/gtk4/app"
+import { Astal, Gdk, Gtk } from "ags/gtk4"
+
+import { baseForRole, barPositionForRole, workspaceStripAnchorForPosition } from "../../lib/bar-logic"
+import { attachHoverHandlers } from "../../lib/widget-helpers"
+import type { BooleanAccessor, HyprStateAccessor, Role } from "../../lib/types"
+
+import WorkspaceStrip from "../workspaces/WorkspaceStrip"
+
+type WorkspaceRevealWindowProps = {
+  gdkmonitor: Gdk.Monitor
+  role: Role
+  hyprState: HyprStateAccessor
+  visible: BooleanAccessor
+  onHover: () => void
+}
+
+export default function WorkspaceRevealWindow({
+  gdkmonitor,
+  role,
+  hyprState,
+  visible,
+  onHover,
+}: WorkspaceRevealWindowProps) {
+  const position = barPositionForRole(role)
+  const geometry = gdkmonitor.get_geometry()
+
+  return (
+    <window
+      name={`bar-workspaces-${role}-${gdkmonitor.connector}`}
+      application={app}
+      namespace={`ags-workspaces-${position}`}
+      gdkmonitor={gdkmonitor}
+      defaultWidth={geometry.width}
+      visible={visible}
+      exclusivity={Astal.Exclusivity.IGNORE}
+      layer={Astal.Layer.OVERLAY}
+      anchor={workspaceStripAnchorForPosition(position)}
+      marginTop={position === "top" ? 0 : undefined}
+      marginBottom={position === "bottom" ? 0 : undefined}
+    >
+      <box
+        class={`workspace-reveal-shell position-${position}`}
+        widthRequest={geometry.width}
+        hexpand
+        halign={Gtk.Align.FILL}
+        $={(self) => attachHoverHandlers(self, onHover)}
+      >
+        <WorkspaceStrip base={baseForRole(role)} hyprState={hyprState} />
+      </box>
+    </window>
+  )
+}
