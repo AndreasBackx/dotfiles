@@ -7,6 +7,9 @@ type TitleSegmentProps = {
   hyprState: HyprStateAccessor
 }
 
+/**
+ * Shows the focused window title with a safe desktop fallback.
+ */
 export default function TitleSegment({ hyprState }: TitleSegmentProps) {
   return (
     <label

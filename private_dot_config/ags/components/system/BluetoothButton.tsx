@@ -4,7 +4,7 @@ import { createPoll } from "ags/time"
 import { execAsync } from "ags/process"
 
 import { parseBluetoothDevices } from "../../lib/parsers"
-import { command, createTextPoll, run } from "../../lib/runtime"
+import { command, createCommandTextPolls, run } from "../../lib/runtime"
 import type { BluetoothDevice } from "../../lib/types"
 
 import SystemMenuButton from "./SystemMenuButton"
@@ -13,10 +13,15 @@ type BluetoothButtonProps = {
   instanceId: string
 }
 
+/**
+ * Polls Bluetooth status and offers a popover for power and device actions.
+ */
 export default function BluetoothButton({ instanceId }: BluetoothButtonProps) {
-  const icon = createTextPoll(3000, command("eww-bluetooth", "icon"))
-  const tooltip = createTextPoll(3000, command("eww-bluetooth", "tooltip"))
-  const state = createTextPoll(3000, command("eww-bluetooth", "state"))
+  const { icon, tooltip, state } = createCommandTextPolls(
+    3000,
+    "eww-bluetooth",
+    ["icon", "tooltip", "state"] as const,
+  )
   const devices = createPoll(new Array<BluetoothDevice>(), 8000, async () => {
     const [allDevices, connectedDevices] = await Promise.all([
       execAsync(["bluetoothctl", "devices"]),

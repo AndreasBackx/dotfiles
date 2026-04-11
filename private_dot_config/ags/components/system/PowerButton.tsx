@@ -8,8 +8,13 @@ type PowerButtonProps = {
   instanceId: string
 }
 
+/**
+ * Exposes session and power-management actions in a popover.
+ */
 export default function PowerButton({ instanceId }: PowerButtonProps) {
   const popoverId = `power-popover-${instanceId}`
+  // Keep the click handlers short while still routing every action through the
+  // same helper script.
   const powerOption = (action: string) => run([`${BIN}/power-options`, action])
 
   return (

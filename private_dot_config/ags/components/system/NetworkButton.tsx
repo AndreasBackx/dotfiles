@@ -4,15 +4,22 @@ import { createPoll } from "ags/time"
 import { execAsync } from "ags/process"
 
 import { parseWifiAccessPoints } from "../../lib/parsers"
-import { command, createTextPoll, run, shell } from "../../lib/runtime"
+import { command, createCommandTextPolls, run, shell } from "../../lib/runtime"
 import type { WifiAccessPoint } from "../../lib/types"
 
 import SystemMenuButton from "./SystemMenuButton"
 
+/**
+ * Connects to a Wi-Fi network using `nmcli` while preserving single quotes in
+ * the SSID.
+ */
 function connectWifi(ssid: string) {
   run(shell(`nmcli d wifi connect '${ssid.replace(/'/g, "'\\''")}'`))
 }
 
+/**
+ * Formats a compact Wi-Fi label for the popover list.
+ */
 function wifiLabel(accessPoint: WifiAccessPoint) {
   return `${accessPoint.ssid} (${accessPoint.signal}%${accessPoint.security ? " 🔒" : ""})`
 }
@@ -21,10 +28,11 @@ type NetworkButtonProps = {
   instanceId: string
 }
 
+/**
+ * Polls network status and lists visible Wi-Fi access points in a popover.
+ */
 export default function NetworkButton({ instanceId }: NetworkButtonProps) {
-  const icon = createTextPoll(3000, command("eww-network", "icon"))
-  const tooltip = createTextPoll(3000, command("eww-network", "tooltip"))
-  const state = createTextPoll(3000, command("eww-network", "state"))
+  const { icon, tooltip, state } = createCommandTextPolls(3000, "eww-network", ["icon", "tooltip", "state"] as const)
   const wifi = createPoll(new Array<WifiAccessPoint>(), 8000, async () => {
     const stdout = await execAsync([
       "nmcli",

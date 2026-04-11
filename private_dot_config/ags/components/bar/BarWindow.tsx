@@ -17,6 +17,9 @@ type BarWindowProps = {
   onHoverLeave?: () => void
 }
 
+/**
+ * Renders one full bar window for a monitor role.
+ */
 export default function BarWindow({
   gdkmonitor,
   role,

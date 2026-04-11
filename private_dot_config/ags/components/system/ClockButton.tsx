@@ -9,6 +9,9 @@ type ClockButtonProps = {
   instanceId: string
 }
 
+/**
+ * Shows the current local time and a calendar popover.
+ */
 export default function ClockButton({ instanceId }: ClockButtonProps) {
   const time = createPoll("", 1000, () => GLib.DateTime.new_now_local().format("%a %d %b %H:%M") ?? "")
   const tooltip = createPoll("", 1000, () =>

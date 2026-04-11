@@ -4,8 +4,11 @@ import config from "./config"
 import { run } from "./runtime"
 import type { HyprMonitor, HyprState, Role } from "./types"
 
-// Monitor matching prefers stable serial numbers when they are available, while
-// still allowing description-only matching on hosts without serial metadata.
+/**
+ * Matches a live Hyprland monitor to a configured role.
+ *
+ * Example: `monitorMatches(monitor, "center")`
+ */
 export function monitorMatches(monitor: HyprMonitor, role: Role) {
   const target = config.monitorRoles[role]
   if (!target) {
@@ -19,10 +22,20 @@ export function monitorMatches(monitor: HyprMonitor, role: Role) {
   return target.name === monitor.description
 }
 
+/**
+ * Returns the connector name for the monitor currently assigned to a role.
+ *
+ * Example: `connectorForRole(state, "left")`
+ */
 export function connectorForRole(state: HyprState, role: Role) {
   return state.monitors.find((monitor) => monitorMatches(monitor, role))?.connector ?? null
 }
 
+/**
+ * Chooses where the center content should render.
+ *
+ * Example: `centerTargetRole(state) // => "center" | "laptop"`
+ */
 export function centerTargetRole(state: HyprState): Role {
   if (connectorForRole(state, "center")) {
     return "center"
@@ -35,6 +48,10 @@ export function centerTargetRole(state: HyprState): Role {
   return "center"
 }
 
+/**
+ * Detects the "laptop only" layout where the center workspace range should be
+ * treated as living on the laptop display.
+ */
 export function soloLaptopCenter(state: HyprState) {
   return (
     !!config.monitorRoles.laptop &&
@@ -45,6 +62,10 @@ export function soloLaptopCenter(state: HyprState) {
   )
 }
 
+/**
+ * Enables center-bar auto-hide for the home center monitor and the laptop
+ * fallback.
+ */
 export function centerAutoHideEnabled(state: HyprState) {
   const role = centerTargetRole(state)
   const target = config.monitorRoles[role]
@@ -64,6 +85,11 @@ export function centerAutoHideEnabled(state: HyprState) {
   return !!target.serial && target.serial === config.homeCenter.serial
 }
 
+/**
+ * Maps a monitor role to its workspace-number base.
+ *
+ * Example: `baseForRole("right") // => 200`
+ */
 export function baseForRole(role: Role) {
   switch (role) {
     case "left":
@@ -76,20 +102,34 @@ export function baseForRole(role: Role) {
   }
 }
 
+/**
+ * Returns the configured top/bottom bar position for a role.
+ */
 export function barPositionForRole(role: Role) {
   return config.monitorRoles[role]?.barPosition ?? "bottom"
 }
 
+/**
+ * Computes the AGS window anchor bits for a full-width bar.
+ */
 export function anchorForPosition(position: "top" | "bottom") {
   const { TOP, BOTTOM, LEFT, RIGHT } = Astal.WindowAnchor
   return position === "top" ? TOP | LEFT | RIGHT : BOTTOM | LEFT | RIGHT
 }
 
+/**
+ * Computes the AGS window anchor bits for the reveal-only workspace strip.
+ */
 export function workspaceStripAnchorForPosition(position: "top" | "bottom") {
   const { TOP, BOTTOM, LEFT } = Astal.WindowAnchor
   return position === "top" ? TOP | LEFT : BOTTOM | LEFT
 }
 
+/**
+ * Returns the workspace ids that should currently be shown in a strip.
+ *
+ * Example: `workspaceIdsForBase(100, state)`
+ */
 export function workspaceIdsForBase(base: number, state: HyprState) {
   const ids: number[] = []
 
@@ -108,10 +148,20 @@ export function workspaceIdsForBase(base: number, state: HyprState) {
   return ids
 }
 
+/**
+ * Formats a visible label for a workspace inside its role-local range.
+ *
+ * Example: `workspaceLabel(100, 103) // => "3"`
+ */
 export function workspaceLabel(base: number, id: number) {
   return `${id - base}`
 }
 
+/**
+ * Builds the CSS class list for a workspace button.
+ *
+ * Example: `workspaceClass(0, 2, state)`
+ */
 export function workspaceClass(base: number, id: number, state: HyprState) {
   const classes = ["workspace-btn"]
 
@@ -128,6 +178,10 @@ export function workspaceClass(base: number, id: number, state: HyprState) {
   return classes.join(" ")
 }
 
+/**
+ * Reassigns the center workspace range to the laptop monitor when it is the
+ * only active display.
+ */
 export function assignCenterWorkspacesToLaptop() {
   if (!config.monitorRoles.laptop) {
     return

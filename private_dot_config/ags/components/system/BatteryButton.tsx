@@ -1,10 +1,14 @@
-import { command, createTextPoll } from "../../lib/runtime"
+import { createCommandTextPolls } from "../../lib/runtime"
 
+/**
+ * Shows the current battery icon and percentage when a battery is present.
+ */
 export default function BatteryButton() {
-  const icon = createTextPoll(15000, command("eww-battery", "icon"))
-  const text = createTextPoll(15000, command("eww-battery", "text"))
-  const tooltip = createTextPoll(15000, command("eww-battery", "tooltip"))
-  const state = createTextPoll(15000, command("eww-battery", "state"))
+  const { icon, text, tooltip, state } = createCommandTextPolls(
+    15000,
+    "eww-battery",
+    ["icon", "text", "tooltip", "state"] as const,
+  )
 
   return (
     <box visible={text((value) => value.length > 0)}>

@@ -10,6 +10,9 @@ type WorkspaceStripProps = {
   hyprState: HyprStateAccessor
 }
 
+/**
+ * Renders the currently relevant workspaces for one role-local workspace range.
+ */
 export default function WorkspaceStrip({ base, hyprState }: WorkspaceStripProps) {
   return (
     <box class="workspace-strip">

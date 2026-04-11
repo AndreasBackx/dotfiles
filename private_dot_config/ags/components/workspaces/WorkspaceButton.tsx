@@ -8,6 +8,9 @@ type WorkspaceButtonProps = {
   hyprState: HyprStateAccessor
 }
 
+/**
+ * Navigates to a workspace and reflects its active/visible/occupied state.
+ */
 export default function WorkspaceButton({ base, id, hyprState }: WorkspaceButtonProps) {
   return (
     <button

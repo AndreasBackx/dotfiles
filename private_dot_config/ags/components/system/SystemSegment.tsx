@@ -11,6 +11,9 @@ type SystemSegmentProps = {
   instanceId: string
 }
 
+/**
+ * Groups the right-hand status widgets for one bar instance.
+ */
 export default function SystemSegment({ instanceId }: SystemSegmentProps) {
   return (
     <box class="system-segment" spacing={1}>

@@ -14,8 +14,9 @@ type OverlayWindowProps = {
   children: any
 }
 
-// Bar windows share the same overlay-window setup. Keep it in one place so
-// anchor, layer, and monitor wiring stay consistent across the variants.
+/**
+ * Shared wrapper for AGS overlay windows used by bar surfaces.
+ */
 export default function OverlayWindow({
   name,
   namespace,

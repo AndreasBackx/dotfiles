@@ -1,6 +1,6 @@
 import { Gtk } from "ags/gtk4"
 
-import { command, createTextPoll, run } from "../../lib/runtime"
+import { command, createCommandTextPolls, run } from "../../lib/runtime"
 
 import SystemMenuButton from "./SystemMenuButton"
 
@@ -8,9 +8,11 @@ type BrightnessButtonProps = {
   instanceId: string
 }
 
+/**
+ * Shows brightness and exposes quick adjustment presets in a popover.
+ */
 export default function BrightnessButton({ instanceId }: BrightnessButtonProps) {
-  const text = createTextPoll(3000, command("eww-brightness", "text"))
-  const tooltip = createTextPoll(3000, command("eww-brightness", "tooltip"))
+  const { text, tooltip } = createCommandTextPolls(3000, "eww-brightness", ["text", "tooltip"] as const)
   const popoverId = `brightness-popover-${instanceId}`
   const presets = [0, 25, 50, 75, 100]
 

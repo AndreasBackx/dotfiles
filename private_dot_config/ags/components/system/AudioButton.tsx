@@ -4,7 +4,7 @@ import { createPoll } from "ags/time"
 import { execAsync } from "ags/process"
 
 import { parseWpSection } from "../../lib/parsers"
-import { command, createTextPoll, run, shell } from "../../lib/runtime"
+import { command, createCommandTextPolls, run, shell } from "../../lib/runtime"
 import type { AudioEndpoint } from "../../lib/types"
 
 import SystemMenuButton from "./SystemMenuButton"
@@ -13,10 +13,11 @@ type AudioButtonProps = {
   instanceId: string
 }
 
+/**
+ * Polls PipeWire status and offers sink/source selection in a popover.
+ */
 export default function AudioButton({ instanceId }: AudioButtonProps) {
-  const icon = createTextPoll(2000, command("eww-audio", "icon"))
-  const text = createTextPoll(2000, command("eww-audio", "text"))
-  const tooltip = createTextPoll(2000, command("eww-audio", "tooltip"))
+  const { icon, text, tooltip } = createCommandTextPolls(2000, "eww-audio", ["icon", "text", "tooltip"] as const)
   const pipewire = createPoll({ sinks: new Array<AudioEndpoint>(), sources: new Array<AudioEndpoint>() }, 5000, async () => {
     const stdout = await execAsync(shell("wpctl status"))
     return {

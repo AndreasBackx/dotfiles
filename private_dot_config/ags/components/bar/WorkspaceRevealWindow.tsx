@@ -15,6 +15,10 @@ type WorkspaceRevealWindowProps = {
   onHover: () => void
 }
 
+/**
+ * Renders the thin workspace-only reveal strip used while the center bar is
+ * auto-hidden.
+ */
 export default function WorkspaceRevealWindow({
   gdkmonitor,
   role,

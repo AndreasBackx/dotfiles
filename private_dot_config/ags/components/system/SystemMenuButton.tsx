@@ -9,6 +9,9 @@ type SystemMenuButtonProps = {
   children: any
 }
 
+/**
+ * Shared menubutton wrapper that wires a tracked popover to a system widget.
+ */
 export default function SystemMenuButton({ popoverId, tooltipText, button, children }: SystemMenuButtonProps) {
   return (
     <menubutton class="bar-menu-button" tooltipText={tooltipText}>

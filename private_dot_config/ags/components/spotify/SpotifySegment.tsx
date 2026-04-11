@@ -4,6 +4,10 @@ import { createSubprocess } from "ags/process"
 
 import { command, run, trimOutput } from "../../lib/runtime"
 
+/**
+ * Streams Spotify metadata into the center segment and toggles playback on
+ * click.
+ */
 export default function SpotifySegment() {
   // The helper scripts expose long-lived streams, so subprocess bindings are a
   // better fit than polling here.

@@ -27,8 +27,11 @@ export type CenterVisibilityController = {
   cleanup: () => void
 }
 
-// This module owns the timer-driven visibility policy for the auto-hidden center
-// bar so `app.tsx` can focus on wiring external state into the UI.
+/**
+ * Creates the timer-driven controller for the auto-hidden center bar.
+ *
+ * Example: `const visibility = createCenterVisibilityController({ ... })`
+ */
 export function createCenterVisibilityController({
   hyprState,
   centerVisible,
@@ -48,16 +51,19 @@ export function createCenterVisibilityController({
   // only after they close, but they do not independently veto hiding here.
   const shouldKeepCenterVisible = () => hoveredSurfaceIds.size > 0
 
+  /** Cancels any pending center-bar hide timer. */
   const cancelCenterHide = () => {
     centerHideTimer?.cancel()
     centerHideTimer = null
   }
 
+  /** Cancels the temporary workspace-strip reveal timer. */
   const cancelWorkspaceStripHide = () => {
     workspaceStripTimer?.cancel()
     workspaceStripTimer = null
   }
 
+  /** Hides the center bar unless the pointer is still on an interactive surface. */
   const hideCenter = () => {
     if (shouldKeepCenterVisible()) {
       return
@@ -68,6 +74,7 @@ export function createCenterVisibilityController({
     cancelCenterHide()
   }
 
+  /** Shows the temporary workspace strip used to recall the hidden center bar. */
   const showWorkspaceStrip = () => {
     setWorkspaceStripVisible(true)
     cancelWorkspaceStripHide()
@@ -77,6 +84,7 @@ export function createCenterVisibilityController({
     })
   }
 
+  /** Makes the center bar visible and clears any pending hide timers. */
   const showCenter = () => {
     cancelCenterHide()
     cancelWorkspaceStripHide()
@@ -84,6 +92,7 @@ export function createCenterVisibilityController({
     setCenterVisible(true)
   }
 
+  /** Starts or restarts the delayed auto-hide timer for the center bar. */
   const scheduleCenterHide = (delay = centerHideDelayMs) => {
     if (!centerAutoHideEnabled(hyprState.get()) || shouldKeepCenterVisible()) {
       return
@@ -101,10 +110,12 @@ export function createCenterVisibilityController({
     })
   }
 
+  /** Handles pointer exit from the center bar shell. */
   const handleCenterLeave = () => {
     scheduleCenterHide()
   }
 
+  /** Updates hover bookkeeping for bar shells and tracked popovers. */
   const handleHoverChange: HoverReporter = (id, hovered) => {
     if (hovered) {
       hoveredSurfaceIds.add(id)
@@ -122,6 +133,7 @@ export function createCenterVisibilityController({
     }
   }
 
+  /** Updates popover bookkeeping and keeps the center bar visible while opening. */
   const handlePopoverVisibilityChange: PopoverReporter = (id, open) => {
     if (open) {
       openPopoverIds.add(id)
@@ -136,6 +148,7 @@ export function createCenterVisibilityController({
     }
   }
 
+  /** Forces the non-autohide baseline state used on monitors without hiding. */
   const applyAutoHideState = () => {
     if (centerAutoHideEnabled(hyprState.get())) {
       return
@@ -147,6 +160,7 @@ export function createCenterVisibilityController({
     setCenterVisible(true)
   }
 
+  /** Clears timers and tracked interaction state during app shutdown. */
   const cleanup = () => {
     cancelCenterHide()
     cancelWorkspaceStripHide()

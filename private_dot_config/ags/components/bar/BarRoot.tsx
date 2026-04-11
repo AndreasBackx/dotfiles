@@ -13,6 +13,9 @@ type BarRootProps = {
   position: "top" | "bottom"
 }
 
+/**
+ * Lays out the left, center, and right content segments inside a bar window.
+ */
 export default function BarRoot({ base, hyprState, instanceId, position }: BarRootProps) {
   return (
     <centerbox

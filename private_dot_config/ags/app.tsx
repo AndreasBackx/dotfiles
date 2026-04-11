@@ -19,6 +19,9 @@ import type { HyprState } from "./lib/types"
 let requestShowCenter: (() => void) | null = null
 let requestShowWorkspaces: (() => void) | null = null
 
+// Application entry point. It binds monitor state, subscribes to Hyprland
+// workspace updates, and delegates center-bar visibility policy to the
+// controller in `lib/center-visibility.ts`.
 app.start({
   instanceName: "dotfiles-bar",
   css: style,

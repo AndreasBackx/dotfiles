@@ -15,10 +15,12 @@ type MonitorBarsProps = {
   hideCenter: () => void
 }
 
+/** Returns whether a role currently belongs to the monitor being rendered. */
 function roleIsOnCurrentMonitor(state: HyprState, role: Role, connector: string) {
   return connectorForRole(state, role) === connector
 }
 
+/** Returns visibility for the main center/laptop bar window on one monitor. */
 function primaryVisibleForRole(
   state: HyprState,
   role: "center" | "laptop",
@@ -32,6 +34,7 @@ function primaryVisibleForRole(
   )
 }
 
+/** Returns visibility for the reveal-only workspace strip on one monitor. */
 function revealVisibleForRole(
   state: HyprState,
   role: "center" | "laptop",
@@ -48,6 +51,9 @@ function revealVisibleForRole(
   )
 }
 
+/**
+ * Creates all bar windows needed for one physical monitor.
+ */
 export default function MonitorBars({
   gdkmonitor,
   hyprState,
