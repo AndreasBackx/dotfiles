@@ -51,7 +51,7 @@ const BAR_HEIGHT = 56
 const CENTER_HIDE_DELAY_MS = 320
 const INITIAL_AUTOHIDE_DELAY_MS = 1200
 const POINTER_IDLE_HIDE_DELAY_MS = 1200
-const WORKSPACE_STRIP_HIDE_DELAY_MS = 3000
+const WORKSPACE_STRIP_HIDE_DELAY_MS = 300
 
 let requestShowCenter: (() => void) | null = null
 let requestShowWorkspaces: (() => void) | null = null
@@ -833,14 +833,14 @@ function MonitorBars({
   centerVisible,
   workspaceStripVisible,
   showCenter,
-  scheduleCenterHide,
+  hideCenter,
 }: {
   gdkmonitor: Gdk.Monitor
   hyprState: ReturnType<typeof createState<HyprState>>[0]
   centerVisible: ReturnType<typeof createState<boolean>>[0]
   workspaceStripVisible: ReturnType<typeof createState<boolean>>[0]
   showCenter: () => void
-  scheduleCenterHide: (delay?: number) => void
+  hideCenter: () => void
 }) {
   const connector = gdkmonitor.connector
 
@@ -885,7 +885,7 @@ function MonitorBars({
         hyprState={hyprState}
         visible={centerVisibleOnMonitor}
         onHoverEnter={showCenter}
-        onHoverLeave={() => scheduleCenterHide()}
+        onHoverLeave={hideCenter}
       />
       <BarWindow
         gdkmonitor={gdkmonitor}
@@ -893,7 +893,7 @@ function MonitorBars({
         hyprState={hyprState}
         visible={laptopVisibleOnMonitor}
         onHoverEnter={showCenter}
-        onHoverLeave={() => scheduleCenterHide()}
+        onHoverLeave={hideCenter}
       />
       <WorkspaceRevealWindow
         gdkmonitor={gdkmonitor}
@@ -1129,7 +1129,7 @@ app.start({
               centerVisible={centerVisible}
               workspaceStripVisible={workspaceStripVisible}
               showCenter={showCenter}
-              scheduleCenterHide={scheduleCenterHide}
+              hideCenter={hideCenter}
             />
           </This>
         )}

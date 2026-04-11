@@ -86,6 +86,9 @@ chezmoi apply --dry-run --verbose
 
 # Check your system dependencies.
 dot-doctor
+
+# Reload the AGS bar after AGS config edits.
+ags-reload
 ```
 
 Common issues:
@@ -93,6 +96,7 @@ Common issues:
 - Missing wrappers: run `chezmoi apply` again after installing required desktop tools.
 - Missing secrets: check `~/.config/.secrets` and your secrets provider setup.
 - Headless mode: desktop checks are skipped and 1Password-backed secrets are not loaded.
+- AGS bar reloads: use `ags-reload`; logs go to `~/.local/state/ags-reload.log`.
 
 ## ddcutil access (if needed)
 
