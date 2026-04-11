@@ -1,0 +1,67 @@
+export type BarPosition = "top" | "bottom"
+
+export type MonitorConfig = {
+  name: string
+  serial: string
+  barPosition: BarPosition
+}
+
+const config = {
+  monitorRoles: {
+    left: {
+      name: "{{ index .monitors .monitors.selected "left" "name" }}",
+      serial: "{{ index .monitors .monitors.selected "left" "serial_number" | default "" }}",
+      barPosition: "{{ index .monitors .monitors.selected "left" "bar_position" | default "bottom" }}",
+    },
+    center: {
+      name: "{{ index .monitors .monitors.selected "center" "name" }}",
+      serial: "{{ index .monitors .monitors.selected "center" "serial_number" | default "" }}",
+      barPosition: "{{ index .monitors .monitors.selected "center" "bar_position" | default "bottom" }}",
+    },
+    right: {
+      name: "{{ index .monitors .monitors.selected "right" "name" }}",
+      serial: "{{ index .monitors .monitors.selected "right" "serial_number" | default "" }}",
+      barPosition: "{{ index .monitors .monitors.selected "right" "bar_position" | default "bottom" }}",
+    },
+{{- if hasKey (index .monitors .monitors.selected) "laptop" }}
+    laptop: {
+      name: "{{ index .monitors .monitors.selected "laptop" "name" }}",
+      serial: "{{ index .monitors .monitors.selected "laptop" "serial_number" | default "" }}",
+      barPosition: "{{ index .monitors .monitors.selected "laptop" "bar_position" | default "top" }}",
+    },
+{{- else }}
+    laptop: null,
+{{- end }}
+  },
+  homeCenter: {
+    name: "{{ index .monitors.home.center "name" }}",
+    serial: "{{ index .monitors.home.center "serial_number" | default "" }}",
+  },
+  theme: {
+    background: "{{ .themes.rubecula.background }}",
+    transparency: {{ .themes.rubecula.transparency }},
+    foreground: "{{ .themes.rubecula.foreground }}",
+    color1: "{{ .themes.rubecula.color1 }}",
+    color10: "{{ .themes.rubecula.color10 }}",
+  },
+} as const satisfies {
+  monitorRoles: {
+    left: MonitorConfig
+    center: MonitorConfig
+    right: MonitorConfig
+    laptop: MonitorConfig | null
+  }
+  homeCenter: {
+    name: string
+    serial: string
+  }
+  theme: {
+    background: string
+    transparency: number
+    foreground: string
+    color1: string
+    color10: string
+  }
+}
+
+export default config

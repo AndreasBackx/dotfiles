@@ -30,6 +30,60 @@ truncate_title() {
     print -r -- "$1" | cut -c1-90
 }
 
+state_json() {
+    local active_workspace_json workspaces_json monitors_json active_id visible_ids populated_ids title
+
+    active_workspace_json="$(hyprctl_json activeworkspace || true)"
+    active_id="$(jq -r '.id // 1' <<<"${active_workspace_json:-{}}" 2>/dev/null || true)"
+    if [[ -z "$active_id" || "$active_id" == "null" ]]; then
+        active_id=1
+    fi
+
+    workspaces_json="$(hyprctl_json workspaces || true)"
+    if [[ -z "$workspaces_json" ]]; then
+        workspaces_json='[]'
+    fi
+
+    monitors_json="$(hyprctl_json monitors || true)"
+    if [[ -z "$monitors_json" ]]; then
+        monitors_json='[]'
+    fi
+
+    visible_ids=$(jq -c '[.[] | .activeWorkspace.id]' <<<"$monitors_json" 2>/dev/null || true)
+    populated_ids=$(jq -c '[.[] | select((.windows // 0) > 0) | .id]' <<<"$workspaces_json" 2>/dev/null || true)
+    title=$(window_title | jq -Rs .)
+
+    if [[ -z "$visible_ids" ]]; then
+        visible_ids='[]'
+    fi
+    if [[ -z "$populated_ids" ]]; then
+        populated_ids='[]'
+    fi
+
+    jq -cn \
+        --argjson activeWorkspaceId "$active_id" \
+        --argjson visibleWorkspaceIds "$visible_ids" \
+        --argjson populatedWorkspaceIds "$populated_ids" \
+        --argjson monitors "$monitors_json" \
+        --argjson windowTitle "$title" '
+        {
+            activeWorkspaceId: $activeWorkspaceId,
+            visibleWorkspaceIds: $visibleWorkspaceIds,
+            populatedWorkspaceIds: $populatedWorkspaceIds,
+            monitors: [
+                $monitors[]
+                | {
+                    connector: .name,
+                    description: .description,
+                    serial: (.serial // ""),
+                    activeWorkspaceId: (.activeWorkspace.id // 0)
+                  }
+            ],
+            windowTitle: $windowTitle
+        }
+    '
+}
+
 render() {
     local active_id
     local base
@@ -165,6 +219,13 @@ should_handle_event() {
             ;;
         esac
         ;;
+    json)
+        case "$event" in
+        workspace|workspacev2|focusedmon|focusedmonv2|openwindow|closewindow|movewindow|activewindow|activewindowv2|windowtitle|windowtitlev2)
+            return 0
+            ;;
+        esac
+        ;;
     window)
         case "$event" in
         activewindow|activewindowv2|windowtitle|windowtitlev2|focusedmon|focusedmonv2)
@@ -199,6 +260,9 @@ emit_once() {
     window)
         window_title
         ;;
+    json)
+        state_json
+        ;;
     *)
         return 1
         ;;
@@ -210,6 +274,7 @@ listen_updates() {
     local arg
     local initial_output
     local last_window
+    local last_json
     local next_output
     local sock
     local line
@@ -219,6 +284,7 @@ listen_updates() {
     mode="$1"
     arg="${2:-auto}"
     last_window=""
+    last_json=""
 
     initial_output="$(emit_once "$mode" "$arg" || true)"
     if [[ -n "$initial_output" ]]; then
@@ -227,6 +293,8 @@ listen_updates() {
 
     if [[ "$mode" == "window" ]]; then
         last_window="$initial_output"
+    elif [[ "$mode" == "json" ]]; then
+        last_json="$initial_output"
     fi
 
     while true; do
@@ -240,6 +308,12 @@ listen_updates() {
                         if [[ -n "$next_output" && "$next_output" != "$last_window" ]]; then
                             print -r -- "$next_output"
                             last_window="$next_output"
+                        fi
+                    elif [[ "$mode" == "json" ]]; then
+                        next_output="$(state_json || true)"
+                        if [[ -n "$next_output" && "$next_output" != "$last_json" ]]; then
+                            print -r -- "$next_output"
+                            last_json="$next_output"
                         fi
                     fi
                     continue
@@ -266,6 +340,12 @@ listen_updates() {
                     if [[ -n "$next_output" && "$next_output" != "$last_window" ]]; then
                         print -r -- "$next_output"
                         last_window="$next_output"
+                    fi
+                elif [[ "$mode" == "json" ]]; then
+                    next_output="$(state_json || true)"
+                    if [[ -n "$next_output" && "$next_output" != "$last_json" ]]; then
+                        print -r -- "$next_output"
+                        last_json="$next_output"
                     fi
                 else
                     next_output="$(render "$arg" || true)"
@@ -288,6 +368,12 @@ listen_updates() {
                             print -r -- "$next_output"
                             last_window="$next_output"
                         fi
+                    elif [[ "$mode" == "json" ]]; then
+                        next_output="$(state_json || true)"
+                        if [[ -n "$next_output" && "$next_output" != "$last_json" ]]; then
+                            print -r -- "$next_output"
+                            last_json="$next_output"
+                        fi
                     fi
                     continue
                 fi
@@ -313,6 +399,12 @@ listen_updates() {
                     if [[ -n "$next_output" && "$next_output" != "$last_window" ]]; then
                         print -r -- "$next_output"
                         last_window="$next_output"
+                    fi
+                elif [[ "$mode" == "json" ]]; then
+                    next_output="$(state_json || true)"
+                    if [[ -n "$next_output" && "$next_output" != "$last_json" ]]; then
+                        print -r -- "$next_output"
+                        last_json="$next_output"
                     fi
                 else
                     next_output="$(render "$arg" || true)"
@@ -337,6 +429,11 @@ listen_updates() {
                 print -r -- "$next_output"
                 last_window="$next_output"
             fi
+        elif [[ "$mode" == "json" ]]; then
+            if [[ "$next_output" != "$last_json" ]]; then
+                print -r -- "$next_output"
+                last_json="$next_output"
+            fi
         else
             print -r -- "$next_output"
         fi
@@ -350,16 +447,19 @@ render)
 window)
     window_title
     ;;
+snapshot-json)
+    state_json
+    ;;
 listen)
     if [[ $# -lt 2 ]]; then
-        echo "Usage: $0 listen {render|window} [arg]"
+        echo "Usage: $0 listen {render|window|json} [arg]"
         exit 2
     fi
 
     listen_updates "$2" "${3:-auto}"
     ;;
 *)
-    echo "Usage: $0 {render|window|listen}"
+    echo "Usage: $0 {render|window|snapshot-json|listen}"
     exit 2
     ;;
 esac

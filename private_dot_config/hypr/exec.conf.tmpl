@@ -1,7 +1,8 @@
 exec = justloggedin || notify-send 'Hyprland reloaded!' --expire-time 2500 -u normal
 
 #exec-once = hyprpm reload -n
-exec-once = eww-bar start
+exec-once = ags run "$HOME/.config/ags/app.tsx"
+exec-once = pgrep -x waycorner >/dev/null || waycorner
 exec-once = hypridle
 exec-once = pypr
 exec-once = sh -lc 'pkill shikane; shikane >/tmp/shikane.log 2>&1 &'

@@ -1,0 +1,316 @@
+{{- $t := .themes.rubecula -}}
+window {
+  background: transparent;
+  color: #cecece;
+  font-family: monospace, "MesloLGM Nerd Font";
+  font-size: 14px;
+}
+
+button {
+  min-height: 0;
+  min-width: 0;
+  color: #cecece;
+  background: transparent;
+  background-image: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  outline: none;
+}
+
+button:hover,
+button:focus,
+button:active,
+button:checked,
+button:focus-visible {
+  color: #cecece;
+  background: transparent;
+  background-image: none;
+  box-shadow: none;
+  outline: none;
+}
+
+menubutton,
+menubutton > button,
+menubutton button,
+.bar-menu-button,
+.bar-menu-button > button,
+.bar-menu-button button {
+  color: #cecece;
+  background: transparent;
+  background-image: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  outline: none;
+}
+
+menubutton:hover,
+menubutton:focus,
+menubutton:active,
+menubutton > button:hover,
+menubutton > button:focus,
+menubutton > button:active,
+menubutton > button:checked,
+.bar-menu-button,
+.bar-menu-button:hover,
+.bar-menu-button:focus,
+.bar-menu-button:active,
+.bar-menu-button:checked,
+.bar-menu-button > button:hover,
+.bar-menu-button > button:focus,
+.bar-menu-button > button:active,
+.bar-menu-button > button:checked {
+  color: #cecece;
+  background: transparent;
+  background-image: none;
+  box-shadow: none;
+  outline: none;
+}
+
+.workspace-btn,
+.spotify-button,
+.bar-item,
+.bar-menu-button {
+  color: #cecece;
+  background: transparent;
+  background-image: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  outline: none;
+}
+
+.workspace-btn:hover,
+.workspace-btn:focus,
+.workspace-btn:active,
+.spotify-button:hover,
+.spotify-button:focus,
+.spotify-button:active,
+.spotify-button:checked,
+.bar-item:hover,
+.bar-item:focus,
+.bar-item:active,
+.bar-menu-button:hover,
+.bar-menu-button:focus,
+.bar-menu-button:active,
+.bar-menu-button:checked {
+  color: #cecece;
+  background: transparent;
+  background-image: none;
+  box-shadow: none;
+}
+
+.bar-window-shell,
+.workspace-reveal-shell {
+  background: transparent;
+}
+
+.bar-root {
+  background: rgba(28, 28, 28, {{ $t.transparency }});
+  color: #cecece;
+  min-height: 56px;
+}
+
+.left-side,
+.center-side,
+.right-side,
+.workspace-strip,
+.system-segment {
+  min-width: 1px;
+}
+
+.left-side {
+  padding-left: 6px;
+}
+
+.right-side {
+  padding-right: 6px;
+}
+
+.workspace-strip {
+  min-height: 56px;
+}
+
+.workspace-reveal-shell {
+  background: rgba(28, 28, 28, {{ $t.transparency }});
+}
+
+.workspace-btn {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: #8a8a8a;
+  padding: 0 10px;
+  min-height: 56px;
+  border-bottom: 2px solid transparent;
+}
+
+.position-top .workspace-btn {
+  border-bottom: none;
+  border-top: 2px solid transparent;
+}
+
+.workspace-btn.shown,
+.workspace-btn.active {
+  color: #cecece;
+  border-bottom-color: #cecece;
+}
+
+.position-top .workspace-btn.shown,
+.position-top .workspace-btn.active {
+  border-top-color: #cecece;
+  border-bottom-color: transparent;
+}
+
+.workspace-btn:hover,
+.bar-item:hover,
+.bar-menu-button:hover {
+  background: transparent;
+}
+
+.panel button:hover {
+  background: #242424;
+}
+
+.window-title {
+  color: #cecece;
+  padding: 0 12px 0 14px;
+}
+
+.spotify-button {
+  border: none;
+  background: transparent;
+  border-radius: 3px;
+}
+
+.spotify-text {
+  color: #cecece;
+  padding: 0 26px;
+}
+
+.spotify-paused,
+.spotify-stopped {
+  color: #7a7a7a;
+}
+
+.system-segment {
+  min-width: 0;
+}
+
+.bar-item {
+  background: transparent;
+  border-radius: 3px;
+  padding: 0 10px;
+}
+
+.bar-item.icon-only {
+  padding: 0 8px;
+}
+
+.bar-item.with-text {
+  padding: 0 10px;
+}
+
+.bar-menu-button {
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+.bar-menu-button > button,
+menubutton > button {
+  padding: 0;
+  margin: 0;
+  min-height: 0;
+  min-width: 0;
+}
+
+.item-icon {
+  margin-right: 6px;
+  font-family: "MesloLGM Nerd Font Mono", "Symbols Nerd Font Mono", monospace;
+}
+
+.item-icon-only {
+  margin-right: 0;
+}
+
+.clock-item {
+  padding: 0 11px;
+}
+
+.net-offline,
+.bt-off {
+  color: #7a7a7a;
+}
+
+.battery-critical {
+  color: {{ $t.color1 }};
+}
+
+.battery-success {
+  color: {{ $t.color10 }};
+}
+
+popover > contents,
+menu {
+  background: #1c1c1c;
+  color: #cecece;
+  border: 1px solid #404040;
+  border-radius: 4px;
+  padding: 4px;
+}
+
+tooltip {
+  background: #141414;
+  color: #cecece;
+  border: 1px solid #404040;
+  border-radius: 4px;
+}
+
+tooltip label {
+  padding: 6px 9px;
+}
+
+.panel {
+  background: #1c1c1c;
+  color: #cecece;
+  border: 1px solid #404040;
+  border-radius: 4px;
+  padding: 12px;
+  min-width: 280px;
+}
+
+.panel-title {
+  color: #cecece;
+  font-size: 14px;
+}
+
+.panel-status {
+  color: #b0b0b0;
+}
+
+.panel-section-title {
+  color: #b6b6b6;
+  margin-top: 8px;
+}
+
+.panel-row {
+  margin-bottom: 2px;
+}
+
+.panel button,
+.panel .danger {
+  background: transparent;
+  border: 1px solid #242424;
+  border-radius: 3px;
+  padding: 4px 8px;
+}
+
+.panel .occupied {
+  border-color: #404040;
+}
+
+.panel .danger {
+  border-color: {{ $t.color1 }};
+}

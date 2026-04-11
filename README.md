@@ -64,13 +64,19 @@ sudo apt-get install -y \
 
 ## Desktop extras (Wayland)
 
-These are expected by scripts and config for Hyprland/Eww setups:
+These are expected by scripts and config for Hyprland/AGS setups:
 
 - `minos`
-- `eww`
+- `ags`
+- `astal-gtk4-devel`
 - `wireplumber` (`wpctl`)
 - `kitty`
 - `rofi` / `rofi-wayland`
+
+Current Fedora/Terra limitation:
+
+- only the base `Astal` Gtk4 package is assumed to be packaged here
+- feature typelibs such as `AstalTray`, `AstalWp`, `AstalNetwork`, `AstalBluetooth`, `AstalBattery`, `AstalMpris`, and `AstalHyprland` may still be unavailable, so the AGS bar currently falls back to existing helper scripts for those domains
 
 ## Validation and troubleshooting
 

@@ -13,6 +13,7 @@ label = "Desk + Laptop"
 [monitors.work.left]
 name = "Dell Inc. DELL U3219Q F2XWXV2"
 shikane_search = ["m=DELL U3219Q", "s=F2XWXV2", "v=Dell Inc."]
+bar_position = "bottom"
 mode = "3840x2160@60Hz"
 position = "0x0"
 scale = "1.25"
@@ -23,6 +24,7 @@ profiles = ["desk", "desk_laptop"]
 [monitors.work.center]
 name = "Dell Inc. DELL U4025QW 1WM5M04"
 shikane_search = ["m=DELL U4025QW", "s=1WM5M04", "v=Dell Inc."]
+bar_position = "bottom"
 mode = "5120x2160@120Hz"
 position = "1728x642"
 scale = "1.25"
@@ -33,6 +35,7 @@ profiles = ["desk", "desk_laptop"]
 [monitors.work.right]
 name = "Dell Inc. DELL U2515H 9X2VY6A80A8L"
 shikane_search = ["m=DELL U2515H", "s=9X2VY6A80A8L", "v=Dell Inc."]
+bar_position = "bottom"
 mode = "2560x1440@60Hz"
 position = "5824x150"
 scale = "1"
@@ -43,6 +46,7 @@ profiles = ["desk", "desk_laptop"]
 [monitors.work.laptop]
 name = "Lenovo Group Limited 0x4149"
 shikane_search = ["m=0x4149", "v=Lenovo Group Limited"]
+bar_position = "top"
 mode = "2880x1800@90Hz"
 position = "3776x2370"
 scale = "1.8"
@@ -72,6 +76,7 @@ label = "Laptop"
 name = "Lenovo Group Limited Y32p-30 U1HMF6PT"
 shikane_search = ["m=Y32p-30", "s=U1HMF6PT", "v=Lenovo Group Limited"]
 serial_number = "U1HMF6PT"
+bar_position = "bottom"
 mode = "3840x2160@143.999Hz"
 position = "0x0"
 scale = "1.25"
@@ -83,6 +88,7 @@ profiles = ["desk", "desk_living_room"]
 name = "Dell Inc. AW3225QF GZ00YZ3"
 shikane_search = ["m=AW3225QF", "s=GZ00YZ3", "v=Dell Inc."]
 serial_number = "GZ00YZ3"
+bar_position = "bottom"
 mode = "3840x2160@120Hz"
 position = "1728x865"
 scale = "1.25"
@@ -94,6 +100,7 @@ profiles = ["desk", "desk_living_room"]
 name = "Lenovo Group Limited Y32p-30 U1HMF6PN"
 shikane_search = ["m=Y32p-30", "s=U1HMF6PN", "v=Lenovo Group Limited"]
 serial_number = "U1HMF6PN"
+bar_position = "bottom"
 mode = "3840x2160@120Hz"
 position = "4800x0"
 scale = "1.25"
@@ -105,6 +112,7 @@ profiles = ["desk", "desk_living_room"]
 name = "LG Electronics LG TV 0x01010101"
 shikane_search = ["m=LG TV", "s=0x01010101", "v=LG Electronics"]
 serial_number = "0x01010101"
+bar_position = "bottom"
 mode = "3840x2160@60Hz"
 position = "1984x-575"
 scale = "2"
@@ -114,6 +122,7 @@ profiles = ["living_room", "desk_living_room"]
 name = "LG Display 0x07C6"
 shikane_search = ["m=0x07C6", "v=LG Display"]
 serial_number = ""
+bar_position = "top"
 mode = "2880x1800@120"
 position = "0x0"
 scale = "1.67"
