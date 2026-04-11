@@ -64,10 +64,10 @@ export function attachHoverHandlers(widget: Gtk.Widget, id?: string, onEnter?: (
 export function attachPopoverHandlers(popover: Gtk.Popover, id: string) {
   let open = popover.get_visible()
   trackedPopovers.set(id, popover)
-  attachHoverHandlers(popover, id)
 
-  // Gtk emits multiple visibility-related signals while a popover opens and
-  // closes. Collapse them to a single stable open/closed callback.
+  // Prefer a small set of stable signals here. Menubutton/popover pairs already
+  // manage a lot of internal toggle state, and over-listening can trigger noisy
+  // state churn during open/close transitions.
   const reportOpenState = (nextOpen: boolean) => {
     if (nextOpen === open) {
       return
@@ -77,21 +77,17 @@ export function attachPopoverHandlers(popover: Gtk.Popover, id: string) {
     updatePopoverVisibility?.(id, nextOpen)
   }
 
-  popover.connect("show", () => reportOpenState(true))
-  popover.connect("map", () => reportOpenState(true))
-  popover.connect("hide", () => reportOpenState(false))
-  popover.connect("unmap", () => reportOpenState(false))
-  popover.connect("destroy", () => {
-    reportOpenState(false)
-    trackedPopovers.delete(id)
-  })
-
   popover.connect("notify::visible", () => {
     reportOpenState(popover.get_visible())
   })
 
   popover.connect("closed", () => {
     reportOpenState(false)
+  })
+
+  popover.connect("destroy", () => {
+    reportOpenState(false)
+    trackedPopovers.delete(id)
   })
 }
 

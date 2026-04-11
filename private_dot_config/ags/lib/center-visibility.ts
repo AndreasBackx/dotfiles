@@ -46,10 +46,10 @@ export function createCenterVisibilityController({
   const hoveredSurfaceIds = new Set<string>()
   const openPopoverIds = new Set<string>()
 
-  // Preserve current behavior: hover state is the only condition that blocks a
-  // pending hide. Open popovers call `showCenter()` and may trigger a new hide
-  // only after they close, but they do not independently veto hiding here.
-  const shouldKeepCenterVisible = () => hoveredSurfaceIds.size > 0
+  // Keep the center bar alive while the pointer is on it or while a popover is
+  // still open. This avoids racing Gtk's toggle-button state with forced
+  // popover shutdowns.
+  const shouldKeepCenterVisible = () => hoveredSurfaceIds.size > 0 || openPopoverIds.size > 0
 
   /** Cancels any pending center-bar hide timer. */
   const cancelCenterHide = () => {
@@ -115,7 +115,7 @@ export function createCenterVisibilityController({
     scheduleCenterHide()
   }
 
-  /** Updates hover bookkeeping for bar shells and tracked popovers. */
+  /** Updates hover bookkeeping for bar shells. */
   const handleHoverChange: HoverReporter = (id, hovered) => {
     if (hovered) {
       hoveredSurfaceIds.add(id)
