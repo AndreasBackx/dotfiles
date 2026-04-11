@@ -758,7 +758,7 @@ function WorkspaceRevealWindow({
 
   return (
     <window
-      name={`bar-workspaces-${gdkmonitor.connector}`}
+      name={`bar-workspaces-${role}-${gdkmonitor.connector}`}
       application={app}
       namespace={`ags-workspaces-${position}`}
       gdkmonitor={gdkmonitor}

@@ -1,0 +1,13 @@
+#!/usr/bin/env zsh
+
+set -euo pipefail
+
+app_file="$HOME/.config/ags/app.tsx"
+log_file="${XDG_STATE_HOME:-$HOME/.local/state}/ags-reload.log"
+
+mkdir -p "${log_file:h}"
+
+ags quit --instance dotfiles-bar >/dev/null 2>&1 || true
+sleep 0.2
+
+ags run --log-file "$log_file" "$app_file" >/dev/null 2>&1 &!
