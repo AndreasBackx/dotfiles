@@ -106,6 +106,7 @@ If a widget breaks after a system upgrade, check the output format of those comm
 - `components/spotify/SpotifySegment.tsx`: Spotify track display and play/pause action.
 - `lib/runtime.ts`: command helpers, polling helpers, shared constants.
 - `lib/bar-logic.ts`: monitor role logic and workspace helpers.
+- `lib/center-visibility.ts`: timer and interaction policy for center-bar auto-hide.
 - `lib/widget-helpers.ts`: hover and popover tracking bridge.
 - `lib/parsers.ts`: command output parsing helpers.
 - `lib/types.ts`: shared application types.

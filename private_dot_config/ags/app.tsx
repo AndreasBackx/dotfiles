@@ -1,11 +1,11 @@
 import app from "ags/gtk4/app"
 import { For, This, createBinding, createState, onCleanup } from "ags"
-import { timeout } from "ags/time"
 import { subprocess } from "ags/process"
 
 import style from "./style.css"
 import MonitorBars from "./components/bar/MonitorBars"
 import { assignCenterWorkspacesToLaptop, centerAutoHideEnabled, soloLaptopCenter } from "./lib/bar-logic"
+import { createCenterVisibilityController } from "./lib/center-visibility"
 import {
   CENTER_HIDE_DELAY_MS,
   INITIAL_AUTOHIDE_DELAY_MS,
@@ -50,104 +50,20 @@ app.start({
     const [workspaceStripVisible, setWorkspaceStripVisible] = createState(false)
 
     let initialAutohideScheduled = false
-    let centerHideTimer: ReturnType<typeof timeout> | null = null
-    let workspaceStripTimer: ReturnType<typeof timeout> | null = null
-    const hoveredSurfaceIds = new Set<string>()
-    const openPopoverIds = new Set<string>()
-
-    // Hover and popover state are tracked centrally because the auto-hidden
-    // center segment spans multiple bar windows and transient popovers.
-    const cancelCenterHide = () => {
-      centerHideTimer?.cancel()
-      centerHideTimer = null
-    }
-
-    const cancelWorkspaceStripHide = () => {
-      workspaceStripTimer?.cancel()
-      workspaceStripTimer = null
-    }
-
-    const shouldKeepCenterVisible = () => hoveredSurfaceIds.size > 0
-
-    const hideCenter = () => {
-      if (shouldKeepCenterVisible()) {
-        return
-      }
-
-      closeTrackedPopovers()
-      setCenterVisible(false)
-      cancelCenterHide()
-    }
-
-    const showWorkspaceStrip = () => {
-      setWorkspaceStripVisible(true)
-      cancelWorkspaceStripHide()
-      workspaceStripTimer = timeout(WORKSPACE_STRIP_HIDE_DELAY_MS, () => {
-        setWorkspaceStripVisible(false)
-        workspaceStripTimer = null
-      })
-    }
-
-    const showCenter = () => {
-      cancelCenterHide()
-      cancelWorkspaceStripHide()
-      setWorkspaceStripVisible(false)
-      setCenterVisible(true)
-    }
-
-    const handleCenterLeave = () => {
-      scheduleCenterHide()
-    }
-
-    const scheduleCenterHide = (delay = CENTER_HIDE_DELAY_MS) => {
-      if (!centerAutoHideEnabled(hyprState.get()) || shouldKeepCenterVisible()) {
-        return
-      }
-
-      cancelCenterHide()
-      centerHideTimer = timeout(delay, () => {
-        centerHideTimer = null
-
-        if (!centerAutoHideEnabled(hyprState.get()) || !centerVisible.get() || shouldKeepCenterVisible()) {
-          return
-        }
-
-        hideCenter()
-      })
-    }
-
-    requestShowCenter = showCenter
-    requestShowWorkspaces = showWorkspaceStrip
-    setHoverReporter((id, hovered) => {
-      if (hovered) {
-        hoveredSurfaceIds.add(id)
-        cancelCenterHide()
-        if (!centerVisible.get()) {
-          showCenter()
-        }
-        return
-      }
-
-      hoveredSurfaceIds.delete(id)
-
-      if (hoveredSurfaceIds.size === 0) {
-        scheduleCenterHide()
-      }
+    const visibility = createCenterVisibilityController({
+      hyprState,
+      centerVisible,
+      setCenterVisible,
+      setWorkspaceStripVisible,
+      centerHideDelayMs: CENTER_HIDE_DELAY_MS,
+      workspaceStripHideDelayMs: WORKSPACE_STRIP_HIDE_DELAY_MS,
+      closeTrackedPopovers,
     })
 
-    setPopoverVisibilityReporter((id, open) => {
-      if (open) {
-        openPopoverIds.add(id)
-        showCenter()
-        return
-      }
-
-      openPopoverIds.delete(id)
-
-      if (!shouldKeepCenterVisible()) {
-        scheduleCenterHide()
-      }
-    })
+    requestShowCenter = visibility.showCenter
+    requestShowWorkspaces = visibility.showWorkspaceStrip
+    setHoverReporter(visibility.handleHoverChange)
+    setPopoverVisibilityReporter(visibility.handlePopoverVisibilityChange)
 
     // The helper script is the single source of truth for Hyprland monitor and
     // workspace state. Invalid JSON is ignored by `parseJson` and leaves the
@@ -163,21 +79,17 @@ app.start({
       if (centerAutoHideEnabled(nextState)) {
         if (!initialAutohideScheduled) {
           initialAutohideScheduled = true
-          scheduleCenterHide(INITIAL_AUTOHIDE_DELAY_MS)
+          visibility.scheduleCenterHide(INITIAL_AUTOHIDE_DELAY_MS)
         }
       } else {
         initialAutohideScheduled = false
-        cancelCenterHide()
-        cancelWorkspaceStripHide()
-        setWorkspaceStripVisible(false)
-        setCenterVisible(true)
+        visibility.applyAutoHideState()
       }
     })
 
     onCleanup(() => {
       proc.kill()
-      cancelCenterHide()
-      cancelWorkspaceStripHide()
+      visibility.cleanup()
       requestShowCenter = null
       requestShowWorkspaces = null
       setHoverReporter(null)
@@ -193,8 +105,8 @@ app.start({
               hyprState={hyprState}
               centerVisible={centerVisible}
               workspaceStripVisible={workspaceStripVisible}
-              showCenter={showCenter}
-              hideCenter={handleCenterLeave}
+              showCenter={visibility.showCenter}
+              hideCenter={visibility.handleCenterLeave}
             />
           </This>
         )}
