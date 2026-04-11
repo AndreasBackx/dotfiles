@@ -30,6 +30,8 @@ export default function BarWindow({
   const instanceId = `${role}-${gdkmonitor.connector}`
   const hoverId = `bar-window-${role}-${gdkmonitor.connector}`
 
+  // Each role gets its own overlay window so monitors can independently host
+  // left, center, right, or laptop bars without cross-monitor layout coupling.
   return (
     <window
       name={`bar-${role}-${gdkmonitor.connector}`}

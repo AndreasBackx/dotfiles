@@ -5,6 +5,8 @@ import { createSubprocess } from "ags/process"
 import { command, run, trimOutput } from "../../lib/runtime"
 
 export default function SpotifySegment() {
+  // The helper scripts expose long-lived streams, so subprocess bindings are a
+  // better fit than polling here.
   const text = createSubprocess("", command("eww-spotify", "monitor"), trimOutput)
   const tooltip = createSubprocess("", command("eww-spotify", "monitor-tooltip"), trimOutput)
   const state = createSubprocess("paused", command("eww-spotify", "monitor-state"), trimOutput)

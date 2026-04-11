@@ -1,23 +1,27 @@
 import type { AudioEndpoint, BluetoothDevice, WifiAccessPoint } from "./types"
 
+function nonEmptyLines(stdout: string) {
+  return stdout
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+}
+
 export function sanitizedTitle(title: string) {
   const trimmed = title.trim()
   return trimmed.length > 0 ? trimmed : "Desktop"
 }
 
 export function parseWifiAccessPoints(stdout: string) {
-  return stdout
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean)
+  return nonEmptyLines(stdout)
     .map((line) => {
-      const [inUse, bssid, ssid, signal, security] = line.split(":")
+      const [inUse = "", bssid = "", ssid = "", signal = "0", ...securityParts] = line.split(":")
       return {
         inUse: inUse === "*",
         bssid,
         ssid,
-        signal: Number.parseInt(signal || "0", 10),
-        security: security || "",
+        signal: Number.parseInt(signal, 10),
+        security: securityParts.join(":"),
       } satisfies WifiAccessPoint
     })
     .filter((ap) => ap.ssid)
@@ -25,24 +29,16 @@ export function parseWifiAccessPoints(stdout: string) {
 }
 
 export function parseBluetoothDevices(allDevices: string, connectedDevices: string) {
-  const connected = new Set(
-    connectedDevices
-      .split("\n")
-      .map((line) => line.trim())
-      .filter(Boolean)
-      .map((line) => line.split(" ")[1]),
-  )
+  const connected = new Set(nonEmptyLines(connectedDevices).map((line) => line.split(/\s+/)[1]))
 
-  return allDevices
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean)
+  return nonEmptyLines(allDevices)
     .map((line) => {
-      const parts = line.split(" ")
+      const parts = line.split(/\s+/)
+      const mac = parts[1] ?? ""
       return {
-        mac: parts[1] ?? "",
+        mac,
         name: parts.slice(2).join(" "),
-        connected: connected.has(parts[1] ?? ""),
+        connected: connected.has(mac),
       } satisfies BluetoothDevice
     })
     .filter((device) => device.mac && device.name)

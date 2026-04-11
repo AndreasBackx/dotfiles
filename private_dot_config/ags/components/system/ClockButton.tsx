@@ -3,7 +3,7 @@ import GLib from "gi://GLib?version=2.0"
 import { Gtk } from "ags/gtk4"
 import { createPoll } from "ags/time"
 
-import { attachPopoverHandlers } from "../../lib/widget-helpers"
+import SystemMenuButton from "./SystemMenuButton"
 
 type ClockButtonProps = {
   instanceId: string
@@ -17,15 +17,18 @@ export default function ClockButton({ instanceId }: ClockButtonProps) {
   const popoverId = `clock-popover-${instanceId}`
 
   return (
-    <menubutton class="bar-menu-button" tooltipText={tooltip}>
-      <box class="bar-item clock-item">
-        <label label={time} />
-      </box>
-      <popover $={(self: Gtk.Popover) => attachPopoverHandlers(self, popoverId)}>
+    <SystemMenuButton
+      popoverId={popoverId}
+      tooltipText={tooltip}
+      button={
+        <box class="bar-item clock-item">
+          <label label={time} />
+        </box>
+      }
+    >
         <box class="panel" orientation={Gtk.Orientation.VERTICAL} spacing={8}>
           <Gtk.Calendar />
         </box>
-      </popover>
-    </menubutton>
+    </SystemMenuButton>
   )
 }

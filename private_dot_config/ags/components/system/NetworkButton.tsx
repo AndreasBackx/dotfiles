@@ -4,12 +4,17 @@ import { createPoll } from "ags/time"
 import { execAsync } from "ags/process"
 
 import { parseWifiAccessPoints } from "../../lib/parsers"
-import { attachPopoverHandlers } from "../../lib/widget-helpers"
 import { command, createTextPoll, run, shell } from "../../lib/runtime"
 import type { WifiAccessPoint } from "../../lib/types"
 
+import SystemMenuButton from "./SystemMenuButton"
+
 function connectWifi(ssid: string) {
   run(shell(`nmcli d wifi connect '${ssid.replace(/'/g, "'\\''")}'`))
+}
+
+function wifiLabel(accessPoint: WifiAccessPoint) {
+  return `${accessPoint.ssid} (${accessPoint.signal}%${accessPoint.security ? " 🔒" : ""})`
 }
 
 type NetworkButtonProps = {
@@ -37,11 +42,15 @@ export default function NetworkButton({ instanceId }: NetworkButtonProps) {
   const popoverId = `network-popover-${instanceId}`
 
   return (
-    <menubutton class="bar-menu-button" tooltipText={tooltip}>
-      <box class={state((value) => `bar-item icon-only net-${value}`)}>
-        <label class="item-icon item-icon-only" label={icon} />
-      </box>
-      <popover $={(self: Gtk.Popover) => attachPopoverHandlers(self, popoverId)}>
+    <SystemMenuButton
+      popoverId={popoverId}
+      tooltipText={tooltip}
+      button={
+        <box class={state((value) => `bar-item icon-only net-${value}`)}>
+          <label class="item-icon item-icon-only" label={icon} />
+        </box>
+      }
+    >
         <box class="panel" orientation={Gtk.Orientation.VERTICAL} spacing={8}>
           <label class="panel-title" label="Network" xalign={0} />
           <label class="panel-status" label={tooltip} xalign={0} />
@@ -63,16 +72,12 @@ export default function NetworkButton({ instanceId }: NetworkButtonProps) {
                     }
                   }}
                 >
-                  <label
-                    label={`${accessPoint.ssid} (${accessPoint.signal}%${accessPoint.security ? " 🔒" : ""})`}
-                    xalign={0}
-                  />
+                  <label label={wifiLabel(accessPoint)} xalign={0} />
                 </button>
               )}
             </For>
           </box>
         </box>
-      </popover>
-    </menubutton>
+    </SystemMenuButton>
   )
 }

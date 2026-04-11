@@ -1,7 +1,7 @@
 import { Gdk } from "ags/gtk4"
 
 import { centerAutoHideEnabled, centerTargetRole, connectorForRole, soloLaptopCenter } from "../../lib/bar-logic"
-import type { BooleanAccessor, HyprStateAccessor } from "../../lib/types"
+import type { BooleanAccessor, HyprState, HyprStateAccessor, Role } from "../../lib/types"
 
 import BarWindow from "./BarWindow"
 import WorkspaceRevealWindow from "./WorkspaceRevealWindow"
@@ -15,6 +15,39 @@ type MonitorBarsProps = {
   hideCenter: () => void
 }
 
+function roleIsOnCurrentMonitor(state: HyprState, role: Role, connector: string) {
+  return connectorForRole(state, role) === connector
+}
+
+function primaryVisibleForRole(
+  state: HyprState,
+  role: "center" | "laptop",
+  connector: string,
+  centerVisible: boolean,
+) {
+  return (
+    centerTargetRole(state) === role &&
+    roleIsOnCurrentMonitor(state, role, connector) &&
+    (!centerAutoHideEnabled(state) || centerVisible)
+  )
+}
+
+function revealVisibleForRole(
+  state: HyprState,
+  role: "center" | "laptop",
+  connector: string,
+  centerVisible: boolean,
+  workspaceStripVisible: boolean,
+) {
+  return (
+    centerTargetRole(state) === role &&
+    roleIsOnCurrentMonitor(state, role, connector) &&
+    centerAutoHideEnabled(state) &&
+    !centerVisible &&
+    workspaceStripVisible
+  )
+}
+
 export default function MonitorBars({
   gdkmonitor,
   hyprState,
@@ -25,37 +58,17 @@ export default function MonitorBars({
 }: MonitorBarsProps) {
   const connector = gdkmonitor.connector
 
-  const leftVisible = hyprState((state) => !soloLaptopCenter(state) && connectorForRole(state, "left") === connector)
+  const leftVisible = hyprState((state) => !soloLaptopCenter(state) && roleIsOnCurrentMonitor(state, "left", connector))
   const rightVisible = hyprState(
-    (state) => !soloLaptopCenter(state) && connectorForRole(state, "right") === connector,
+    (state) => !soloLaptopCenter(state) && roleIsOnCurrentMonitor(state, "right", connector),
   )
-  const centerVisibleOnMonitor = hyprState(
-    (state) =>
-      centerTargetRole(state) === "center" &&
-      connectorForRole(state, "center") === connector &&
-      (!centerAutoHideEnabled(state) || centerVisible()),
+  const centerVisibleOnMonitor = hyprState((state) => primaryVisibleForRole(state, "center", connector, centerVisible()))
+  const laptopVisibleOnMonitor = hyprState((state) => primaryVisibleForRole(state, "laptop", connector, centerVisible()))
+  const centerRevealVisible = hyprState((state) =>
+    revealVisibleForRole(state, "center", connector, centerVisible(), workspaceStripVisible()),
   )
-  const laptopVisibleOnMonitor = hyprState(
-    (state) =>
-      centerTargetRole(state) === "laptop" &&
-      connectorForRole(state, "laptop") === connector &&
-      (!centerAutoHideEnabled(state) || centerVisible()),
-  )
-  const centerRevealVisible = hyprState(
-    (state) =>
-      centerTargetRole(state) === "center" &&
-      connectorForRole(state, "center") === connector &&
-      centerAutoHideEnabled(state) &&
-      !centerVisible() &&
-      workspaceStripVisible(),
-  )
-  const laptopRevealVisible = hyprState(
-    (state) =>
-      centerTargetRole(state) === "laptop" &&
-      connectorForRole(state, "laptop") === connector &&
-      centerAutoHideEnabled(state) &&
-      !centerVisible() &&
-      workspaceStripVisible(),
+  const laptopRevealVisible = hyprState((state) =>
+    revealVisibleForRole(state, "laptop", connector, centerVisible(), workspaceStripVisible()),
   )
 
   return (

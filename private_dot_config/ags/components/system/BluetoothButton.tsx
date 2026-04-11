@@ -4,9 +4,10 @@ import { createPoll } from "ags/time"
 import { execAsync } from "ags/process"
 
 import { parseBluetoothDevices } from "../../lib/parsers"
-import { attachPopoverHandlers } from "../../lib/widget-helpers"
 import { command, createTextPoll, run } from "../../lib/runtime"
 import type { BluetoothDevice } from "../../lib/types"
+
+import SystemMenuButton from "./SystemMenuButton"
 
 type BluetoothButtonProps = {
   instanceId: string
@@ -26,11 +27,15 @@ export default function BluetoothButton({ instanceId }: BluetoothButtonProps) {
   const popoverId = `bluetooth-popover-${instanceId}`
 
   return (
-    <menubutton class="bar-menu-button" tooltipText={tooltip}>
-      <box class={state((value) => `bar-item icon-only bt-${value}`)}>
-        <label class="item-icon item-icon-only" label={icon} />
-      </box>
-      <popover $={(self: Gtk.Popover) => attachPopoverHandlers(self, popoverId)}>
+    <SystemMenuButton
+      popoverId={popoverId}
+      tooltipText={tooltip}
+      button={
+        <box class={state((value) => `bar-item icon-only bt-${value}`)}>
+          <label class="item-icon item-icon-only" label={icon} />
+        </box>
+      }
+    >
         <box class="panel" orientation={Gtk.Orientation.VERTICAL} spacing={8}>
           <label class="panel-title" label="Bluetooth" xalign={0} />
           <label class="panel-status" label={tooltip} xalign={0} />
@@ -55,7 +60,6 @@ export default function BluetoothButton({ instanceId }: BluetoothButtonProps) {
             </For>
           </box>
         </box>
-      </popover>
-    </menubutton>
+    </SystemMenuButton>
   )
 }

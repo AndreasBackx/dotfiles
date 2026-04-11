@@ -55,6 +55,8 @@ app.start({
     const hoveredSurfaceIds = new Set<string>()
     const openPopoverIds = new Set<string>()
 
+    // Hover and popover state are tracked centrally because the auto-hidden
+    // center segment spans multiple bar windows and transient popovers.
     const cancelCenterHide = () => {
       centerHideTimer?.cancel()
       centerHideTimer = null
@@ -147,6 +149,9 @@ app.start({
       }
     })
 
+    // The helper script is the single source of truth for Hyprland monitor and
+    // workspace state. Invalid JSON is ignored by `parseJson` and leaves the
+    // previous state intact.
     const proc = subprocess(command("eww-workspaces", "listen", "json"), (stdout) => {
       const nextState = parseJson<HyprState>(stdout, hyprState.get())
       setHyprState(nextState)

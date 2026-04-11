@@ -26,6 +26,7 @@ export default function WorkspaceRevealWindow({
   const geometry = gdkmonitor.get_geometry()
   const hoverId = `workspace-reveal-${role}-${gdkmonitor.connector}`
 
+  // This window only appears while the auto-hidden center bar is collapsed.
   return (
     <window
       name={`bar-workspaces-${role}-${gdkmonitor.connector}`}

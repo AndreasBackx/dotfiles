@@ -18,32 +18,24 @@ function clearHoverState(id?: string) {
   }
 }
 
+// Hover handlers are attached to both bar windows and popovers so the app-level
+// visibility controller can treat them as a single interactive surface.
 export function attachHoverHandlers(widget: Gtk.Widget, id?: string, onEnter?: () => void, onLeave?: () => void) {
   const controller = new Gtk.EventControllerMotion()
+  const reportEnter = () => {
+    if (id) {
+      updateHoverState?.(id, true)
+    }
 
-  if (onEnter) {
-    controller.connect("enter", () => {
-      if (id) {
-        updateHoverState?.(id, true)
-      }
-      onEnter()
-    })
-  } else {
-    controller.connect("enter", () => {
-      if (id) {
-        updateHoverState?.(id, true)
-      }
-    })
+    onEnter?.()
+  }
+  const reportLeave = () => {
+    clearHoverState(id)
+    onLeave?.()
   }
 
-  if (onLeave) {
-    controller.connect("leave", () => {
-      clearHoverState(id)
-      onLeave()
-    })
-  } else {
-    controller.connect("leave", () => clearHoverState(id))
-  }
+  controller.connect("enter", reportEnter)
+  controller.connect("leave", reportLeave)
 
   widget.connect("destroy", () => clearHoverState(id))
   widget.connect("unmap", () => clearHoverState(id))
@@ -57,6 +49,8 @@ export function attachPopoverHandlers(popover: Gtk.Popover, id: string) {
   trackedPopovers.set(id, popover)
   attachHoverHandlers(popover, id)
 
+  // Gtk emits multiple visibility-related signals while a popover opens and
+  // closes. Collapse them to a single stable open/closed callback.
   const reportOpenState = (nextOpen: boolean) => {
     if (nextOpen === open) {
       return

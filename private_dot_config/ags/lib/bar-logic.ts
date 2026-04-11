@@ -4,6 +4,8 @@ import config from "./config"
 import { run } from "./runtime"
 import type { HyprMonitor, HyprState, Role } from "./types"
 
+// Monitor matching prefers stable serial numbers when they are available, while
+// still allowing description-only matching on hosts without serial metadata.
 export function monitorMatches(monitor: HyprMonitor, role: Role) {
   const target = config.monitorRoles[role]
   if (!target) {
@@ -91,6 +93,7 @@ export function workspaceStripAnchorForPosition(position: "top" | "bottom") {
 export function workspaceIdsForBase(base: number, state: HyprState) {
   const ids: number[] = []
 
+  // Only render workspaces that are visible, active, or currently populated.
   for (let offset = 1; offset <= 12; offset += 1) {
     const id = base + offset
     const active = state.activeWorkspaceId === id
@@ -130,6 +133,8 @@ export function assignCenterWorkspacesToLaptop() {
     return
   }
 
+  // When the laptop is the only remaining display, keep the center workspace
+  // range attached to it so the visible strip still matches Hyprland routing.
   for (let workspace = 101; workspace <= 112; workspace += 1) {
     run(["hyprctl", "keyword", "workspace", `${workspace},monitor:desc:${config.monitorRoles.laptop.name}`])
   }

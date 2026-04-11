@@ -34,6 +34,7 @@ export function parseJson<T>(text: string, fallback: T): T {
   }
 }
 
+// Most widgets only need trimmed stdout from a command at a fixed interval.
 export function createTextPoll(interval: number, cmd: string[]) {
   return createPoll("", interval, cmd, trimOutput)
 }
