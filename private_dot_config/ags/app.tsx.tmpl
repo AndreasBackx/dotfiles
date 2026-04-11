@@ -50,10 +50,13 @@ const BIN = `${HOME}/.bin`
 const BAR_HEIGHT = 56
 const CENTER_HIDE_DELAY_MS = 320
 const INITIAL_AUTOHIDE_DELAY_MS = 1200
+const POINTER_IDLE_HIDE_DELAY_MS = 1200
 const WORKSPACE_STRIP_HIDE_DELAY_MS = 3000
 
 let requestShowCenter: (() => void) | null = null
 let requestShowWorkspaces: (() => void) | null = null
+let reportPointerActivity: (() => void) | null = null
+let updatePopoverVisibility: ((open: boolean) => void) | null = null
 
 function command(name: string, ...args: string[]) {
   return [`${BIN}/${name}`, ...args]
@@ -297,14 +300,43 @@ function attachHoverHandlers(widget: Gtk.Widget, onEnter?: () => void, onLeave?:
   const controller = new Gtk.EventControllerMotion()
 
   if (onEnter) {
-    controller.connect("enter", () => onEnter())
+    controller.connect("enter", () => {
+      reportPointerActivity?.()
+      onEnter()
+    })
   }
+
+  controller.connect("motion", () => reportPointerActivity?.())
 
   if (onLeave) {
     controller.connect("leave", () => onLeave())
   }
 
   widget.add_controller(controller)
+}
+
+function attachPopoverHandlers(popover: Gtk.Popover) {
+  let visible = popover.get_visible()
+
+  popover.connect("notify::visible", () => {
+    const nextVisible = popover.get_visible()
+
+    if (nextVisible === visible) {
+      return
+    }
+
+    visible = nextVisible
+    updatePopoverVisibility?.(nextVisible)
+  })
+
+  popover.connect("closed", () => {
+    if (!visible) {
+      return
+    }
+
+    visible = false
+    updatePopoverVisibility?.(false)
+  })
 }
 
 function workspaceButton(base: number, id: number, hyprState: ReturnType<typeof createState<HyprState>>[0]) {
@@ -378,7 +410,7 @@ function BrightnessButton() {
         <label class="item-icon" label="󰃠" />
         <label class="item-text" label={text} />
       </box>
-      <popover>
+      <popover $={(self: Gtk.Popover) => attachPopoverHandlers(self)}>
         <box class="panel" orientation={Gtk.Orientation.VERTICAL} spacing={8}>
           <label class="panel-title" label="Brightness" xalign={0} />
           <box class="panel-row" spacing={8}>
@@ -415,7 +447,7 @@ function AudioButton() {
         <label class="item-icon" label={icon} />
         <label class="item-text" label={text} />
       </box>
-      <popover>
+      <popover $={(self: Gtk.Popover) => attachPopoverHandlers(self)}>
         <box class="panel" orientation={Gtk.Orientation.VERTICAL} spacing={8}>
           <label class="panel-title" label="PipeWire" xalign={0} />
           <label class="panel-status" label={tooltip} xalign={0} />
@@ -481,7 +513,7 @@ function NetworkButton() {
       <box class={state((value) => `bar-item icon-only net-${value}`)}>
         <label class="item-icon item-icon-only" label={icon} />
       </box>
-      <popover>
+      <popover $={(self: Gtk.Popover) => attachPopoverHandlers(self)}>
         <box class="panel" orientation={Gtk.Orientation.VERTICAL} spacing={8}>
           <label class="panel-title" label="Network" xalign={0} />
           <label class="panel-status" label={tooltip} xalign={0} />
@@ -534,7 +566,7 @@ function BluetoothButton() {
       <box class={state((value) => `bar-item icon-only bt-${value}`)}>
         <label class="item-icon item-icon-only" label={icon} />
       </box>
-      <popover>
+      <popover $={(self: Gtk.Popover) => attachPopoverHandlers(self)}>
         <box class="panel" orientation={Gtk.Orientation.VERTICAL} spacing={8}>
           <label class="panel-title" label="Bluetooth" xalign={0} />
           <label class="panel-status" label={tooltip} xalign={0} />
@@ -588,7 +620,7 @@ function PowerButton() {
       <box class="bar-item icon-only">
         <label class="item-icon item-icon-only" label="⏻" />
       </box>
-      <popover>
+      <popover $={(self: Gtk.Popover) => attachPopoverHandlers(self)}>
         <box class="panel" orientation={Gtk.Orientation.VERTICAL} spacing={8}>
           <label class="panel-title" label="Power" xalign={0} />
           <label class="panel-section-title" label="Session" xalign={0} />
@@ -624,7 +656,7 @@ function ClockButton() {
       <box class="bar-item clock-item">
         <label label={time} />
       </box>
-      <popover>
+      <popover $={(self: Gtk.Popover) => attachPopoverHandlers(self)}>
         <box class="panel" orientation={Gtk.Orientation.VERTICAL} spacing={8}>
           <Gtk.Calendar />
         </box>
@@ -923,11 +955,19 @@ app.start({
 
     let initialAutohideScheduled = false
     let centerHideTimer: ReturnType<typeof timeout> | null = null
+    let pointerIdleTimer: ReturnType<typeof timeout> | null = null
     let workspaceStripTimer: ReturnType<typeof timeout> | null = null
+    let lastPointerActivityAt = Date.now()
+    let openPopoverCount = 0
 
     const cancelCenterHide = () => {
       centerHideTimer?.cancel()
       centerHideTimer = null
+    }
+
+    const cancelPointerIdleHide = () => {
+      pointerIdleTimer?.cancel()
+      pointerIdleTimer = null
     }
 
     const cancelWorkspaceStripHide = () => {
@@ -936,8 +976,13 @@ app.start({
     }
 
     const hideCenter = () => {
+      if (openPopoverCount > 0) {
+        return
+      }
+
       setCenterVisible(false)
       cancelCenterHide()
+      cancelPointerIdleHide()
     }
 
     const showWorkspaceStrip = () => {
@@ -949,25 +994,88 @@ app.start({
       })
     }
 
+    const schedulePointerIdleHide = (delay = POINTER_IDLE_HIDE_DELAY_MS) => {
+      if (!centerAutoHideEnabled(hyprState.get()) || openPopoverCount > 0 || !centerVisible.get()) {
+        return
+      }
+
+      cancelPointerIdleHide()
+      pointerIdleTimer = timeout(delay, () => {
+        pointerIdleTimer = null
+
+        if (openPopoverCount > 0 || !centerAutoHideEnabled(hyprState.get()) || !centerVisible.get()) {
+          return
+        }
+
+        const idleFor = Date.now() - lastPointerActivityAt
+
+        if (idleFor < POINTER_IDLE_HIDE_DELAY_MS) {
+          schedulePointerIdleHide(POINTER_IDLE_HIDE_DELAY_MS - idleFor)
+          return
+        }
+
+        hideCenter()
+      })
+    }
+
+    const notePointerActivity = () => {
+      lastPointerActivityAt = Date.now()
+
+      if (centerVisible.get()) {
+        schedulePointerIdleHide()
+      }
+    }
+
     const showCenter = () => {
+      notePointerActivity()
       cancelCenterHide()
       cancelWorkspaceStripHide()
       setWorkspaceStripVisible(false)
       setCenterVisible(true)
+      schedulePointerIdleHide()
     }
 
     requestShowCenter = showCenter
     requestShowWorkspaces = showWorkspaceStrip
+    reportPointerActivity = notePointerActivity
+
+    updatePopoverVisibility = (open) => {
+      if (open) {
+        openPopoverCount += 1
+        showCenter()
+        cancelPointerIdleHide()
+        return
+      }
+
+      openPopoverCount = Math.max(0, openPopoverCount - 1)
+
+      if (openPopoverCount === 0) {
+        scheduleCenterHide()
+        schedulePointerIdleHide()
+      }
+    }
 
     const scheduleCenterHide = (delay = CENTER_HIDE_DELAY_MS) => {
-      if (!centerAutoHideEnabled(hyprState.get())) {
+      if (!centerAutoHideEnabled(hyprState.get()) || openPopoverCount > 0) {
         return
       }
 
       cancelCenterHide()
       centerHideTimer = timeout(delay, () => {
-        hideCenter()
         centerHideTimer = null
+
+        if (openPopoverCount > 0 || !centerAutoHideEnabled(hyprState.get()) || !centerVisible.get()) {
+          return
+        }
+
+        const idleFor = Date.now() - lastPointerActivityAt
+
+        if (idleFor < POINTER_IDLE_HIDE_DELAY_MS) {
+          schedulePointerIdleHide(POINTER_IDLE_HIDE_DELAY_MS - idleFor)
+          return
+        }
+
+        hideCenter()
       })
     }
 
@@ -993,6 +1101,7 @@ app.start({
       } else {
         initialAutohideScheduled = false
         cancelCenterHide()
+        cancelPointerIdleHide()
         cancelWorkspaceStripHide()
         setWorkspaceStripVisible(false)
         setCenterVisible(true)
@@ -1002,9 +1111,12 @@ app.start({
     onCleanup(() => {
       proc.kill()
       cancelCenterHide()
+      cancelPointerIdleHide()
       cancelWorkspaceStripHide()
       requestShowCenter = null
       requestShowWorkspaces = null
+      reportPointerActivity = null
+      updatePopoverVisibility = null
     })
 
     return (
