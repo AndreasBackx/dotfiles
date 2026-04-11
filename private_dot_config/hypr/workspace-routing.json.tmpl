@@ -1,0 +1,25 @@
+{{- $location := .monitors.selected -}}
+{{- $selected := index .monitors $location -}}
+{{- $defaultProfile := .monitors.default_profile | default (index $selected "default_profile") -}}
+{
+  "location": {{ $location | toJson }},
+  "defaultProfile": {{ $defaultProfile | toJson }},
+  "workspaces": {{ .workspaces | toJson }},
+  "monitors": {
+{{- $first := true -}}
+{{- range $role := list "left" "center" "right" "laptop" "tv" -}}
+  {{- if hasKey $selected $role -}}
+    {{- $monitor := index $selected $role -}}
+    {{- if and (kindIs "map" $monitor) (hasKey $monitor "workspaces") (hasKey $monitor "profiles") -}}
+      {{- if not $first }},{{ end }}
+      {{- $first = false }}
+      {{ $role | toJson }}: {
+        "name": {{ index $monitor "name" | toJson }},
+        "profiles": {{ index $monitor "profiles" | toJson }},
+        "workspaces": {{ index $monitor "workspaces" | toJson }}
+      }
+    {{- end -}}
+  {{- end -}}
+{{- end }}
+  }
+}

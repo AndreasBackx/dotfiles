@@ -1,0 +1,56 @@
+#!/usr/bin/env zsh
+
+set -euo pipefail
+
+config_file="$HOME/.config/hypr/workspace-routing.json"
+
+if [[ ! -f "$config_file" ]]; then
+    exit 0
+fi
+
+active_profile="${1:-}"
+if [[ -z "$active_profile" ]]; then
+    # TODO: replace this placeholder with the real shikane active-profile query once it is available.
+    active_profile="$(sh -lc 'printf %s "$ACTIVE_PROFILE"')"
+fi
+if [[ -z "$active_profile" ]]; then
+    active_profile="$(jq -r '.defaultProfile' "$config_file")"
+fi
+
+clients_json="$(hyprctl -j clients 2>/dev/null || printf '[]')"
+
+jq -cr --arg profile "$active_profile" '
+  . as $root
+  | ($root.monitors
+      | to_entries
+      | map(select(.value.profiles | index($profile)))) as $visibleMonitors
+  | ($visibleMonitors | length) as $visibleCount
+  | ($visibleMonitors
+      | reduce .[] as $monitor ({}; . + {
+          (($monitor.value.workspaces | if $monitor.key == "laptop" and $visibleCount == 1 then "center" else . end)): true
+        })) as $visibleSets
+  | ($root.workspaces
+      | to_entries
+      | map(select(.key != "associations"))
+      | reduce .[] as $set ({}; reduce $set.value[] as $workspace (. ; . + {($workspace | tostring): $set.key}))) as $workspaceToSet
+  | ($root.workspaces.associations
+      | to_entries
+      | map({
+          name: .key,
+          target: (([.value[] | select($visibleSets[$workspaceToSet[tostring]] == true)][0]) // .value[0]),
+          members: .value
+        })
+      | map(select(.target != null)))[]
+  | .target as $target
+  | .members[]
+  | select(. != $target)
+  | {source: ., target: $target}
+' "$config_file" | while IFS= read -r mapping; do
+    source_workspace="$(jq -r '.source' <<<"$mapping")"
+    target_workspace="$(jq -r '.target' <<<"$mapping")"
+
+    jq -r --argjson workspace "$source_workspace" '.[] | select(.workspace.id == $workspace) | .address' <<<"$clients_json" | while IFS= read -r address; do
+        [[ -n "$address" ]] || continue
+        hyprctl dispatch movetoworkspacesilent "$target_workspace,address:$address" >/dev/null 2>&1 || true
+    done
+done

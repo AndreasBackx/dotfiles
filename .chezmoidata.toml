@@ -1,3 +1,17 @@
+[workspaces]
+left = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+center = [101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112]
+right = [201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212]
+laptop = [301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312]
+
+[workspaces.associations]
+mail = [1, 111]
+media = [2, 112]
+messages = [3, 109]
+chats = [4, 110]
+work_comm = [5, 105]
+browser = [301, 101]
+
 [monitors]
 [monitors.work]
 screen_timeout = 3600
@@ -12,6 +26,7 @@ label = "Desk + Laptop"
 
 [monitors.work.left]
 name = "Dell Inc. DELL U3219Q F2XWXV2"
+workspaces = "left"
 shikane_search = ["m=DELL U3219Q", "s=F2XWXV2", "v=Dell Inc."]
 bar_position = "bottom"
 mode = "3840x2160@60Hz"
@@ -23,6 +38,7 @@ profiles = ["desk", "desk_laptop"]
 
 [monitors.work.center]
 name = "Dell Inc. DELL U4025QW 1WM5M04"
+workspaces = "center"
 shikane_search = ["m=DELL U4025QW", "s=1WM5M04", "v=Dell Inc."]
 bar_position = "bottom"
 mode = "5120x2160@120Hz"
@@ -34,6 +50,7 @@ profiles = ["desk", "desk_laptop"]
 
 [monitors.work.right]
 name = "Dell Inc. DELL U2515H 9X2VY6A80A8L"
+workspaces = "right"
 shikane_search = ["m=DELL U2515H", "s=9X2VY6A80A8L", "v=Dell Inc."]
 bar_position = "bottom"
 mode = "2560x1440@60Hz"
@@ -45,6 +62,7 @@ profiles = ["desk", "desk_laptop"]
 
 [monitors.work.laptop]
 name = "Lenovo Group Limited 0x4149"
+workspaces = "laptop"
 shikane_search = ["m=0x4149", "v=Lenovo Group Limited"]
 bar_position = "top"
 mode = "2880x1800@90Hz"
@@ -74,6 +92,7 @@ label = "Laptop"
 
 [monitors.home.left]
 name = "Lenovo Group Limited Y32p-30 U1HMF6PT"
+workspaces = "left"
 shikane_search = ["m=Y32p-30", "s=U1HMF6PT", "v=Lenovo Group Limited"]
 serial_number = "U1HMF6PT"
 bar_position = "bottom"
@@ -86,6 +105,7 @@ profiles = ["desk", "desk_living_room"]
 
 [monitors.home.center]
 name = "Dell Inc. AW3225QF GZ00YZ3"
+workspaces = "center"
 shikane_search = ["m=AW3225QF", "s=GZ00YZ3", "v=Dell Inc."]
 serial_number = "GZ00YZ3"
 bar_position = "bottom"
@@ -98,6 +118,7 @@ profiles = ["desk", "desk_living_room"]
 
 [monitors.home.right]
 name = "Lenovo Group Limited Y32p-30 U1HMF6PN"
+workspaces = "right"
 shikane_search = ["m=Y32p-30", "s=U1HMF6PN", "v=Lenovo Group Limited"]
 serial_number = "U1HMF6PN"
 bar_position = "bottom"
@@ -110,6 +131,7 @@ profiles = ["desk", "desk_living_room"]
 
 [monitors.home.tv]
 name = "LG Electronics LG TV 0x01010101"
+workspaces = "right"
 shikane_search = ["m=LG TV", "s=0x01010101", "v=LG Electronics"]
 serial_number = "0x01010101"
 bar_position = "bottom"
@@ -120,6 +142,7 @@ profiles = ["living_room", "desk_living_room"]
 
 [monitors.home.laptop]
 name = "LG Display 0x07C6"
+workspaces = "laptop"
 shikane_search = ["m=0x07C6", "v=LG Display"]
 serial_number = ""
 bar_position = "top"

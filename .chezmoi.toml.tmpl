@@ -14,6 +14,12 @@ relative_xdg_cache_home = ".cache"
 [data.monitors]
 {{- $location := promptStringOnce . "monitors.selected" "Where are you located? [home/work]" "home" }}
 selected = "{{ $location }}"
+{{- $defaultProfile := "desk" }}
+{{- if and (hasKey . "monitors") (hasKey .monitors $location) (hasKey (index .monitors $location) "default_profile") }}
+  {{- $defaultProfile = index (index .monitors $location) "default_profile" }}
+{{- end }}
+{{- $configuredDefaultProfile := promptStringOnce . "monitors.default_profile" "What should the default monitor profile be?" $defaultProfile }}
+default_profile = "{{ $configuredDefaultProfile }}"
 
 [edit]
 command = "code"

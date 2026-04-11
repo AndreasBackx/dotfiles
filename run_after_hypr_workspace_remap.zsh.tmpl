@@ -1,0 +1,22 @@
+#!/usr/bin/env zsh
+
+{{ if .headless }}
+# We're headless.
+exit 0
+{{ end }}
+
+set -o errexit -o nounset -o pipefail
+
+if ! command -v hyprctl >/dev/null 2>&1; then
+    exit 0
+fi
+
+if [[ -z "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]]; then
+    exit 0
+fi
+
+if [[ ! -x "$HOME/.bin/hypr-workspace-remap" ]]; then
+    exit 0
+fi
+
+"$HOME/.bin/hypr-workspace-remap"

@@ -1,3 +1,71 @@
+{{- $location := .monitors.selected -}}
+{{- $selectedMonitors := index .monitors $location -}}
+{{- $defaultProfile := .monitors.default_profile | default (index $selectedMonitors "default_profile") -}}
+{{- $activeProfile := $defaultProfile -}}
+{{- /* TODO: replace the ACTIVE_PROFILE placeholder with the real shikane active-profile query once it is available. */ -}}
+{{- $profileFromEnv := trim (output "sh" "-lc" "printf '%s' \"$ACTIVE_PROFILE\"") -}}
+{{- if ne $profileFromEnv "" -}}
+  {{- $activeProfile = $profileFromEnv -}}
+{{- end -}}
+{{- if hasKey . "runtime" -}}
+  {{- $runtime := index . "runtime" -}}
+  {{- if and $runtime (hasKey $runtime "active_profile") -}}
+    {{- $runtimeProfile := trim (index $runtime "active_profile") -}}
+    {{- if ne $runtimeProfile "" -}}
+      {{- $activeProfile = $runtimeProfile -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $workspaceSets := .workspaces -}}
+{{- $visibleRoles := dict -}}
+{{- range $role := list "left" "center" "right" "laptop" "tv" -}}
+  {{- if hasKey $selectedMonitors $role -}}
+    {{- $monitor := index $selectedMonitors $role -}}
+    {{- if and (kindIs "map" $monitor) (hasKey $monitor "workspaces") (hasKey $monitor "profiles") (has $activeProfile (index $monitor "profiles")) -}}
+      {{- $_ := set $visibleRoles $role true -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $visibleSets := dict -}}
+{{- range $role := list "left" "center" "right" "laptop" "tv" -}}
+  {{- if hasKey $visibleRoles $role -}}
+    {{- $monitor := index $selectedMonitors $role -}}
+    {{- $setName := index $monitor "workspaces" -}}
+    {{- if and (eq $role "laptop") (eq (len $visibleRoles) 1) -}}
+      {{- $setName = "center" -}}
+    {{- end -}}
+    {{- $_ := set $visibleSets $setName true -}}
+  {{- end -}}
+{{- end -}}
+{{- $workspaceToSet := dict -}}
+{{- range $setName, $members := $workspaceSets -}}
+  {{- if and (ne $setName "associations") (kindIs "slice" $members) -}}
+    {{- range $workspace := $members -}}
+      {{- $_ := set $workspaceToSet (printf "%v" $workspace) $setName -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $associationTargets := dict -}}
+{{- $associationResolvedVisible := dict -}}
+{{- range $associationName, $members := index $workspaceSets "associations" -}}
+  {{- if gt (len $members) 0 -}}
+    {{- $_ := set $associationTargets $associationName (index $members 0) -}}
+  {{- end -}}
+  {{- range $workspace := $members -}}
+    {{- $workspaceKey := printf "%v" $workspace -}}
+    {{- $setName := index $workspaceToSet $workspaceKey | default "" -}}
+    {{- if and (not (hasKey $associationResolvedVisible $associationName)) (hasKey $visibleSets $setName) -}}
+      {{- $_ := set $associationTargets $associationName $workspace -}}
+      {{- $_ := set $associationResolvedVisible $associationName true -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $mailWorkspace := index $associationTargets "mail" -}}
+{{- $mediaWorkspace := index $associationTargets "media" -}}
+{{- $messagesWorkspace := index $associationTargets "messages" -}}
+{{- $chatsWorkspace := index $associationTargets "chats" -}}
+{{- $workCommWorkspace := index $associationTargets "work_comm" -}}
+
 # Disable kitty/terminal shadow.
 windowrule {
 	name = noshadow-kitty
@@ -146,7 +214,7 @@ windowrule {
 	name = workspace-1-thunderbird
 	match:class = ^(thunderbird)$
 
-	workspace = 1 silent
+	workspace = {{ $mailWorkspace }} silent
 }
 
 # Workspace 2
@@ -154,14 +222,14 @@ windowrule {
 	name = workspace-2-spotify
 	match:class = ^(Spotify(\sPremium)?)$
 
-	workspace = 2 silent
+	workspace = {{ $mediaWorkspace }} silent
 }
 # On Wayland Spotify opens without a class.
 windowrule {
 	name = workspace-2-spotify-initialtitle
 	match:initial_title = ^(Spotify(\sPremium)?)$
 
-	workspace = 2 silent
+	workspace = {{ $mediaWorkspace }} silent
 }
 
 {{ if eq .environment "home" }}
@@ -170,13 +238,13 @@ windowrule {
 	name = workspace-3-discord
 	match:class = ^([dD]iscord)|(com\.discordapp\.Discord)$
 
-	workspace = 3 silent
+	workspace = {{ $messagesWorkspace }} silent
 }
 windowrule {
 	name = workspace-3-msgs
 	match:title = ^(Signal.*)|(WhatsApp.*)$
 
-	workspace = 3 silent
+	workspace = {{ $messagesWorkspace }} silent
 }
 
 # Workspace 4
@@ -184,13 +252,13 @@ windowrule {
 	name = workspace-4-comm
 	match:class = ^(Hexchat)|(Zulip)|(Slack)$
 
-	workspace = 4 silent
+	workspace = {{ $chatsWorkspace }} silent
 }
 windowrule {
 	name = workspace-4-tuba
 	match:title = ^(Tuba)$
 
-	workspace = 4 silent
+	workspace = {{ $chatsWorkspace }} silent
 }
 {{ else }}
 # Workspace 3
@@ -198,13 +266,13 @@ windowrule {
 	name = workspace-3-mattermost
 	match:class = ^(Mattermost)$
 
-	workspace = 3 silent
+	workspace = {{ $messagesWorkspace }} silent
 }
 windowrule {
 	name = workspace-3-initialmsgs
 	match:initial_title = ^(Workchat)|(Google Chat)$
 
-	workspace = 3 silent
+	workspace = {{ $messagesWorkspace }} silent
 }
 
 # Workspace 4
@@ -212,26 +280,26 @@ windowrule {
 	name = workspace-4-discord
 	match:class = ^([dD]iscord)|(com\.discordapp\.Discord)$
 
-	workspace = 4 silent
+	workspace = {{ $chatsWorkspace }} silent
 }
 windowrule {
 	name = workspace-4-msgs
 	match:title = ^(Signal.*)|(WhatsApp.*)$
 
-	workspace = 4 silent
+	workspace = {{ $chatsWorkspace }} silent
 }
 
 windowrule {
 	name = workspace-5-comm
 	match:class = ^(Hexchat)|(Zulip)|(Slack)$
 
-	workspace = 5 silent
+	workspace = {{ $workCommWorkspace }} silent
 }
 windowrule {
 	name = workspace-5-tuba
 	match:title = ^(Tuba)$
 
-	workspace = 5 silent
+	workspace = {{ $workCommWorkspace }} silent
 }
 {{ end }}
 

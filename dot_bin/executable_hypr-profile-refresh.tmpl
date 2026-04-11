@@ -1,0 +1,50 @@
+#!/usr/bin/env zsh
+
+set -euo pipefail
+
+config_file="$HOME/.config/hypr/workspace-routing.json"
+
+if [[ ! -f "$config_file" ]]; then
+    exit 0
+fi
+
+# TODO: replace this placeholder with the real shikane active-profile query once it is available.
+active_profile="$(sh -lc 'printf %s "$ACTIVE_PROFILE"')"
+
+if [[ -z "$active_profile" ]]; then
+    active_profile="$(jq -r '.defaultProfile' "$config_file")"
+fi
+
+wait_for_profile_monitors() {
+    local expected_json actual_json expected_count
+    expected_json="$(jq -c --arg profile "$active_profile" '[.monitors | to_entries[] | select(.value.profiles | index($profile)) | .value.name]' "$config_file")"
+    expected_count="$(jq 'length' <<<"$expected_json")"
+
+    if [[ "$expected_count" -eq 0 ]]; then
+        return 0
+    fi
+
+    local attempt
+    for attempt in {1..30}; do
+        actual_json="$(hyprctl -j monitors 2>/dev/null || printf '[]')"
+
+        if jq -e --argjson expected "$expected_json" '
+            [.[].description] as $actual
+            | all($expected[]; $actual | index(.))
+        ' <<<"$actual_json" >/dev/null 2>&1; then
+            return 0
+        fi
+
+        sleep 0.1
+    done
+}
+
+wait_for_profile_monitors
+
+chezmoi apply \
+    --force \
+    --override-data "{\"runtime\":{\"active_profile\":\"$active_profile\"}}" \
+    "$HOME/.config/hypr/windows.conf" \
+    "$HOME/.config/hypr/workspaces.conf"
+
+"$HOME/.bin/hypr-workspace-remap" "$active_profile"
