@@ -1,10 +1,10 @@
-import app from "ags/gtk4/app"
-import { Astal, Gdk, Gtk } from "ags/gtk4"
+import { Gdk, Gtk } from "ags/gtk4"
 
 import { baseForRole, barPositionForRole, workspaceStripAnchorForPosition } from "../../lib/bar-logic"
 import { attachHoverHandlers } from "../../lib/widget-helpers"
 import type { BooleanAccessor, HyprStateAccessor, Role } from "../../lib/types"
 
+import OverlayWindow from "./OverlayWindow"
 import WorkspaceStrip from "../workspaces/WorkspaceStrip"
 
 type WorkspaceRevealWindowProps = {
@@ -28,15 +28,11 @@ export default function WorkspaceRevealWindow({
 
   // This window only appears while the auto-hidden center bar is collapsed.
   return (
-    <window
+    <OverlayWindow
       name={`bar-workspaces-${role}-${gdkmonitor.connector}`}
-      application={app}
       namespace={`ags-workspaces-${position}`}
       gdkmonitor={gdkmonitor}
-      defaultWidth={geometry.width}
       visible={visible}
-      exclusivity={Astal.Exclusivity.IGNORE}
-      layer={Astal.Layer.OVERLAY}
       anchor={workspaceStripAnchorForPosition(position)}
       marginTop={position === "top" ? 0 : undefined}
       marginBottom={position === "bottom" ? 0 : undefined}
@@ -50,6 +46,6 @@ export default function WorkspaceRevealWindow({
       >
         <WorkspaceStrip base={baseForRole(role)} hyprState={hyprState} />
       </box>
-    </window>
+    </OverlayWindow>
   )
 }

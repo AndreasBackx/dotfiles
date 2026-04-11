@@ -97,6 +97,7 @@ If a widget breaks after a system upgrade, check the output format of those comm
 
 - `app.tsx`: application entry point, monitor subscription, visibility timers, request handling.
 - `components/bar/MonitorBars.tsx`: per-monitor visibility selectors.
+- `components/bar/OverlayWindow.tsx`: shared overlay window wrapper for bar surfaces.
 - `components/bar/BarWindow.tsx`: overlay window for a full bar instance.
 - `components/bar/WorkspaceRevealWindow.tsx`: overlay window for the reveal-only workspace strip.
 - `components/bar/BarRoot.tsx`: layout root for the bar contents.

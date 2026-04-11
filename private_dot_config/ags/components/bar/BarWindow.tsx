@@ -1,5 +1,4 @@
-import app from "ags/gtk4/app"
-import { Astal, Gdk, Gtk } from "ags/gtk4"
+import { Gdk, Gtk } from "ags/gtk4"
 
 import { anchorForPosition, barPositionForRole, baseForRole } from "../../lib/bar-logic"
 import { BAR_HEIGHT } from "../../lib/runtime"
@@ -7,6 +6,7 @@ import { attachHoverHandlers } from "../../lib/widget-helpers"
 import type { BooleanAccessor, HyprStateAccessor, Role } from "../../lib/types"
 
 import BarRoot from "./BarRoot"
+import OverlayWindow from "./OverlayWindow"
 
 type BarWindowProps = {
   gdkmonitor: Gdk.Monitor
@@ -33,15 +33,11 @@ export default function BarWindow({
   // Each role gets its own overlay window so monitors can independently host
   // left, center, right, or laptop bars without cross-monitor layout coupling.
   return (
-    <window
+    <OverlayWindow
       name={`bar-${role}-${gdkmonitor.connector}`}
-      application={app}
       namespace={`ags-bar-${position}`}
       gdkmonitor={gdkmonitor}
-      defaultWidth={geometry.width}
       visible={visible}
-      exclusivity={Astal.Exclusivity.IGNORE}
-      layer={Astal.Layer.OVERLAY}
       anchor={anchorForPosition(position)}
     >
       <box
@@ -54,6 +50,6 @@ export default function BarWindow({
       >
         <BarRoot base={baseForRole(role)} hyprState={hyprState} instanceId={instanceId} position={position} />
       </box>
-    </window>
+    </OverlayWindow>
   )
 }
