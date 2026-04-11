@@ -8,18 +8,27 @@ const CPU_USAGE_COMMAND =
 const MEMORY_PERCENT_COMMAND = "free | awk '/Mem:/ {print int(($3 / $2) * 100)}'"
 const MEMORY_USED_COMMAND = `free -b | awk '/Mem:/ {printf "%.1fGiB", $3 / 1073741824}'`
 
+function parsePercentOrZero(stdout: string) {
+  const parsed = Number.parseInt(stdout.trim(), 10)
+  return Number.isNaN(parsed) ? 0 : parsed
+}
+
+function parseTrimmed(stdout: string) {
+  return stdout.trim()
+}
+
 export default function WarningItems() {
   const cpu = createPoll(0, 5000, async () => {
     const stdout = await execAsync(shell(CPU_USAGE_COMMAND))
-    return Number.parseInt(stdout.trim() || "0", 10)
+    return parsePercentOrZero(stdout)
   })
   const memory = createPoll(0, 5000, async () => {
     const stdout = await execAsync(shell(MEMORY_PERCENT_COMMAND))
-    return Number.parseInt(stdout.trim() || "0", 10)
+    return parsePercentOrZero(stdout)
   })
   const memoryUsed = createPoll("", 5000, async () => {
     const stdout = await execAsync(shell(MEMORY_USED_COMMAND))
-    return stdout.trim()
+    return parseTrimmed(stdout)
   })
 
   return (
