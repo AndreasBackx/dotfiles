@@ -1,0 +1,5 @@
+device_name = "AT Translated Set 2 keyboard"
+
+[[remap]]
+input = ["KEY_LEFTCTRL", "KEY_BACKSPACE"]
+output = ["KEY_DELETE"]
