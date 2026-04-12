@@ -1,0 +1,45 @@
+.clock-item {
+  padding: 0 11px;
+}
+
+calendar {
+  background: rgba(255, 255, 255, 0.03);
+  color: @ags-fg;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 8px;
+}
+
+calendar header,
+calendar button,
+calendar view,
+calendar grid,
+calendar label {
+  color: @ags-fg;
+}
+
+calendar button:hover,
+calendar button:focus,
+calendar button:active {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.timezone-search {
+  background: rgba(255, 255, 255, 0.04);
+  color: @ags-fg;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
+.timezone-search:focus {
+  border-color: @ags-accent;
+}
+
+.timezone-list {
+  min-width: 320px;
+}
+
+.timezone-list viewport {
+  background: transparent;
+}

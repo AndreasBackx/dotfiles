@@ -1,0 +1,19 @@
+.bar-root {
+  background: @ags-surface;
+  color: #cecece;
+  min-height: 56px;
+}
+
+.left-side,
+.center-side,
+.right-side {
+  min-width: 1px;
+}
+
+.left-side {
+  padding-left: 6px;
+}
+
+.right-side {
+  padding-right: 6px;
+}

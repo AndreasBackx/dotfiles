@@ -1,0 +1,30 @@
+.bar-menu-button {
+  color: #cecece;
+  background: transparent;
+  background-image: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  outline: none;
+  padding: 0;
+}
+
+.bar-menu-button:focus,
+.bar-menu-button:active,
+.bar-menu-button > button:focus,
+.bar-menu-button > button:active,
+menubutton > button:focus,
+menubutton > button:active {
+  background: transparent;
+  background-image: none;
+  box-shadow: none;
+}
+
+.bar-menu-button > button,
+menubutton > button {
+  padding: 0 10px;
+  margin: 0;
+  min-width: 0;
+  min-height: 0;
+  border-radius: 0;
+}

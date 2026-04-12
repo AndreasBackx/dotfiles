@@ -1,0 +1,8 @@
+{{- $t := .themes.rubecula -}}
+
+@define-color ags-fg {{ $t.foreground }};
+@define-color ags-danger {{ $t.color1 }};
+@define-color ags-success {{ $t.color10 }};
+@define-color ags-accent {{ $t.color3 }};
+@define-color ags-surface rgba(28, 28, 28, {{ $t.transparency }});
+@define-color ags-popover-bg rgba(28, 28, 28, 0.98);

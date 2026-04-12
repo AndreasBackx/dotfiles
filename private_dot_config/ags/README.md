@@ -11,7 +11,8 @@ This folder contains the AGS v2 configuration for the desktop bar.
 - `components/spotify/*` renders the Spotify status segment.
 - `components/system/*` renders the right-hand status and control widgets.
 - `lib/*` contains shared runtime helpers, monitor/workspace logic, and output parsers.
-- `style.css.tmpl` and `lib/config.ts.tmpl` are chezmoi templates, so their output depends on host data.
+- `theme.css.tmpl` and `lib/config.ts.tmpl` are chezmoi templates, so their output depends on host data.
+- `app.css` plus colocated `*.css` files next to components provide the global GTK stylesheet that `app.tsx` assembles at startup.
 
 ## Runtime Flow
 
@@ -118,6 +119,6 @@ If a widget breaks after a system upgrade, check the output format of those comm
 Two files in this folder are generated from chezmoi templates:
 
 - `lib/config.ts.tmpl`
-- `style.css.tmpl`
+- `theme.css.tmpl`
 
-That means host-specific monitor names, serial numbers, bar positions, and theme values are injected at render time. When changing monitor behavior or theme styling, confirm whether the right fix belongs in the TypeScript/CSS template or in the chezmoi data source that feeds it.
+That means host-specific monitor names, serial numbers, bar positions, and theme values are injected at render time. Most styling now lives in plain `*.css` files beside the TSX components that use those classes, while `theme.css.tmpl` centralizes the host-specific color values they reference. When changing monitor behavior or theme styling, confirm whether the right fix belongs in TypeScript, in a colocated CSS file, or in the chezmoi data source that feeds the templates.

@@ -1,0 +1,7 @@
+.battery-critical {
+  color: @ags-danger;
+}
+
+.battery-success {
+  color: @ags-success;
+}

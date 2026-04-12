@@ -1,0 +1,82 @@
+.workspace-btn {
+  color: #cecece;
+  background: transparent;
+  background-image: none;
+  border: none;
+  border-radius: 4px 4px 0 0;
+  box-shadow: none;
+  outline: none;
+  transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
+  color: #8a8a8a;
+  padding: 0 10px;
+  min-width: 20px;
+  min-height: 56px;
+  border-bottom: 2px solid transparent;
+}
+
+.workspace-btn:hover,
+.workspace-btn:focus-visible,
+.workspace-btn:active {
+  background: rgba(255, 255, 255, 0.08);
+  background-image: none;
+  box-shadow: none;
+  color: #f0f0f0;
+  border-bottom-color: transparent;
+}
+
+.position-top .workspace-btn:hover,
+.position-top .workspace-btn:focus-visible,
+.position-top .workspace-btn:active {
+  border-top-color: transparent;
+}
+
+.workspace-btn:focus {
+  color: #8a8a8a;
+  background: transparent;
+  background-image: none;
+  border-bottom-color: transparent;
+  box-shadow: none;
+}
+
+.position-top .workspace-btn {
+  border-bottom: none;
+  border-top: 2px solid transparent;
+  border-radius: 0 0 4px 4px;
+}
+
+.workspace-btn.active {
+  color: #cecece;
+  border-bottom-color: #cecece;
+}
+
+.workspace-btn.shown {
+  color: #b8b8b8;
+}
+
+.workspace-btn.shown:focus {
+  color: #b8b8b8;
+}
+
+.position-top .workspace-btn.active {
+  border-top-color: #cecece;
+  border-bottom-color: transparent;
+}
+
+.workspace-btn.active:focus {
+  color: #cecece;
+  border-bottom-color: #cecece;
+}
+
+.position-top .workspace-btn.shown {
+  border-top-color: transparent;
+}
+
+.position-top .workspace-btn:focus {
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+}
+
+.position-top .workspace-btn.active:focus {
+  border-top-color: #cecece;
+  border-bottom-color: transparent;
+}

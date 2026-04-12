@@ -1,0 +1,88 @@
+window {
+  background: transparent;
+  color: #cecece;
+  font-family: monospace, "MesloLGM Nerd Font";
+  font-size: 14px;
+}
+
+button {
+  min-height: 0;
+  min-width: 0;
+  color: #cecece;
+  background: transparent;
+  background-image: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  outline: none;
+}
+
+button:hover,
+button:focus,
+button:active,
+button:checked,
+button:focus-visible {
+  color: #cecece;
+  background: transparent;
+  background-image: none;
+  box-shadow: none;
+  outline: none;
+}
+
+menubutton,
+menubutton > button,
+menubutton button,
+.bar-menu-button,
+.bar-menu-button > button,
+.bar-menu-button button {
+  color: #cecece;
+  background: transparent;
+  background-image: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  outline: none;
+}
+
+menubutton:hover,
+menubutton:focus,
+menubutton:active,
+menubutton > button:hover,
+menubutton > button:focus,
+menubutton > button:active,
+menubutton > button:checked,
+.bar-menu-button,
+.bar-menu-button:hover,
+.bar-menu-button:focus,
+.bar-menu-button:active,
+.bar-menu-button:checked,
+.bar-menu-button > button:hover,
+.bar-menu-button > button:focus,
+.bar-menu-button > button:active,
+.bar-menu-button > button:checked {
+  color: #cecece;
+  background: transparent;
+  background-image: none;
+  box-shadow: none;
+  outline: none;
+}
+
+popover > contents,
+menu {
+  background: @ags-popover-bg;
+  color: @ags-fg;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 6px;
+}
+
+tooltip {
+  background: #141414;
+  color: #cecece;
+  border: 1px solid #404040;
+  border-radius: 4px;
+}
+
+tooltip label {
+  padding: 6px 9px;
+}

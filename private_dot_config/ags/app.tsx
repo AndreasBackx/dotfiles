@@ -3,7 +3,22 @@ import { Gtk } from "ags/gtk4"
 import { For, This, createBinding, createState, onCleanup } from "ags"
 import { subprocess } from "ags/process"
 
-import style from "./style.css"
+import themeCss from "./theme.css"
+import appCss from "./app.css"
+import barRootCss from "./components/bar/BarRoot.css"
+import barWindowCss from "./components/bar/BarWindow.css"
+import workspaceRevealCss from "./components/bar/WorkspaceRevealWindow.css"
+import spotifyCss from "./components/spotify/SpotifySegment.css"
+import bluetoothCss from "./components/system/BluetoothButton.css"
+import batteryCss from "./components/system/BatteryButton.css"
+import clockCss from "./components/system/ClockButton.css"
+import networkCss from "./components/system/NetworkButton.css"
+import systemSharedCss from "./components/system/shared.css"
+import systemMenuButtonCss from "./components/system/SystemMenuButton.css"
+import systemSegmentCss from "./components/system/SystemSegment.css"
+import titleCss from "./components/title/TitleSegment.css"
+import workspaceButtonCss from "./components/workspaces/WorkspaceButton.css"
+import workspaceStripCss from "./components/workspaces/WorkspaceStrip.css"
 import MonitorBars from "./components/bar/MonitorBars"
 import { assignCenterWorkspacesToLaptop, centerAutoHideEnabled, soloLaptopCenter } from "./lib/bar-logic"
 import { createCenterVisibilityController } from "./lib/center-visibility"
@@ -19,13 +34,31 @@ import type { HyprState } from "./lib/types"
 
 let requestShowCenter: (() => void) | null = null
 let requestShowWorkspaces: (() => void) | null = null
+const css = [
+  themeCss,
+  appCss,
+  barWindowCss,
+  workspaceRevealCss,
+  barRootCss,
+  workspaceStripCss,
+  workspaceButtonCss,
+  titleCss,
+  spotifyCss,
+  systemSharedCss,
+  systemSegmentCss,
+  systemMenuButtonCss,
+  batteryCss,
+  networkCss,
+  bluetoothCss,
+  clockCss,
+].join("\n")
 
 // Application entry point. It binds monitor state, subscribes to Hyprland
 // workspace updates, and delegates center-bar visibility policy to the
 // controller in `lib/center-visibility.ts`.
 app.start({
   instanceName: "dotfiles-bar",
-  css: style,
+  css,
   gtkTheme: "Adwaita-dark",
   requestHandler(argv, response) {
     switch (argv[0]) {

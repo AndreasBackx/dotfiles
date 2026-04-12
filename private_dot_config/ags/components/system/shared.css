@@ -1,0 +1,129 @@
+.bar-item,
+.bar-menu-button {
+  color: #cecece;
+  background: transparent;
+  background-image: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  outline: none;
+  transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+
+.bar-menu-button:hover {
+  background: rgba(255, 255, 255, 0.08);
+  background-image: none;
+  box-shadow: none;
+}
+
+.panel button:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.bar-item {
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+}
+
+.bar-item.icon-only {
+  min-height: 56px;
+  justify-content: center;
+  align-items: center;
+}
+
+.bar-item.with-text {
+  min-height: 56px;
+  justify-content: center;
+}
+
+.system-button-content {
+  min-height: 56px;
+  min-width: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+.system-button-content.with-text {
+  spacing: 6px;
+}
+
+.bar-item,
+.bar-menu-button > button > box,
+menubutton > button > box,
+.bar-menu-button > box {
+  justify-content: center;
+  align-items: center;
+}
+
+.item-icon {
+  font-size: 15px;
+  font-family: "MesloLGM Nerd Font Mono", "Symbols Nerd Font Mono", monospace;
+}
+
+.panel {
+  background: transparent;
+  color: @ags-fg;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  min-width: 280px;
+}
+
+.panel-divider {
+  min-height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 2px 0;
+}
+
+.panel-title {
+  color: #cecece;
+  font-size: 14px;
+}
+
+.panel-heading-row {
+  min-width: 280px;
+}
+
+.panel-heading-value {
+  margin-left: 12px;
+}
+
+.panel-status {
+  color: #b0b0b0;
+}
+
+.panel-section-title {
+  color: #b6b6b6;
+  margin-top: 8px;
+}
+
+.panel-row {
+  margin-bottom: 2px;
+}
+
+.panel button,
+.panel .danger {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  min-width: 32px;
+  min-height: 28px;
+  padding: 4px 12px;
+}
+
+.panel button:hover,
+.panel button:focus,
+.panel button:active {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.panel .occupied {
+  border-color: @ags-success;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.panel .danger {
+  border-color: @ags-danger;
+}
