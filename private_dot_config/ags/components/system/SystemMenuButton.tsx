@@ -20,6 +20,17 @@ export default function SystemMenuButton({
 }: SystemMenuButtonProps) {
   let menuButton: Gtk.MenuButton | null = null
   let popover: Gtk.Popover | null = null
+  let wired = false
+
+  const wirePopover = () => {
+    if (!menuButton || !popover || wired) {
+      return
+    }
+
+    wired = true
+    menuButton.set_popover(popover)
+    attachPopoverHandlers(popover, popoverId)
+  }
 
   return (
     <menubutton
@@ -28,9 +39,9 @@ export default function SystemMenuButton({
       $={(self: Gtk.MenuButton) => {
         menuButton = self
         self.set_focus_on_click(false)
-        if (popover) {
-          self.set_popover(popover)
-        }
+        self.set_always_show_arrow(false)
+        self.set_has_frame(false)
+        wirePopover()
       }}
     >
       {button}
@@ -39,8 +50,7 @@ export default function SystemMenuButton({
           popover = self
           self.set_autohide(true)
           self.set_has_arrow(false)
-          attachPopoverHandlers(self, popoverId)
-          menuButton?.set_popover(self)
+          wirePopover()
         }}
       >
         {children}

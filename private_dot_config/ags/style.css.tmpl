@@ -83,7 +83,6 @@ menubutton > button:checked,
 }
 
 .workspace-btn:hover,
-.bar-item:hover,
 .bar-menu-button:hover {
   background: rgba(255, 255, 255, 0.08);
   background-image: none;
@@ -185,7 +184,6 @@ menubutton > button:active {
 }
 
 .workspace-btn:hover,
-.bar-item:hover,
 .bar-menu-button:hover {
   background: rgba(255, 255, 255, 0.08);
 }
@@ -210,6 +208,7 @@ menubutton > button:active {
 .spotify-text {
   color: #cecece;
   padding: 0 26px;
+  font-weight: 400;
 }
 
 .spotify-paused,
@@ -224,17 +223,16 @@ menubutton > button:active {
 .bar-item {
   background: transparent;
   border-radius: 0;
-  min-width: 32px;
-  padding: 0 10px;
+  padding: 0;
 }
 
 .bar-item.icon-only {
-  padding: 0 8px;
+  min-height: 56px;
   justify-content: center;
+  align-items: center;
 }
 
 .bar-item.with-text {
-  padding: 0 8px;
   min-height: 56px;
   justify-content: center;
 }
@@ -247,11 +245,7 @@ menubutton > button:active {
 }
 
 .system-button-content.with-text {
-  spacing: 0;
-}
-
-.system-button-content.icon-only {
-  min-width: 16px;
+  spacing: 6px;
 }
 
 .bar-menu-button {
@@ -263,9 +257,9 @@ menubutton > button:active {
 
 .bar-menu-button > button,
 menubutton > button {
-  padding: 0;
+  padding: 0 10px;
   margin: 0;
-  min-width: 32px;
+  min-width: 0;
   min-height: 0;
   border-radius: 0;
 }
@@ -279,13 +273,11 @@ menubutton > button > box,
 }
 
 .item-icon {
-  margin-right: 6px;
-  min-width: 16px;
+  font-size: 15px;
   font-family: "MesloLGM Nerd Font Mono", "Symbols Nerd Font Mono", monospace;
 }
 
 .item-icon-only {
-  margin-right: 0;
 }
 
 .clock-item {

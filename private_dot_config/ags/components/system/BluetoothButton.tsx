@@ -37,9 +37,7 @@ export default function BluetoothButton({ instanceId }: BluetoothButtonProps) {
       tooltipText={tooltip}
       button={
         <box class={state((value) => `bar-item icon-only bt-${value}`)} halign={Gtk.Align.CENTER}>
-          <box class="system-button-content icon-only" halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER}>
-            <label class="item-icon item-icon-only" label={icon} xalign={0.5} yalign={0.5} widthRequest={16} />
-          </box>
+          <label class="item-icon item-icon-only" label={icon} xalign={0.5} yalign={0.5} />
         </box>
       }
     >

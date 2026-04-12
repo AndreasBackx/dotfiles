@@ -49,6 +49,7 @@ export default function NetworkButton({ instanceId }: NetworkButtonProps) {
     console.log(`[ags][network] ${instanceId} polled ${accessPoints.length} access points`)
     return accessPoints
   })
+
   const popoverId = `network-popover-${instanceId}`
 
   return (
@@ -57,9 +58,7 @@ export default function NetworkButton({ instanceId }: NetworkButtonProps) {
       tooltipText={tooltip}
       button={
         <box class={state((value) => `bar-item icon-only net-${value}`)} halign={Gtk.Align.CENTER}>
-          <box class="system-button-content icon-only" halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER}>
-            <label class="item-icon item-icon-only" label={icon} xalign={0.5} yalign={0.5} widthRequest={16} />
-          </box>
+          <label class="item-icon item-icon-only" label={icon} xalign={0.5} yalign={0.5} />
         </box>
       }
     >

@@ -59,15 +59,19 @@ export function attachHoverHandlers(widget: Gtk.Widget, id?: string, onEnter?: (
 /**
  * Tracks a popover's open state and hover state under a stable id.
  *
+ * Do not drive `Gtk.MenuButton` active state manually here. A previous attempt
+ * to force `set_active(false)` during popover wiring caused Gtk to log broken
+ * active-state accounting warnings and left menu buttons visually stuck.
+ *
  * Example: `attachPopoverHandlers(popover, "audio-popover-left-DP-1")`
  */
 export function attachPopoverHandlers(popover: Gtk.Popover, id: string) {
   let open = popover.get_visible()
   trackedPopovers.set(id, popover)
 
-  // Prefer a small set of stable signals here. Menubutton/popover pairs already
-  // manage a lot of internal toggle state, and over-listening can trigger noisy
-  // state churn during open/close transitions.
+  // Prefer a small set of stable popover signals here. Menubutton/popover pairs
+  // manage their own toggle state, and manually syncing GtkMenuButton active
+  // state caused stuck buttons and Gtk warnings during reload/open races.
   const reportOpenState = (nextOpen: boolean) => {
     if (nextOpen === open) {
       return

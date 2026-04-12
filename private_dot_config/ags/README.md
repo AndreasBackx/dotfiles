@@ -66,6 +66,7 @@ Important behavior:
 - Hovering the center bar or any attached popover keeps the center bar visible long enough for interaction.
 - `show-center` and `show-workspaces` requests can be sent to the AGS instance through the request handler.
 - When auto-hide is disabled, the center bar is forced visible and the reveal strip is hidden.
+- `lib/widget-helpers.ts` intentionally tracks popover state from the popover itself. Manually forcing `GtkMenuButton` active state during popover setup caused Gtk "broken accounting of active state" warnings and stuck menu buttons during reload/open races.
 
 ## External Command Contracts
 
