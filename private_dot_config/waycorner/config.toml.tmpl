@@ -1,10 +1,10 @@
 [center-trigger]
 enter_command = ["ags", "request", "--instance", "dotfiles-bar", "show-center"]
 locations = ["{{ if eq (index .monitors .monitors.selected "center" "bar_position" | default "bottom") "top" }}top{{ else }}bottom{{ end }}"]
-size = 6
+size = 1
 margin = 0
 timeout_ms = 50
-color = "#00000000"
+color = "#FF0000"
 
 [center-trigger.output]
 description = "{{ index .monitors .monitors.selected "center" "name" }}"
@@ -13,10 +13,10 @@ description = "{{ index .monitors .monitors.selected "center" "name" }}"
 [laptop-trigger]
 enter_command = ["ags", "request", "--instance", "dotfiles-bar", "show-center"]
 locations = ["{{ if eq (index .monitors .monitors.selected "laptop" "bar_position" | default "top") "top" }}top{{ else }}bottom{{ end }}"]
-size = 6
+size = 1
 margin = 0
 timeout_ms = 50
-color = "#00000000"
+color = "#FF0000"
 
 [laptop-trigger.output]
 description = "{{ index .monitors .monitors.selected "laptop" "name" }}"
