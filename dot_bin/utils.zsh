@@ -8,7 +8,7 @@ function is_wayland() {
     fi
 }
 
-function waybar-json() {
+function json-output() {
     text=$1
     tooltip=$2
     class=$3
@@ -25,9 +25,9 @@ function waybar-json() {
     fi
 }
 
-function waybar-json-percentage() {
+function json-output-percentage() {
     percentage=$4
-    waybar-json $1 $2 $3 ", \"percentage\": $percentage"
+    json-output $1 $2 $3 ", \"percentage\": $percentage"
 }
 
 function polybar-output() {

@@ -35,7 +35,7 @@ function check_cache() {
 
     # Return as fast as possible, then update the repos and update.
     if is_wayland; then
-        waybar-json "$amount"
+        json-output "$amount"
     else
         echo "$amount"
     fi
@@ -56,7 +56,7 @@ function check_live() {
     fi
 
     if is_wayland; then
-        waybar-json "$amount"
+        json-output "$amount"
     else
         echo "$amount"
     fi

@@ -17,7 +17,7 @@ This folder contains the AGS v2 configuration for the desktop bar.
 ## Runtime Flow
 
 1. `app.tsx` starts AGS with a custom instance name and CSS.
-2. It subscribes to `eww-workspaces listen json`, which streams Hyprland workspace and monitor state.
+2. It subscribes to `bar-workspaces listen json`, which streams Hyprland workspace and monitor state.
 3. The streamed state is stored in `hyprState` and passed down as an accessor.
 4. `MonitorBars.tsx` decides which bar windows should exist on each physical monitor.
 5. Each `BarWindow.tsx` renders `BarRoot.tsx`, which composes the workspace strip, title, Spotify segment, and system segment.
@@ -73,13 +73,13 @@ Important behavior:
 
 Most widgets are thin wrappers around existing shell helpers in `~/.bin`:
 
-- `eww-workspaces`
-- `eww-audio`
-- `eww-battery`
-- `eww-bluetooth`
-- `eww-brightness`
-- `eww-network`
-- `eww-spotify`
+- `bar-workspaces`
+- `bar-audio`
+- `bar-battery`
+- `bar-bluetooth`
+- `bar-brightness`
+- `bar-network`
+- `bar-spotify`
 - `power-options`
 
 The widgets also depend on standard tools:

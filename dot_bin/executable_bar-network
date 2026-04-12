@@ -1,0 +1,124 @@
+#!/usr/bin/env zsh
+
+set -euo pipefail
+
+active_device_line() {
+    nmcli -t -f DEVICE,TYPE,STATE,CONNECTION device status | awk -F: '$3 == "connected" {print; exit}'
+}
+
+state() {
+    local line type
+    line=$(active_device_line)
+    if [[ -z "$line" ]]; then
+        echo "offline"
+        return
+    fi
+
+    IFS=':' read -r _device type _connection_state _connection <<<"$line"
+    if [[ "$type" == "ethernet" ]]; then
+        echo "wired"
+    elif [[ "$type" == "wifi" ]]; then
+        echo "wifi"
+    else
+        echo "online"
+    fi
+}
+
+icon() {
+    local line type
+    line=$(active_device_line)
+
+    if [[ -z "$line" ]]; then
+        echo "󰖪"
+        return
+    fi
+
+    IFS=':' read -r _device type _connection_state _connection <<<"$line"
+    if [[ "$type" == "ethernet" ]]; then
+        echo "󰈀"
+    elif [[ "$type" == "wifi" ]]; then
+        echo "󰖩"
+    else
+        echo "󰈁"
+    fi
+}
+
+wifi_signal() {
+    nmcli -t -f IN-USE,SIGNAL dev wifi list --rescan no 2>/dev/null | awk -F: '$1 == "*" {print $2; exit}'
+}
+
+tooltip() {
+    local net_state line device type connection signal
+    net_state=$(nmcli networking 2>/dev/null || echo "disabled")
+
+    if [[ "$net_state" != "enabled" ]]; then
+        echo "Offline"
+        return
+    fi
+
+    line=$(active_device_line)
+    if [[ -z "$line" ]]; then
+        echo "Offline"
+        return
+    fi
+
+    IFS=':' read -r device type _connection_state connection <<<"$line"
+
+    if [[ "$type" == "wifi" ]]; then
+        signal=$(wifi_signal)
+        if [[ -n "$signal" ]]; then
+            echo "Wi-Fi: ${connection} (${signal}%)"
+        else
+            echo "Wi-Fi: ${connection}"
+        fi
+    elif [[ "$type" == "ethernet" ]]; then
+        echo "Ethernet: ${device}"
+    else
+        echo "Online: ${connection}"
+    fi
+}
+
+toggle_networking() {
+    if [[ "$(nmcli networking)" == "enabled" ]]; then
+        nmcli networking off
+    else
+        nmcli networking on
+    fi
+}
+
+connections_editor() {
+    nm-connection-editor || nmtui
+}
+
+disconnect_wifi() {
+    local wifi_device
+    wifi_device=$(nmcli -t -f DEVICE,TYPE,STATE device status | awk -F: '$2 == "wifi" && $3 == "connected" {print $1; exit}')
+    if [[ -n "$wifi_device" ]]; then
+        nmcli device disconnect "$wifi_device"
+    fi
+}
+
+case "${1:-icon}" in
+icon)
+    icon
+    ;;
+tooltip)
+    tooltip
+    ;;
+state)
+    state
+    ;;
+toggle-network)
+    toggle_networking
+    ;;
+disconnect-wifi)
+    disconnect_wifi
+    ;;
+connections)
+    connections_editor
+    ;;
+*)
+    echo "Usage: $0 {icon|tooltip|state|toggle-network|disconnect-wifi|connections}"
+    exit 2
+    ;;
+esac

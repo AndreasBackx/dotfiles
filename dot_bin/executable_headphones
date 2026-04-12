@@ -57,13 +57,13 @@ case "$1" in
         if is_connected; then
             if is_wayland; then
                 battery_percentage=`battery`
-                waybar-json $HEADPHONES_ICON "Connected ($battery_percentage%)" connected
+                json-output $HEADPHONES_ICON "Connected ($battery_percentage%)" connected
             else
                 echo "%{F#CECECE}%{F-}"
             fi
         else
             if is_wayland; then
-                waybar-json $HEADPHONES_ICON "Disconnected" disconnected
+                json-output $HEADPHONES_ICON "Disconnected" disconnected
             else
                 echo "%{F#6E6E6E}%{F-}"
             fi

@@ -39,9 +39,6 @@ function hint_for() {
     minos)
         echo "Install minos and ensure it is in PATH"
         ;;
-    eww)
-        echo "Install package: eww"
-        ;;
     wpctl)
         echo "Install package: wireplumber"
         ;;
@@ -62,9 +59,6 @@ function hint_for() {
         ;;
     borg)
         echo "Install package: borgbackup"
-        ;;
-    sass)
-        echo "Install package: sass or sassc"
         ;;
     *)
         echo "Install package: $cmd"
@@ -103,7 +97,6 @@ if [[ "$headless" == "true" ]]; then
 else
     print_result info "Checking required desktop tools"
     check_required minos
-    check_required eww
     check_required wpctl
 
     print_result info "Checking optional desktop tools"

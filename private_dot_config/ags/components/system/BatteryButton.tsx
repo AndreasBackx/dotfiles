@@ -8,7 +8,7 @@ import { createCommandTextPolls } from "../../lib/runtime"
 export default function BatteryButton() {
   const { icon, text, tooltip, state } = createCommandTextPolls(
     15000,
-    "eww-battery",
+    "bar-battery",
     ["icon", "text", "tooltip", "state"] as const,
   )
 

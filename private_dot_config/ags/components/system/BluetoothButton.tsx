@@ -19,7 +19,7 @@ type BluetoothButtonProps = {
 export default function BluetoothButton({ instanceId }: BluetoothButtonProps) {
   const { icon, tooltip, state } = createCommandTextPolls(
     3000,
-    "eww-bluetooth",
+    "bar-bluetooth",
     ["icon", "tooltip", "state"] as const,
   )
   const devices = createPoll(new Array<BluetoothDevice>(), 8000, async () => {
@@ -45,7 +45,7 @@ export default function BluetoothButton({ instanceId }: BluetoothButtonProps) {
           <label class="panel-title" label="Bluetooth" xalign={0} />
           <label class="panel-status" label={tooltip} xalign={0} />
           <box class="panel-row" spacing={8}>
-            <button onClicked={() => run(command("eww-bluetooth", "toggle-power"))}>Toggle Power</button>
+            <button onClicked={() => run(command("bar-bluetooth", "toggle-power"))}>Toggle Power</button>
             <button onClicked={() => run(["bluetoothctl", "scan", "on"])}>Scan On</button>
             <button onClicked={() => run(["bluetoothctl", "scan", "off"])}>Scan Off</button>
           </box>
@@ -56,7 +56,7 @@ export default function BluetoothButton({ instanceId }: BluetoothButtonProps) {
                 <button
                   class={device.connected ? "panel-button occupied" : "panel-button"}
                   onClicked={() =>
-                    run(command("eww-bluetooth", device.connected ? "disconnect" : "connect", device.mac))
+                    run(command("bar-bluetooth", device.connected ? "disconnect" : "connect", device.mac))
                   }
                 >
                   <label label={device.name} xalign={0} />

@@ -13,7 +13,7 @@ export const WORKSPACE_STRIP_HIDE_DELAY_MS = 300
 /**
  * Builds an absolute command path inside `~/.bin`.
  *
- * Example: `command("eww-network", "tooltip")`
+ * Example: `command("bar-network", "tooltip")`
  */
 export function command(name: string, ...args: string[]) {
   return [`${BIN}/${name}`, ...args]
@@ -31,7 +31,7 @@ export function shell(cmd: string) {
 /**
  * Fire-and-forget command execution for click handlers and async side effects.
  *
- * Example: `run(command("eww-audio", "toggle-mute"))`
+ * Example: `run(command("bar-audio", "toggle-mute"))`
  */
 export function run(cmd: string | string[]) {
   execAsync(cmd).catch((error) => console.error(error))
@@ -62,7 +62,7 @@ export function parseJson<T>(text: string, fallback: T): T {
 /**
  * Creates a polling binding whose value is the trimmed stdout of a command.
  *
- * Example: `createTextPoll(3000, command("eww-network", "tooltip"))`
+ * Example: `createTextPoll(3000, command("bar-network", "tooltip"))`
  */
 export function createTextPoll(interval: number, cmd: string[]) {
   return createPoll("", interval, cmd, trimOutput)
@@ -73,7 +73,7 @@ export function createTextPoll(interval: number, cmd: string[]) {
  * subcommands like `icon`, `text`, `tooltip`, and `state`.
  *
  * Example:
- * `createCommandTextPolls(3000, "eww-network", ["icon", "tooltip", "state"] as const)`
+ * `createCommandTextPolls(3000, "bar-network", ["icon", "tooltip", "state"] as const)`
  */
 export function createCommandTextPolls<const T extends readonly string[]>(
   interval: number,

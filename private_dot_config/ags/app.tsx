@@ -111,7 +111,7 @@ app.start({
     // The helper script is the single source of truth for Hyprland monitor and
     // workspace state. Invalid JSON is ignored by `parseJson` and leaves the
     // previous state intact.
-    const proc = subprocess(command("eww-workspaces", "listen", "json"), (stdout) => {
+    const proc = subprocess(command("bar-workspaces", "listen", "json"), (stdout) => {
       const nextState = parseJson<HyprState>(stdout, hyprState.get())
       setHyprState(nextState)
 

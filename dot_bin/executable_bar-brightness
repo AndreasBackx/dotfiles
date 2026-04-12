@@ -1,0 +1,124 @@
+#!/usr/bin/env zsh
+
+set -euo pipefail
+
+resolve_backend() {
+    case "${1:-minos}" in
+    minos | brightnessctl)
+        print -r -- "${1:-minos}"
+        ;;
+    *)
+        print -r -- "minos"
+        ;;
+    esac
+}
+
+select_brightness_value() {
+    local -a values
+    values=("$@")
+
+    if (( ${#values[@]} >= 2 )); then
+        echo "${values[2]}"
+    elif (( ${#values[@]} >= 1 )); then
+        echo "${values[1]}"
+    else
+        echo 0
+    fi
+}
+
+get_brightness_minos() {
+    local raw value
+    local -a values
+
+    raw=$(minos get --minimal --brightness 2>/dev/null || true)
+    values=(${(@f)$(printf '%s\n' "$raw" | awk '/Brightness:/ {gsub(/%/, "", $2); print int($2)}')})
+
+    value=$(select_brightness_value "${values[@]}")
+    if [[ -z "$value" ]]; then
+        echo 0
+    else
+        echo "$value"
+    fi
+}
+
+get_brightness_brightnessctl() {
+    local value max
+
+    value=$(brightnessctl g 2>/dev/null || true)
+    max=$(brightnessctl m 2>/dev/null || true)
+
+    if [[ -z "$value" || -z "$max" || "$max" == "0" ]]; then
+        echo 0
+        return
+    fi
+
+    echo $(( (value * 100) / max ))
+}
+
+get_brightness() {
+    case "$(resolve_backend "$1")" in
+    brightnessctl)
+        get_brightness_brightnessctl
+        ;;
+    *)
+        get_brightness_minos
+        ;;
+    esac
+}
+
+icon() {
+    echo "󰃠"
+}
+
+text() {
+    local backend="${1:-minos}"
+    echo "$(get_brightness "$backend")%"
+}
+
+tooltip() {
+    local backend="${1:-minos}"
+    echo "Brightness: $(get_brightness "$backend")%"
+}
+
+backend=$(resolve_backend "$1")
+
+if [[ "$backend" == "${1:-}" ]]; then
+    shift
+fi
+
+case "${1:-text}" in
+icon)
+    icon
+    ;;
+text)
+    text "$backend"
+    ;;
+tooltip)
+    tooltip "$backend"
+    ;;
+up)
+    if [[ "$backend" == "brightnessctl" ]]; then
+        brightnessctl set 10%+
+    else
+        minos set --minimal --brightness +10%
+    fi
+    ;;
+down)
+    if [[ "$backend" == "brightnessctl" ]]; then
+        brightnessctl set 10%-
+    else
+        minos set --minimal --brightness -10%
+    fi
+    ;;
+set)
+    if [[ "$backend" == "brightnessctl" ]]; then
+        brightnessctl set "${2:?brightness required}%"
+    else
+        minos set --minimal --brightness "${2:?brightness required}%"
+    fi
+    ;;
+*)
+    echo "Usage: $0 [minos|brightnessctl] {icon|text|tooltip|up|down|set}"
+    exit 2
+    ;;
+esac

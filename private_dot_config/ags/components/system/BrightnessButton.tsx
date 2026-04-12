@@ -14,8 +14,8 @@ type BrightnessButtonProps = {
 export default function BrightnessButton({ instanceId }: BrightnessButtonProps) {
   const backend = instanceId.startsWith("laptop-") ? "brightnessctl" : "minos"
   console.log(`[ags][brightness] ${instanceId} using ${backend}`)
-  const text = createTextPoll(3000, command("eww-brightness", backend, "text"))
-  const tooltip = createTextPoll(3000, command("eww-brightness", backend, "tooltip"))
+  const text = createTextPoll(3000, command("bar-brightness", backend, "text"))
+  const tooltip = createTextPoll(3000, command("bar-brightness", backend, "tooltip"))
   const popoverId = `brightness-popover-${instanceId}`
   const presets = [0, 25, 50, 75, 100]
 
@@ -35,12 +35,12 @@ export default function BrightnessButton({ instanceId }: BrightnessButtonProps) 
         <box class="panel" orientation={Gtk.Orientation.VERTICAL} spacing={8}>
           <label class="panel-title" label="Brightness" xalign={0} />
           <box class="panel-row" spacing={8}>
-            <button onClicked={() => run(command("eww-brightness", backend, "down"))}>-10%</button>
-            <button onClicked={() => run(command("eww-brightness", backend, "up"))}>+10%</button>
+            <button onClicked={() => run(command("bar-brightness", backend, "down"))}>-10%</button>
+            <button onClicked={() => run(command("bar-brightness", backend, "up"))}>+10%</button>
           </box>
           <box class="panel-row" spacing={8}>
             {presets.map((value) => (
-              <button onClicked={() => run(command("eww-brightness", backend, "set", `${value}`))}>
+              <button onClicked={() => run(command("bar-brightness", backend, "set", `${value}`))}>
                 <label label={`${value}`} />
               </button>
             ))}

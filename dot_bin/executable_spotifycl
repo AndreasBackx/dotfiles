@@ -63,7 +63,7 @@ class OutputType(str, Enum):
     def __str__(self):
         return self.value
 
-    WAYBAR = "waybar"
+    JSON = "json"
     POLYBAR = "polybar"
 
 
@@ -244,17 +244,17 @@ class Spotifycl:
     def output(self, text, tooltip=None, css_class=None):
         text = "" if text is None else text
 
-        def escape_html_waybar(value: str) -> str:
-            if self.output_type != OutputType.WAYBAR:
+        def escape_html_json(value: str) -> str:
+            if self.output_type != OutputType.JSON:
                 return value
             return html.escape(value)
 
         output = {
-            "text": escape_html_waybar(text),
+            "text": escape_html_json(text),
         }
 
         if tooltip:
-            output["tooltip"] = escape_html_waybar(tooltip)
+            output["tooltip"] = escape_html_json(tooltip)
 
         css_class = css_class or []
         css_class = [css_class] if not isinstance(css_class, list) else css_class
@@ -264,7 +264,7 @@ class Spotifycl:
             self.empty_output = True
 
         if output != self.last_output:
-            if self.output_type == OutputType.WAYBAR:
+            if self.output_type == OutputType.JSON:
                 serialized = json.dumps(output)
             else:
                 color = ""
@@ -398,8 +398,8 @@ def common_options(fn):
     fn = click.option(
         "--output-type",
         type=ChoiceEnum(OutputType),
-        default=OutputType.WAYBAR,
-        help="Output type for specific bar.",
+        default=OutputType.JSON,
+        help="Output format for specific bars.",
     )(fn)
     fn = click.option(
         "--class-to-color",

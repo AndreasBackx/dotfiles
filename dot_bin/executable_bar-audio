@@ -1,0 +1,120 @@
+#!/usr/bin/env zsh
+
+set -euo pipefail
+
+volume_raw() {
+    wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null || true
+}
+
+volume_percent() {
+    local raw
+    raw=$(volume_raw)
+    if [[ -z "$raw" ]]; then
+        echo "n/a"
+        return
+    fi
+
+    awk '{print int($2 * 100)}' <<<"$raw"
+}
+
+sink_name() {
+    wpctl status 2>/dev/null | awk '
+      /Sinks:/{in_sinks=1; next}
+      /Sources:/{in_sinks=0}
+      in_sinks && /\*/ {
+        line=$0
+        sub(/.*\*/, "", line)
+        sub(/^[[:space:]]+/, "", line)
+        sub(/[[:space:]]*\[vol:.*$/, "", line)
+        print line
+        exit
+      }
+    ' || true
+}
+
+icon() {
+    local raw volume
+    raw=$(volume_raw)
+    if [[ -z "$raw" ]]; then
+        echo "󰝟"
+        return
+    fi
+
+    volume=$(awk '{print int($2 * 100)}' <<<"$raw")
+    if [[ "$raw" == *"MUTED"* ]]; then
+        echo "󰝟"
+    elif (( volume < 30 )); then
+        echo ""
+    elif (( volume < 70 )); then
+        echo ""
+    else
+        echo ""
+    fi
+}
+
+text() {
+    local volume
+    volume=$(volume_percent)
+    if [[ "$volume" == "n/a" ]]; then
+        echo "n/a"
+    else
+        echo "${volume}%"
+    fi
+}
+
+tooltip() {
+    local raw volume muted sink
+    raw=$(volume_raw)
+    if [[ -z "$raw" ]]; then
+        echo "Volume: unavailable"
+        return
+    fi
+
+    volume=$(volume_percent)
+    if [[ "$raw" == *"MUTED"* ]]; then
+        muted="yes"
+    else
+        muted="no"
+    fi
+
+    sink=$(sink_name)
+    if [[ -n "$sink" ]]; then
+        print -r -- "Volume: ${volume}%"
+        print -r -- "Muted: ${muted}"
+        print -r -- "Sink: ${sink}"
+    else
+        print -r -- "Volume: ${volume}%"
+        print -r -- "Muted: ${muted}"
+    fi
+}
+
+case "${1:-icon}" in
+icon)
+    icon
+    ;;
+text)
+    text
+    ;;
+tooltip)
+    tooltip
+    ;;
+up)
+    wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+
+    ;;
+down)
+    wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
+    ;;
+toggle-mute)
+    wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+    ;;
+set-sink)
+    wpctl set-default "${2:?sink id required}"
+    ;;
+set-source)
+    wpctl set-default "${2:?source id required}"
+    ;;
+*)
+    echo "Usage: $0 {icon|text|tooltip|up|down|toggle-mute|set-sink|set-source}"
+    exit 2
+    ;;
+esac

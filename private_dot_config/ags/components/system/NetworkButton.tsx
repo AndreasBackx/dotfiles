@@ -32,7 +32,7 @@ type NetworkButtonProps = {
  * Polls network status and lists visible Wi-Fi access points in a popover.
  */
 export default function NetworkButton({ instanceId }: NetworkButtonProps) {
-  const { icon, tooltip, state } = createCommandTextPolls(3000, "eww-network", ["icon", "tooltip", "state"] as const)
+  const { icon, tooltip, state } = createCommandTextPolls(3000, "bar-network", ["icon", "tooltip", "state"] as const)
   const wifi = createPoll(new Array<WifiAccessPoint>(), 8000, async () => {
     const stdout = await execAsync([
       "nmcli",
@@ -66,8 +66,8 @@ export default function NetworkButton({ instanceId }: NetworkButtonProps) {
           <label class="panel-title" label="Network" xalign={0} />
           <label class="panel-status" label={tooltip} xalign={0} />
           <box class="panel-row" spacing={8}>
-            <button onClicked={() => run(command("eww-network", "toggle-network"))}>Toggle Networking</button>
-            <button onClicked={() => run(command("eww-network", "connections"))}>Connections</button>
+            <button onClicked={() => run(command("bar-network", "toggle-network"))}>Toggle Networking</button>
+            <button onClicked={() => run(command("bar-network", "connections"))}>Connections</button>
           </box>
           <label class="panel-section-title" label="Wi-Fi" xalign={0} />
           <box orientation={Gtk.Orientation.VERTICAL} spacing={6}>
@@ -77,7 +77,7 @@ export default function NetworkButton({ instanceId }: NetworkButtonProps) {
                   class={accessPoint.inUse ? "panel-button occupied" : "panel-button"}
                   onClicked={() => {
                     if (accessPoint.inUse) {
-                      run(command("eww-network", "disconnect-wifi"))
+                      run(command("bar-network", "disconnect-wifi"))
                     } else {
                       connectWifi(accessPoint.ssid)
                     }

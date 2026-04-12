@@ -17,7 +17,7 @@ type AudioButtonProps = {
  * Polls PipeWire status and offers sink/source selection in a popover.
  */
 export default function AudioButton({ instanceId }: AudioButtonProps) {
-  const { icon, text, tooltip } = createCommandTextPolls(2000, "eww-audio", ["icon", "text", "tooltip"] as const)
+  const { icon, text, tooltip } = createCommandTextPolls(2000, "bar-audio", ["icon", "text", "tooltip"] as const)
   const pipewire = createPoll({ sinks: new Array<AudioEndpoint>(), sources: new Array<AudioEndpoint>() }, 5000, async () => {
     const stdout = await execAsync(shell("wpctl status"))
     const endpoints = {
@@ -57,9 +57,9 @@ export default function AudioButton({ instanceId }: AudioButtonProps) {
           <label class="panel-title" label="PipeWire" xalign={0} />
           <label class="panel-status" label={tooltip} xalign={0} />
           <box class="panel-row" spacing={8}>
-            <button onClicked={() => run(command("eww-audio", "down"))}>-5%</button>
-            <button onClicked={() => run(command("eww-audio", "up"))}>+5%</button>
-            <button onClicked={() => run(command("eww-audio", "toggle-mute"))}>Mute</button>
+            <button onClicked={() => run(command("bar-audio", "down"))}>-5%</button>
+            <button onClicked={() => run(command("bar-audio", "up"))}>+5%</button>
+            <button onClicked={() => run(command("bar-audio", "toggle-mute"))}>Mute</button>
             <button onClicked={() => run(["pavucontrol"])}>Pavucontrol</button>
           </box>
           <label class="panel-section-title" label="Sinks" xalign={0} />
@@ -68,7 +68,7 @@ export default function AudioButton({ instanceId }: AudioButtonProps) {
               {(sink) => (
                 <button
                   class={sink.active ? "panel-button occupied" : "panel-button"}
-                  onClicked={() => run(command("eww-audio", "set-sink", sink.id))}
+                  onClicked={() => run(command("bar-audio", "set-sink", sink.id))}
                 >
                   <label label={sink.name} xalign={0} />
                 </button>
@@ -81,7 +81,7 @@ export default function AudioButton({ instanceId }: AudioButtonProps) {
               {(source) => (
                 <button
                   class={source.active ? "panel-button occupied" : "panel-button"}
-                  onClicked={() => run(command("eww-audio", "set-source", source.id))}
+                  onClicked={() => run(command("bar-audio", "set-source", source.id))}
                 >
                   <label label={source.name} xalign={0} />
                 </button>

@@ -87,25 +87,25 @@ function status() {
     fi
 
     if ! is_timer_active; then
-        waybar-json "\uf740" "Backup is disabled. Click to enable and start it." inactive
+        json-output "\uf740" "Backup is disabled. Click to enable and start it." inactive
         return 1
     fi
 
     if ! is_service_active; then
         if is_service_failed; then
-            waybar-json "\uf7e4" "Backup has failed, click to try again." failed
+            json-output "\uf7e4" "Backup has failed, click to try again." failed
             return 1
         else
-            waybar-json "\uf0c2" "Backup timer is waiting for the next backup. Click to start now." waiting
+            json-output "\uf0c2" "Backup timer is waiting for the next backup. Click to start now." waiting
             return 0
         fi
     fi
 
-    waybar-json "\uf382" "Backing up..." running
+    json-output "\uf382" "Backing up..." running
 }
 
 function error_usage() {
-    echo "Usage: $0 {status|update|start} [--background]"
+    echo "Usage: $0 {status|start|stop} [--background]"
     exit 1
 }
 
@@ -136,9 +136,6 @@ done
 case "$subcommand" in
 status)
     status
-    ;;
-update)
-    pkill -RTMIN+8 waybar
     ;;
 start)
     if [[ "$background" == "yes" ]]; then

@@ -12,9 +12,9 @@ import { command, run, trimOutput } from "../../lib/runtime"
 export default function SpotifySegment() {
   // The helper scripts expose long-lived streams, so subprocess bindings are a
   // better fit than polling here.
-  const text = createSubprocess("", command("eww-spotify", "monitor"), trimOutput)
-  const tooltip = createSubprocess("", command("eww-spotify", "monitor-tooltip"), trimOutput)
-  const state = createSubprocess("paused", command("eww-spotify", "monitor-state"), trimOutput)
+  const text = createSubprocess("", command("bar-spotify", "monitor"), trimOutput)
+  const tooltip = createSubprocess("", command("bar-spotify", "monitor-tooltip"), trimOutput)
+  const state = createSubprocess("paused", command("bar-spotify", "monitor-state"), trimOutput)
 
   return (
     <button
@@ -25,7 +25,7 @@ export default function SpotifySegment() {
       $={(self: Gtk.Button) => {
         const controller = new Gtk.GestureClick()
         controller.set_button(Gdk.BUTTON_SECONDARY)
-        controller.connect("pressed", () => run(command("eww-spotify", "toggle-liked")))
+        controller.connect("pressed", () => run(command("bar-spotify", "toggle-liked")))
         self.add_controller(controller)
       }}
     >
