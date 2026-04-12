@@ -97,6 +97,7 @@ Common issues:
 - Missing secrets: check `~/.config/.secrets` and your secrets provider setup.
 - Headless mode: desktop checks are skipped and 1Password-backed secrets are not loaded.
 - AGS bar reloads: use `ags-reload`; logs go to `~/.local/state/ags-reload.log`.
+- Hyprland/UWSM logs: file log at `~/.local/state/hyprland/hyprland.log`, session journal via `journalctl --user -u wayland-wm@hyprland.desktop.service`, crash reports at `~/.cache/hyprland/hyprlandCrashReport*.txt`, and the `hyprland-logs` helper shows all of them together.
 
 ## ddcutil access (if needed)
 
