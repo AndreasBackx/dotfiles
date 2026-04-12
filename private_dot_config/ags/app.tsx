@@ -1,4 +1,5 @@
 import app from "ags/gtk4/app"
+import { Gtk } from "ags/gtk4"
 import { For, This, createBinding, createState, onCleanup } from "ags"
 import { subprocess } from "ags/process"
 
@@ -25,7 +26,7 @@ let requestShowWorkspaces: (() => void) | null = null
 app.start({
   instanceName: "dotfiles-bar",
   css: style,
-  gtkTheme: "Adwaita",
+  gtkTheme: "Adwaita-dark",
   requestHandler(argv, response) {
     switch (argv[0]) {
       case "show-center":
@@ -41,6 +42,12 @@ app.start({
     }
   },
   main() {
+    const settings = Gtk.Settings.get_default()
+    settings?.set_property("gtk-application-prefer-dark-theme", true)
+    settings?.set_property("gtk-tooltip-timeout", 120)
+    settings?.set_property("gtk-tooltip-browse-timeout", 60)
+    settings?.set_property("gtk-tooltip-browse-mode-timeout", 120)
+
     const monitors = createBinding(app, "monitors")
     const [hyprState, setHyprState] = createState<HyprState>({
       activeWorkspaceId: 1,

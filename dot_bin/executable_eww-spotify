@@ -22,7 +22,7 @@ monitor() {
         text=${text//$'\n'/ }
         class_json=$(class_string <<<"$line")
 
-        if [[ "$class_json" == *playing* ]] && [[ -n "$text" ]]; then
+        if [[ "$class_json" != *stopped* ]] && [[ -n "$text" ]]; then
             echo "$text"
         else
             echo ""
@@ -42,7 +42,7 @@ monitor_tooltip() {
         text=${text//$'\n'/ }
         class_json=$(class_string <<<"$line")
 
-        if [[ "$class_json" == *playing* ]] && [[ -n "$text" ]]; then
+        if [[ "$class_json" != *stopped* ]] && [[ -n "$text" ]]; then
             echo "$text"
         else
             echo ""

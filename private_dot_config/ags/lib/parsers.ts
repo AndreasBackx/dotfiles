@@ -26,8 +26,42 @@ function splitBluetoothLine(line: string) {
 /**
  * Parses one `nmcli -t` Wi-Fi row into the app's access-point shape.
  */
+function splitNmcliFields(line: string) {
+  const fields: string[] = []
+  let current = ""
+  let escaping = false
+
+  for (const char of line) {
+    if (escaping) {
+      current += char
+      escaping = false
+      continue
+    }
+
+    if (char === "\\") {
+      escaping = true
+      continue
+    }
+
+    if (char === ":") {
+      fields.push(current)
+      current = ""
+      continue
+    }
+
+    current += char
+  }
+
+  if (escaping) {
+    current += "\\"
+  }
+
+  fields.push(current)
+  return fields
+}
+
 function parseWifiAccessPoint(line: string): WifiAccessPoint {
-  const [inUse = "", bssid = "", ssid = "", signal = "0", ...securityParts] = line.split(":")
+  const [inUse = "", bssid = "", ssid = "", signal = "0", ...securityParts] = splitNmcliFields(line)
 
   return {
     inUse: inUse === "*",

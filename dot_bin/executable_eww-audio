@@ -86,9 +86,12 @@ tooltip() {
 
     sink=$(sink_name)
     if [[ -n "$sink" ]]; then
-        echo "Volume: ${volume}% (muted: ${muted}) - ${sink}"
+        print -r -- "Volume: ${volume}%"
+        print -r -- "Muted: ${muted}"
+        print -r -- "Sink: ${sink}"
     else
-        echo "Volume: ${volume}% (muted: ${muted})"
+        print -r -- "Volume: ${volume}%"
+        print -r -- "Muted: ${muted}"
     fi
 }
 

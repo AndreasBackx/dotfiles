@@ -36,8 +36,10 @@ export default function BluetoothButton({ instanceId }: BluetoothButtonProps) {
       popoverId={popoverId}
       tooltipText={tooltip}
       button={
-        <box class={state((value) => `bar-item icon-only bt-${value}`)}>
-          <label class="item-icon item-icon-only" label={icon} />
+        <box class={state((value) => `bar-item icon-only bt-${value}`)} halign={Gtk.Align.CENTER}>
+          <box class="system-button-content icon-only" halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER}>
+            <label class="item-icon item-icon-only" label={icon} xalign={0.5} yalign={0.5} widthRequest={16} />
+          </box>
         </box>
       }
     >
@@ -45,9 +47,9 @@ export default function BluetoothButton({ instanceId }: BluetoothButtonProps) {
           <label class="panel-title" label="Bluetooth" xalign={0} />
           <label class="panel-status" label={tooltip} xalign={0} />
           <box class="panel-row" spacing={8}>
-            <button onClicked={() => run(command("eww-bluetooth", "toggle-power"))}>toggle power</button>
-            <button onClicked={() => run(["bluetoothctl", "scan", "on"])}>scan on</button>
-            <button onClicked={() => run(["bluetoothctl", "scan", "off"])}>scan off</button>
+            <button onClicked={() => run(command("eww-bluetooth", "toggle-power"))}>Toggle Power</button>
+            <button onClicked={() => run(["bluetoothctl", "scan", "on"])}>Scan On</button>
+            <button onClicked={() => run(["bluetoothctl", "scan", "off"])}>Scan Off</button>
           </box>
           <label class="panel-section-title" label="Known devices" xalign={0} />
           <box orientation={Gtk.Orientation.VERTICAL} spacing={6}>

@@ -22,8 +22,10 @@ export default function PowerButton({ instanceId }: PowerButtonProps) {
       popoverId={popoverId}
       tooltipText="Power options"
       button={
-        <box class="bar-item icon-only">
-          <label class="item-icon item-icon-only" label="⏻" />
+        <box class="bar-item icon-only" halign={Gtk.Align.CENTER}>
+          <box class="system-button-content icon-only" halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER}>
+            <label class="item-icon item-icon-only" label="⏻" xalign={0.5} yalign={0.5} widthRequest={16} />
+          </box>
         </box>
       }
     >
@@ -31,19 +33,19 @@ export default function PowerButton({ instanceId }: PowerButtonProps) {
           <label class="panel-title" label="Power" xalign={0} />
           <label class="panel-section-title" label="Session" xalign={0} />
           <box class="panel-row" spacing={8}>
-            <button onClicked={() => powerOption("logout")}>logout</button>
-            <button onClicked={() => powerOption("suspend")}>suspend</button>
-            <button onClicked={() => powerOption("hibernate")}>hibernate</button>
+            <button onClicked={() => powerOption("logout")}>Logout</button>
+            <button onClicked={() => powerOption("suspend")}>Suspend</button>
+            <button onClicked={() => powerOption("hibernate")}>Hibernate</button>
           </box>
           <label class="panel-section-title" label="System" xalign={0} />
           <box class="panel-row" spacing={8}>
-            <button onClicked={() => powerOption("reboot")}>reboot</button>
-            <button class="danger" onClicked={() => powerOption("shutdown")}>shutdown</button>
+            <button onClicked={() => powerOption("reboot")}>Reboot</button>
+            <button class="danger" onClicked={() => powerOption("shutdown")}>Shutdown</button>
           </box>
           <label class="panel-section-title" label="After updates" xalign={0} />
           <box class="panel-row" spacing={8}>
-            <button onClicked={() => powerOption("update-reboot")}>update + reboot</button>
-            <button onClicked={() => powerOption("update-shutdown")}>update + shutdown</button>
+            <button onClicked={() => powerOption("update-reboot")}>Update + Reboot</button>
+            <button onClicked={() => powerOption("update-shutdown")}>Update + Shutdown</button>
           </box>
         </box>
     </SystemMenuButton>

@@ -45,7 +45,9 @@ export default function NetworkButton({ instanceId }: NetworkButtonProps) {
       "--rescan",
       "auto",
     ])
-    return parseWifiAccessPoints(stdout)
+    const accessPoints = parseWifiAccessPoints(stdout)
+    console.log(`[ags][network] ${instanceId} polled ${accessPoints.length} access points`)
+    return accessPoints
   })
   const popoverId = `network-popover-${instanceId}`
 
@@ -54,8 +56,10 @@ export default function NetworkButton({ instanceId }: NetworkButtonProps) {
       popoverId={popoverId}
       tooltipText={tooltip}
       button={
-        <box class={state((value) => `bar-item icon-only net-${value}`)}>
-          <label class="item-icon item-icon-only" label={icon} />
+        <box class={state((value) => `bar-item icon-only net-${value}`)} halign={Gtk.Align.CENTER}>
+          <box class="system-button-content icon-only" halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER}>
+            <label class="item-icon item-icon-only" label={icon} xalign={0.5} yalign={0.5} widthRequest={16} />
+          </box>
         </box>
       }
     >
@@ -63,8 +67,8 @@ export default function NetworkButton({ instanceId }: NetworkButtonProps) {
           <label class="panel-title" label="Network" xalign={0} />
           <label class="panel-status" label={tooltip} xalign={0} />
           <box class="panel-row" spacing={8}>
-            <button onClicked={() => run(command("eww-network", "toggle-network"))}>toggle networking</button>
-            <button onClicked={() => run(command("eww-network", "connections"))}>connections</button>
+            <button onClicked={() => run(command("eww-network", "toggle-network"))}>Toggle Networking</button>
+            <button onClicked={() => run(command("eww-network", "connections"))}>Connections</button>
           </box>
           <label class="panel-section-title" label="Wi-Fi" xalign={0} />
           <box orientation={Gtk.Orientation.VERTICAL} spacing={6}>

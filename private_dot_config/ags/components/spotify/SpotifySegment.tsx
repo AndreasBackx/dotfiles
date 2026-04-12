@@ -1,5 +1,6 @@
 import Pango from "gi://Pango?version=1.0"
 
+import { Gdk, Gtk } from "ags/gtk4"
 import { createSubprocess } from "ags/process"
 
 import { command, run, trimOutput } from "../../lib/runtime"
@@ -21,6 +22,12 @@ export default function SpotifySegment() {
       visible={text((value) => value.length > 0)}
       tooltipText={tooltip}
       onClicked={() => run(["playerctl", "play-pause"])}
+      $={(self: Gtk.Button) => {
+        const controller = new Gtk.GestureClick()
+        controller.set_button(Gdk.BUTTON_SECONDARY)
+        controller.connect("pressed", () => run(command("eww-spotify", "toggle-liked")))
+        self.add_controller(controller)
+      }}
     >
       <label
         class={state((value) => `spotify-text spotify-${value}`)}

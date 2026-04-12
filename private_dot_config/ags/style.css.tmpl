@@ -79,22 +79,23 @@ menubutton > button:checked,
   border-radius: 0;
   box-shadow: none;
   outline: none;
+  transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
 }
 
 .workspace-btn:hover,
-.workspace-btn:focus,
-.workspace-btn:active,
-.spotify-button:hover,
-.spotify-button:focus,
-.spotify-button:active,
-.spotify-button:checked,
 .bar-item:hover,
-.bar-item:focus,
-.bar-item:active,
-.bar-menu-button:hover,
+.bar-menu-button:hover {
+  background: rgba(255, 255, 255, 0.08);
+  background-image: none;
+  box-shadow: none;
+}
+
 .bar-menu-button:focus,
 .bar-menu-button:active,
-.bar-menu-button:checked {
+.bar-menu-button > button:focus,
+.bar-menu-button > button:active,
+menubutton > button:focus,
+menubutton > button:active {
   background: transparent;
   background-image: none;
   box-shadow: none;
@@ -103,7 +104,7 @@ menubutton > button:checked,
 .workspace-btn:hover,
 .workspace-btn:focus,
 .workspace-btn:active {
-  color: #8a8a8a;
+  color: #f0f0f0;
   border-bottom-color: transparent;
 }
 
@@ -150,10 +151,11 @@ menubutton > button:checked,
 
 .workspace-btn {
   border: none;
-  border-radius: 0;
+  border-radius: 4px 4px 0 0;
   background: transparent;
   color: #8a8a8a;
   padding: 0 10px;
+  min-width: 20px;
   min-height: 56px;
   border-bottom: 2px solid transparent;
 }
@@ -161,28 +163,35 @@ menubutton > button:checked,
 .position-top .workspace-btn {
   border-bottom: none;
   border-top: 2px solid transparent;
+  border-radius: 0 0 4px 4px;
 }
 
-.workspace-btn.shown,
 .workspace-btn.active {
   color: #cecece;
   border-bottom-color: #cecece;
 }
 
-.position-top .workspace-btn.shown,
+.workspace-btn.shown {
+  color: #b8b8b8;
+}
+
 .position-top .workspace-btn.active {
   border-top-color: #cecece;
   border-bottom-color: transparent;
 }
 
+.position-top .workspace-btn.shown {
+  border-top-color: transparent;
+}
+
 .workspace-btn:hover,
 .bar-item:hover,
 .bar-menu-button:hover {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .panel button:hover {
-  background: #242424;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .window-title {
@@ -193,7 +202,9 @@ menubutton > button:checked,
 .spotify-button {
   border: none;
   background: transparent;
-  border-radius: 3px;
+  border-radius: 0;
+  min-width: 32px;
+  padding: 0 4px;
 }
 
 .spotify-text {
@@ -212,34 +223,64 @@ menubutton > button:checked,
 
 .bar-item {
   background: transparent;
-  border-radius: 3px;
+  border-radius: 0;
+  min-width: 32px;
   padding: 0 10px;
 }
 
 .bar-item.icon-only {
   padding: 0 8px;
+  justify-content: center;
 }
 
 .bar-item.with-text {
-  padding: 0 10px;
+  padding: 0 8px;
+  min-height: 56px;
+  justify-content: center;
+}
+
+.system-button-content {
+  min-height: 56px;
+  min-width: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+.system-button-content.with-text {
+  spacing: 0;
+}
+
+.system-button-content.icon-only {
+  min-width: 16px;
 }
 
 .bar-menu-button {
   border: none;
   background: transparent;
   padding: 0;
+  border-radius: 0;
 }
 
 .bar-menu-button > button,
 menubutton > button {
   padding: 0;
   margin: 0;
+  min-width: 32px;
   min-height: 0;
-  min-width: 0;
+  border-radius: 0;
+}
+
+.bar-menu-button > button > box,
+menubutton > button > box,
+.bar-menu-button > box,
+.bar-item {
+  justify-content: center;
+  align-items: center;
 }
 
 .item-icon {
   margin-right: 6px;
+  min-width: 16px;
   font-family: "MesloLGM Nerd Font Mono", "Symbols Nerd Font Mono", monospace;
 }
 
@@ -266,11 +307,11 @@ menubutton > button {
 
 popover > contents,
 menu {
-  background: #1c1c1c;
-  color: #cecece;
-  border: 1px solid #404040;
-  border-radius: 4px;
-  padding: 4px;
+  background: rgba(28, 28, 28, 0.98);
+  color: {{ $t.foreground }};
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 6px;
 }
 
 tooltip {
@@ -285,17 +326,31 @@ tooltip label {
 }
 
 .panel {
-  background: #1c1c1c;
-  color: #cecece;
-  border: 1px solid #404040;
-  border-radius: 4px;
+  background: transparent;
+  color: {{ $t.foreground }};
+  border: none;
+  border-radius: 8px;
   padding: 12px;
   min-width: 280px;
+}
+
+.panel-divider {
+  min-height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 2px 0;
 }
 
 .panel-title {
   color: #cecece;
   font-size: 14px;
+}
+
+.panel-heading-row {
+  min-width: 280px;
+}
+
+.panel-heading-value {
+  margin-left: 12px;
 }
 
 .panel-status {
@@ -314,15 +369,67 @@ tooltip label {
 .panel button,
 .panel .danger {
   background: transparent;
-  border: 1px solid #242424;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 3px;
-  padding: 4px 8px;
+  min-width: 32px;
+  min-height: 28px;
+  padding: 4px 12px;
+}
+
+.panel button:hover,
+.panel button:focus,
+.panel button:active {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.16);
 }
 
 .panel .occupied {
-  border-color: #404040;
+  border-color: {{ $t.color10 }};
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .panel .danger {
   border-color: {{ $t.color1 }};
+}
+
+calendar {
+  background: rgba(255, 255, 255, 0.03);
+  color: {{ $t.foreground }};
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 8px;
+}
+
+calendar header,
+calendar button,
+calendar view,
+calendar grid,
+calendar label {
+  color: {{ $t.foreground }};
+}
+
+calendar button:hover,
+calendar button:focus,
+calendar button:active {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.timezone-search {
+  background: rgba(255, 255, 255, 0.04);
+  color: {{ $t.foreground }};
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
+.timezone-search:focus {
+  border-color: {{ $t.color3 }};
+}
+
+.timezone-list {
+  min-width: 320px;
+}
+
+.timezone-list viewport {
+  background: transparent;
 }

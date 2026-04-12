@@ -2,7 +2,18 @@
 
 set -euo pipefail
 
-get_brightness() {
+resolve_backend() {
+    case "${1:-minos}" in
+    minos | brightnessctl)
+        print -r -- "${1:-minos}"
+        ;;
+    *)
+        print -r -- "minos"
+        ;;
+    esac
+}
+
+get_brightness_minos() {
     local raw value
     local -a values
 
@@ -16,6 +27,31 @@ get_brightness() {
     else
         echo "$value"
     fi
+}
+
+get_brightness_brightnessctl() {
+    local value max
+
+    value=$(brightnessctl g 2>/dev/null || true)
+    max=$(brightnessctl m 2>/dev/null || true)
+
+    if [[ -z "$value" || -z "$max" || "$max" == "0" ]]; then
+        echo 0
+        return
+    fi
+
+    echo $(( (value * 100) / max ))
+}
+
+get_brightness() {
+    case "$(resolve_backend "$1")" in
+    brightnessctl)
+        get_brightness_brightnessctl
+        ;;
+    *)
+        get_brightness_minos
+        ;;
+    esac
 }
 
 select_brightness_value() {
@@ -63,7 +99,8 @@ panel_markup() {
 }
 
 status() {
-    echo "$(icon) $(text)"
+    local backend="${1:-minos}"
+    echo "$(icon) $(text "$backend")"
 }
 
 icon() {
@@ -71,20 +108,23 @@ icon() {
 }
 
 text() {
+    local backend="${1:-minos}"
     local value
-    value=$(get_brightness)
+    value=$(get_brightness "$backend")
     echo "${value}%"
 }
 
 tooltip() {
+    local backend="${1:-minos}"
     local value
-    value=$(get_brightness)
+    value=$(get_brightness "$backend")
     echo "Brightness: ${value}%"
 }
 
 panel_state() {
+    local backend="${1:-minos}"
     local value
-    value=$(get_brightness)
+    value=$(get_brightness "$backend")
     if (( value <= 5 )); then
         echo "low"
     else
@@ -93,8 +133,9 @@ panel_state() {
 }
 
 render() {
+    local backend="${1:-minos}"
     local value
-    value=$(get_brightness)
+    value=$(get_brightness "$backend")
     panel_markup "$value"
 }
 
@@ -118,61 +159,82 @@ refresh_with_value() {
 }
 
 refresh() {
-    refresh_with_value "$(get_brightness)"
+    local backend="${1:-minos}"
+    refresh_with_value "$(get_brightness "$backend")"
 }
 
 refresh_after_relative_set() {
-    local step="$1"
+    local backend="$1"
+    local step="$2"
     local current value
-    shift
+    shift 2
 
-    current=$(get_brightness)
+    current=$(get_brightness "$backend")
     "$@" || return
     value=$(clamp_brightness $(( current + step )))
     refresh_with_value "$value"
 }
 
 refresh_after_absolute_set() {
-    local target="$1"
-    shift
+    local backend="$1"
+    local target="$2"
+    shift 2
 
     "$@" || return
     refresh_with_value "$(clamp_brightness "$target")"
 }
 
+backend=$(resolve_backend "$1")
+
+if [[ "$backend" == "${1:-}" ]]; then
+    shift
+fi
+
 case "${1:-status}" in
 status)
-    status
+    status "$backend"
     ;;
 icon)
     icon
     ;;
 text)
-    text
+    text "$backend"
     ;;
 tooltip)
-    tooltip
+    tooltip "$backend"
     ;;
 panel-state)
-    panel_state
+    panel_state "$backend"
     ;;
 render)
-    render
+    render "$backend"
     ;;
 refresh)
-    refresh
+    refresh "$backend"
     ;;
 up)
-    refresh_after_relative_set 10 minos set --minimal --brightness +10%
+    if [[ "$backend" == "brightnessctl" ]]; then
+        refresh_after_relative_set "$backend" 10 brightnessctl set 10%+
+    else
+        refresh_after_relative_set "$backend" 10 minos set --minimal --brightness +10%
+    fi
     ;;
 down)
-    refresh_after_relative_set -10 minos set --minimal --brightness -10%
+    if [[ "$backend" == "brightnessctl" ]]; then
+        refresh_after_relative_set "$backend" -10 brightnessctl set 10%-
+    else
+        refresh_after_relative_set "$backend" -10 minos set --minimal --brightness -10%
+    fi
     ;;
 set)
-    refresh_after_absolute_set "${2:?brightness required}" minos set --minimal --brightness "${2:?brightness required}%"
+    if [[ "$backend" == "brightnessctl" ]]; then
+        refresh_after_absolute_set "$backend" "${2:?brightness required}" brightnessctl set "${2:?brightness required}%"
+    else
+        refresh_after_absolute_set "$backend" "${2:?brightness required}" minos set --minimal --brightness "${2:?brightness required}%"
+    fi
     ;;
 *)
-    echo "Usage: $0 {status|icon|text|tooltip|panel-state|render|refresh|up|down|set}"
+    echo "Usage: $0 [minos|brightnessctl] {status|icon|text|tooltip|panel-state|render|refresh|up|down|set}"
     exit 2
     ;;
 esac
