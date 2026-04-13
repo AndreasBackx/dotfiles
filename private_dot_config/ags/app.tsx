@@ -1,7 +1,8 @@
+import Hyprland from "gi://AstalHyprland"
+
 import app from "ags/gtk4/app"
 import { Gtk } from "ags/gtk4"
 import { For, This, createBinding, createState, onCleanup } from "ags"
-import { subprocess } from "ags/process"
 
 import themeCss from "./theme.css"
 import appCss from "./app.css"
@@ -26,14 +27,38 @@ import {
   CENTER_HIDE_DELAY_MS,
   INITIAL_AUTOHIDE_DELAY_MS,
   WORKSPACE_STRIP_HIDE_DELAY_MS,
-  command,
-  parseJson,
 } from "./lib/runtime"
 import { closeTrackedPopovers, setHoverReporter, setPopoverVisibilityReporter } from "./lib/widget-helpers"
 import type { HyprState } from "./lib/types"
 
 let requestShowCenter: (() => void) | null = null
 let requestShowWorkspaces: (() => void) | null = null
+
+function buildHyprState(hyprland: Hyprland.Hyprland | null): HyprState {
+  if (!hyprland) {
+    return {
+      activeWorkspaceId: 1,
+      visibleWorkspaceIds: [],
+      populatedWorkspaceIds: [],
+      monitors: [],
+      windowTitle: "Desktop",
+    }
+  }
+
+  return {
+    activeWorkspaceId: hyprland.focusedWorkspace?.id ?? 1,
+    visibleWorkspaceIds: hyprland.monitors.map((monitor) => monitor.activeWorkspace?.id ?? 0).filter(Boolean),
+    populatedWorkspaceIds: hyprland.workspaces.filter((workspace) => workspace.clients.length > 0).map((workspace) => workspace.id),
+    monitors: hyprland.monitors.map((monitor) => ({
+      connector: monitor.name,
+      description: monitor.description,
+      serial: monitor.serial,
+      activeWorkspaceId: monitor.activeWorkspace?.id ?? 0,
+    })),
+    windowTitle: hyprland.focusedClient?.title || "Desktop",
+  }
+}
+
 const css = [
   themeCss,
   appCss,
@@ -82,6 +107,7 @@ app.start({
     settings?.set_property("gtk-tooltip-browse-mode-timeout", 120)
 
     const monitors = createBinding(app, "monitors")
+    const hyprland = Hyprland.get_default()
     const [hyprState, setHyprState] = createState<HyprState>({
       activeWorkspaceId: 1,
       visibleWorkspaceIds: [],
@@ -108,11 +134,8 @@ app.start({
     setHoverReporter(visibility.handleHoverChange)
     setPopoverVisibilityReporter(visibility.handlePopoverVisibilityChange)
 
-    // The helper script is the single source of truth for Hyprland monitor and
-    // workspace state. Invalid JSON is ignored by `parseJson` and leaves the
-    // previous state intact.
-    const proc = subprocess(command("bar-workspaces", "listen", "json"), (stdout) => {
-      const nextState = parseJson<HyprState>(stdout, hyprState.get())
+    const syncHyprState = () => {
+      const nextState = buildHyprState(hyprland)
       setHyprState(nextState)
 
       if (soloLaptopCenter(nextState)) {
@@ -128,10 +151,16 @@ app.start({
         initialAutohideScheduled = false
         visibility.applyAutoHideState()
       }
-    })
+    }
+
+    const hyprlandEventId = hyprland?.connect("event", syncHyprState) ?? 0
+    syncHyprState()
 
     onCleanup(() => {
-      proc.kill()
+      if (hyprland && hyprlandEventId) {
+        hyprland.disconnect(hyprlandEventId)
+      }
+
       visibility.cleanup()
       requestShowCenter = null
       requestShowWorkspaces = null

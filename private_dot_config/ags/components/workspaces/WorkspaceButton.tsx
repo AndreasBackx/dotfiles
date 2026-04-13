@@ -1,4 +1,5 @@
-import { run } from "../../lib/runtime"
+import Hyprland from "gi://AstalHyprland"
+
 import { workspaceClass, workspaceLabel } from "../../lib/bar-logic"
 import type { HyprStateAccessor } from "../../lib/types"
 
@@ -12,10 +13,12 @@ type WorkspaceButtonProps = {
  * Navigates to a workspace and reflects its active/visible/occupied state.
  */
 export default function WorkspaceButton({ base, id, hyprState }: WorkspaceButtonProps) {
+  const hyprland = Hyprland.get_default()
+
   return (
     <button
       class={hyprState((state) => workspaceClass(base, id, state))}
-      onClicked={() => run(["hyprctl", "dispatch", "workspace", `${id}`])}
+      onClicked={() => hyprland?.dispatch("workspace", `${id}`)}
     >
       <label label={workspaceLabel(base, id)} />
     </button>
