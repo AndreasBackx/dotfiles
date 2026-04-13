@@ -1,22 +1,36 @@
-import { Gtk } from "ags/gtk4"
+import Battery from "gi://AstalBattery"
 
-import { createCommandTextPolls } from "../../lib/runtime"
+import { createBinding } from "ags"
+import { Gtk } from "ags/gtk4"
 
 /**
  * Shows the current battery icon and percentage when a battery is present.
  */
 export default function BatteryButton() {
-  const { icon, text, tooltip, state } = createCommandTextPolls(
-    15000,
-    "bar-battery",
-    ["icon", "text", "tooltip", "state"] as const,
-  )
+  const battery = Battery.get_default()
+  const percentage = createBinding(battery, "percentage")
+  const iconName = createBinding(battery, "batteryIconName")
+  const visible = createBinding(battery, "isBattery")
+
+  const text = percentage((value) => `${Math.round(value * 100)}%`)
+  const tooltip = percentage((value) => `Battery: ${Math.round(value * 100)}%`)
+  const state = percentage((value) => {
+    if (value >= 0.95) {
+      return "success"
+    }
+
+    if (value <= 0.15) {
+      return "critical"
+    }
+
+    return "normal"
+  })
 
   return (
-    <box visible={text((value) => value.length > 0)}>
+    <box visible={visible}>
       <button class={state((value) => `bar-item with-text battery-${value}`)} tooltipText={tooltip}>
         <box class="system-button-content with-text" halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER}>
-          <label class="item-icon" label={icon} xalign={0.5} yalign={0.5} widthRequest={16} />
+          <image iconName={iconName} pixelSize={16} />
           <label class="item-text" label={text} />
         </box>
       </button>
