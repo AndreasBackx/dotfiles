@@ -10,6 +10,7 @@ This folder contains the AGS v2 configuration for the desktop bar.
 - `components/title/*` renders the focused window title.
 - `components/spotify/*` renders the Spotify status segment.
 - `components/system/*` renders the right-hand status and control widgets.
+- `components/system/TraySegment.tsx` renders AppIndicator / StatusNotifier tray icons through `AstalTray`.
 - `lib/*` contains shared runtime helpers, monitor/workspace logic, and output parsers.
 - `theme.css.tmpl` and `lib/config.ts.tmpl` are chezmoi templates, so their output depends on host data.
 - `app.css` plus colocated `*.css` files next to components provide the global GTK stylesheet that `app.tsx` assembles at startup.
@@ -80,6 +81,7 @@ Most widgets are thin wrappers around existing shell helpers in `~/.bin`:
 - `bar-brightness`
 - `bar-network`
 - `bar-spotify`
+- `AstalTray`
 - `power-options`
 
 The widgets also depend on standard tools:
@@ -92,6 +94,13 @@ The widgets also depend on standard tools:
 - `pavucontrol`
 - `top`
 - `free`
+
+The tray segment depends on the `AstalTray` GI typelib being available to the
+AGS process. On this machine the source-built Astal libraries were installed
+under `/usr/local`, so AGS needs `GI_TYPELIB_PATH=/usr/local/lib64/girepository-1.0`
+in its runtime environment. If AGS is launched from a systemd user service or a
+desktop autostart entry, export that path there so `import "gi://AstalTray"`
+resolves during startup.
 
 If a widget breaks after a system upgrade, check the output format of those commands first. `lib/parsers.ts` contains the parsing assumptions for several of them.
 

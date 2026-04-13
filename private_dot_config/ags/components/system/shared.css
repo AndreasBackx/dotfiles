@@ -10,6 +10,27 @@
   transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
 }
 
+.tray-segment {
+  min-height: 56px;
+}
+
+.tray-button,
+.tray-button > button,
+.tray-button button {
+  min-width: 0;
+  padding: 0;
+}
+
+.tray-item {
+  min-width: 28px;
+  padding: 0 2px;
+}
+
+.tray-icon {
+  min-width: 16px;
+  min-height: 16px;
+}
+
 .bar-menu-button:hover {
   background: rgba(255, 255, 255, 0.08);
   background-image: none;

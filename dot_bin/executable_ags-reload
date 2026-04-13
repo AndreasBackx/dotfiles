@@ -4,6 +4,11 @@ set -euo pipefail
 
 app_file="$HOME/.config/ags/app.tsx"
 log_file="${XDG_STATE_HOME:-$HOME/.local/state}/ags-reload.log"
+typelib_path="/usr/local/lib64/girepository-1.0"
+library_path="/usr/local/lib64"
+
+export GI_TYPELIB_PATH="${typelib_path}${GI_TYPELIB_PATH:+:${GI_TYPELIB_PATH}}"
+export LD_LIBRARY_PATH="${library_path}${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
 
 mkdir -p "${log_file:h}"
 
