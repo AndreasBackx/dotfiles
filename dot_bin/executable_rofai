@@ -1,0 +1,1097 @@
+#!/usr/bin/env zsh
+
+# rofai
+# ----
+# A rofi front-end for GitHub Copilot CLI that keeps the interaction lightweight:
+# - prompt in rofi
+# - response preview in rofi
+# - copy on Enter
+# - optional full response view in Ghostty + Neovim
+#
+# The script stores all persistent state in XDG paths so it can be configured
+# without editing the script itself:
+# - ~/.config/rofai/config      selected model, effort, default agent
+# - ~/.config/rofai/models      available model ids shown in the picker
+# - ~/.config/rofai/agents/     one file per agent prefix prompt
+# - ~/.local/state/rofai/       last prompt and last response cache
+
+emulate -L zsh
+setopt errexit nounset pipefail
+
+readonly XDG_CONFIG_BASE="${XDG_CONFIG_HOME:-$HOME/.config}"
+readonly XDG_STATE_BASE="${XDG_STATE_HOME:-$HOME/.local/state}"
+readonly ROFAI_CONFIG_DIR="${XDG_CONFIG_BASE}/rofai"
+readonly ROFAI_AGENTS_DIR="${ROFAI_CONFIG_DIR}/agents"
+readonly ROFAI_CONFIG_FILE="${ROFAI_CONFIG_DIR}/config"
+readonly ROFAI_MODELS_FILE="${ROFAI_CONFIG_DIR}/models"
+readonly ROFAI_STATE_DIR="${XDG_STATE_BASE}/rofai"
+readonly ROFAI_LAST_RESPONSE_FILE="${ROFAI_STATE_DIR}/last-response.txt"
+readonly ROFAI_LAST_PROMPT_FILE="${ROFAI_STATE_DIR}/last-prompt.txt"
+readonly ROFAI_RESPONSE_TITLE="rofai-response"
+readonly ROFAI_TERMINAL_WIDTH="72%"
+readonly ROFAI_TERMINAL_HEIGHT="78%"
+
+# These are boot defaults only. User choices are loaded from XDG config.
+typeset -g ROFAI_MODEL="gpt-5.4"
+typeset -g ROFAI_EFFORT="medium"
+typeset -g ROFAI_DEFAULT_AGENT="default"
+typeset -g ROFAI_BIN_NAME="rofai"
+
+function usage() {
+    cat <<'EOF'
+Usage:
+  rofai
+  rofai --agent NAME
+  rofai --model MODEL
+  rofai --effort LEVEL
+  rofai --agent NAME --model MODEL
+  rofai --print PROMPT [--agent NAME] [--model MODEL] [--effort LEVEL]
+  rofai config show
+  rofai config set-model MODEL
+  rofai config set-effort LEVEL
+  rofai config set-default-agent NAME
+  rofai agents list
+  rofai agents show NAME
+  rofai agents set NAME PROMPT
+  rofai agents edit NAME
+  rofai agents remove NAME
+
+Prompt UI shortcuts:
+  Enter   submit prompt
+  Alt+a   choose agent
+  Alt+m   choose model
+  Alt+Left / Alt+Right   change effort
+  Escape  close
+
+Response UI:
+  Enter   copy response and close
+  Alt+t   open full response in Ghostty + nvim
+  Escape  close without copying
+EOF
+}
+
+# Ensure the XDG directories exist before any read/write operation.
+function ensure_paths() {
+    mkdir -p "$ROFAI_CONFIG_DIR" "$ROFAI_AGENTS_DIR" "$ROFAI_STATE_DIR"
+}
+
+# Seed default config and starter content on first run.
+# Agents are intentionally plain text files so they stay easy to edit manually.
+function ensure_default_files() {
+    ensure_paths
+
+    if [[ ! -f "$ROFAI_CONFIG_FILE" ]]; then
+        save_config
+    fi
+
+    if [[ ! -f "${ROFAI_AGENTS_DIR}/default.txt" ]]; then
+        cat >"${ROFAI_AGENTS_DIR}/default.txt" <<'EOF'
+EOF
+    fi
+
+    if [[ ! -f "${ROFAI_AGENTS_DIR}/research.txt" ]]; then
+        cat >"${ROFAI_AGENTS_DIR}/research.txt" <<'EOF'
+You are a careful web research agent. Use the web for current information, cite concrete details in your answer, and clearly call out uncertainty when sources disagree.
+EOF
+    fi
+
+    if [[ ! -f "${ROFAI_AGENTS_DIR}/review.txt" ]]; then
+        cat >"${ROFAI_AGENTS_DIR}/review.txt" <<'EOF'
+You are a strict reviewer. Focus first on bugs, regressions, security issues, and missing edge cases. Keep the answer concise and prioritize concrete findings.
+EOF
+    fi
+
+    if [[ ! -f "$ROFAI_MODELS_FILE" ]]; then
+        cat >"$ROFAI_MODELS_FILE" <<'EOF'
+gpt-5.4
+gpt-5.3-codex
+gpt-5.2-codex
+gpt-5.2
+gpt-5.1
+gpt-5.4-mini
+gpt-5-mini
+gpt-4.1
+claude-sonnet-4.6
+claude-sonnet-4.5
+claude-haiku-4.5
+claude-opus-4.6
+claude-opus-4.5
+claude-sonnet-4
+EOF
+    fi
+}
+
+function load_config() {
+    ensure_default_files
+    source "$ROFAI_CONFIG_FILE"
+    : "${ROFAI_MODEL:=gpt-5.4}"
+    : "${ROFAI_EFFORT:=medium}"
+    : "${ROFAI_DEFAULT_AGENT:=default}"
+    ensure_model_in_list "$ROFAI_MODEL"
+}
+
+# Persist the active selections in a shell-sourceable config file.
+function save_config() {
+    ensure_paths
+    printf '%s\n' '# shellcheck shell=sh' >"$ROFAI_CONFIG_FILE"
+    printf 'ROFAI_MODEL=%q\n' "$ROFAI_MODEL" >>"$ROFAI_CONFIG_FILE"
+    printf 'ROFAI_EFFORT=%q\n' "$ROFAI_EFFORT" >>"$ROFAI_CONFIG_FILE"
+    printf 'ROFAI_DEFAULT_AGENT=%q\n' "$ROFAI_DEFAULT_AGENT" >>"$ROFAI_CONFIG_FILE"
+}
+
+function error() {
+    print -u2 -- "$*"
+}
+
+# `die` is reserved for fatal errors where continuing the current flow would
+# leave the UI or config in an inconsistent state.
+function die() {
+    error "$*"
+    exit 1
+}
+
+function rofi_error() {
+    local message="$1"
+
+    if command -v rofi >/dev/null 2>&1; then
+        rofi -e "$message" >/dev/null 2>&1 || true
+    fi
+
+    die "$message"
+}
+
+# Non-fatal message helper used when a dialog action should simply return to the
+# previous picker instead of terminating the whole script.
+function rofi_notice() {
+    local message="$1"
+
+    if command -v rofi >/dev/null 2>&1; then
+        rofi -e "$message" >/dev/null 2>&1 || true
+    else
+        error "$message"
+    fi
+}
+
+function require_command() {
+    local name="$1"
+    command -v "$name" >/dev/null 2>&1 || rofi_error "Missing required command: $name"
+}
+
+# Agent names are used as file names, so the accepted character set is narrow on
+# purpose to keep path handling simple and predictable.
+function validate_agent_name() {
+    local name="$1"
+
+    [[ "$name" =~ ^[A-Za-z0-9._-]+$ ]] || die "Invalid agent name: $name"
+}
+
+# Effort is passed directly to `gh copilot --effort`, so only supported values
+# are accepted here.
+function validate_effort() {
+    local value="$1"
+
+    case "$value" in
+    low|medium|high|xhigh) ;;
+    *)
+        die "Invalid effort: $value"
+        ;;
+    esac
+}
+
+# Map a logical agent name to its on-disk prompt file.
+function agent_file() {
+    local name="$1"
+    validate_agent_name "$name"
+    print -- "${ROFAI_AGENTS_DIR}/${name}.txt"
+}
+
+# Agents are listed alphabetically so the picker is stable and easy to scan.
+function list_agents() {
+    local file
+    local -a names
+
+    for file in "$ROFAI_AGENTS_DIR"/*.txt(.N); do
+        names+=("${file:t:r}")
+    done
+
+    if (( ${#names[@]} == 0 )); then
+        return 1
+    fi
+
+    printf '%s\n' "${(@on)names}"
+}
+
+function require_agent_exists() {
+    local name="$1"
+    local file
+
+    file="$(agent_file "$name")"
+    [[ -f "$file" ]] || die "Unknown agent: $name"
+}
+
+function agent_prompt() {
+    local name="$1"
+    local file
+
+    file="$(agent_file "$name")"
+    [[ -f "$file" ]] || return 1
+    sed -n '1,$p' "$file"
+}
+
+# Convert an absolute path back to a `~/...` display path for the UI.
+function display_path() {
+    local path="$1"
+
+    if [[ "$path" == "$HOME"* ]]; then
+        print -- "~${path#$HOME}"
+        return 0
+    fi
+
+    print -- "$path"
+}
+
+# Copilot model ids are stored normalized so custom entries and preset entries
+# behave the same way in both the config file and the picker.
+function normalize_model_id() {
+    local value="${(L)1}"
+
+    value="${value// /-}"
+    value="${value//_/-}"
+
+    while [[ "$value" == *--* ]]; do
+        value="${value//--/-}"
+    done
+
+    value="${value#-}"
+    value="${value%-}"
+
+    print -- "$value"
+}
+
+# The model picker is backed by a simple newline-delimited file for the same
+# reason as agents: easy manual editing, no extra parser dependency.
+function list_models() {
+    sed -n '1,$p' "$ROFAI_MODELS_FILE"
+}
+
+function save_models() {
+    local -a models=("$@")
+    printf '%s\n' "${models[@]}" >"$ROFAI_MODELS_FILE"
+}
+
+function ensure_model_in_list() {
+    local model
+    local -a models
+
+    model="$(normalize_model_id "$1")"
+    models=("${(@f)$(list_models)}")
+
+    if (( ${models[(Ie)$model]} == 0 )); then
+        models+=("$model")
+        save_models "${models[@]}"
+    fi
+}
+
+# Effort can be changed from the prompt without opening a separate picker.
+function cycle_effort() {
+    local current="$1"
+    local direction="$2"
+    local -a efforts=(low medium high xhigh)
+    local index next_index
+
+    index=${efforts[(Ie)$current]}
+    (( index == 0 )) && index=2
+
+    if [[ "$direction" == "left" ]]; then
+        next_index=$(( index == 1 ? ${#efforts[@]} : index - 1 ))
+    else
+        next_index=$(( index == ${#efforts[@]} ? 1 : index + 1 ))
+    fi
+
+    print -- "${efforts[$next_index]}"
+}
+
+# Escape response text before sending it to rofi as Pango markup.
+function pango_escape() {
+    local text="$1"
+
+    text="${text//&/&amp;}"
+    text="${text//</&lt;}"
+    text="${text//>/&gt;}"
+
+    print -r -- "$text"
+}
+
+# Small helper to build multiline strings without literal `\n` artifacts.
+function join_lines() {
+    printf '%s\n' "$@"
+}
+
+# Theme for the main prompt entry.
+# Rofi cannot auto-grow into a true multiline editor here, so the input bar is
+# simply made roomier and easier to read.
+function prompt_theme() {
+    cat <<'EOF'
+window {
+    width: 760px;
+    padding: 24px;
+}
+message {
+    padding: 0 0 8px 0;
+}
+message textbox {
+    text-color: rgba(206, 206, 206, 62%);
+}
+listview {
+    lines: 0;
+}
+inputbar {
+    padding: 14px 12px;
+    margin: 0 0 12px 0;
+    border: 1px;
+    border-color: rgba(204, 196, 122, 30%);
+    background-color: rgba(255, 255, 255, 4%);
+}
+entry {
+    placeholder: "Copilot";
+}
+num-filtered-rows, num-rows, textbox-num-sep, case-indicator {
+    enabled: false;
+}
+EOF
+}
+
+# Theme shared by small management dialogs like add/remove confirmations.
+function chooser_theme() {
+    cat <<'EOF'
+window {
+    width: 680px;
+    padding: 20px;
+}
+message {
+    padding: 0 0 8px 0;
+}
+message textbox {
+    text-color: rgba(206, 206, 206, 62%);
+}
+inputbar {
+    padding: 8px 10px;
+    border: 1px;
+    border-color: rgba(204, 196, 122, 30%);
+    background-color: rgba(255, 255, 255, 4%);
+}
+num-filtered-rows, num-rows, textbox-num-sep, case-indicator {
+    enabled: false;
+}
+EOF
+}
+
+# Theme for the response preview window. The input bar is hidden so this feels
+# like a viewer, not a filter prompt.
+function response_theme() {
+    cat <<'EOF'
+window {
+    width: 1180px;
+    padding: 24px;
+}
+mainbox {
+    spacing: 14px;
+}
+inputbar {
+    enabled: false;
+}
+message {
+    padding: 4px 2px 2px 2px;
+}
+message textbox {
+    markup: true;
+    font: "monospace 12";
+}
+listview {
+    lines: 1;
+    fixed-height: true;
+    spacing: 0;
+}
+element {
+    padding: 10px 12px;
+    border: 1px;
+    border-color: rgba(204, 196, 122, 30%);
+    background-color: rgba(255, 255, 255, 4%);
+}
+element selected.normal {
+    background-color: rgba(204, 196, 122, 90%);
+    text-color: rgba(28, 28, 28, 90%);
+}
+element-text {
+    highlight: none;
+}
+mode-switcher {
+    enabled: false;
+}
+EOF
+}
+
+# Copy helper preferring Wayland clipboard tools first.
+function copy_text() {
+    local text="$1"
+
+    if command -v wl-copy >/dev/null 2>&1; then
+        print -rn -- "$text" | wl-copy
+        return 0
+    fi
+
+    if command -v xclip >/dev/null 2>&1; then
+        print -rn -- "$text" | xclip -selection clipboard
+        return 0
+    fi
+
+    if command -v xsel >/dev/null 2>&1; then
+        print -rn -- "$text" | xsel --clipboard --input
+        return 0
+    fi
+
+    die "No clipboard command found. Install wl-copy, xclip, or xsel."
+}
+
+# Central file write helper used for both config/state and generated content.
+function write_text_file() {
+    local path="$1"
+    local content="$2"
+
+    print -rn -- "$content" >"$path"
+}
+
+# Generic single-line text prompt used by the model and agent management flows.
+function prompt_text() {
+    setopt localoptions noerrexit
+
+    local title="$1"
+    local message="$2"
+    local initial_value="${3:-}"
+    local response
+
+    response="$(printf '' | rofi -dmenu -p "$title" -mesg "$message" -format f -filter "$initial_value" -theme-str "$(chooser_theme)")" || return 1
+    [[ -n "$response" ]] || return 1
+    print -- "$response"
+}
+
+# Confirmation prompt for destructive UI actions.
+function confirm_action() {
+    setopt localoptions noerrexit
+
+    local title="$1"
+    local message="$2"
+    local selection
+
+    selection="$(printf 'Confirm\nCancel\n' | rofi -dmenu -no-custom -p "$title" -mesg "$message" -selected-row 1 -l 2 -hover-select -theme-str "$(chooser_theme)")" || return 1
+    [[ "$selection" == "Confirm" ]]
+}
+
+# Create a new agent entirely from rofi.
+function add_agent_dialog() {
+    local name prompt file
+
+    name="$(prompt_text 'New Agent' "$(join_lines "Save to $(display_path "$ROFAI_AGENTS_DIR")/" '' 'Type a new agent name.')" '')" || return 1
+
+    if [[ ! "$name" =~ ^[A-Za-z0-9._-]+$ ]]; then
+        rofi_notice 'Agent names may only contain letters, numbers, dots, underscores, and dashes.'
+        return 1
+    fi
+
+    file="$(agent_file "$name")"
+
+    if [[ -f "$file" ]]; then
+        rofi_notice "Agent already exists: $name"
+        return 1
+    fi
+
+    prompt="$(prompt_text 'Agent Prompt' 'Type the prefix prompt for this agent.' '')" || return 1
+    write_text_file "$file" "$prompt"
+    print -- "$name"
+}
+
+# Remove a saved agent and keep the config pointing at a valid default.
+function remove_agent_dialog() {
+    local name="$1"
+    local file
+    local -a remaining_agents
+
+    file="$(agent_file "$name")"
+    [[ -f "$file" ]] || return 1
+
+    confirm_action 'Remove Agent' "$(join_lines "Delete agent '$name'?" '' "Saved in $(display_path "$ROFAI_AGENTS_DIR")/")" || return 1
+    rm -f "$file"
+
+    remaining_agents=("${(@f)$(list_agents 2>/dev/null || true)}")
+
+    if (( ${#remaining_agents[@]} == 0 )); then
+        write_text_file "${ROFAI_AGENTS_DIR}/default.txt" ""
+        remaining_agents=(default)
+    fi
+
+    if [[ "$ROFAI_DEFAULT_AGENT" == "$name" ]]; then
+        ROFAI_DEFAULT_AGENT="${remaining_agents[1]}"
+        save_config
+    fi
+
+    print -- "${remaining_agents[1]}"
+}
+
+# Add a normalized model id from the UI.
+function add_model_dialog() {
+    local model_name
+    local -a models
+
+    model_name="$(prompt_text 'New Model' "$(join_lines "Save to $(display_path "$ROFAI_MODELS_FILE")" '' 'Type a model id like claude-sonnet-4.6.')" '')" || return 1
+    model_name="$(normalize_model_id "$model_name")"
+    [[ -n "$model_name" ]] || return 1
+
+    models=("${(@f)$(list_models)}")
+    if (( ${models[(Ie)$model_name]} == 0 )); then
+        models+=("$model_name")
+        save_models "${models[@]}"
+    fi
+
+    print -- "$model_name"
+}
+
+# Remove a saved model, with fallback if the list would otherwise become empty.
+function remove_model_dialog() {
+    local model_name="$1"
+    local -a models
+
+    confirm_action 'Remove Model' "$(join_lines "Delete model '$model_name'?" '' "Saved in $(display_path "$ROFAI_MODELS_FILE")")" || return 1
+    models=("${(@f)$(list_models)}")
+    models[(Ie)$model_name]=()
+
+    if (( ${#models[@]} == 0 )); then
+        models=(gpt-5.4)
+    fi
+
+    save_models "${models[@]}"
+
+    if [[ "$ROFAI_MODEL" == "$model_name" ]]; then
+        ROFAI_MODEL="${models[1]}"
+        save_config
+    fi
+
+    print -- "${models[1]}"
+}
+
+function agent_chooser_message() {
+    join_lines \
+        "Saved in $(display_path "$ROFAI_AGENTS_DIR")/" \
+        "" \
+        "Enter choose   Alt+n add   Alt+Backspace delete"
+}
+
+function model_chooser_message() {
+    join_lines \
+        "Saved in $(display_path "$ROFAI_MODELS_FILE")" \
+        "" \
+        "Enter choose   Alt+n add   Alt+Backspace delete"
+}
+
+# Agent picker supports choose/add/delete directly from rofi.
+function choose_agent() {
+    setopt localoptions noerrexit
+
+    local current="$1"
+    local selection
+    local rofi_status
+
+    while true; do
+        selection="$(list_agents | rofi -dmenu -i -p 'Agent' -mesg "$(agent_chooser_message)" -select "$current" -hover-select -format s -kb-custom-1 'Alt+n' -kb-custom-2 'Alt+BackSpace' -theme-str "$(chooser_theme)")"
+        rofi_status=$?
+
+        case "$rofi_status" in
+        0)
+            [[ -n "$selection" ]] || continue
+            require_agent_exists "$selection"
+            print -- "$selection"
+            return 0
+            ;;
+        1)
+            return 1
+            ;;
+        10)
+            if selection="$(add_agent_dialog)"; then
+                print -- "$selection"
+                return 0
+            fi
+            ;;
+        11)
+            [[ -n "$selection" ]] || continue
+            if current="$(remove_agent_dialog "$selection")"; then
+                [[ "$current" == "$selection" ]] || :
+            fi
+            ;;
+        *)
+            return 1
+            ;;
+        esac
+    done
+}
+
+# Model picker mirrors agent management, but stores normalized model ids.
+function choose_model() {
+    setopt localoptions noerrexit
+
+    local current="$1"
+    local selection
+    local rofi_status
+
+    while true; do
+        selection="$(list_models | rofi -dmenu -i -p 'Model' -mesg "$(model_chooser_message)" -select "$current" -hover-select -format s -kb-custom-1 'Alt+n' -kb-custom-2 'Alt+BackSpace' -theme-str "$(chooser_theme)")"
+        rofi_status=$?
+
+        case "$rofi_status" in
+        0)
+            [[ -n "$selection" ]] || continue
+            print -- "$selection"
+            return 0
+            ;;
+        1)
+            return 1
+            ;;
+        10)
+            if selection="$(add_model_dialog)"; then
+                print -- "$selection"
+                return 0
+            fi
+            ;;
+        11)
+            [[ -n "$selection" ]] || continue
+            if current="$(remove_model_dialog "$selection")"; then
+                [[ "$current" == "$selection" ]] || :
+            fi
+            ;;
+        *)
+            return 1
+            ;;
+        esac
+    done
+}
+
+# Compact status text shown under the main prompt input.
+function prompt_message() {
+    local agent="$1"
+    local model="$2"
+    local effort="$3"
+
+    join_lines \
+        "Agent  ${agent} (Alt+a)" \
+        "Model  ${model} (Alt+m)" \
+        "Effort ${effort} (Alt+Left / Alt+Right)"
+}
+
+# Main prompt loop. Custom rofi exit codes are used for side actions:
+# - Alt+a choose agent
+# - Alt+m choose model
+# - Alt+Left/Right cycle effort
+function prompt_for_query() {
+    setopt localoptions noerrexit
+
+    local current_prompt="$1"
+    local current_agent="$2"
+    local current_model="$3"
+    local current_effort="$4"
+    local prompt_message_text
+    local output
+    local rofi_status
+
+    while true; do
+        prompt_message_text="$(prompt_message "$current_agent" "$current_model" "$current_effort")"
+        output="$(printf '' | rofi -dmenu -p 'Ask' -mesg "$prompt_message_text" -format f -filter "$current_prompt" -kb-custom-1 'Alt+a' -kb-custom-2 'Alt+m' -kb-custom-3 'Alt+Left' -kb-custom-4 'Alt+Right' -theme-str "$(prompt_theme)")"
+        rofi_status=$?
+
+        case "$rofi_status" in
+        0)
+            [[ -n "$output" ]] || continue
+            print -- "$output"
+            return 0
+            ;;
+        1)
+            return 1
+            ;;
+        10)
+            output="${output:-$current_prompt}"
+            current_prompt="$output"
+            if output="$(choose_agent "$current_agent")"; then
+                current_agent="$output"
+                ROFAI_DEFAULT_AGENT="$current_agent"
+                save_config
+            fi
+            ;;
+        11)
+            output="${output:-$current_prompt}"
+            current_prompt="$output"
+            if output="$(choose_model "$current_model")"; then
+                current_model="$output"
+                ROFAI_MODEL="$current_model"
+                save_config
+            fi
+            ;;
+        12)
+            current_effort="$(cycle_effort "$current_effort" left)"
+            ROFAI_EFFORT="$current_effort"
+            save_config
+            ;;
+        13)
+            current_effort="$(cycle_effort "$current_effort" right)"
+            ROFAI_EFFORT="$current_effort"
+            save_config
+            ;;
+        *)
+            return 1
+            ;;
+        esac
+    done
+}
+
+# Build the actual Copilot prompt by prepending the agent prefix if present.
+function build_prompt() {
+    local agent_name="$1"
+    local user_prompt="$2"
+    local prefix=""
+
+    prefix="$(agent_prompt "$agent_name" 2>/dev/null || true)"
+
+    if [[ -z "$prefix" ]]; then
+        print -r -- "$user_prompt"
+        return 0
+    fi
+
+    printf '%s\n\n%s\n' "$prefix" "$user_prompt"
+}
+
+# Non-interactive Copilot invocation with only web access exposed.
+function run_copilot() {
+    local prompt="$1"
+    local model="$2"
+    local effort="$3"
+    local response
+
+    response="$(gh copilot -- -p "$prompt" -s --model "$model" --effort "$effort" --available-tools='web_fetch' --allow-all-tools --allow-all-urls --no-ask-user --no-custom-instructions --disable-builtin-mcps --stream=off --no-color 2>&1)" || {
+        rofi_error "$(join_lines 'gh copilot failed:' '' "$response")"
+    }
+
+    print -r -- "$response"
+}
+
+# Open the full saved response in Ghostty with Neovim in readonly mode.
+# When Hyprland is available, inline exec rules are used so the terminal opens
+# as a centered floating window with percentage sizing similar to the rofi
+# preview.
+function open_response_in_terminal() {
+    local quoted_file quoted_title command
+
+    require_command ghostty
+    require_command nvim
+
+    [[ -f "$ROFAI_LAST_RESPONSE_FILE" ]] || return 1
+
+    quoted_file="${(q)ROFAI_LAST_RESPONSE_FILE}"
+    quoted_title="${(q)ROFAI_RESPONSE_TITLE}"
+    command="ghostty --title=${quoted_title} -e nvim -R ${quoted_file}"
+
+    if command -v hyprctl >/dev/null 2>&1; then
+        hyprctl dispatch exec "[float;center;size ${ROFAI_TERMINAL_WIDTH} ${ROFAI_TERMINAL_HEIGHT};title:^(${ROFAI_RESPONSE_TITLE})$] ${command}" >/dev/null 2>&1 || ghostty --title="$ROFAI_RESPONSE_TITLE" -e nvim -R "$ROFAI_LAST_RESPONSE_FILE" >/dev/null 2>&1 &!
+        return 0
+    fi
+
+    ghostty --title="$ROFAI_RESPONSE_TITLE" -e nvim -R "$ROFAI_LAST_RESPONSE_FILE" >/dev/null 2>&1 &!
+}
+
+# Response preview keeps the common fast action in rofi while offering Alt+t for
+# a real terminal viewer where mouse text selection and scrolling work normally.
+function show_response() {
+    setopt localoptions noerrexit
+
+    local response="$1"
+    local escaped
+    local message
+    local rofi_status
+
+    escaped="$(pango_escape "$response")"
+    message="$(join_lines '<b>Response</b>' '' "$escaped" '' '<i>Enter copies. Alt+t opens Ghostty + nvim. Escape closes.</i>')"
+
+    printf 'Copy response\n' | rofi -dmenu -no-custom -p 'Response' -mesg "$message" -markup -selected-row 0 -l 1 -kb-custom-1 'Alt+t' -theme-str "$(response_theme)" >/dev/null
+    rofi_status=$?
+
+    case "$rofi_status" in
+    0)
+        copy_text "$response"
+        ;;
+    10)
+        open_response_in_terminal
+        ;;
+    *)
+        return 1
+        ;;
+    esac
+}
+
+# End-to-end UI flow: collect prompt, call Copilot, cache response, present it.
+function run_ui() {
+    local current_agent current_model current_effort prompt full_prompt response
+
+    require_command rofi
+    require_command gh
+
+    ensure_default_files
+    current_agent="$ROFAI_DEFAULT_AGENT"
+    current_model="$ROFAI_MODEL"
+    current_effort="$ROFAI_EFFORT"
+
+    require_agent_exists "$current_agent"
+
+    prompt="$(prompt_for_query "" "$current_agent" "$current_model" "$current_effort")" || return 0
+    write_text_file "$ROFAI_LAST_PROMPT_FILE" "$prompt"
+
+    full_prompt="$(build_prompt "$ROFAI_DEFAULT_AGENT" "$prompt")"
+    response="$(run_copilot "$full_prompt" "$ROFAI_MODEL" "$ROFAI_EFFORT")"
+    write_text_file "$ROFAI_LAST_RESPONSE_FILE" "$response"
+    show_response "$response" || return 0
+}
+
+# Scripting mode bypasses rofi entirely and prints the agent response to stdout.
+function print_mode() {
+    local prompt="$1"
+    local agent_name="$2"
+    local model_name="$3"
+    local effort_name="$4"
+    local full_prompt
+
+    require_command gh
+    load_config
+
+    if [[ -n "$agent_name" ]]; then
+        require_agent_exists "$agent_name"
+    else
+        agent_name="$ROFAI_DEFAULT_AGENT"
+    fi
+
+    if [[ -z "$model_name" ]]; then
+        model_name="$ROFAI_MODEL"
+    else
+        model_name="$(normalize_model_id "$model_name")"
+    fi
+
+    if [[ -z "$effort_name" ]]; then
+        effort_name="$ROFAI_EFFORT"
+    else
+        validate_effort "$effort_name"
+    fi
+
+    full_prompt="$(build_prompt "$agent_name" "$prompt")"
+    run_copilot "$full_prompt" "$model_name" "$effort_name"
+}
+
+# Config inspection helper for CLI usage and quick debugging.
+function config_show() {
+    load_config
+    printf 'ROFAI_MODEL=%s\n' "$ROFAI_MODEL"
+    printf 'ROFAI_EFFORT=%s\n' "$ROFAI_EFFORT"
+    printf 'ROFAI_DEFAULT_AGENT=%s\n' "$ROFAI_DEFAULT_AGENT"
+    printf 'ROFAI_CONFIG_FILE=%s\n' "$ROFAI_CONFIG_FILE"
+    printf 'ROFAI_MODELS_FILE=%s\n' "$ROFAI_MODELS_FILE"
+    printf 'ROFAI_AGENTS_DIR=%s\n' "$ROFAI_AGENTS_DIR"
+}
+
+function config_set_model() {
+    local value="$1"
+    load_config
+    ROFAI_MODEL="$(normalize_model_id "$value")"
+    ensure_model_in_list "$ROFAI_MODEL"
+    save_config
+}
+
+function config_set_effort() {
+    local value="$1"
+    load_config
+    validate_effort "$value"
+    ROFAI_EFFORT="$value"
+    save_config
+}
+
+function config_set_default_agent() {
+    local value="$1"
+    load_config
+    require_agent_exists "$value"
+    ROFAI_DEFAULT_AGENT="$value"
+    save_config
+}
+
+function agents_list_cmd() {
+    load_config
+    list_agents
+}
+
+function agents_show_cmd() {
+    local name="$1"
+    local file
+
+    load_config
+    file="$(agent_file "$name")"
+    [[ -f "$file" ]] || die "Unknown agent: $name"
+    sed -n '1,$p' "$file"
+}
+
+function agents_set_cmd() {
+    local name="$1"
+    local prompt="$2"
+    local file
+
+    load_config
+    file="$(agent_file "$name")"
+    write_text_file "$file" "$prompt"
+}
+
+function agents_edit_cmd() {
+    local name="$1"
+    local file editor
+
+    load_config
+    file="$(agent_file "$name")"
+    [[ -f "$file" ]] || : >"$file"
+
+    editor="${VISUAL:-${EDITOR:-vi}}"
+    "$=editor" "$file"
+}
+
+function agents_remove_cmd() {
+    local name="$1"
+    local file
+
+    load_config
+    [[ "$name" != "$ROFAI_DEFAULT_AGENT" ]] || die "Refusing to remove the default agent: $name"
+    file="$(agent_file "$name")"
+    [[ -f "$file" ]] || die "Unknown agent: $name"
+    rm -f "$file"
+}
+
+# CLI entrypoint. Interactive mode is the default unless `--print` is used.
+function main() {
+    local agent_override=""
+    local model_override=""
+    local effort_override=""
+    local print_prompt=""
+
+    while (( $# > 0 )); do
+        case "$1" in
+        --help|-h)
+            usage
+            return 0
+            ;;
+        --agent)
+            [[ $# -ge 2 ]] || die "Missing value for --agent"
+            agent_override="$2"
+            shift 2
+            ;;
+        --model)
+            [[ $# -ge 2 ]] || die "Missing value for --model"
+            model_override="$2"
+            shift 2
+            ;;
+        --effort)
+            [[ $# -ge 2 ]] || die "Missing value for --effort"
+            effort_override="$2"
+            shift 2
+            ;;
+        --print)
+            [[ $# -ge 2 ]] || die "Missing value for --print"
+            print_prompt="$2"
+            shift 2
+            ;;
+        config)
+            [[ $# -ge 2 ]] || die "Missing config subcommand"
+            case "$2" in
+            show)
+                config_show
+                return 0
+                ;;
+            set-model)
+                [[ $# -ge 3 ]] || die "Missing model value"
+                config_set_model "$3"
+                return 0
+                ;;
+            set-effort)
+                [[ $# -ge 3 ]] || die "Missing effort value"
+                config_set_effort "$3"
+                return 0
+                ;;
+            set-default-agent)
+                [[ $# -ge 3 ]] || die "Missing agent value"
+                config_set_default_agent "$3"
+                return 0
+                ;;
+            *)
+                die "Unknown config subcommand: $2"
+                ;;
+            esac
+            ;;
+        agents)
+            [[ $# -ge 2 ]] || die "Missing agents subcommand"
+            case "$2" in
+            list)
+                agents_list_cmd
+                return 0
+                ;;
+            show)
+                [[ $# -ge 3 ]] || die "Missing agent name"
+                agents_show_cmd "$3"
+                return 0
+                ;;
+            set)
+                [[ $# -ge 4 ]] || die "Missing agent name or prompt"
+                agents_set_cmd "$3" "$4"
+                return 0
+                ;;
+            edit)
+                [[ $# -ge 3 ]] || die "Missing agent name"
+                agents_edit_cmd "$3"
+                return 0
+                ;;
+            remove)
+                [[ $# -ge 3 ]] || die "Missing agent name"
+                agents_remove_cmd "$3"
+                return 0
+                ;;
+            *)
+                die "Unknown agents subcommand: $2"
+                ;;
+            esac
+            ;;
+        *)
+            die "Unknown argument: $1"
+            ;;
+        esac
+    done
+
+    load_config
+
+    if [[ -n "$agent_override" ]]; then
+        require_agent_exists "$agent_override"
+        ROFAI_DEFAULT_AGENT="$agent_override"
+    fi
+
+    if [[ -n "$model_override" ]]; then
+        ROFAI_MODEL="$(normalize_model_id "$model_override")"
+        ensure_model_in_list "$ROFAI_MODEL"
+    fi
+
+    if [[ -n "$effort_override" ]]; then
+        validate_effort "$effort_override"
+        ROFAI_EFFORT="$effort_override"
+    fi
+
+    if [[ -n "$print_prompt" ]]; then
+        print_mode "$print_prompt" "$agent_override" "$model_override" "$effort_override"
+        return 0
+    fi
+
+    run_ui
+}
+
+main "$@"
