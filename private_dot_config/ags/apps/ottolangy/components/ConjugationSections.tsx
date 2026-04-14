@@ -6,6 +6,8 @@ import type { StateAccessor } from "../../../common/utils/state"
 import { chunkColumns } from "../utils/format"
 import type { LookupResult } from "../utils/types"
 
+import ConjugationCellRow from "./ConjugationCellRow"
+
 type ConjugationSectionsProps = {
   result: StateAccessor<LookupResult | null>
   copiedFormKey: StateAccessor<string>
@@ -27,7 +29,9 @@ export default function ConjugationSections({ result, copiedFormKey, onCopy }: C
                     <For each={() => section.pronouns}>
                       {(pronoun) => (
                         <box class="ottolangy-row" orientation={Gtk.Orientation.HORIZONTAL}>
-                          <label class="ottolangy-pronoun" label={pronoun.label} xalign={0} />
+                          <box class="ottolangy-row-content" orientation={Gtk.Orientation.HORIZONTAL}>
+                            <label class="ottolangy-pronoun" label={pronoun.label} xalign={0} />
+                          </box>
                         </box>
                       )}
                     </For>
@@ -49,23 +53,7 @@ export default function ConjugationSections({ result, copiedFormKey, onCopy }: C
                               const copyKey = `${section.key}:${column.key}:${pronoun.key}`
 
                               return (
-                                <box
-                                  class="ottolangy-row ottolangy-copy-row"
-                                  orientation={Gtk.Orientation.HORIZONTAL}
-                                  spacing={6}
-                                  $={(self: Gtk.Box) => {
-                                    const controller = new Gtk.GestureClick()
-                                    controller.connect("released", () => {
-                                      if (cell?.text) {
-                                        onCopy(cell.text, copyKey)
-                                      }
-                                    })
-                                    self.add_controller(controller)
-                                  }}
-                                >
-                                  <label class="ottolangy-form ottolangy-copyable" label={cell?.markup ?? ""} useMarkup wrap xalign={0} hexpand />
-                                  <label visible={copiedFormKey((value) => value === copyKey)} class="ottolangy-copied-indicator" label="✓" xalign={1} />
-                                </box>
+                                <ConjugationCellRow cell={cell} copyKey={copyKey} copiedFormKey={copiedFormKey} onCopy={onCopy} />
                               )
                             }}
                           </For>

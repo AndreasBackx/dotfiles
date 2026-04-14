@@ -31,24 +31,22 @@ export default function RecentSearches({
           <label label="Clear all" />
         </button>
       </centerbox>
-      <For each={() => recentSearches.get()}>
+      <For each={recentSearches}>
         {(entry) => (
-          <centerbox
-            class="ottolangy-recent-row"
-            orientation={Gtk.Orientation.HORIZONTAL}
-            $={(self: Gtk.CenterBox) => {
-              const controller = new Gtk.GestureClick()
-              controller.connect("released", () => onApplyRecentSearch(entry))
-              self.add_controller(controller)
-            }}
-          >
-            <box $type="start" class="ottolangy-recent-button" orientation={Gtk.Orientation.VERTICAL} spacing={3} hexpand>
-              <label label={entry.query} xalign={0} />
-              <label class="ottolangy-meta" label={entry.summary ?? ""} xalign={0} />
-            </box>
+          <centerbox class="ottolangy-recent-row" orientation={Gtk.Orientation.HORIZONTAL}>
+            <button $type="start" class="ottolangy-recent-button" hexpand onClicked={() => onApplyRecentSearch(entry)}>
+              <centerbox orientation={Gtk.Orientation.HORIZONTAL}>
+                <box $type="start" orientation={Gtk.Orientation.VERTICAL} spacing={3} hexpand>
+                  <box orientation={Gtk.Orientation.HORIZONTAL} spacing={8}>
+                    <label label={entry.query} xalign={0} />
+                    <label class="ottolangy-meta ottolangy-recent-mode" label={entry.mode ?? "translation"} xalign={0} />
+                  </box>
+                  <label class="ottolangy-meta" label={entry.summary ?? ""} xalign={0} />
+                </box>
+                <label $type="end" class="ottolangy-muted" label={formatLanguagePair(entry.fromLanguage, entry.toLanguage, languageLabels)} xalign={1} />
+              </centerbox>
+            </button>
             <box $type="end" orientation={Gtk.Orientation.HORIZONTAL} spacing={8}>
-              <label class="ottolangy-meta" label={entry.mode ?? "translation"} xalign={1} />
-              <label class="ottolangy-muted" label={formatLanguagePair(entry.fromLanguage, entry.toLanguage, languageLabels)} xalign={1} />
               <button class="ottolangy-delete-button" onClicked={() => onDeleteRecentSearch(entry)}>
                 <label label="🗑️" />
               </button>

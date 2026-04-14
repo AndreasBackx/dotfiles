@@ -58,8 +58,8 @@
 .ottolangy-tab,
 .ottolangy-action,
 .ottolangy-icon-button,
-.ottolangy-lang-item,
-.ottolangy-setting-toggle {
+.ottolangy-setting-toggle,
+.ottolangy-search-clear {
   color: #cecece;
   background: transparent;
   background-image: none;
@@ -73,23 +73,22 @@
 .ottolangy-tab > label,
 .ottolangy-action > label,
 .ottolangy-icon-button > label,
-.ottolangy-lang-item > label,
-.ottolangy-setting-toggle > label {
+.ottolangy-setting-toggle > label,
+.ottolangy-search-clear > label {
   padding: 6px 10px;
 }
 
 .ottolangy-chip:hover,
 .ottolangy-tab:hover,
 .ottolangy-icon-button:hover,
-.ottolangy-lang-item:hover,
 .ottolangy-setting-toggle:hover,
+.ottolangy-search-clear:hover,
 .ottolangy-action:hover {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.16);
 }
 
 .ottolangy-tab.active,
-.ottolangy-lang-item.active,
 .ottolangy-setting-toggle.active {
   border-color: #ccc47a;
   background: rgba(204, 196, 122, 0.12);
@@ -106,22 +105,26 @@
 }
 
 .ottolangy-entry {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 3px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
   color: #e5e5e5;
   padding: 10px 12px;
   outline: none;
   box-shadow: none;
 }
 
+.ottolangy-search-box:focus-within {
+  border-color: #ccc47a;
+  box-shadow: inset 0 0 0 1px #ccc47a;
+}
+
 .ottolangy-entry:focus,
 entry.ottolangy-entry:focus,
 entry.ottolangy-entry:focus-within,
 entry.ottolangy-entry:focus-visible {
-  border-color: #ccc47a;
   outline: none;
-  box-shadow: inset 0 0 0 1px #ccc47a;
+  box-shadow: none;
 }
 
 .ottolangy-translation-link {

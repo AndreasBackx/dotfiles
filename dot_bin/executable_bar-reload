@@ -23,3 +23,5 @@ fi
 : > "$log_file"
 
 ags run --log-file "$log_file" "$app_file" >/dev/null 2>&1 &!
+
+print -- "bar log: $log_file"

@@ -10,3 +10,17 @@
 .ottolangy-language-label {
   min-width: 40px;
 }
+
+.ottolangy-language-dropdown {
+  min-width: 132px;
+}
+
+.ottolangy-language-dropdown > dropdown {
+  min-width: 132px;
+}
+
+.ottolangy-search-box {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+}

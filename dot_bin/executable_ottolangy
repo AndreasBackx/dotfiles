@@ -18,3 +18,5 @@ sleep 0.1
 : > "$log_file"
 
 ags run --log-file "$log_file" "$app_file" >/dev/null 2>&1 &!
+
+print -- "ottolangy log: $log_file"

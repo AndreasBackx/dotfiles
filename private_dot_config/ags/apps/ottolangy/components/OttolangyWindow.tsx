@@ -1,11 +1,12 @@
 import Gtk from "gi://Gtk?version=4.0"
+import Gdk from "gi://Gdk?version=4.0"
 
 import app from "ags/gtk4/app"
 import { Astal } from "ags/gtk4"
 
 type OttolangyWindowProps = {
   children: any
-  onReady: () => void
+  onReady: (window: Gtk.Window) => void
 }
 
 export default function OttolangyWindow({ children, onReady }: OttolangyWindowProps) {
@@ -23,26 +24,28 @@ export default function OttolangyWindow({ children, onReady }: OttolangyWindowPr
       canFocus
       canTarget
       focusOnClick
-      layer={Astal.Layer.TOP}
-      exclusivity={Astal.Exclusivity.NORMAL}
-      keymode={Astal.Keymode.EXCLUSIVE}
       resizable
       visible
+      keymode={Astal.Keymode.ON_DEMAND}
       $={(self: Gtk.Window) => {
-        const controller = new Gtk.ShortcutController()
-        controller.set_scope(Gtk.ShortcutScope.GLOBAL)
-        controller.add_shortcut(
-          Gtk.Shortcut.new(
-            Gtk.ShortcutTrigger.parse_string("Escape"),
-            Gtk.CallbackAction.new(() => {
-              app.quit()
-              return true
-            }),
-          ),
-        )
-        self.add_controller(controller)
+        self.set_focusable(true)
+        self.set_can_focus(true)
+        self.set_can_target(true)
+        self.set_focus_on_click(true)
+        self.set_focus_visible(true)
+        const keyController = new Gtk.EventControllerKey()
+        keyController.set_propagation_phase(Gtk.PropagationPhase.CAPTURE)
+        keyController.connect("key-pressed", (_, keyval) => {
+          if (keyval === Gdk.KEY_Escape) {
+            app.quit()
+            return true
+          }
+
+          return false
+        })
+        self.add_controller(keyController)
         self.present()
-        onReady()
+        onReady(self)
       }}
     >
       {children}

@@ -1,8 +1,29 @@
 .ottolangy-recent-row {
   padding: 10px 12px;
+  border-radius: 3px;
+}
+
+.ottolangy-recent-row:hover {
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .ottolangy-recent-button {
+  min-height: 0;
+  min-width: 0;
+  color: #cecece;
+  background: transparent;
+  background-image: none;
+  border: none;
+  border-radius: 3px;
+  box-shadow: none;
+  padding: 0;
+}
+
+.ottolangy-recent-mode {
+  padding-top: 1px;
+}
+
+.ottolangy-delete-button {
   color: #cecece;
   background: transparent;
   background-image: none;
@@ -10,18 +31,7 @@
   border-radius: 0;
   box-shadow: none;
   padding: 0;
-}
-
-.ottolangy-recent-button:hover {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.ottolangy-delete-button {
-  background: transparent;
-  border: none;
-  border-radius: 0;
   opacity: 0;
-  padding: 0 2px;
 }
 
 .ottolangy-recent-row:hover .ottolangy-delete-button {

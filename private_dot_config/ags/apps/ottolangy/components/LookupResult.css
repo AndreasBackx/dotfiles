@@ -47,8 +47,32 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+.ottolangy-row-content {
+  min-height: 30px;
+}
+
+.ottolangy-copy-row {
+  min-width: 0;
+  background: transparent;
+  background-image: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
 .ottolangy-copy-row:hover {
   background: rgba(255, 255, 255, 0.04);
+}
+
+.ottolangy-copy-row:focus,
+.ottolangy-copy-row:focus-visible,
+.ottolangy-copy-row:active,
+.ottolangy-copy-row:checked {
+  background: transparent;
+  background-image: none;
+  box-shadow: none;
 }
 
 .ottolangy-pronoun,
