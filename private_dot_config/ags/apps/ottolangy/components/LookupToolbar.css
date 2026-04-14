@@ -1,0 +1,12 @@
+.ottolangy-topbar,
+.ottolangy-toolbar {
+  padding-bottom: 12px;
+}
+
+.ottolangy-language-row {
+  min-width: 0;
+}
+
+.ottolangy-language-label {
+  min-width: 40px;
+}

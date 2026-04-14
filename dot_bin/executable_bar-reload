@@ -1,0 +1,25 @@
+#!/usr/bin/env zsh
+
+set -euo pipefail
+
+app_file="$HOME/.config/ags/apps/bar/app.tsx"
+log_file="${XDG_STATE_HOME:-$HOME/.local/state}/bar-reload.log"
+typelib_path="/usr/local/lib64/girepository-1.0"
+library_path="/usr/local/lib64"
+
+export GI_TYPELIB_PATH="${typelib_path}${GI_TYPELIB_PATH:+:${GI_TYPELIB_PATH}}"
+export LD_LIBRARY_PATH="${library_path}${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
+
+mkdir -p "${log_file:h}"
+
+ags quit --instance dotfiles-bar >/dev/null 2>&1 || true
+sleep 0.2
+
+if pgrep -f '/run/user/.*/ags\.js' >/dev/null 2>&1; then
+  pkill -TERM -f '/run/user/.*/ags\.js' >/dev/null 2>&1 || true
+  sleep 0.2
+fi
+
+: > "$log_file"
+
+ags run --log-file "$log_file" "$app_file" >/dev/null 2>&1 &!

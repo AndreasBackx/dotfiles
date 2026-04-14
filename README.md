@@ -48,7 +48,7 @@ These run automatically after apply:
 ## Core Commands
 
 - `dot-doctor`: check required base and desktop tools.
-- `ags-reload`: restart the AGS bar and write logs to `~/.local/state/ags-reload.log`.
+- `bar-reload`: restart the AGS bar and write logs to `~/.local/state/bar-reload.log`.
 - `hyprland-logs`: show the Hyprland file log, recent UWSM journal entries, crash reports, and logrotate config path.
 - `monitor-profiles selection`: switch monitor profiles through `shikanectl` and update default audio devices for that profile.
 - `hypr-profile-refresh`: re-render profile-sensitive Hyprland config and remap windows.
@@ -85,7 +85,7 @@ chezmoi apply --dry-run --verbose
 dot-doctor
 
 # Restart the AGS bar after edits.
-ags-reload
+bar-reload
 ```
 
 Common things to check:
@@ -93,7 +93,7 @@ Common things to check:
 - Missing wrappers: run `chezmoi apply` again after installing required desktop tools.
 - Missing secrets: check `~/.config/.secrets` and your 1Password CLI setup.
 - Headless mode: desktop checks are skipped and secrets are not loaded.
-- AGS reloads: logs go to `~/.local/state/ags-reload.log`.
+- AGS reloads: logs go to `~/.local/state/bar-reload.log`.
 - Hyprland and UWSM logs:
   file log `~/.local/state/hyprland/hyprland.log`
   session journal `journalctl --user -u wayland-wm@hyprland.desktop.service`

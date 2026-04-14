@@ -1,0 +1,28 @@
+button {
+  min-height: 0;
+  min-width: 0;
+  background-image: none;
+  box-shadow: none;
+  outline: none;
+}
+
+button:hover,
+button:focus,
+button:active,
+button:checked,
+button:focus-visible {
+  background-image: none;
+  box-shadow: none;
+  outline: none;
+}
+
+tooltip {
+  background: #141414;
+  color: #cecece;
+  border: 1px solid #404040;
+  border-radius: 4px;
+}
+
+tooltip label {
+  padding: 6px 9px;
+}

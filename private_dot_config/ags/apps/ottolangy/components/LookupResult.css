@@ -1,0 +1,66 @@
+.ottolangy-summary,
+.ottolangy-tabs,
+.ottolangy-section {
+  padding-bottom: 12px;
+}
+
+.ottolangy-tabs {
+  padding-bottom: 0;
+}
+
+.ottolangy-conjugation-body {
+  min-height: 430px;
+}
+
+.ottolangy-result-content {
+  padding-top: 12px;
+}
+
+.ottolangy-columns {
+  padding-bottom: 2px;
+}
+
+.ottolangy-pronoun-column,
+.ottolangy-column {
+  min-width: 0;
+}
+
+.ottolangy-pronoun-column {
+  min-width: 148px;
+}
+
+.ottolangy-column-group {
+  min-width: 0;
+}
+
+.ottolangy-column-placeholder {
+  opacity: 0;
+}
+
+.ottolangy-column-title {
+  min-height: 28px;
+  padding: 0 8px 8px;
+}
+
+.ottolangy-row {
+  min-height: 30px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.ottolangy-copy-row:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.ottolangy-pronoun,
+.ottolangy-form {
+  padding: 5px 8px;
+}
+
+.ottolangy-form {
+  color: #d6d6d6;
+  font-weight: 600;
+}
+
+.ottolangy-copyable:hover {
+  color: #6cc7d9;
+}

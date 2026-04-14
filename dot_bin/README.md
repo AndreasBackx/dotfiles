@@ -5,7 +5,7 @@
 ## Commands I Run Directly
 
 - `dot-doctor`: checks whether the machine has the base and desktop tools these dotfiles expect.
-- `ags-reload`: restarts the AGS bar and writes logs to `~/.local/state/ags-reload.log`.
+- `bar-reload`: restarts the AGS bar and writes logs to `~/.local/state/bar-reload.log`.
 - `hyprland-logs`: quick Hyprland and UWSM log summary.
 - `monitor-profiles selection`: switch shikane monitor profiles from a rofi menu and apply per-profile audio defaults.
 - `hypr-profile-refresh`: re-render `windows.conf` and `workspaces.conf` for the active monitor profile, then remap windows.

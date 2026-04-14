@@ -1,7 +1,7 @@
 exec = justloggedin || notify-send 'Hyprland reloaded!' --expire-time 2500 -u normal
 
 #exec-once = hyprpm reload -n
-exec-once = env GI_TYPELIB_PATH=/usr/local/lib64/girepository-1.0 LD_LIBRARY_PATH=/usr/local/lib64 ags run "$HOME/.config/ags/app.tsx"
+exec-once = env GI_TYPELIB_PATH=/usr/local/lib64/girepository-1.0 LD_LIBRARY_PATH=/usr/local/lib64 ags run "$HOME/.config/ags/apps/bar/app.tsx"
 exec-once = pgrep -x waycorner >/dev/null || waycorner
 exec-once = hypridle
 exec-once = pypr
