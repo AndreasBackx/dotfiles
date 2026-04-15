@@ -48,3 +48,5 @@ chezmoi apply \
     "$HOME/.config/hypr/workspaces.conf"
 
 "$HOME/.bin/hypr-workspace-remap" "$active_profile"
+
+ags request --instance dotfiles-bar set-profile "$active_profile" >/dev/null 2>&1 || true

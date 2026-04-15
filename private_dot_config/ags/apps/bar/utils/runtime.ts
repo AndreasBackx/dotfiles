@@ -60,6 +60,20 @@ export function parseJson<T>(text: string, fallback: T): T {
 }
 
 /**
+ * Reads a UTF-8 text file and falls back when it is missing.
+ *
+ * Example: `readTextFile("/tmp/config.json", "{}")`
+ */
+export function readTextFile(path: string, fallback = "") {
+  try {
+    const [, bytes] = GLib.file_get_contents(path)
+    return new TextDecoder().decode(bytes)
+  } catch {
+    return fallback
+  }
+}
+
+/**
  * Creates a polling binding whose value is the trimmed stdout of a command.
  *
  * Example: `createTextPoll(3000, command("bar-network", "tooltip"))`

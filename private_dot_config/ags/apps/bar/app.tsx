@@ -22,18 +22,46 @@ import titleCss from "./components/title/TitleSegment.css"
 import workspaceButtonCss from "./components/workspaces/WorkspaceButton.css"
 import workspaceStripCss from "./components/workspaces/WorkspaceStrip.css"
 import MonitorBars from "./components/bar/MonitorBars"
-import { assignCenterWorkspacesToLaptop, centerAutoHideEnabled, soloLaptopCenter } from "./utils/bar-logic"
+import { assignCenterWorkspacesToLaptop, centerAutoHideEnabled, centerTargetRole, soloLaptopCenter } from "./utils/bar-logic"
 import { createCenterVisibilityController } from "./utils/center-visibility"
 import {
   CENTER_HIDE_DELAY_MS,
+  HOME,
   INITIAL_AUTOHIDE_DELAY_MS,
   WORKSPACE_STRIP_HIDE_DELAY_MS,
+  parseJson,
+  readTextFile,
 } from "./utils/runtime"
 import { closeTrackedPopovers, setHoverReporter, setPopoverVisibilityReporter } from "./utils/widget-helpers"
-import type { HyprState } from "./utils/types"
+import type { HyprState, Role } from "./utils/types"
 
 let requestShowCenter: (() => void) | null = null
 let requestShowWorkspaces: (() => void) | null = null
+let requestSetProfile: ((profile: string) => void) | null = null
+
+const WORKSPACE_ROUTING_PATH = `${HOME}/.config/hypr/workspace-routing.json`
+const ROLE_ORDER = ["left", "center", "right", "laptop"] as const satisfies readonly Role[]
+const DEFAULT_ENABLED_ROLES = ["laptop"] as const satisfies readonly Role[]
+
+type WorkspaceRoutingConfig = {
+  defaultProfile: string
+  monitors: Partial<Record<Role | "tv", { profiles?: string[] }>>
+}
+
+function enabledRolesForProfile(profile: string): Role[] {
+  const config = parseJson<WorkspaceRoutingConfig>(readTextFile(WORKSPACE_ROUTING_PATH, "{}"), {
+    defaultProfile: "",
+    monitors: {},
+  })
+
+  const enabledRoles = ROLE_ORDER.filter((role) => config.monitors[role]?.profiles?.includes(profile))
+
+  return enabledRoles.length > 0 ? [...enabledRoles] : [...DEFAULT_ENABLED_ROLES]
+}
+
+function centerRoleEnabled(state: HyprState, enabledRoles: Role[]) {
+  return enabledRoles.includes(centerTargetRole(state))
+}
 
 function buildHyprState(hyprland: Hyprland.Hyprland | null): HyprState {
   if (!hyprland) {
@@ -97,6 +125,18 @@ app.start({
         requestShowWorkspaces?.()
         response("ok")
         return
+      case "set-profile": {
+        const profile = argv[1]?.trim()
+
+        if (!profile) {
+          response("missing profile")
+          return
+        }
+
+        requestSetProfile?.(profile)
+        response("ok")
+        return
+      }
       default:
         response("unknown command")
     }
@@ -117,6 +157,8 @@ app.start({
       monitors: [],
       windowTitle: "Desktop",
     })
+    // TODO: query shikane for the active profile on startup once shikane exposes it; until then default to the laptop bar.
+    const [enabledRoles, setEnabledRoles] = createState<Role[]>([...DEFAULT_ENABLED_ROLES])
     const [centerVisible, setCenterVisible] = createState(true)
     const [workspaceStripVisible, setWorkspaceStripVisible] = createState(false)
 
@@ -136,23 +178,34 @@ app.start({
     setHoverReporter(visibility.handleHoverChange)
     setPopoverVisibilityReporter(visibility.handlePopoverVisibilityChange)
 
-    const syncHyprState = () => {
-      const nextState = buildHyprState(hyprland)
-      setHyprState(nextState)
-
-      if (soloLaptopCenter(nextState)) {
+    const syncBarLayout = (nextState: HyprState, roles = enabledRoles()) => {
+      if (soloLaptopCenter(nextState) && roles.includes("laptop")) {
         assignCenterWorkspacesToLaptop()
       }
 
-      if (centerAutoHideEnabled(nextState)) {
+      if (centerRoleEnabled(nextState, roles) && centerAutoHideEnabled(nextState)) {
         if (!initialAutohideScheduled) {
           initialAutohideScheduled = true
           visibility.scheduleCenterHide(INITIAL_AUTOHIDE_DELAY_MS)
         }
-      } else {
-        initialAutohideScheduled = false
-        visibility.applyAutoHideState()
+
+        return
       }
+
+      initialAutohideScheduled = false
+      visibility.applyAutoHideState()
+    }
+
+    requestSetProfile = (profile) => {
+      const nextRoles = enabledRolesForProfile(profile)
+      setEnabledRoles(nextRoles)
+      syncBarLayout(hyprState.get(), nextRoles)
+    }
+
+    const syncHyprState = () => {
+      const nextState = buildHyprState(hyprland)
+      setHyprState(nextState)
+      syncBarLayout(nextState)
     }
 
     const hyprlandEventId = hyprland?.connect("event", syncHyprState) ?? 0
@@ -166,6 +219,7 @@ app.start({
       visibility.cleanup()
       requestShowCenter = null
       requestShowWorkspaces = null
+      requestSetProfile = null
       setHoverReporter(null)
       setPopoverVisibilityReporter(null)
     })
@@ -177,6 +231,7 @@ app.start({
             <MonitorBars
               gdkmonitor={monitor}
               hyprState={hyprState}
+              enabledRoles={enabledRoles}
               centerVisible={centerVisible}
               workspaceStripVisible={workspaceStripVisible}
               showCenter={visibility.showCenter}

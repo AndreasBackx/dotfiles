@@ -1,7 +1,7 @@
 import { Gdk } from "ags/gtk4"
 
 import { centerAutoHideEnabled, centerTargetRole, connectorForRole, soloLaptopCenter } from "../../utils/bar-logic"
-import type { BooleanAccessor, HyprState, HyprStateAccessor, Role } from "../../utils/types"
+import type { BooleanAccessor, HyprState, HyprStateAccessor, Role, RoleAccessor } from "../../utils/types"
 
 import BarWindow from "./BarWindow"
 import WorkspaceRevealWindow from "./WorkspaceRevealWindow"
@@ -9,10 +9,27 @@ import WorkspaceRevealWindow from "./WorkspaceRevealWindow"
 type MonitorBarsProps = {
   gdkmonitor: Gdk.Monitor
   hyprState: HyprStateAccessor
+  enabledRoles: RoleAccessor
   centerVisible: BooleanAccessor
   workspaceStripVisible: BooleanAccessor
   showCenter: () => void
   hideCenter: () => void
+}
+
+function roleEnabled(enabledRoles: Role[], role: Role) {
+  return enabledRoles.includes(role)
+}
+
+function shouldRenderRole(state: HyprState, enabledRoles: Role[], role: Role, connector: string) {
+  if (!roleEnabled(enabledRoles, role) || !roleIsOnCurrentMonitor(state, role, connector)) {
+    return false
+  }
+
+  if (role === "left" || role === "right") {
+    return !soloLaptopCenter(state)
+  }
+
+  return true
 }
 
 /** Returns whether a role currently belongs to the monitor being rendered. */
@@ -57,6 +74,7 @@ function revealVisibleForRole(
 export default function MonitorBars({
   gdkmonitor,
   hyprState,
+  enabledRoles,
   centerVisible,
   workspaceStripVisible,
   showCenter,
@@ -79,38 +97,50 @@ export default function MonitorBars({
 
   return (
     <>
-      <BarWindow gdkmonitor={gdkmonitor} role="left" hyprState={hyprState} visible={leftVisible} />
-      <BarWindow gdkmonitor={gdkmonitor} role="right" hyprState={hyprState} visible={rightVisible} />
-      <BarWindow
-        gdkmonitor={gdkmonitor}
-        role="center"
-        hyprState={hyprState}
-        visible={centerVisibleOnMonitor}
-        onHoverEnter={showCenter}
-        onHoverLeave={hideCenter}
-      />
-      <BarWindow
-        gdkmonitor={gdkmonitor}
-        role="laptop"
-        hyprState={hyprState}
-        visible={laptopVisibleOnMonitor}
-        onHoverEnter={showCenter}
-        onHoverLeave={hideCenter}
-      />
-      <WorkspaceRevealWindow
-        gdkmonitor={gdkmonitor}
-        role="center"
-        hyprState={hyprState}
-        visible={centerRevealVisible}
-        onHover={showCenter}
-      />
-      <WorkspaceRevealWindow
-        gdkmonitor={gdkmonitor}
-        role="laptop"
-        hyprState={hyprState}
-        visible={laptopRevealVisible}
-        onHover={showCenter}
-      />
+      {shouldRenderRole(hyprState(), enabledRoles(), "left", connector) && (
+        <BarWindow gdkmonitor={gdkmonitor} role="left" hyprState={hyprState} visible={leftVisible} />
+      )}
+      {shouldRenderRole(hyprState(), enabledRoles(), "right", connector) && (
+        <BarWindow gdkmonitor={gdkmonitor} role="right" hyprState={hyprState} visible={rightVisible} />
+      )}
+      {shouldRenderRole(hyprState(), enabledRoles(), "center", connector) && (
+        <>
+          <BarWindow
+            gdkmonitor={gdkmonitor}
+            role="center"
+            hyprState={hyprState}
+            visible={centerVisibleOnMonitor}
+            onHoverEnter={showCenter}
+            onHoverLeave={hideCenter}
+          />
+          <WorkspaceRevealWindow
+            gdkmonitor={gdkmonitor}
+            role="center"
+            hyprState={hyprState}
+            visible={centerRevealVisible}
+            onHover={showCenter}
+          />
+        </>
+      )}
+      {shouldRenderRole(hyprState(), enabledRoles(), "laptop", connector) && (
+        <>
+          <BarWindow
+            gdkmonitor={gdkmonitor}
+            role="laptop"
+            hyprState={hyprState}
+            visible={laptopVisibleOnMonitor}
+            onHoverEnter={showCenter}
+            onHoverLeave={hideCenter}
+          />
+          <WorkspaceRevealWindow
+            gdkmonitor={gdkmonitor}
+            role="laptop"
+            hyprState={hyprState}
+            visible={laptopRevealVisible}
+            onHover={showCenter}
+          />
+        </>
+      )}
     </>
   )
 }

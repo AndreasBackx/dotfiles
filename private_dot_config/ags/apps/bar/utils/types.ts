@@ -39,3 +39,4 @@ export type AudioEndpoint = {
 
 export type HyprStateAccessor = StateAccessor<HyprState>
 export type BooleanAccessor = StateAccessor<boolean>
+export type RoleAccessor = StateAccessor<Role[]>
