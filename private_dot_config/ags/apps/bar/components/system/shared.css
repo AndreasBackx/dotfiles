@@ -148,3 +148,29 @@ menubutton > button > box,
 .panel .danger {
   border-color: @ags-danger;
 }
+
+.displays-panel {
+  min-width: 320px;
+}
+
+.display-minimum-row,
+.display-slider-header {
+  min-width: 296px;
+}
+
+.display-minimum-control {
+  align-items: center;
+}
+
+.display-minimum-value,
+.display-slider-value {
+  min-width: 44px;
+}
+
+.display-slider-row {
+  margin-top: 2px;
+}
+
+.display-slider {
+  min-width: 296px;
+}
