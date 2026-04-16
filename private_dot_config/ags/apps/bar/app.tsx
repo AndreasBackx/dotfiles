@@ -1,8 +1,9 @@
 import Hyprland from "gi://AstalHyprland"
+import Adw from "gi://Adw"
 
 import app from "ags/gtk4/app"
 import { Gtk } from "ags/gtk4"
-import { For, This, createBinding, createState, onCleanup } from "ags"
+import { This, createBinding, createState, onCleanup } from "ags"
 
 import commonBaseCss from "../../common/theming/base.css"
 import themeCss from "./theming/theme.css"
@@ -144,11 +145,7 @@ app.start({
     }
   },
   main() {
-    const settings = Gtk.Settings.get_default()
-    settings?.set_property("gtk-application-prefer-dark-theme", true)
-    settings?.set_property("gtk-tooltip-timeout", 120)
-    settings?.set_property("gtk-tooltip-browse-timeout", 60)
-    settings?.set_property("gtk-tooltip-browse-mode-timeout", 120)
+    Adw.StyleManager.get_default()?.set_color_scheme(Adw.ColorScheme.FORCE_DARK)
 
     const monitors = createBinding(app, "monitors")
     const hyprland = Hyprland.get_default()
@@ -227,8 +224,7 @@ app.start({
     })
 
     return (
-      <For each={monitors}>
-        {(monitor) => (
+      <>{monitors.as((value) => value.map((monitor) => (
           <This this={app}>
             <MonitorBars
               gdkmonitor={monitor}
@@ -240,8 +236,7 @@ app.start({
               hideCenter={visibility.handleCenterLeave}
             />
           </This>
-        )}
-      </For>
+        )))}</>
     )
   },
 })

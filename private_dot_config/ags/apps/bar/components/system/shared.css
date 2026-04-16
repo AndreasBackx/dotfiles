@@ -49,32 +49,20 @@
 
 .bar-item.icon-only {
   min-height: 56px;
-  justify-content: center;
-  align-items: center;
 }
 
 .bar-item.with-text {
   min-height: 56px;
-  justify-content: center;
 }
 
 .system-button-content {
   min-height: 56px;
-  min-width: 100%;
-  justify-content: center;
-  align-items: center;
-}
-
-.system-button-content.with-text {
-  spacing: 6px;
 }
 
 .bar-item,
 .bar-menu-button > button > box,
 menubutton > button > box,
 .bar-menu-button > box {
-  justify-content: center;
-  align-items: center;
 }
 
 .item-icon {
