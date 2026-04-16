@@ -1,0 +1,38 @@
+.displays-panel {
+  min-width: 320px;
+}
+
+.display-minimum-row,
+.display-slider-header {
+  min-width: 296px;
+}
+
+.display-minimum-control {
+  align-items: center;
+}
+
+.display-minimum-entry {
+  min-width: 56px;
+  background: rgba(255, 255, 255, 0.04);
+  color: @ags-fg;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+
+.display-minimum-entry:focus {
+  border-color: @ags-accent;
+}
+
+.display-minimum-value,
+.display-slider-value {
+  min-width: 44px;
+}
+
+.display-slider-row {
+  margin-top: 2px;
+}
+
+.display-slider {
+  min-width: 296px;
+}

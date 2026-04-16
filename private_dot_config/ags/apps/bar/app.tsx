@@ -14,6 +14,7 @@ import spotifyCss from "./components/spotify/SpotifySegment.css"
 import bluetoothCss from "./components/system/BluetoothButton.css"
 import batteryCss from "./components/system/BatteryButton.css"
 import clockCss from "./components/system/ClockButton.css"
+import displaysCss from "./components/system/DisplaysButton.css"
 import networkCss from "./components/system/NetworkButton.css"
 import systemSharedCss from "./components/system/shared.css"
 import systemMenuButtonCss from "./components/system/SystemMenuButton.css"
@@ -106,6 +107,7 @@ const css = [
   networkCss,
   bluetoothCss,
   clockCss,
+  displaysCss,
 ].join("\n")
 
 // Application entry point. It binds monitor state, subscribes to Hyprland
