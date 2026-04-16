@@ -9,6 +9,12 @@ export type HyprMonitor = {
   activeWorkspaceId: number
 }
 
+export type MonitorIdentity = {
+  connector: string
+  description: string
+  serial: string
+}
+
 export type HyprState = {
   activeWorkspaceId: number
   visibleWorkspaceIds: number[]

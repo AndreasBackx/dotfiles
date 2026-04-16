@@ -1,4 +1,5 @@
 import GLib from "gi://GLib?version=2.0"
+import { Accessor } from "gnim"
 
 import { createState } from "ags"
 import { execAsync } from "ags/process"
@@ -46,12 +47,10 @@ async function readCurrentTimezone() {
 export function getClockState(): ClockState {
   return getGlobalState("bar-clock-state", () => {
     const [activeCount, setActiveCount] = createState(0)
-    const active = ((map?: (value: boolean) => boolean) => {
-      const value = activeCount.get() > 0
-      return typeof map === "function" ? map(value) : value
-    }) as StateAccessor<boolean> & { subscribe(callback: () => void): () => void }
-    active.get = () => activeCount.get() > 0
-    active.subscribe = (callback: () => void) => (activeCount as any).subscribe?.(callback) ?? (() => {})
+    const active = new Accessor(
+      () => activeCount.get() > 0,
+      (callback) => (activeCount as any).subscribe?.(callback) ?? (() => {}),
+    ) as StateAccessor<boolean> & { subscribe(callback: () => void): () => void }
 
     // Keep the label aligned to minute boundaries, while the tooltip retains a
     // second-resolution clock for the more detailed panel status text.

@@ -5,6 +5,7 @@ import { Gtk } from "ags/gtk4"
 
 import { setInstancePopoverOpen } from "../../utils/activity"
 import { attachPopoverHandlers } from "../../utils/widget-helpers"
+import { getTrayState } from "./TrayState"
 
 type TraySegmentProps = {
   instanceId: string
@@ -33,8 +34,7 @@ function initTrayButton(button: Gtk.MenuButton, item: Tray.TrayItem, instanceId:
  * Renders StatusNotifier / AppIndicator items exposed through AstalTray.
  */
 export default function TraySegment({ instanceId }: TraySegmentProps) {
-  const tray = Tray.get_default()
-  const items = createBinding(tray, "items")
+  const { items } = getTrayState()
 
   return (
     <box class="tray-segment" spacing={1}>

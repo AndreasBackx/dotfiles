@@ -31,7 +31,11 @@ export function createAdaptivePollState<T>(initial: T, options: AdaptivePollOpti
 
   const clearTimer = () => {
     if (timeoutId > 0) {
-      GLib.source_remove(timeoutId)
+      try {
+        GLib.source_remove(timeoutId)
+      } catch {
+        // Timer may already have been removed as part of shutdown/reload.
+      }
       timeoutId = 0
     }
   }

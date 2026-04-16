@@ -1,4 +1,5 @@
 import GLib from "gi://GLib?version=2.0"
+import { Accessor } from "gnim"
 
 import { createState } from "ags"
 
@@ -75,12 +76,10 @@ function parseMemorySnapshot() {
 export function getWarningState(): WarningState {
   return getGlobalState("bar-warning-state", () => {
     const [activeCount, setActiveCount] = createState(0)
-    const active = ((map?: (value: boolean) => boolean) => {
-      const value = activeCount.get() > 0
-      return typeof map === "function" ? map(value) : value
-    }) as StateAccessor<boolean> & { subscribe(callback: () => void): () => void }
-    active.get = () => activeCount.get() > 0
-    active.subscribe = (callback: () => void) => (activeCount as any).subscribe?.(callback) ?? (() => {})
+    const active = new Accessor(
+      () => activeCount.get() > 0,
+      (callback) => (activeCount as any).subscribe?.(callback) ?? (() => {}),
+    ) as StateAccessor<boolean> & { subscribe(callback: () => void): () => void }
 
     let previousCpuSample = parseCpuSample()
     const poller = createAdaptivePollState<WarningSnapshot>(
@@ -116,13 +115,7 @@ export function getWarningState(): WarningState {
     // bind directly to `cpu`, `memory`, and `memoryUsed` without knowing about
     // the composite polling payload.
     const pick = <T>(selector: (value: WarningSnapshot) => T) => {
-      const accessor = ((map?: (value: T) => T) => {
-        const selected = selector(snapshot.get())
-        return typeof map === "function" ? map(selected) : selected
-      }) as StateAccessor<T> & { subscribe?: (callback: () => void) => () => void }
-      accessor.get = () => selector(snapshot.get())
-      accessor.subscribe = (callback: () => void) => snapshot.subscribe?.(callback) ?? (() => {})
-      return accessor
+      return new Accessor(() => selector(snapshot.get()), (callback) => snapshot.subscribe?.(callback) ?? (() => {})) as StateAccessor<T>
     }
 
     const attachedInstances = new Map<string, { refs: number; dispose: () => void; active: boolean }>()

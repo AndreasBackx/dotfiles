@@ -4,7 +4,7 @@ import SpotifySegment from "../spotify/SpotifySegment"
 import SystemSegment from "../system/SystemSegment"
 import TitleSegment from "../title/TitleSegment"
 import WorkspaceStrip from "../workspaces/WorkspaceStrip"
-import type { HyprStateAccessor } from "../../utils/types"
+import type { HyprStateAccessor, MonitorIdentity } from "../../utils/types"
 
 type BarRootProps = {
   base: number
@@ -17,6 +17,16 @@ type BarRootProps = {
  * Lays out the left, center, and right content segments inside a bar window.
  */
 export default function BarRoot({ base, hyprState, instanceId, position }: BarRootProps) {
+  const connector = instanceId.slice(instanceId.indexOf("-") + 1)
+  const monitor = hyprState((state) => {
+    const current = state.monitors.find((item) => item.connector === connector)
+    return {
+      connector,
+      description: current?.description || "",
+      serial: current?.serial || "",
+    } satisfies MonitorIdentity
+  })
+
   return (
     <centerbox
       class={`bar-root position-${position}`}
@@ -32,7 +42,7 @@ export default function BarRoot({ base, hyprState, instanceId, position }: BarRo
         <SpotifySegment />
       </box>
       <box $type="end" class="right-side" hexpand halign={Gtk.Align.END}>
-        <SystemSegment instanceId={instanceId} />
+        <SystemSegment instanceId={instanceId} monitor={monitor} />
       </box>
     </centerbox>
   )
