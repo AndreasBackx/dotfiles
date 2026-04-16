@@ -1,20 +1,20 @@
 import Pango from "gi://Pango?version=1.0"
 
 import { Gdk, Gtk } from "ags/gtk4"
-import { createSubprocess } from "ags/process"
 
-import { command, run, trimOutput } from "../../utils/runtime"
+import { command, run } from "../../utils/runtime"
+import { getSpotifyState } from "./SpotifyState"
 
 /**
  * Streams Spotify metadata into the center segment and toggles playback on
  * click.
+ *
+ * The subprocess-backed monitor state is shared app-wide through
+ * `getSpotifyState()`. That keeps multi-monitor setups from spawning duplicate
+ * long-lived helper processes for every visible bar instance.
  */
 export default function SpotifySegment() {
-  // The helper scripts expose long-lived streams, so subprocess bindings are a
-  // better fit than polling here.
-  const text = createSubprocess("", command("bar-spotify", "monitor"), trimOutput)
-  const tooltip = createSubprocess("", command("bar-spotify", "monitor-tooltip"), trimOutput)
-  const state = createSubprocess("paused", command("bar-spotify", "monitor-state"), trimOutput)
+  const { text, tooltip, state } = getSpotifyState()
 
   return (
     <button

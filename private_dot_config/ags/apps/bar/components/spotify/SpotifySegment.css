@@ -12,12 +12,17 @@
 }
 
 .spotify-text {
-  color: #cecece;
+  color: inherit;
   padding: 0 26px;
   font-weight: 400;
 }
 
 .spotify-paused,
 .spotify-stopped {
+  color: #7a7a7a;
+}
+
+.spotify-text.spotify-paused,
+.spotify-text.spotify-stopped {
   color: #7a7a7a;
 }
