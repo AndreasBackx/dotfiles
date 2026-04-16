@@ -7,7 +7,6 @@ import { Gtk } from "ags/gtk4"
 import SystemMenuButton from "./SystemMenuButton"
 
 const DISPLAY_BRIGHTNESS_STEP = 5
-const MINIMUM_BRIGHTNESS_STEP = DISPLAY_BRIGHTNESS_STEP
 const DEFAULT_MINIMUM_BRIGHTNESS = 0
 
 type DisplaysButtonProps = {
@@ -45,6 +44,10 @@ function getProperty<T>(value: any, ...keys: string[]) {
 function clampBrightness(value: number, minimumBrightness: number) {
   const rounded = Math.round(value / DISPLAY_BRIGHTNESS_STEP) * DISPLAY_BRIGHTNESS_STEP
   return Math.max(minimumBrightness, Math.min(100, rounded))
+}
+
+function clampMinimumBrightness(value: number) {
+  return Math.max(0, Math.min(100, value))
 }
 
 function averageBrightness(items: DisplayBrightnessItem[]) {
@@ -89,19 +92,27 @@ function buildDisplayIdentifier(item: DisplayBrightnessItem) {
 }
 
 type BrightnessScaleProps = {
-  value: number
-  minimumBrightness: number
+  value: number | (() => number)
+  minimumBrightness: number | (() => number)
   onBrightnessChanged: (value: number) => void
+}
+
+function isReactiveNumber(value: number | (() => number)): value is (() => number) & { subscribe(callback: () => void): () => void } {
+  return typeof value === "function" && "subscribe" in value
+}
+
+function readReactiveNumber(value: number | (() => number)) {
+  return isReactiveNumber(value) ? value() : value
 }
 
 function BrightnessScale({ value, minimumBrightness, onBrightnessChanged }: BrightnessScaleProps) {
   const adjustment = new Gtk.Adjustment({
-    lower: minimumBrightness,
+    lower: readReactiveNumber(minimumBrightness),
     upper: 100,
     stepIncrement: DISPLAY_BRIGHTNESS_STEP,
     pageIncrement: DISPLAY_BRIGHTNESS_STEP,
     pageSize: 0,
-    value,
+    value: readReactiveNumber(value),
   })
 
   return (
@@ -113,13 +124,40 @@ function BrightnessScale({ value, minimumBrightness, onBrightnessChanged }: Brig
       roundDigits={0}
       digits={0}
       adjustment={adjustment}
+      $={() => {
+        const syncAdjustment = () => {
+          const nextMinimum = readReactiveNumber(minimumBrightness)
+          const nextValue = clampBrightness(readReactiveNumber(value), nextMinimum)
+
+          adjustment.set_lower(nextMinimum)
+          if (Math.abs(adjustment.get_value() - nextValue) > 0.01) {
+            adjustment.set_value(nextValue)
+          }
+        }
+
+        syncAdjustment()
+
+        const disposers = new Array<() => void>()
+        if (isReactiveNumber(minimumBrightness)) {
+          disposers.push(minimumBrightness.subscribe(syncAdjustment))
+        }
+        if (isReactiveNumber(value)) {
+          disposers.push(value.subscribe(syncAdjustment))
+        }
+
+        onCleanup(() => {
+          for (const dispose of disposers) {
+            dispose()
+          }
+        })
+      }}
       onValueChanged={(self) => {
-        const next = clampBrightness(self.get_value(), minimumBrightness)
+        const next = clampBrightness(self.get_value(), readReactiveNumber(minimumBrightness))
         if (Math.abs(self.get_value() - next) > 0.01) {
           self.set_value(next)
         }
 
-        if (next === value) {
+        if (next === readReactiveNumber(value)) {
           return
         }
 
@@ -141,6 +179,7 @@ export default function DisplaysButton({ instanceId }: DisplaysButtonProps) {
   const [visible, setVisible] = createState(false)
   const [globalControl, setGlobalControl] = createState(false)
   const [minimumBrightness, setMinimumBrightness] = createState(DEFAULT_MINIMUM_BRIGHTNESS)
+  const [minimumBrightnessInput, setMinimumBrightnessInput] = createState(`${DEFAULT_MINIMUM_BRIGHTNESS}`)
   const popoverId = `displays-popover-${instanceId}`
   let pollId = 0
   let started = false
@@ -207,8 +246,33 @@ export default function DisplaysButton({ instanceId }: DisplaysButtonProps) {
     refreshDisplays()
   }
 
-  const updateMinimumBrightness = (delta: number) => {
-    setMinimumBrightness(Math.max(0, Math.min(100, minimumBrightness.get() + delta)))
+  const commitMinimumBrightness = (entry?: Gtk.Entry) => {
+    const currentMinimum = minimumBrightness.get()
+    const rawText = entry?.get_text() ?? minimumBrightnessInput.get()
+    const parsed = Number.parseInt(rawText.trim(), 10)
+
+    if (!Number.isFinite(parsed)) {
+      const fallback = `${currentMinimum}`
+      setMinimumBrightnessInput(fallback)
+      entry?.set_text(fallback)
+      return
+    }
+
+    const nextMinimum = clampMinimumBrightness(parsed)
+    const normalized = `${nextMinimum}`
+    setMinimumBrightnessInput(normalized)
+    entry?.set_text(normalized)
+
+    if (nextMinimum === currentMinimum) {
+      return
+    }
+
+    setMinimumBrightness(nextMinimum)
+
+    const itemsBelowMinimum = items.get().filter((item) => item.brightness < nextMinimum)
+    if (itemsBelowMinimum.length > 0) {
+      applyBrightness(itemsBelowMinimum, nextMinimum)
+    }
   }
 
   const start = () => {
@@ -255,9 +319,27 @@ export default function DisplaysButton({ instanceId }: DisplaysButtonProps) {
           <centerbox class="display-minimum-row" orientation={Gtk.Orientation.HORIZONTAL}>
             <label $type="start" label="Minimum brightness" xalign={0} />
             <box $type="end" class="display-minimum-control" spacing={6}>
-              <button onClicked={() => updateMinimumBrightness(-MINIMUM_BRIGHTNESS_STEP)}>-{MINIMUM_BRIGHTNESS_STEP}</button>
-              <label class="panel-status display-minimum-value" label={minimumBrightness((value) => `${value}%`)} />
-              <button onClicked={() => updateMinimumBrightness(MINIMUM_BRIGHTNESS_STEP)}>+{MINIMUM_BRIGHTNESS_STEP}</button>
+              <entry
+                class="display-minimum-entry"
+                inputPurpose={Gtk.InputPurpose.DIGITS}
+                widthChars={4}
+                maxWidthChars={4}
+                text={minimumBrightnessInput}
+                $={(self: Gtk.Entry) => {
+                  self.connect("changed", () => {
+                    setMinimumBrightnessInput(self.get_text())
+                  })
+                  self.connect("activate", () => {
+                    commitMinimumBrightness(self)
+                  })
+                  self.connect("notify::has-focus", () => {
+                    if (!self.has_focus()) {
+                      commitMinimumBrightness(self)
+                    }
+                  })
+                }}
+              />
+              <label class="panel-status display-minimum-value" label="%" />
             </box>
           </centerbox>
           <box visible={items((value) => value.length > 1)}>
@@ -275,8 +357,8 @@ export default function DisplaysButton({ instanceId }: DisplaysButtonProps) {
               />
             </centerbox>
             <BrightnessScale
-              value={averageBrightness(items.get())}
-              minimumBrightness={minimumBrightness.get()}
+              value={items((currentItems) => averageBrightness(currentItems))}
+              minimumBrightness={minimumBrightness}
               onBrightnessChanged={(value) => applyBrightness(items.get(), value)}
             />
           </box>
@@ -289,8 +371,10 @@ export default function DisplaysButton({ instanceId }: DisplaysButtonProps) {
                     <label $type="end" class="panel-status display-slider-value" label={`${item.brightness}%`} xalign={1} />
                   </centerbox>
                   <BrightnessScale
-                    value={item.brightness}
-                    minimumBrightness={minimumBrightness.get()}
+                    value={items(
+                      (currentItems) => currentItems.find((currentItem) => currentItem.key === item.key)?.brightness ?? item.brightness,
+                    )}
+                    minimumBrightness={minimumBrightness}
                     onBrightnessChanged={(value) => applyBrightness([item], value)}
                   />
                 </box>
