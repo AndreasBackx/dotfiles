@@ -74,6 +74,30 @@ export function readTextFile(path: string, fallback = "") {
 }
 
 /**
+ * Runs a command synchronously and returns trimmed stdout, or the fallback when
+ * the command fails or prints nothing useful.
+ */
+export function readCommandOutput(cmd: string[], fallback = "") {
+  try {
+    const [, stdout, stderr, status] = GLib.spawn_sync(null, cmd, null, GLib.SpawnFlags.SEARCH_PATH, null)
+
+    if (status !== 0 && !stdout?.length) {
+      return fallback
+    }
+
+    const output = new TextDecoder().decode(stdout).trim()
+
+    if (!output) {
+      return fallback
+    }
+
+    return output
+  } catch {
+    return fallback
+  }
+}
+
+/**
  * Creates a polling binding whose value is the trimmed stdout of a command.
  *
  * Example: `createTextPoll(3000, command("bar-network", "tooltip"))`

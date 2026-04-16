@@ -1,35 +1,45 @@
+{{- $location := .monitors.selected -}}
+{{- $selected := index .monitors $location -}}
+{{- $defaultProfile := .monitors.default_profile | default (index $selected "default_profile") -}}
+
 export type BarPosition = "top" | "bottom"
 
 export type MonitorConfig = {
   name: string
   serial: string
   barPosition: BarPosition
+  profiles: string[]
 }
 
 // This file is rendered by chezmoi. Monitor names, serials, and positions come
 // from host data and should stay aligned with the machine inventory there.
 const config = {
+  defaultProfile: {{ $defaultProfile | toJson }},
   monitorRoles: {
     left: {
       name: "{{ index .monitors .monitors.selected "left" "name" }}",
       serial: "{{ index .monitors .monitors.selected "left" "serial_number" | default "" }}",
       barPosition: "{{ index .monitors .monitors.selected "left" "bar_position" | default "bottom" }}",
+      profiles: {{ index .monitors .monitors.selected "left" "profiles" | toJson }},
     },
     center: {
       name: "{{ index .monitors .monitors.selected "center" "name" }}",
       serial: "{{ index .monitors .monitors.selected "center" "serial_number" | default "" }}",
       barPosition: "{{ index .monitors .monitors.selected "center" "bar_position" | default "bottom" }}",
+      profiles: {{ index .monitors .monitors.selected "center" "profiles" | toJson }},
     },
     right: {
       name: "{{ index .monitors .monitors.selected "right" "name" }}",
       serial: "{{ index .monitors .monitors.selected "right" "serial_number" | default "" }}",
       barPosition: "{{ index .monitors .monitors.selected "right" "bar_position" | default "bottom" }}",
+      profiles: {{ index .monitors .monitors.selected "right" "profiles" | toJson }},
     },
 {{- if hasKey (index .monitors .monitors.selected) "laptop" }}
     laptop: {
       name: "{{ index .monitors .monitors.selected "laptop" "name" }}",
       serial: "{{ index .monitors .monitors.selected "laptop" "serial_number" | default "" }}",
       barPosition: "{{ index .monitors .monitors.selected "laptop" "bar_position" | default "top" }}",
+      profiles: {{ index .monitors .monitors.selected "laptop" "profiles" | toJson }},
     },
 {{- else }}
     laptop: null,
@@ -47,6 +57,7 @@ const config = {
     color10: "{{ .themes.rubecula.color10 }}",
   },
 } as const satisfies {
+  defaultProfile: string
   monitorRoles: {
     left: MonitorConfig
     center: MonitorConfig

@@ -82,6 +82,11 @@ label = "Desk"
 audio_sink = "alsa_output.usb-FiiO_DigiHug_USB_Audio-01.analog-stereo"
 audio_source = "alsa_input.usb-BLUE_MICROPHONE_Blue_Snowball_201305-00.analog-stereo"
 
+[monitors.home.profile_settings.desk_living_room]
+label = "Desk + Living Room"
+audio_sink = "raop_sink.Sonos-38420BD3AE96.local.10.10.10.31.7000"
+audio_source = "alsa_input.usb-BLUE_MICROPHONE_Blue_Snowball_201305-00.analog-stereo"
+
 [monitors.home.profile_settings.living_room]
 label = "Living Room"
 audio_sink = "raop_sink.Sonos-38420BD3AE96.local.10.10.10.31.7000"
