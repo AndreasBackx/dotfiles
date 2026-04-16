@@ -1,10 +1,11 @@
-import GLib from "gi://GLib?version=2.0"
 import AstalDisplays from "gi://AstalDisplays?version=0.1"
 
 import { For, createState, onCleanup } from "ags"
 import { Gtk } from "ags/gtk4"
 
-import SystemMenuButton from "./SystemMenuButton"
+import { instanceActive } from "../../utils/activity"
+import { createAdaptivePollState } from "../../utils/polling"
+import SystemMenuButton from "../system/SystemMenuButton"
 
 const DISPLAY_BRIGHTNESS_STEP = 5
 const DEFAULT_MINIMUM_BRIGHTNESS = 0
@@ -199,6 +200,10 @@ function BrightnessScale({ value, minimumBrightness, onBrightnessChanged }: Brig
 /**
  * Shows brightness-capable displays from AstalDisplays and exposes per-display
  * or merged brightness control.
+ *
+ * Unlike the old implementation, this widget no longer keeps a permanent timer
+ * alive. Display queries now use adaptive polling, so hidden bars stop polling
+ * entirely and visible bars refresh immediately when they become active again.
  */
 export default function DisplaysButton({ instanceId }: DisplaysButtonProps) {
   const manager = AstalDisplays.Manager.get_default() as any
@@ -210,9 +215,9 @@ export default function DisplaysButton({ instanceId }: DisplaysButtonProps) {
   const [minimumBrightness, setMinimumBrightness] = createState(DEFAULT_MINIMUM_BRIGHTNESS)
   const [minimumBrightnessInput, setMinimumBrightnessInput] = createState(`${DEFAULT_MINIMUM_BRIGHTNESS}`)
   const [displayErrors, setDisplayErrors] = createState<DisplayErrorMap>({})
+  const active = instanceActive(instanceId) as { get(): boolean; subscribe?: (callback: () => void) => () => void }
   const popoverId = `displays-popover-${instanceId}`
-  let pollId = 0
-  let started = false
+  let initialized = false
 
   const refreshDisplays = () => {
     try {
@@ -251,6 +256,16 @@ export default function DisplaysButton({ instanceId }: DisplaysButtonProps) {
       setDisplayErrors({})
     }
   }
+
+  const poller = createAdaptivePollState(null, {
+    active,
+    visibleIntervalMs: 3000,
+    hiddenIntervalMs: null,
+    poll: () => {
+      refreshDisplays()
+      return null
+    },
+  })
 
   const applyBrightness = (targetItems: DisplayBrightnessItem[], requestedBrightness: number) => {
     if (targetItems.length === 0) {
@@ -361,34 +376,25 @@ export default function DisplaysButton({ instanceId }: DisplaysButtonProps) {
     }
   }
 
-  const start = () => {
-    if (started) {
-      return
-    }
-
-    started = true
-    refreshDisplays()
-    pollId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 3, () => {
-      refreshDisplays()
-      return GLib.SOURCE_CONTINUE
-    })
-  }
-
   onCleanup(() => {
-    if (pollId > 0) {
-      GLib.source_remove(pollId)
-    }
+    poller.cleanup()
   })
 
   return (
     <box
       visible={visible}
       $={() => {
-        start()
+        if (initialized) {
+          return
+        }
+
+        initialized = true
+        refreshDisplays()
       }}
     >
       <SystemMenuButton
         popoverId={popoverId}
+        instanceId={instanceId}
         tooltipText={tooltip}
         button={
           <box class="bar-item with-text" halign={Gtk.Align.CENTER}>
