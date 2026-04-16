@@ -36,3 +36,7 @@
 .display-slider {
   min-width: 296px;
 }
+
+.display-slider-error {
+  color: @ags-danger;
+}

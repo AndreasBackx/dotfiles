@@ -20,6 +20,8 @@ type DisplayBrightnessItem = {
   brightness: number
 }
 
+type DisplayErrorMap = Record<string, string>
+
 function getProperty<T>(value: any, ...keys: string[]) {
   for (const key of keys) {
     if (value && typeof value === "object" && key in value && value[key] != null) {
@@ -63,6 +65,34 @@ function itemLabel(item: DisplayBrightnessItem) {
   return item.name || item.serial || "Unknown display"
 }
 
+function buildDisplayKey(name: string, serial: string) {
+  return serial || name || "Unknown display"
+}
+
+function buildDisplayKeyFromIdentifier(identifier: any) {
+  if (!identifier) {
+    return null
+  }
+
+  const name = getProperty<string>(identifier, "name") || ""
+  const serial = getProperty<string>(identifier, "serialNumber", "serial-number", "serial_number") || ""
+  return buildDisplayKey(name, serial)
+}
+
+function listModelItems(model: any) {
+  if (!model) {
+    return []
+  }
+
+  const count = typeof model.get_n_items === "function" ? model.get_n_items() : 0
+  const items = new Array<any>()
+  for (let index = 0; index < count; index += 1) {
+    items.push(typeof model.get_item === "function" ? model.get_item(index) : null)
+  }
+
+  return items.filter((item) => item != null)
+}
+
 function buildDisplayItem(display: any): DisplayBrightnessItem | null {
   const identifier = getProperty<any>(display, "id")
   const physical = getProperty<any>(display, "physical")
@@ -74,10 +104,9 @@ function buildDisplayItem(display: any): DisplayBrightnessItem | null {
 
   const name = getProperty<string>(identifier, "name") || "Unknown display"
   const serial = getProperty<string>(identifier, "serialNumber", "serial-number", "serial_number") || ""
-  const key = serial || name
 
   return {
-    key,
+    key: buildDisplayKey(name, serial),
     name,
     serial,
     brightness,
@@ -180,6 +209,7 @@ export default function DisplaysButton({ instanceId }: DisplaysButtonProps) {
   const [globalControl, setGlobalControl] = createState(false)
   const [minimumBrightness, setMinimumBrightness] = createState(DEFAULT_MINIMUM_BRIGHTNESS)
   const [minimumBrightnessInput, setMinimumBrightnessInput] = createState(`${DEFAULT_MINIMUM_BRIGHTNESS}`)
+  const [displayErrors, setDisplayErrors] = createState<DisplayErrorMap>({})
   const popoverId = `displays-popover-${instanceId}`
   let pollId = 0
   let started = false
@@ -189,8 +219,12 @@ export default function DisplaysButton({ instanceId }: DisplaysButtonProps) {
       const queried = (manager.query() as any[])
         .map((display) => buildDisplayItem(display))
         .filter((item): item is DisplayBrightnessItem => item !== null)
+      const activeKeys = new Set(queried.map((item) => item.key))
 
       setItems(queried)
+      setDisplayErrors((currentErrors) =>
+        Object.fromEntries(Object.entries(currentErrors).filter(([key]) => activeKeys.has(key))),
+      )
       setVisible(queried.length > 0)
 
       if (queried.length === 0) {
@@ -214,6 +248,7 @@ export default function DisplaysButton({ instanceId }: DisplaysButtonProps) {
       setTooltip("Displays unavailable")
       setVisible(false)
       setGlobalControl(false)
+      setDisplayErrors({})
     }
   }
 
@@ -235,12 +270,63 @@ export default function DisplaysButton({ instanceId }: DisplaysButtonProps) {
     )
 
     try {
-      const unresolved = manager.update(updates) as any[]
-      if (unresolved.length > 0) {
-        console.warn("[ags][displays] unresolved brightness updates", unresolved)
+      const results = manager.update(updates) as any[]
+      const nextErrors = { ...displayErrors.get() }
+      const failedKeys = new Set<string>()
+
+      results.forEach((result, index) => {
+        const requestedItem = targetItems[index]
+        const failedItems = listModelItems(getProperty<any>(result, "failed"))
+
+        if (failedItems.length === 0) {
+          if (requestedItem) {
+            delete nextErrors[requestedItem.key]
+          }
+          return
+        }
+
+        let sawMappedFailure = false
+        for (const failedItem of failedItems) {
+          const matchedId = getProperty<any>(failedItem, "matchedId", "matched-id", "matched_id")
+          const failureKey = buildDisplayKeyFromIdentifier(matchedId) || requestedItem?.key || null
+          const message = getProperty<string>(failedItem, "message") || "Brightness update failed"
+
+          if (!failureKey) {
+            continue
+          }
+
+          nextErrors[failureKey] = message
+          failedKeys.add(failureKey)
+          sawMappedFailure = true
+        }
+
+        if (!sawMappedFailure && requestedItem) {
+          nextErrors[requestedItem.key] = "Brightness update failed"
+          failedKeys.add(requestedItem.key)
+        }
+      })
+
+      for (const item of targetItems) {
+        if (!failedKeys.has(item.key)) {
+          delete nextErrors[item.key]
+        }
       }
+
+      if (failedKeys.size > 0) {
+        console.warn("[ags][displays] brightness update failed", nextErrors)
+      }
+
+      setDisplayErrors(nextErrors)
     } catch (error) {
       console.error(error)
+      const message = error instanceof Error ? error.message : "Brightness update failed"
+      setDisplayErrors((currentErrors) => {
+        const nextErrors = { ...currentErrors }
+        for (const item of targetItems) {
+          nextErrors[item.key] = message
+        }
+        return nextErrors
+      })
     }
 
     refreshDisplays()
@@ -361,6 +447,19 @@ export default function DisplaysButton({ instanceId }: DisplaysButtonProps) {
               minimumBrightness={minimumBrightness}
               onBrightnessChanged={(value) => applyBrightness(items.get(), value)}
             />
+            <box visible={displayErrors((errors) => Object.keys(errors).length > 0)} orientation={Gtk.Orientation.VERTICAL} spacing={4}>
+              <For each={items}>
+                {(item) => (
+                  <label
+                    visible={displayErrors((errors) => Boolean(errors[item.key]))}
+                    class="panel-status display-slider-error"
+                    label={displayErrors((errors) => `${itemLabel(item)}: ${errors[item.key] ?? ""}`)}
+                    xalign={0}
+                    wrap
+                  />
+                )}
+              </For>
+            </box>
           </box>
           <box visible={globalControl((value) => !value)} orientation={Gtk.Orientation.VERTICAL} spacing={10}>
             <For each={items}>
@@ -376,6 +475,13 @@ export default function DisplaysButton({ instanceId }: DisplaysButtonProps) {
                     )}
                     minimumBrightness={minimumBrightness}
                     onBrightnessChanged={(value) => applyBrightness([item], value)}
+                  />
+                  <label
+                    visible={displayErrors((errors) => Boolean(errors[item.key]))}
+                    class="panel-status display-slider-error"
+                    label={displayErrors((errors) => errors[item.key] ?? "")}
+                    xalign={0}
+                    wrap
                   />
                 </box>
               )}
