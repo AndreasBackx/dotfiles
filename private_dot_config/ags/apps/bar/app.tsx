@@ -2,7 +2,7 @@ import Hyprland from "gi://AstalHyprland"
 import Adw from "gi://Adw"
 
 import app from "ags/gtk4/app"
-import { Gtk } from "ags/gtk4"
+import { Gdk, Gtk } from "ags/gtk4"
 import { For, This, createBinding, createState, onCleanup } from "ags"
 
 import commonBaseCss from "../../common/theming/base.css"
@@ -23,9 +23,10 @@ import systemSegmentCss from "./components/system/SystemSegment.css"
 import titleCss from "./components/title/TitleSegment.css"
 import workspaceButtonCss from "./components/workspaces/WorkspaceButton.css"
 import workspaceStripCss from "./components/workspaces/WorkspaceStrip.css"
-import MonitorBars from "./components/bar/MonitorBars"
+import BarWindow from "./components/bar/BarWindow"
+import WorkspaceRevealWindow from "./components/bar/WorkspaceRevealWindow"
 import config from "./utils/config"
-import { assignCenterWorkspacesToLaptop, centerAutoHideEnabled, centerTargetRole, soloLaptopCenter } from "./utils/bar-logic"
+import { assignCenterWorkspacesToLaptop, centerAutoHideEnabled, centerTargetRole, connectorForRole, soloLaptopCenter } from "./utils/bar-logic"
 import { createCenterVisibilityController } from "./utils/center-visibility"
 import {
   CENTER_HIDE_DELAY_MS,
@@ -43,6 +44,28 @@ let requestSetProfile: ((profile: string) => void) | null = null
 const ROLE_ORDER = ["left", "center", "right", "laptop"] as const satisfies readonly Role[]
 const DEFAULT_ENABLED_ROLES = ["laptop"] as const satisfies readonly Role[]
 
+type WindowItem = {
+  key: string
+  role: Role
+  monitor: Gdk.Monitor
+}
+
+type WindowKind = "bar" | "reveal"
+
+type WindowSpec = {
+  role: Role
+  kind: WindowKind
+}
+
+const WINDOW_SPECS = [
+  { role: "left", kind: "bar" },
+  { role: "right", kind: "bar" },
+  { role: "center", kind: "bar" },
+  { role: "center", kind: "reveal" },
+  { role: "laptop", kind: "bar" },
+  { role: "laptop", kind: "reveal" },
+] as const satisfies readonly WindowSpec[]
+
 function enabledRolesForProfile(profile: string): Role[] {
   const enabledRoles = ROLE_ORDER.filter((role) => config.monitorRoles[role]?.profiles.includes(profile))
 
@@ -55,6 +78,64 @@ function startupProfile() {
 
 function centerRoleEnabled(state: HyprState, enabledRoles: Role[]) {
   return enabledRoles.includes(centerTargetRole(state))
+}
+
+function shouldRenderRole(state: HyprState, enabledRoles: Role[], role: Role, connector: string) {
+  if (!enabledRoles.includes(role) || connectorForRole(state, role) !== connector) {
+    return false
+  }
+
+  if (role === "left" || role === "right") {
+    return !soloLaptopCenter(state)
+  }
+
+  return true
+}
+
+function monitorItemsForRole(state: HyprState, enabledRoles: Role[], role: Role, monitors: Gdk.Monitor[]) {
+  const items: WindowItem[] = []
+
+  for (const monitor of monitors) {
+    const connector = monitor.connector
+
+    if (shouldRenderRole(state, enabledRoles, role, connector)) {
+      items.push({ key: `${role}-${connector}`, role, monitor })
+    }
+  }
+
+  return items
+}
+
+function barVisibleForRole(role: Role, connector: string, hyprState: ReturnType<typeof createState<HyprState>>[0], centerVisible: ReturnType<typeof createState<boolean>>[0]) {
+  if (role === "left" || role === "right") {
+    return hyprState((state) => !soloLaptopCenter(state) && connectorForRole(state, role) === connector)
+  }
+
+  return hyprState((state) => {
+    const targetRole = centerTargetRole(state)
+
+    return targetRole === role && connectorForRole(state, role) === connector && (!centerAutoHideEnabled(state) || centerVisible())
+  })
+}
+
+function revealVisibleForRole(
+  role: Role,
+  connector: string,
+  hyprState: ReturnType<typeof createState<HyprState>>[0],
+  centerVisible: ReturnType<typeof createState<boolean>>[0],
+  workspaceStripVisible: ReturnType<typeof createState<boolean>>[0],
+) {
+  return hyprState((state) => {
+    const targetRole = centerTargetRole(state)
+
+    return (
+      targetRole === role &&
+      connectorForRole(state, role) === connector &&
+      centerAutoHideEnabled(state) &&
+      !centerVisible() &&
+      workspaceStripVisible()
+    )
+  })
 }
 
 function buildHyprState(hyprland: Hyprland.Hyprland | null): HyprState {
@@ -170,6 +251,10 @@ app.start({
     requestShowWorkspaces = visibility.showWorkspaceStrip
     setHoverReporter(visibility.handleHoverChange)
     setPopoverVisibilityReporter(visibility.handlePopoverVisibilityChange)
+    const windowItemAccessors = WINDOW_SPECS.map((spec) => ({
+      spec,
+      items: monitors((value) => monitorItemsForRole(hyprState(), enabledRoles(), spec.role, value)),
+    }))
 
     const syncBarLayout = (nextState: HyprState, roles = enabledRoles()) => {
       if (soloLaptopCenter(nextState) && roles.includes("laptop")) {
@@ -217,22 +302,31 @@ app.start({
       setPopoverVisibilityReporter(null)
     })
 
-    return (
-      <For each={monitors} id={(monitor) => monitor.connector}>
-        {(monitor) => (
+    return windowItemAccessors.map(({ spec, items }) => (
+      <For each={items} id={(item) => item.key}>
+        {(item) => (
           <This this={app}>
-            <MonitorBars
-              gdkmonitor={monitor}
-              hyprState={hyprState}
-              enabledRoles={enabledRoles}
-              centerVisible={centerVisible}
-              workspaceStripVisible={workspaceStripVisible}
-              showCenter={visibility.showCenter}
-              hideCenter={visibility.handleCenterLeave}
-            />
+            {spec.kind === "bar" ? (
+              <BarWindow
+                gdkmonitor={item.monitor}
+                role={spec.role}
+                hyprState={hyprState}
+                visible={barVisibleForRole(spec.role, item.monitor.connector, hyprState, centerVisible)}
+                onHoverEnter={spec.role === "center" || spec.role === "laptop" ? visibility.showCenter : undefined}
+                onHoverLeave={spec.role === "center" || spec.role === "laptop" ? visibility.handleCenterLeave : undefined}
+              />
+            ) : (
+              <WorkspaceRevealWindow
+                gdkmonitor={item.monitor}
+                role={spec.role}
+                hyprState={hyprState}
+                visible={revealVisibleForRole(spec.role, item.monitor.connector, hyprState, centerVisible, workspaceStripVisible)}
+                onHover={visibility.showCenter}
+              />
+            )}
           </This>
         )}
       </For>
-    )
+    ))
   },
 })

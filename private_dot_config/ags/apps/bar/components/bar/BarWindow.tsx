@@ -55,7 +55,7 @@ export default function BarWindow({
   return (
     <OverlayWindow
       name={`bar-${role}-${gdkmonitor.connector}`}
-      namespace={`ags-bar-${position}`}
+      namespace={`ags-bar-${gdkmonitor.connector}`}
       gdkmonitor={gdkmonitor}
       visible={visible}
       anchor={anchorForPosition(position)}

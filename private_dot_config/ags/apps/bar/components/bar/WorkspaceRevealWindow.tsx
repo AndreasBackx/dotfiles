@@ -34,7 +34,7 @@ export default function WorkspaceRevealWindow({
   return (
     <OverlayWindow
       name={`bar-workspaces-${role}-${gdkmonitor.connector}`}
-      namespace={`ags-workspaces-${position}`}
+      namespace={`ags-workspaces-${gdkmonitor.connector}`}
       gdkmonitor={gdkmonitor}
       visible={visible}
       anchor={workspaceStripAnchorForPosition(position)}
