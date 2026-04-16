@@ -1,9 +1,11 @@
 import { Gtk } from "ags/gtk4"
 
+import { setInstancePopoverOpen } from "../../utils/activity"
 import { attachPopoverHandlers } from "../../utils/widget-helpers"
 
 type SystemMenuButtonProps = {
   popoverId: string
+  instanceId?: string
   tooltipText?: any
   button: any
   children: any
@@ -14,6 +16,7 @@ type SystemMenuButtonProps = {
  */
 export default function SystemMenuButton({
   popoverId,
+  instanceId,
   tooltipText,
   button,
   children,
@@ -50,6 +53,18 @@ export default function SystemMenuButton({
           popover = self
           self.set_autohide(true)
           self.set_has_arrow(false)
+          if (instanceId) {
+            // Keep the owning bar instance marked as active while any system
+            // popover is open. This lets upcoming adaptive pollers keep their
+            // data fresh for interactive widgets even if the surrounding bar is
+            // otherwise hidden or auto-hidden.
+            self.connect("notify::visible", () => {
+              setInstancePopoverOpen(instanceId, self.get_visible())
+            })
+            self.connect("destroy", () => {
+              setInstancePopoverOpen(instanceId, false)
+            })
+          }
           wirePopover()
         }}
       >

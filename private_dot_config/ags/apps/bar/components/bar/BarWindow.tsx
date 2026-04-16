@@ -1,6 +1,8 @@
+import { onCleanup } from "ags"
 import { Gdk, Gtk } from "ags/gtk4"
 
 import { anchorForPosition, barPositionForRole, baseForRole } from "../../utils/bar-logic"
+import { setInstanceVisible } from "../../utils/activity"
 import { BAR_HEIGHT } from "../../utils/runtime"
 import { attachHoverHandlers } from "../../utils/widget-helpers"
 import type { BooleanAccessor, HyprStateAccessor, Role } from "../../utils/types"
@@ -32,6 +34,21 @@ export default function BarWindow({
   const geometry = gdkmonitor.get_geometry()
   const instanceId = `${role}-${gdkmonitor.connector}`
   const hoverId = `bar-window-${role}-${gdkmonitor.connector}`
+
+  // Report this window's mapped visibility into the shared activity registry so
+  // child widgets can later pause or slow their background work while the bar
+  // is hidden, then refresh immediately when it becomes active again.
+  const syncVisibility = () => {
+    setInstanceVisible(instanceId, visible())
+  }
+  const unsubscribeVisibility = (visible as any).subscribe?.(syncVisibility) ?? null
+
+  syncVisibility()
+
+  onCleanup(() => {
+    unsubscribeVisibility?.()
+    setInstanceVisible(instanceId, false)
+  })
 
   // Each role gets its own overlay window so monitors can independently host
   // left, center, right, or laptop bars without cross-monitor layout coupling.
