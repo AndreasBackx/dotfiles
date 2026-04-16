@@ -30,11 +30,12 @@ function filteredTimezoneList(timezones: string[], query: string) {
  * list remain local to each popover instance.
  */
 export default function ClockButton({ instanceId }: ClockButtonProps) {
-  const { time, tooltip, currentTimezone, availableTimezones, timezoneLoading, applyTimezone } = getClockState()
+  const { time, tooltip, currentTimezone, availableTimezones, timezoneLoading, applyTimezone, attachInstance } = getClockState()
   const [timezoneFilter, setTimezoneFilter] = createState("")
   const [filteredTimezones, setFilteredTimezones] = createState(filteredTimezoneList(availableTimezones.get(), ""))
   const popoverId = `clock-popover-${instanceId}`
   const displayedTimezone = currentTimezone((value) => value || "loading...")
+  const detach = attachInstance(instanceId)
 
   const updateFilteredTimezones = (query: string, zones = availableTimezones.get()) => {
     setFilteredTimezones(filteredTimezoneList(zones, query))
@@ -49,6 +50,7 @@ export default function ClockButton({ instanceId }: ClockButtonProps) {
 
   onCleanup(() => {
     unsubscribeTimezones?.()
+    detach()
   })
 
   return (

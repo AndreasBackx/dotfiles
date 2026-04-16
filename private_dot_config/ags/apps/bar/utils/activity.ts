@@ -12,6 +12,10 @@ type InstanceActivityState = {
 
 const instances = new Map<string, InstanceActivityState>()
 
+function existingInstance(instanceId: string) {
+  return instances.get(instanceId) ?? null
+}
+
 /**
  * Creates or returns the shared activity state for one bar instance.
  *
@@ -82,5 +86,10 @@ export function setInstanceVisible(instanceId: string, visible: boolean) {
 
 /** Called by popover-owning widgets so open menus keep the instance active. */
 export function setInstancePopoverOpen(instanceId: string, open: boolean) {
-  ensureInstance(instanceId).setPopoverOpen(open)
+  existingInstance(instanceId)?.setPopoverOpen(open)
+}
+
+/** Drops the activity state once a bar instance is torn down. */
+export function removeInstance(instanceId: string) {
+  instances.delete(instanceId)
 }

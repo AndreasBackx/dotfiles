@@ -20,6 +20,7 @@ export default function PowerButton({ instanceId }: PowerButtonProps) {
   return (
     <SystemMenuButton
       popoverId={popoverId}
+      instanceId={instanceId}
       tooltipText="Power options"
       button={
         <box class="bar-item icon-only" halign={Gtk.Align.CENTER}>

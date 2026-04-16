@@ -135,12 +135,26 @@ export function getWarningState(): WarningState {
       memory: pick((value) => value.memory),
       memoryUsed: pick((value) => value.memoryUsed),
       attachInstance: (instanceId: string) => {
+        const detach = () => {
+          const current = attachedInstances.get(instanceId)
+          if (!current) {
+            return
+          }
+
+          current.refs -= 1
+          if (current.refs > 0) {
+            return
+          }
+
+          current.dispose()
+          attachedInstances.delete(instanceId)
+          updateActiveCount()
+        }
+
         const existing = attachedInstances.get(instanceId)
         if (existing) {
           existing.refs += 1
-          return () => {
-            existing.refs -= 1
-          }
+          return detach
         }
 
         const activity = instanceActive(instanceId) as StateAccessor<boolean> & {
@@ -158,21 +172,7 @@ export function getWarningState(): WarningState {
         attachedInstances.set(instanceId, entry)
         updateActiveCount()
 
-        return () => {
-          const current = attachedInstances.get(instanceId)
-          if (!current) {
-            return
-          }
-
-          current.refs -= 1
-          if (current.refs > 0) {
-            return
-          }
-
-          current.dispose()
-          attachedInstances.delete(instanceId)
-          updateActiveCount()
-        }
+        return detach
       },
     }
   })

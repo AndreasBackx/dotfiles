@@ -1,10 +1,10 @@
+import AudioButton from "../audio/AudioButton"
+import BluetoothButton from "../bluetooth/BluetoothButton"
 import ClockButton from "../clock/ClockButton"
 import DisplaysButton from "../displays/DisplaysButton"
+import NetworkButton from "../network/NetworkButton"
 import WarningItems from "../warnings/WarningItems"
-import AudioButton from "./AudioButton"
 import BatteryButton from "./BatteryButton"
-import BluetoothButton from "./BluetoothButton"
-import NetworkButton from "./NetworkButton"
 import PowerButton from "./PowerButton"
 import TraySegment from "./TraySegment"
 
@@ -26,7 +26,7 @@ export default function SystemSegment({ instanceId }: SystemSegmentProps) {
       <BatteryButton />
       <PowerButton instanceId={instanceId} />
       <ClockButton instanceId={instanceId} />
-      <TraySegment />
+      <TraySegment instanceId={instanceId} />
     </box>
   )
 }

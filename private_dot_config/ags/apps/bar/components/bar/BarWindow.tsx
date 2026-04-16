@@ -2,7 +2,7 @@ import { onCleanup } from "ags"
 import { Gdk, Gtk } from "ags/gtk4"
 
 import { anchorForPosition, barPositionForRole, baseForRole } from "../../utils/bar-logic"
-import { setInstanceVisible } from "../../utils/activity"
+import { removeInstance, setInstanceVisible } from "../../utils/activity"
 import { BAR_HEIGHT } from "../../utils/runtime"
 import { attachHoverHandlers } from "../../utils/widget-helpers"
 import type { BooleanAccessor, HyprStateAccessor, Role } from "../../utils/types"
@@ -47,7 +47,7 @@ export default function BarWindow({
 
   onCleanup(() => {
     unsubscribeVisibility?.()
-    setInstanceVisible(instanceId, false)
+    removeInstance(instanceId)
   })
 
   // Each role gets its own overlay window so monitors can independently host

@@ -4,7 +4,9 @@ import { createState } from "ags"
 import { execAsync } from "ags/process"
 
 import type { StateAccessor } from "../../../common/utils/state"
+import { instanceActive } from "../../utils/activity"
 import { getGlobalState } from "../../utils/global-state"
+import { createAdaptivePollState } from "../../utils/polling"
 import { createAlignedTimeState } from "../../utils/time"
 import { trimOutput } from "../../utils/runtime"
 
@@ -15,6 +17,7 @@ type ClockState = {
   availableTimezones: StateAccessor<string[]>
   timezoneLoading: StateAccessor<boolean>
   applyTimezone: (timezone: string) => Promise<void>
+  attachInstance: (instanceId: string) => () => void
 }
 
 function parseTimezones(stdout: string) {
@@ -42,13 +45,31 @@ async function readCurrentTimezone() {
  */
 export function getClockState(): ClockState {
   return getGlobalState("bar-clock-state", () => {
+    const [activeCount, setActiveCount] = createState(0)
+    const active = ((map?: (value: boolean) => boolean) => {
+      const value = activeCount.get() > 0
+      return typeof map === "function" ? map(value) : value
+    }) as StateAccessor<boolean> & { subscribe(callback: () => void): () => void }
+    active.get = () => activeCount.get() > 0
+    active.subscribe = (callback: () => void) => (activeCount as any).subscribe?.(callback) ?? (() => {})
+
     // Keep the label aligned to minute boundaries, while the tooltip retains a
     // second-resolution clock for the more detailed panel status text.
     const time = createAlignedTimeState(() => formatLocalTime("%a %d %b %H:%M"), 60_000)
-    const tooltip = createAlignedTimeState(() => formatLocalTime("%a %d %b %Y %H:%M:%S %Z"), 1_000)
+    const tooltipPoller = createAdaptivePollState(formatLocalTime("%a %d %b %Y %H:%M:%S %Z"), {
+      active,
+      visibleIntervalMs: 1000,
+      hiddenIntervalMs: null,
+      poll: () => formatLocalTime("%a %d %b %Y %H:%M:%S %Z"),
+    })
     const [currentTimezone, setCurrentTimezone] = createState("")
     const [availableTimezones, setAvailableTimezones] = createState(new Array<string>())
     const [timezoneLoading, setTimezoneLoading] = createState(true)
+    const attachedInstances = new Map<string, { refs: number; active: boolean; dispose: () => void }>()
+
+    const updateActiveCount = () => {
+      setActiveCount([...attachedInstances.values()].filter((entry) => entry.active).length)
+    }
 
     const refreshCurrentTimezone = async () => {
       try {
@@ -70,7 +91,7 @@ export function getClockState(): ClockState {
 
     return {
       time,
-      tooltip,
+      tooltip: tooltipPoller.value,
       currentTimezone,
       availableTimezones,
       timezoneLoading,
@@ -92,6 +113,45 @@ export function getClockState(): ClockState {
           console.error(error)
           throw error
         }
+      },
+      attachInstance: (instanceId: string) => {
+        const detach = () => {
+          const current = attachedInstances.get(instanceId)
+          if (!current) {
+            return
+          }
+
+          current.refs -= 1
+          if (current.refs > 0) {
+            return
+          }
+
+          current.dispose()
+          attachedInstances.delete(instanceId)
+          updateActiveCount()
+        }
+
+        const existing = attachedInstances.get(instanceId)
+        if (existing) {
+          existing.refs += 1
+          return detach
+        }
+
+        const instance = instanceActive(instanceId) as StateAccessor<boolean> & {
+          subscribe?: (callback: () => void) => () => void
+        }
+        const entry = {
+          refs: 1,
+          active: instance.get(),
+          dispose: instance.subscribe?.(() => {
+            entry.active = instance.get()
+            updateActiveCount()
+          }) ?? (() => {}),
+        }
+
+        attachedInstances.set(instanceId, entry)
+        updateActiveCount()
+        return detach
       },
     }
   })
