@@ -2,6 +2,7 @@ import { For, createState, onCleanup } from "ags"
 import { Gtk } from "ags/gtk4"
 
 import type { StateAccessor } from "../../../../common/utils/state"
+import { createPerfSpan, logShowCenterStage } from "../../utils/perf"
 import type { MonitorIdentity } from "../../utils/types"
 import {
   averageBrightness,
@@ -110,6 +111,8 @@ function BrightnessScale({ value, minimumBrightness, onBrightnessChanged }: Brig
  * entirely and visible bars refresh immediately when they become active again.
  */
 export default function DisplaysButton({ instanceId, monitor }: DisplaysButtonProps) {
+  logShowCenterStage("displays button render enter", `instance=${instanceId}`)
+  const resolveDisplaysState = createPerfSpan("displays button getDisplaysState")
   const {
     items,
     visible,
@@ -117,25 +120,28 @@ export default function DisplaysButton({ instanceId, monitor }: DisplaysButtonPr
     displayErrors,
     attachInstance,
     applyBrightness: applySharedBrightness,
-    refresh,
   } = getDisplaysState()
+  resolveDisplaysState(`instance=${instanceId}`)
   const [globalControl, setGlobalControl] = createState(false)
   const [minimumBrightness, setMinimumBrightness] = createState(DEFAULT_MINIMUM_BRIGHTNESS)
   const [minimumBrightnessInput, setMinimumBrightnessInput] = createState(`${DEFAULT_MINIMUM_BRIGHTNESS}`)
   const [summary, setSummary] = createState("--")
   const popoverId = `displays-popover-${instanceId}`
+  const attachDisplaysInstance = createPerfSpan("displays button attachInstance")
   const detach = attachInstance(instanceId)
-  let initialized = false
+  attachDisplaysInstance(`instance=${instanceId}`)
 
   const syncSummary = () => {
     setSummary(brightnessSummaryForMonitor(items.get(), monitor.get()))
   }
   const detachItems = (items as any).subscribe?.(syncSummary) ?? (() => {})
   const detachMonitor = (monitor as any).subscribe?.(syncSummary) ?? (() => {})
+  const initialSummary = createPerfSpan("displays button initial summary")
   syncSummary()
+  initialSummary(`instance=${instanceId} summary=${summary.get()}`)
 
   const applyBrightness = (targetItems: DisplayBrightnessItem[], requestedBrightness: number) => {
-    applySharedBrightness(targetItems, requestedBrightness, minimumBrightness.get())
+    void applySharedBrightness(targetItems, requestedBrightness, minimumBrightness.get())
   }
 
   const commitMinimumBrightness = (entry?: Gtk.Entry) => {
@@ -174,17 +180,7 @@ export default function DisplaysButton({ instanceId, monitor }: DisplaysButtonPr
   })
 
   return (
-    <box
-      visible={visible}
-      $={() => {
-        if (initialized) {
-          return
-        }
-
-        initialized = true
-        void refresh()
-      }}
-    >
+    <box visible={visible}>
       <SystemMenuButton
         popoverId={popoverId}
         instanceId={instanceId}

@@ -3,6 +3,7 @@ import GLib from "gi://GLib?version=2.0"
 import { createState } from "ags"
 
 import type { StateAccessor } from "../../../common/utils/state"
+import { logShowCenterStage } from "./perf"
 
 type SubscribableAccessor<T> = StateAccessor<T> & {
   subscribe?: (callback: () => void) => () => void
@@ -27,6 +28,7 @@ type AdaptivePollOptions<T> = {
 export function createAdaptivePollState<T>(initial: T, options: AdaptivePollOptions<T>) {
   const [value, setValue] = createState(initial)
   let timeoutId = 0
+  let activationRefreshId = 0
   let polling = false
 
   const clearTimer = () => {
@@ -37,6 +39,17 @@ export function createAdaptivePollState<T>(initial: T, options: AdaptivePollOpti
         // Timer may already have been removed as part of shutdown/reload.
       }
       timeoutId = 0
+    }
+  }
+
+  const clearActivationRefresh = () => {
+    if (activationRefreshId > 0) {
+      try {
+        GLib.source_remove(activationRefreshId)
+      } catch {
+        // Idle source may already have been removed during shutdown/reload.
+      }
+      activationRefreshId = 0
     }
   }
 
@@ -60,6 +73,9 @@ export function createAdaptivePollState<T>(initial: T, options: AdaptivePollOpti
   }
 
   const refresh = async () => {
+    logShowCenterStage("adaptive poll refresh enter")
+    clearActivationRefresh()
+
     if (polling) {
       return value.get()
     }
@@ -68,6 +84,7 @@ export function createAdaptivePollState<T>(initial: T, options: AdaptivePollOpti
 
     try {
       const next = await options.poll()
+      logShowCenterStage("adaptive poll refresh resolved")
       setValue(next)
       return next
     } finally {
@@ -76,12 +93,33 @@ export function createAdaptivePollState<T>(initial: T, options: AdaptivePollOpti
     }
   }
 
-  const handleActivityChange = () => {
-    if (options.active.get() && options.refreshOnActive !== false) {
-      void refresh()
+  const scheduleActivationRefresh = () => {
+    if (activationRefreshId > 0) {
       return
     }
 
+    logShowCenterStage("adaptive poll activation scheduled")
+    activationRefreshId = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+      activationRefreshId = 0
+      logShowCenterStage("adaptive poll activation fired")
+
+      if (!options.active.get()) {
+        return GLib.SOURCE_REMOVE
+      }
+
+      void refresh()
+      return GLib.SOURCE_REMOVE
+    })
+  }
+
+  const handleActivityChange = () => {
+    if (options.active.get() && options.refreshOnActive !== false) {
+      logShowCenterStage("adaptive poll activity active")
+      scheduleActivationRefresh()
+      return
+    }
+
+    clearActivationRefresh()
     scheduleNext()
   }
 
@@ -94,6 +132,7 @@ export function createAdaptivePollState<T>(initial: T, options: AdaptivePollOpti
     cleanup: () => {
       unsubscribe()
       clearTimer()
+      clearActivationRefresh()
     },
   }
 }

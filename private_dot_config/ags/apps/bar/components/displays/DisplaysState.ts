@@ -1,4 +1,5 @@
 import AstalDisplays from "gi://AstalDisplays?version=0.1"
+import Gio from "gi://Gio?version=2.0"
 import { Accessor } from "gnim"
 
 import { createState } from "ags"
@@ -6,10 +7,14 @@ import { createState } from "ags"
 import type { StateAccessor } from "../../../common/utils/state"
 import { instanceActive } from "../../utils/activity"
 import { getGlobalState } from "../../utils/global-state"
+import { createPerfSpan, logShowCenterStage } from "../../utils/perf"
 import { createAdaptivePollState } from "../../utils/polling"
 import type { MonitorIdentity } from "../../utils/types"
 
 const DISPLAY_BRIGHTNESS_STEP = 5
+
+Gio._promisify(AstalDisplays.Manager.prototype, "query_async", "query_finish")
+Gio._promisify(AstalDisplays.Manager.prototype, "update_async", "update_finish")
 
 export type DisplayBrightnessItem = {
   key: string
@@ -33,7 +38,7 @@ type DisplaysState = {
   displayErrors: StateAccessor<DisplayErrorMap>
   attachInstance: (instanceId: string) => () => void
   refresh: () => Promise<DisplaysSnapshot | null>
-  applyBrightness: (targetItems: DisplayBrightnessItem[], requestedBrightness: number, minimumBrightness: number) => void
+  applyBrightness: (targetItems: DisplayBrightnessItem[], requestedBrightness: number, minimumBrightness: number) => Promise<void>
 }
 
 type SubscribableAccessor<T> = StateAccessor<T> & {
@@ -173,7 +178,10 @@ export function brightnessSummaryForMonitor(items: DisplayBrightnessItem[], moni
  */
 export function getDisplaysState(): DisplaysState {
   return getGlobalState("bar-displays-state", () => {
+    logShowCenterStage("displays state factory enter")
+    const resolveManager = createPerfSpan("displays state manager.get_default")
     const manager = AstalDisplays.Manager.get_default() as any
+    resolveManager()
     const [activeCount, setActiveCount] = createState(0)
     const [displayErrors, setDisplayErrors] = createState<DisplayErrorMap>({})
     const active = new Accessor(
@@ -181,10 +189,13 @@ export function getDisplaysState(): DisplaysState {
       (callback) => (activeCount as any).subscribe?.(callback) ?? (() => {}),
     ) as StateAccessor<boolean> & { subscribe(callback: () => void): () => void }
 
-    const refreshSnapshot = () => {
-      const queried = (manager.query() as any[])
+    const refreshSnapshot = async () => {
+      logShowCenterStage("displays refreshSnapshot enter")
+      const queryDisplays = createPerfSpan("displays manager.query_async")
+      const queried = (await manager.query_async(null) as any[])
         .map((display) => buildDisplayItem(display))
         .filter((item): item is DisplayBrightnessItem => item !== null)
+      queryDisplays(`count=${queried.length}`)
       const activeKeys = new Set(queried.map((item) => item.key))
 
       setDisplayErrors((currentErrors) =>
@@ -198,6 +209,7 @@ export function getDisplaysState(): DisplaysState {
       }
     }
 
+    const createPoller = createPerfSpan("displays state poller setup")
     const poller = createAdaptivePollState<DisplaysSnapshot>(
       { items: [], visible: false, tooltip: "Displays unavailable" },
       {
@@ -207,12 +219,15 @@ export function getDisplaysState(): DisplaysState {
         poll: refreshSnapshot,
       },
     )
+    createPoller()
     const snapshot = poller.value as SubscribableAccessor<DisplaysSnapshot>
     const attachedInstances = new Map<string, { refs: number; active: boolean; dispose: () => void }>()
 
     const updateActiveCount = () => {
       setActiveCount([...attachedInstances.values()].filter((entry) => entry.active).length)
     }
+
+    logShowCenterStage("displays state factory ready")
 
     return {
       items: pickSnapshotField(snapshot, (value) => value.items),
@@ -259,7 +274,7 @@ export function getDisplaysState(): DisplaysState {
         return detach
       },
       refresh: poller.refresh,
-      applyBrightness: (targetItems: DisplayBrightnessItem[], requestedBrightness: number, minimumBrightness: number) => {
+      applyBrightness: async (targetItems: DisplayBrightnessItem[], requestedBrightness: number, minimumBrightness: number) => {
         if (targetItems.length === 0) {
           return
         }
@@ -277,7 +292,9 @@ export function getDisplaysState(): DisplaysState {
         )
 
         try {
-          const results = manager.update(updates) as any[]
+          const updateDisplays = createPerfSpan("displays manager.update_async")
+          const results = await manager.update_async(updates, null) as any[]
+          updateDisplays(`count=${results.length}`)
           const nextErrors = { ...displayErrors.get() }
           const failedKeys = new Set<string>()
 

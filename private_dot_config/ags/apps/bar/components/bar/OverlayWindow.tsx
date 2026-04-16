@@ -9,6 +9,8 @@ type OverlayWindowProps = {
   gdkmonitor: Gdk.Monitor
   visible: BooleanAccessor
   anchor: number
+  exclusivity?: Astal.Exclusivity
+  layer?: Astal.Layer
   marginTop?: number
   marginBottom?: number
   children: any
@@ -23,6 +25,8 @@ export default function OverlayWindow({
   gdkmonitor,
   visible,
   anchor,
+  exclusivity = Astal.Exclusivity.IGNORE,
+  layer = Astal.Layer.OVERLAY,
   marginTop,
   marginBottom,
   children,
@@ -37,8 +41,8 @@ export default function OverlayWindow({
       gdkmonitor={gdkmonitor}
       defaultWidth={geometry.width}
       visible={visible}
-      exclusivity={Astal.Exclusivity.IGNORE}
-      layer={Astal.Layer.OVERLAY}
+      exclusivity={exclusivity}
+      layer={layer}
       anchor={anchor}
       marginTop={marginTop}
       marginBottom={marginBottom}

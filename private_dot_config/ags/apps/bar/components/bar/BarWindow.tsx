@@ -1,7 +1,8 @@
 import { onCleanup } from "ags"
-import { Gdk, Gtk } from "ags/gtk4"
+import { Astal, Gdk, Gtk } from "ags/gtk4"
 
 import { anchorForPosition, barPositionForRole, baseForRole } from "../../utils/bar-logic"
+import { logShowCenterStage } from "../../utils/perf"
 import { removeInstance, setInstanceVisible } from "../../utils/activity"
 import { BAR_HEIGHT } from "../../utils/runtime"
 import { attachHoverHandlers } from "../../utils/widget-helpers"
@@ -15,6 +16,7 @@ type BarWindowProps = {
   role: Role
   hyprState: HyprStateAccessor
   visible: BooleanAccessor
+  exclusive: BooleanAccessor
   onHoverEnter?: () => void
   onHoverLeave?: () => void
 }
@@ -27,6 +29,7 @@ export default function BarWindow({
   role,
   hyprState,
   visible,
+  exclusive,
   onHoverEnter,
   onHoverLeave,
 }: BarWindowProps) {
@@ -39,7 +42,9 @@ export default function BarWindow({
   // child widgets can later pause or slow their background work while the bar
   // is hidden, then refresh immediately when it becomes active again.
   const syncVisibility = () => {
-    setInstanceVisible(instanceId, visible())
+    const nextVisible = visible()
+    logShowCenterStage("bar window syncVisibility", `instance=${instanceId} visible=${nextVisible}`)
+    setInstanceVisible(instanceId, nextVisible)
   }
   const unsubscribeVisibility = (visible as any).subscribe?.(syncVisibility) ?? null
 
@@ -58,6 +63,8 @@ export default function BarWindow({
       namespace={`ags-bar-${gdkmonitor.connector}`}
       gdkmonitor={gdkmonitor}
       visible={visible}
+      exclusivity={exclusive((value) => (value ? Astal.Exclusivity.EXCLUSIVE : Astal.Exclusivity.IGNORE))}
+      layer={exclusive((value) => (value ? Astal.Layer.TOP : Astal.Layer.OVERLAY))}
       anchor={anchorForPosition(position)}
     >
       <box

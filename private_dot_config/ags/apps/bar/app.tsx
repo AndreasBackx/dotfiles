@@ -28,6 +28,7 @@ import WorkspaceRevealWindow from "./components/bar/WorkspaceRevealWindow"
 import config from "./utils/config"
 import { assignCenterWorkspacesToLaptop, centerAutoHideEnabled, centerTargetRole, connectorForRole, soloLaptopCenter } from "./utils/bar-logic"
 import { createCenterVisibilityController } from "./utils/center-visibility"
+import { logShowCenterStage, markShowCenterRequest } from "./utils/perf"
 import {
   CENTER_HIDE_DELAY_MS,
   INITIAL_AUTOHIDE_DELAY_MS,
@@ -118,6 +119,18 @@ function barVisibleForRole(role: Role, connector: string, hyprState: ReturnType<
   })
 }
 
+function barExclusiveForRole(role: Role, connector: string, hyprState: ReturnType<typeof createState<HyprState>>[0]) {
+  if (role === "left" || role === "right") {
+    return hyprState((state) => !soloLaptopCenter(state) && connectorForRole(state, role) === connector)
+  }
+
+  return hyprState((state) => {
+    const targetRole = centerTargetRole(state)
+
+    return targetRole === role && connectorForRole(state, role) === connector && !centerAutoHideEnabled(state)
+  })
+}
+
 function revealVisibleForRole(
   role: Role,
   connector: string,
@@ -194,8 +207,12 @@ app.start({
   requestHandler(argv, response) {
     switch (argv[0]) {
       case "show-center":
+        markShowCenterRequest()
+        logShowCenterStage("show-center before handler")
         requestShowCenter?.()
+        logShowCenterStage("show-center after handler")
         response("ok")
+        logShowCenterStage("show-center response sent")
         return
       case "show-workspaces":
         requestShowWorkspaces?.()
@@ -312,6 +329,7 @@ app.start({
                 role={spec.role}
                 hyprState={hyprState}
                 visible={barVisibleForRole(spec.role, item.monitor.connector, hyprState, centerVisible)}
+                exclusive={barExclusiveForRole(spec.role, item.monitor.connector, hyprState)}
                 onHoverEnter={spec.role === "center" || spec.role === "laptop" ? visibility.showCenter : undefined}
                 onHoverLeave={spec.role === "center" || spec.role === "laptop" ? visibility.handleCenterLeave : undefined}
               />

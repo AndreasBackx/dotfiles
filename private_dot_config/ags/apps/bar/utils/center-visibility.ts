@@ -1,6 +1,7 @@
 import { timeout } from "ags/time"
 
 import { centerAutoHideEnabled } from "./bar-logic"
+import { logShowCenterStage } from "./perf"
 import type { BooleanAccessor, HyprStateAccessor } from "./types"
 
 type CenterVisibilityControllerOptions = {
@@ -86,10 +87,13 @@ export function createCenterVisibilityController({
 
   /** Makes the center bar visible and clears any pending hide timers. */
   const showCenter = () => {
+    logShowCenterStage("showCenter enter")
     cancelCenterHide()
     cancelWorkspaceStripHide()
     setWorkspaceStripVisible(false)
+    logShowCenterStage("showCenter before setCenterVisible", `current=${centerVisible.get()}`)
     setCenterVisible(true)
+    logShowCenterStage("showCenter after setCenterVisible", `current=${centerVisible.get()}`)
   }
 
   /** Starts or restarts the delayed auto-hide timer for the center bar. */
