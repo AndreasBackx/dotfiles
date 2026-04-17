@@ -23,9 +23,10 @@ desc:{{ pluck "name" $environment_monitor .monitor | first -}}
 {{ $scale := pluck "scale" $environment_monitor .monitor | first -}}
 {{ $transform := pluck "transform" $environment_monitor .monitor | first -}}
 {{ $vrr := pluck "vrr" $environment_monitor .monitor | first -}}
+{{- $defaultProfile := .defaultProfile -}}
 monitorv2 {
   output = desc:{{ pluck "name" $environment_monitor .monitor | first }}
-{{- if (pluck "disable" $environment_monitor .monitor | first) }}
+{{- if not (has $defaultProfile (pluck "profiles" $environment_monitor .monitor | first)) }}
   disabled = true
 {{- else }}
   mode = {{ pluck "mode" $environment_monitor .monitor | first }}
@@ -48,6 +49,7 @@ monitor=,preferred,auto,1
 
 {{ $environment := .environment -}}
 {{ $selected_monitors := index .monitors .monitors.selected -}}
+{{ $defaultProfile := .monitors.default_profile | default (index $selected_monitors "default_profile") -}}
 {{- range $selected_monitor_position, $selected_monitor := $selected_monitors -}}
 {{- if not (kindIs "map" $selected_monitor) -}}
     {{ continue }}
@@ -56,7 +58,7 @@ monitor=,preferred,auto,1
     {{ continue }}
 {{- end -}}
 # {{ $selected_monitor_position }}
-{{ template "monitor_block" dict "monitor" $selected_monitor "environment" $environment }}
+{{ template "monitor_block" dict "monitor" $selected_monitor "environment" $environment "defaultProfile" $defaultProfile }}
 {{ if index $selected_monitor "background" -}}
 exec = swaybg --output "{{ index $selected_monitor "name" }}" --image {{ index $selected_monitor "background" }} --mode fill
 {{ end -}}

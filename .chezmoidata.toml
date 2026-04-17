@@ -136,7 +136,7 @@ profiles = ["desk", "desk_living_room"]
 
 [monitors.home.tv]
 name = "LG Electronics LG TV 0x01010101"
-workspaces = "right"
+workspaces = "laptop"
 shikane_search = ["m=LG TV", "s=0x01010101", "v=LG Electronics"]
 serial_number = "0x01010101"
 bar_position = "bottom"
