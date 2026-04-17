@@ -182,3 +182,77 @@ color12 = "#6d8fd9"
 color13 = "#a082d9"
 color14 = "#6cc7d9"
 color15 = "#e5e5e5"
+
+[themes.rubecula_dawn]
+name = "rubecula-dawn"
+type = "light"
+
+black = "#141414"
+blackGray = "#1C1C1C"
+darkerGray = "#242424"
+darkGray = "#404040"
+gray = "#6E6E6E"
+lightGray = "#CECECE"
+lighterGray = "#D6D6D6"
+whiteGray = "#DEDEDE"
+white = "#E5E5E5"
+realwhite = "#FFFFFF"
+
+blue = "#5caeef"
+lightBlue = "#ABB2C0"
+
+yellow = "#7E7630"
+
+pink = "#E52E71"
+lightPink = "#DB6165"
+
+green = "#618122"
+lightGreen = "#97C26C"
+
+cyan = "#24798A"
+lightCyan = "#4FB1BC"
+
+orange = "#D9882B"
+lightOrange = "#DFB976"
+
+purple = "#673ABB"
+lightPurple = "#C172D9"
+
+transparent = "#FFFFFF00"
+
+darkBackground = "#E5E5E5"
+background = "#FFFFFF"
+lightBackground = "#DEDEDE"
+highlightBackground = "#14141415"
+activeBackground = "#14141425"
+selectionBackground = "#7E763040"
+inactiveSelectionBackground = "#7E763030"
+inactiveBackground = "#7E763020"
+
+border = "#CECECE"
+
+brightForeground = "#141414"
+foreground = "#404040"
+inactiveForeground = "#6E6E6E"
+
+transparency = 1
+cursor = "#141414"
+cursor_text_color = "#FFFFFF"
+url_color = "#24798A"
+selection_background = "#cbc7ad"
+color0 = "#6E6E6E"
+color1 = "#E52E71"
+color2 = "#618122"
+color3 = "#7E7630"
+color4 = "#5caeef"
+color5 = "#673ABB"
+color6 = "#24798A"
+color7 = "#404040"
+color8 = "#6E6E6E"
+color9 = "#E52E71"
+color10 = "#618122"
+color11 = "#7E7630"
+color12 = "#5caeef"
+color13 = "#673ABB"
+color14 = "#24798A"
+color15 = "#141414"
