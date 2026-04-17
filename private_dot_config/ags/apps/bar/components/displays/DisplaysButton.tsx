@@ -49,6 +49,7 @@ function BrightnessScale({ value, minimumBrightness, onBrightnessChanged }: Brig
     pageSize: 0,
     value: readReactiveNumber(value),
   })
+  let syncingAdjustment = false
 
   return (
     <Gtk.Scale
@@ -66,7 +67,12 @@ function BrightnessScale({ value, minimumBrightness, onBrightnessChanged }: Brig
 
           adjustment.set_lower(nextMinimum)
           if (Math.abs(adjustment.get_value() - nextValue) > 0.01) {
+            // Keep state-driven slider refreshes from being interpreted as user
+            // input. Gtk may emit value-changed for programmatic updates, and
+            // brightness writes must only happen from deliberate interaction.
+            syncingAdjustment = true
             adjustment.set_value(nextValue)
+            syncingAdjustment = false
           }
         }
 
@@ -87,6 +93,10 @@ function BrightnessScale({ value, minimumBrightness, onBrightnessChanged }: Brig
         })
       }}
       onValueChanged={(self) => {
+        if (syncingAdjustment) {
+          return
+        }
+
         const next = clampBrightness(self.get_value(), readReactiveNumber(minimumBrightness))
         if (Math.abs(self.get_value() - next) > 0.01) {
           self.set_value(next)
@@ -141,7 +151,17 @@ export default function DisplaysButton({ instanceId, monitor }: DisplaysButtonPr
   initialSummary(`instance=${instanceId} summary=${summary.get()}`)
 
   const applyBrightness = (targetItems: DisplayBrightnessItem[], requestedBrightness: number) => {
-    void applySharedBrightness(targetItems, requestedBrightness, minimumBrightness.get())
+    const nextBrightness = clampBrightness(requestedBrightness, minimumBrightness.get())
+    const itemsNeedingUpdate = targetItems.filter((item) => item.brightness !== nextBrightness)
+
+    if (itemsNeedingUpdate.length === 0) {
+      return
+    }
+
+    // Compare against the normalized 5%-step target so the no-op check matches
+    // the real write path. This avoids backend updates when GTK reports a raw
+    // slider value that would clamp/round back to the brightness already stored.
+    void applySharedBrightness(itemsNeedingUpdate, nextBrightness, minimumBrightness.get())
   }
 
   const commitMinimumBrightness = (entry?: Gtk.Entry) => {
