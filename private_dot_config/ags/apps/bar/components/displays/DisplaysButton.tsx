@@ -1,5 +1,6 @@
 import { For, createState, onCleanup } from "ags"
 import { Gtk } from "ags/gtk4"
+import GLib from "gi://GLib?version=2.0"
 
 import type { StateAccessor } from "../../../../common/utils/state"
 import { createPerfSpan, logShowCenterStage } from "../../utils/perf"
@@ -15,6 +16,7 @@ import {
 import SystemMenuButton from "../system/SystemMenuButton"
 
 const DISPLAY_BRIGHTNESS_STEP = 5
+const DISPLAY_BRIGHTNESS_DEBOUNCE_MS = 125
 const DEFAULT_MINIMUM_BRIGHTNESS = 0
 
 function clampMinimumBrightness(value: number) {
@@ -149,6 +151,7 @@ export default function DisplaysButton({ instanceId, monitor }: DisplaysButtonPr
   const initialSummary = createPerfSpan("displays button initial summary")
   syncSummary()
   initialSummary(`instance=${instanceId} summary=${summary.get()}`)
+  const pendingBrightnessUpdates = new Map<string, { sourceId: number; brightness: number }>()
 
   const applyBrightness = (targetItems: DisplayBrightnessItem[], requestedBrightness: number) => {
     const nextBrightness = clampBrightness(requestedBrightness, minimumBrightness.get())
@@ -162,6 +165,41 @@ export default function DisplaysButton({ instanceId, monitor }: DisplaysButtonPr
     // the real write path. This avoids backend updates when GTK reports a raw
     // slider value that would clamp/round back to the brightness already stored.
     void applySharedBrightness(itemsNeedingUpdate, nextBrightness, minimumBrightness.get())
+  }
+
+  const clearPendingBrightnessUpdate = (scope: string) => {
+    const pending = pendingBrightnessUpdates.get(scope)
+    if (!pending) {
+      return
+    }
+
+    try {
+      GLib.source_remove(pending.sourceId)
+    } catch {
+      // The timeout may already have fired or been removed during teardown.
+    }
+
+    pendingBrightnessUpdates.delete(scope)
+  }
+
+  const scheduleBrightnessApply = (scope: string, requestedBrightness: number, targetKey?: string) => {
+    clearPendingBrightnessUpdate(scope)
+
+    // Slider drags emit a large stream of intermediate values. Queue only the
+    // final paused value so display writes happen once interaction settles.
+    const sourceId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, DISPLAY_BRIGHTNESS_DEBOUNCE_MS, () => {
+      pendingBrightnessUpdates.delete(scope)
+
+      const currentItems = items.get()
+      const targetItems = targetKey
+        ? currentItems.filter((item) => item.key === targetKey)
+        : currentItems
+
+      applyBrightness(targetItems, requestedBrightness)
+      return GLib.SOURCE_REMOVE
+    })
+
+    pendingBrightnessUpdates.set(scope, { sourceId, brightness: requestedBrightness })
   }
 
   const commitMinimumBrightness = (entry?: Gtk.Entry) => {
@@ -194,6 +232,9 @@ export default function DisplaysButton({ instanceId, monitor }: DisplaysButtonPr
   }
 
   onCleanup(() => {
+    for (const scope of pendingBrightnessUpdates.keys()) {
+      clearPendingBrightnessUpdate(scope)
+    }
     detachItems()
     detachMonitor()
     detach()
@@ -260,7 +301,7 @@ export default function DisplaysButton({ instanceId, monitor }: DisplaysButtonPr
             <BrightnessScale
               value={items((currentItems) => averageBrightness(currentItems))}
               minimumBrightness={minimumBrightness}
-              onBrightnessChanged={(value) => applyBrightness(items.get(), value)}
+              onBrightnessChanged={(value) => scheduleBrightnessApply("all-displays", value)}
             />
             <box visible={displayErrors((errors) => Object.keys(errors).length > 0)} orientation={Gtk.Orientation.VERTICAL} spacing={4}>
               <For each={items}>
@@ -289,7 +330,7 @@ export default function DisplaysButton({ instanceId, monitor }: DisplaysButtonPr
                       (currentItems) => currentItems.find((currentItem) => currentItem.key === item.key)?.brightness ?? item.brightness,
                     )}
                     minimumBrightness={minimumBrightness}
-                    onBrightnessChanged={(value) => applyBrightness([item], value)}
+                    onBrightnessChanged={(value) => scheduleBrightnessApply(item.key, value, item.key)}
                   />
                   <label
                     visible={displayErrors((errors) => Boolean(errors[item.key]))}
