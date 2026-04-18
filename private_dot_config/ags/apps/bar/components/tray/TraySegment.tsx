@@ -37,7 +37,7 @@ export default function TraySegment({ instanceId }: TraySegmentProps) {
   const { items } = getTrayState()
 
   return (
-    <box class="tray-segment" spacing={1}>
+    <box class="tray-segment">
       <For each={items}>
         {(item) => (
           <menubutton

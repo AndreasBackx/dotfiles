@@ -254,13 +254,12 @@ export default function DisplaysButton({ instanceId, monitor }: DisplaysButtonPr
             </box>
           </box>
         }
-      >
-        <box class="panel displays-panel" orientation={Gtk.Orientation.VERTICAL} spacing={10}>
-          <label class="panel-title" label="Displays" xalign={0} />
-          <label class="panel-status" label={tooltip} xalign={0} wrap />
-          <centerbox class="display-minimum-row" orientation={Gtk.Orientation.HORIZONTAL}>
-            <label $type="start" label="Minimum brightness" xalign={0} />
-            <box $type="end" class="display-minimum-control" spacing={6}>
+        >
+          <box class="panel displays-panel" orientation={Gtk.Orientation.VERTICAL} spacing={10}>
+            <label class="panel-title" label="Displays" xalign={0} />
+            <centerbox class="display-minimum-row" orientation={Gtk.Orientation.HORIZONTAL}>
+              <label $type="start" label="Minimum brightness" xalign={0} />
+              <box $type="end" class="display-minimum-control" spacing={6}>
               <entry
                 class="display-minimum-entry"
                 inputPurpose={Gtk.InputPurpose.DIGITS}

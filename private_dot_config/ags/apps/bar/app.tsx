@@ -21,6 +21,7 @@ import systemSharedCss from "./components/system/shared.css"
 import systemMenuButtonCss from "./components/system/SystemMenuButton.css"
 import systemSegmentCss from "./components/system/SystemSegment.css"
 import titleCss from "./components/title/TitleSegment.css"
+import trayCss from "./components/tray/TraySegment.css"
 import workspaceButtonCss from "./components/workspaces/WorkspaceButton.css"
 import workspaceStripCss from "./components/workspaces/WorkspaceStrip.css"
 import BarWindow from "./components/bar/BarWindow"
@@ -186,6 +187,7 @@ const css = [
   workspaceStripCss,
   workspaceButtonCss,
   titleCss,
+  trayCss,
   spotifyCss,
   systemSharedCss,
   systemSegmentCss,

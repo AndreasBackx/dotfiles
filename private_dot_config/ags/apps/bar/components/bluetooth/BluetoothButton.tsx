@@ -54,7 +54,7 @@ export default function BluetoothButton({ instanceId }: BluetoothButtonProps) {
                       $type="end"
                       class="panel-status"
                       label={createBinding(device, "batteryPercentage")((value) =>
-                        value >= 0 ? `${Math.round(value * 100)}%` : "",
+                        value >= 0 ? `${Math.round(value)}%` : "",
                       )}
                       xalign={1}
                     />

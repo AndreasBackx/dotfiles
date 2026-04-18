@@ -4,11 +4,11 @@ import { setInstancePopoverOpen } from "../../utils/activity"
 import { attachPopoverHandlers } from "../../utils/widget-helpers"
 
 type SystemMenuButtonProps = {
-  popoverId: string
+  popoverId?: string
   instanceId?: string
   tooltipText?: any
   button: any
-  children: any
+  children?: any
 }
 
 /**
@@ -24,9 +24,10 @@ export default function SystemMenuButton({
   let menuButton: Gtk.MenuButton | null = null
   let popover: Gtk.Popover | null = null
   let wired = false
+  const hasPopover = Boolean(popoverId && children)
 
   const wirePopover = () => {
-    if (!menuButton || !popover || wired) {
+    if (!hasPopover || !menuButton || !popover || wired) {
       return
     }
 
@@ -48,28 +49,30 @@ export default function SystemMenuButton({
       }}
     >
       {button}
-      <popover
-        $={(self: Gtk.Popover) => {
-          popover = self
-          self.set_autohide(true)
-          self.set_has_arrow(false)
-          if (instanceId) {
-            // Keep the owning bar instance marked as active while any system
-            // popover is open. This lets upcoming adaptive pollers keep their
-            // data fresh for interactive widgets even if the surrounding bar is
-            // otherwise hidden or auto-hidden.
-            self.connect("notify::visible", () => {
-              setInstancePopoverOpen(instanceId, self.get_visible())
-            })
-            self.connect("destroy", () => {
-              setInstancePopoverOpen(instanceId, false)
-            })
-          }
-          wirePopover()
-        }}
-      >
-        {children}
-      </popover>
+      {hasPopover ? (
+        <popover
+          $={(self: Gtk.Popover) => {
+            popover = self
+            self.set_autohide(true)
+            self.set_has_arrow(false)
+            if (instanceId) {
+              // Keep the owning bar instance marked as active while any system
+              // popover is open. This lets upcoming adaptive pollers keep their
+              // data fresh for interactive widgets even if the surrounding bar is
+              // otherwise hidden or auto-hidden.
+              self.connect("notify::visible", () => {
+                setInstancePopoverOpen(instanceId, self.get_visible())
+              })
+              self.connect("destroy", () => {
+                setInstancePopoverOpen(instanceId, false)
+              })
+            }
+            wirePopover()
+          }}
+        >
+          {children}
+        </popover>
+      ) : null}
     </menubutton>
   )
 }

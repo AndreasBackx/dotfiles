@@ -10,10 +10,10 @@
   min-width: 1px;
 }
 
-.left-side {
-  padding-left: 6px;
+.workspace-strip-slot {
+  flex: 0 0 auto;
 }
 
-.right-side {
-  padding-right: 6px;
+.title-slot {
+  min-width: 1px;
 }

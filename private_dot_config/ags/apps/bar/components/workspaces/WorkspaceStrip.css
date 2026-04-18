@@ -1,4 +1,5 @@
 .workspace-strip {
   min-width: 1px;
   min-height: 56px;
+  padding-left: 4px;
 }

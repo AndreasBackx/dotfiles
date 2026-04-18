@@ -35,8 +35,12 @@ export default function BarRoot({ base, hyprState, instanceId, position }: BarRo
       halign={Gtk.Align.FILL}
     >
       <box $type="start" class="left-side" spacing={6} hexpand>
-        <WorkspaceStrip base={base} hyprState={hyprState} />
-        <TitleSegment hyprState={hyprState} />
+        <box class="workspace-strip-slot">
+          <WorkspaceStrip base={base} hyprState={hyprState} />
+        </box>
+        <box class="title-slot" hexpand>
+          <TitleSegment hyprState={hyprState} />
+        </box>
       </box>
       <box $type="center" class="center-side" hexpand halign={Gtk.Align.CENTER}>
         <SpotifySegment />

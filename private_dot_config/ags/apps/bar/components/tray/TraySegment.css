@@ -1,0 +1,21 @@
+
+.tray-segment {
+  min-height: 56px;
+}
+
+.tray-button,
+.tray-button > button,
+.tray-button button {
+  min-width: 0;
+  padding: 0;
+}
+
+.tray-item {
+  /*min-width: 28px;*/
+  padding: 0;
+}
+
+.tray-icon {
+  min-width: 16px;
+  min-height: 16px;
+}

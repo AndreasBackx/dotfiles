@@ -1,7 +1,11 @@
-.battery-critical {
+.battery {
+  color: #cecece;
+}
+
+.battery-critical image {
   color: @ags-danger;
 }
 
-.battery-success {
+.battery-full image {
   color: @ags-success;
 }

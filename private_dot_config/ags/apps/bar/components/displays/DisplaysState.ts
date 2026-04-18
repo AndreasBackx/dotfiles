@@ -1,4 +1,4 @@
-import AstalDisplays from "gi://AstalDisplays?version=0.1"
+import AstalDisplays from "gi://DisplaysAstal?version=0.1"
 import Gio from "gi://Gio?version=2.0"
 import { Accessor } from "gnim"
 

@@ -4,10 +4,10 @@ import BatteryButton from "../battery/BatteryButton"
 import ClockButton from "../clock/ClockButton"
 import DisplaysButton from "../displays/DisplaysButton"
 import NetworkButton from "../network/NetworkButton"
+import PowerButton from "../power/PowerButton"
 import TraySegment from "../tray/TraySegment"
 import WarningItems from "../warnings/WarningItems"
 import type { StateAccessor } from "../../../../common/utils/state"
-import PowerButton from "./PowerButton"
 import type { MonitorIdentity } from "../../utils/types"
 
 type SystemSegmentProps = {
@@ -26,7 +26,7 @@ export default function SystemSegment({ instanceId, monitor }: SystemSegmentProp
       <DisplaysButton instanceId={instanceId} monitor={monitor} />
       <AudioButton instanceId={instanceId} />
       <WarningItems instanceId={instanceId} />
-      <BatteryButton />
+      <BatteryButton instanceId={instanceId} />
       <PowerButton instanceId={instanceId} />
       <ClockButton instanceId={instanceId} />
       <TraySegment instanceId={instanceId} />

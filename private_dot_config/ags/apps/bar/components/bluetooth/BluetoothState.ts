@@ -16,6 +16,30 @@ type BluetoothStateValue = {
   toggleDevice: (device: Bluetooth.Device) => Promise<void>
 }
 
+function deviceLabel(device: Bluetooth.Device) {
+  return device.alias || device.name || ""
+}
+
+function runDeviceAction(
+  start: (callback: (self: Bluetooth.Device, result: unknown) => void) => void,
+  finish: (result: unknown) => void,
+) {
+  return new Promise<void>((resolve, reject) => {
+    try {
+      start((_self, result) => {
+        try {
+          finish(result)
+          resolve()
+        } catch (error) {
+          reject(error)
+        }
+      })
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
+
 /**
  * Returns the shared Bluetooth state for all bar instances.
  */
@@ -24,8 +48,10 @@ export function getBluetoothState(): BluetoothStateValue {
     const bluetooth = Bluetooth.get_default()
     const devices = createBinding(bluetooth, "devices")((items) =>
       [...items]
-        .filter((device) => Boolean(device.alias || device.name))
-        .sort((left, right) => Number(right.connected) - Number(left.connected) || left.alias.localeCompare(right.alias)),
+        .filter((device) => Boolean(deviceLabel(device)))
+        .sort(
+          (left, right) => Number(right.connected) - Number(left.connected) || deviceLabel(left).localeCompare(deviceLabel(right)),
+        ),
     )
     const [icon, setIcon] = createState("bluetooth-disabled-symbolic")
     const [tooltip, setTooltip] = createState("Bluetooth unavailable")
@@ -125,10 +151,18 @@ export function getBluetoothState(): BluetoothStateValue {
       toggleDevice: async (device: Bluetooth.Device) => {
         try {
           if (device.connected) {
-            await device.disconnect_device()
+            await runDeviceAction(
+              (callback) => device.disconnect_device(callback),
+              (result) => device.disconnect_device_finish(result as any),
+            )
           } else {
-            await device.connect_device()
+            await runDeviceAction(
+              (callback) => device.connect_device(callback),
+              (result) => device.connect_device_finish(result as any),
+            )
           }
+
+          syncState()
         } catch (error) {
           console.error(error)
         }
