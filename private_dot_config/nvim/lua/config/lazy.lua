@@ -18,7 +18,7 @@ require("lazy").setup({
     { import = "plugins" },
   },
   git = {
-    url_format = "git@github.com:%s.git"
+    url_format = "git@github.com:%s.git",
   },
   defaults = {
     -- By default, only LazyVim plugins will be lazy-loaded. Your custom plugins will load during startup.
@@ -30,7 +30,10 @@ require("lazy").setup({
     -- version = "*", -- try installing the latest stable version for plugins that support semver
   },
   install = { colorscheme = { "tokyonight", "habamax" } },
-  checker = { enabled = true }, -- automatically check for plugin updates
+  checker = {
+    -- Disabled as otherwise ssh agent popups happen every now and then.
+    enabled = false,
+  }, -- automatically check for plugin updates
   performance = {
     rtp = {
       -- disable some rtp plugins
