@@ -10,7 +10,8 @@
   transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
 }
 
-.bar-menu-button:hover {
+.bar-menu-button:hover,
+.bar-menu-button:checked {
   background: rgba(255, 255, 255, 0.08);
   background-image: none;
   box-shadow: none;
