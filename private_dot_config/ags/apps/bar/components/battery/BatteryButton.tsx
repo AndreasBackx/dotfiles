@@ -36,6 +36,10 @@ export default function BatteryButton({ instanceId }: BatteryButtonProps) {
             <label $type="end" class="panel-status" label={details((value) => value.status)} xalign={1} />
           </centerbox>
           <centerbox orientation={Gtk.Orientation.HORIZONTAL}>
+            <label $type="start" label="Estimate" xalign={0} />
+            <label $type="end" class="panel-status" label={details((value) => value.estimate)} xalign={1} />
+          </centerbox>
+          <centerbox orientation={Gtk.Orientation.HORIZONTAL}>
             <label $type="start" label="Health" xalign={0} />
             <label $type="end" class="panel-status" label={details((value) => value.health)} xalign={1} />
           </centerbox>

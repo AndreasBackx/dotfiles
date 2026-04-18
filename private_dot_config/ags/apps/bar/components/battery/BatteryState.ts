@@ -15,6 +15,7 @@ type BatteryTimeEstimate = {
 
 type BatteryDetails = {
   status: string
+  esimate: string
   health: string
   cycles: string
 }
@@ -107,9 +108,13 @@ function readBatteryDetails(): BatteryDetails {
   const status = readSysfsText(`${BATTERY_SYSFS_PATH}/status`) || "Unavailable"
   const healthPercent = readBatteryHealthPercent()
   const cycleCount = readSysfsNumber(`${BATTERY_SYSFS_PATH}/cycle_count`)
+  const [timeEstimate, setTimeEstimate] = createState<BatteryTimeEstimate>(readBatteryTimeEstimate())
+
+  const estimate = timeEstimate.get() 
 
   return {
     status,
+    estimate: estimate ? `${estimate.text} ${estimate.suffix}` : "",
     health: healthPercent !== null ? `${formatPercent(healthPercent)} of design capacity` : "Unavailable",
     cycles: cycleCount !== null ? `${cycleCount}` : "Unavailable",
   }
@@ -133,18 +138,15 @@ export function getBatteryState() {
       return GLib.SOURCE_CONTINUE
     })
 
+    const estimate = timeEstimate.get()
+
     return {
       percentage,
       iconName,
       visible,
       details,
       text: percentage((value) => `${Math.round(value * 100)}%`),
-      tooltip: percentage((value) => {
-        const base = `Battery: ${Math.round(value * 100)}%`
-        const estimate = timeEstimate.get()
-
-        return estimate ? `${base}, ${estimate.text} ${estimate.suffix}` : base
-      }),
+      tooltip: estimate ? `${estimate.text} ${estimate.suffix}` : "",
       state: percentage((value) => {
         if (value >= 0.95) {
           return "full"
