@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dbus-send --session --print-reply=literal --reply-timeout=1000 --dest=org.freedesktop.portal.Desktop /org/freedesktop/portal/desktop org.freedesktop.portal.Settings.Read string:org.freedesktop.appearance string:color-scheme)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(fzf --version)",
+      "Bash(gh search *)"
+    ]
+  }
+}
