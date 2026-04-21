@@ -1,3 +1,4 @@
+source ~/.bin/hg_bookmark.zsh
 source ~/.bin/hg_commit.zsh
 source ~/.bin/taste_tester.zsh
 
@@ -30,6 +31,7 @@ SPACESHIP_TIME_FORMAT="[%T]"
 SPACESHIP_PROMPT_ORDER=(
   dir # Current directory section
   $SPACESHIP_VCS_SECTION # VCS section (jj with git fallback)
+  hg_bookmark
   hg_commit
   golang # Go section
   rust   # Rust section

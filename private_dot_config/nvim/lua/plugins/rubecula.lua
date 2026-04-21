@@ -1,9 +1,9 @@
 return {
   {
-    -- "Rubecula/nvim",
+    "Rubecula/nvim",
     name = "rubecula",
-    dir = "~/dev/rubecula-nvim",
-    dev = true,
+    -- dir = "~/dev/rubecula-nvim",
+    -- dev = true,
     priority = 1000,
     opts = {
       -- variant = "auto",
