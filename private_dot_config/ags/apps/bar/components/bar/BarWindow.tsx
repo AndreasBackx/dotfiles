@@ -60,7 +60,7 @@ export default function BarWindow({
   return (
     <OverlayWindow
       name={`bar-${role}-${gdkmonitor.connector}`}
-      namespace={`ags-bar-${gdkmonitor.connector}`}
+      namespace={`ags-bar-${position}-${gdkmonitor.connector}`}
       gdkmonitor={gdkmonitor}
       visible={visible}
       exclusivity={exclusive((value) => (value ? Astal.Exclusivity.EXCLUSIVE : Astal.Exclusivity.IGNORE))}
