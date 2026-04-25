@@ -21,6 +21,31 @@ selected = "{{ $location }}"
 {{- $configuredDefaultProfile := promptStringOnce . "monitors.default_profile" "What should the default monitor profile be?" $defaultProfile }}
 default_profile = "{{ $configuredDefaultProfile }}"
 
+[data.backup]
+{{- $backupEnabled := promptBoolOnce . "backup.enabled" "Configure Borg backups for this machine? [y/n]" false }}
+enabled = {{ $backupEnabled }}
+{{- if $backupEnabled }}
+{{- $backupHost := promptStringOnce . "backup.host" "Backup host or IP" "" }}
+host = "{{ $backupHost }}"
+{{- $backupPort := promptStringOnce . "backup.port" "Backup SSH port" "8022" }}
+port = "{{ $backupPort }}"
+{{- $backupHostAlias := promptStringOnce . "backup.host_alias" "Local SSH alias for the backup host" "borg-backup" }}
+host_alias = "{{ $backupHostAlias }}"
+{{- $backupRepoName := promptStringOnce . "backup.repo_name" "Repository name for this machine" "repo" }}
+repo_name = "{{ $backupRepoName }}"
+{{- $backupTimer := promptStringOnce . "backup.on_calendar" "systemd OnCalendar schedule for backups" "daily" }}
+on_calendar = "{{ $backupTimer }}"
+{{- $backupStaleHours := promptStringOnce . "backup.stale_hours" "Mark backups stale after how many hours?" "24" }}
+stale_hours = "{{ $backupStaleHours }}"
+{{- else }}
+host = ""
+port = "8022"
+host_alias = ""
+repo_name = ""
+on_calendar = "daily"
+stale_hours = "24"
+{{- end }}
+
 [edit]
 command = "code"
 args = ["--wait"]

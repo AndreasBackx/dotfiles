@@ -173,13 +173,13 @@ export default function DisplaysButton({ instanceId, monitor }: DisplaysButtonPr
       return
     }
 
+    pendingBrightnessUpdates.delete(scope)
+
     try {
       GLib.source_remove(pending.sourceId)
     } catch {
       // The timeout may already have fired or been removed during teardown.
     }
-
-    pendingBrightnessUpdates.delete(scope)
   }
 
   const scheduleBrightnessApply = (scope: string, requestedBrightness: number, targetKey?: string) => {
@@ -188,6 +188,11 @@ export default function DisplaysButton({ instanceId, monitor }: DisplaysButtonPr
     // Slider drags emit a large stream of intermediate values. Queue only the
     // final paused value so display writes happen once interaction settles.
     const sourceId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, DISPLAY_BRIGHTNESS_DEBOUNCE_MS, () => {
+      const pending = pendingBrightnessUpdates.get(scope)
+      if (!pending || pending.sourceId !== sourceId) {
+        return GLib.SOURCE_REMOVE
+      }
+
       pendingBrightnessUpdates.delete(scope)
 
       const currentItems = items.get()

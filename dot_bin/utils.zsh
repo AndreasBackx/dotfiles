@@ -9,24 +9,39 @@ function is_wayland() {
 }
 
 function json-output() {
-    text=$1
-    tooltip=$2
-    class=$3
-    extra=$4
+    text="${1-}"
+    tooltip="${2-}"
+    class="${3-}"
+    extra="${4-}"
+
+    json-escape() {
+        local value="${1-}"
+        value=${value//\\/\\\\}
+        value=${value//\"/\\\"}
+        value=${value//$'\n'/\\n}
+        value=${value//$'\r'/\\r}
+        value=${value//$'\t'/\\t}
+        print -r -- "$value"
+    }
+
+    local escaped_text
+    local escaped_tooltip
+    escaped_text=$(json-escape "$text")
+    escaped_tooltip=$(json-escape "$tooltip")
 
     if [[ -z "$tooltip" ]]; then
-        echo "{\"text\": \"$text\"}"
+        echo "{\"text\": \"$escaped_text\"}"
     elif [[ -z "$class" ]]; then
-        echo "{\"text\": \"$text\", \"tooltip\": \"$tooltip\"}"
+        echo "{\"text\": \"$escaped_text\", \"tooltip\": \"$escaped_tooltip\"}"
     elif [[ -z "$extra" ]]; then
-        echo "{\"text\": \"$text\", \"tooltip\": \"$tooltip\", \"class\": \"$class\"}"
+        echo "{\"text\": \"$escaped_text\", \"tooltip\": \"$escaped_tooltip\", \"class\": \"$class\"}"
     else
-        echo "{\"text\": \"$text\", \"tooltip\": \"$tooltip\", \"class\": \"$class\"$extra}"
+        echo "{\"text\": \"$escaped_text\", \"tooltip\": \"$escaped_tooltip\", \"class\": \"$class\"$extra}"
     fi
 }
 
 function json-output-percentage() {
-    percentage=$4
+    percentage="${4-}"
     json-output $1 $2 $3 ", \"percentage\": $percentage"
 }
 

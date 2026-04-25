@@ -1,4 +1,5 @@
 export { default as AudioButton } from "../audio/AudioButton"
+export { default as BackupButton } from "../backup/BackupButton"
 export { default as BluetoothButton } from "../bluetooth/BluetoothButton"
 export { default as BatteryButton } from "../battery/BatteryButton"
 export { default as ClockButton } from "../clock/ClockButton"

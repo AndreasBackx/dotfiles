@@ -1,157 +1,646 @@
 #!/usr/bin/env zsh
 
-set -e
+set -o errexit -o nounset -o pipefail
 
-# This needs to be able to run from root as well.
-SCRIPT_DIR=$(dirname "$0")
+# This helper is the single entrypoint for Borg backups on this machine.
+#
+# High-level behavior:
+# - `chezmoi apply` renders the source files and settings in the user profile.
+# - `backup init` installs or updates the root-owned runtime files, generates the
+#   dedicated SSH key if needed, enables the timer, and initializes the remote
+#   repo only when it does not already exist.
+# - `backup start` runs a foreground backup immediately.
+# - `backup start --background` starts the root systemd service.
+# - `backup status` is machine-readable and intended for future AGS use.
+
+SCRIPT_DIR="${0:A:h}"
 source "$SCRIPT_DIR/utils.zsh"
 
-source "$SCRIPT_DIR/../.config/.variables"
-if [[ -f "$SCRIPT_DIR/../.config/.secrets" ]]; then
-    source "$SCRIPT_DIR/../.config/.secrets"
-fi
+VARIABLES_PATH="$SCRIPT_DIR/../.config/.variables"
+[[ -f "$VARIABLES_PATH" ]] && source "$VARIABLES_PATH"
 
-function is_environment_setup() {
-    if [[ -z "${BORG_REPO}" || -z "${BORG_BASE_DIR}" ]]; then
-        false
+BORG_BIN="/usr/bin/borg"
+SYSTEMCTL_BIN="/usr/bin/systemctl"
+SSH_BIN="/usr/bin/ssh"
+SSH_KEYGEN_BIN="/usr/bin/ssh-keygen"
+SUDO_BIN="/usr/bin/sudo"
+MKDIR_BIN="/usr/bin/mkdir"
+CP_BIN="/usr/bin/cp"
+CHMOD_BIN="/usr/bin/chmod"
+CMP_BIN="/usr/bin/cmp"
+MKTEMP_BIN="/usr/bin/mktemp"
+RM_BIN="/usr/bin/rm"
+DATE_BIN="/usr/bin/date"
+STAT_BIN="/usr/bin/stat"
+TAIL_BIN="/usr/bin/tail"
+TEE_BIN="/usr/bin/tee"
+TEST_BIN="/usr/bin/test"
+MKFIFO_BIN="/usr/bin/mkfifo"
+HOSTNAME_BIN="/usr/bin/hostname"
+
+SOURCE_SERVICE_PATH="$SCRIPT_DIR/../.config/systemd/system/backup.service"
+SOURCE_TIMER_PATH="$SCRIPT_DIR/../.config/systemd/system/backup.timer"
+SOURCE_EXCLUDE_PATH="$SCRIPT_DIR/../.config/borg/excludefile"
+
+ACTIVE_SERVICE_PATH="/etc/systemd/system/backup.service"
+ACTIVE_TIMER_PATH="/etc/systemd/system/backup.timer"
+ACTIVE_BORG_DIR="/etc/borg"
+ACTIVE_EXCLUDE_PATH="$ACTIVE_BORG_DIR/excludefile"
+ACTIVE_SSH_CONFIG_PATH="$ACTIVE_BORG_DIR/ssh_config"
+
+ROOT_SSH_DIR="/root/.ssh"
+ROOT_SSH_KEY_PATH="$ROOT_SSH_DIR/id_ed25519_borg_backup"
+ROOT_KNOWN_HOSTS_PATH="$ROOT_SSH_DIR/known_hosts"
+
+STATE_DIR="/var/lib/backup"
+LAST_SUCCESS_PATH="$STATE_DIR/last-success"
+LAST_FAILURE_PATH="$STATE_DIR/last-failure"
+LAST_FAILURE_SUMMARY_PATH="$STATE_DIR/last-failure-summary"
+
+function usage() {
+    cat <<'EOF'
+Usage: backup <subcommand> [options]
+
+Subcommands:
+  init               Install or update the root backup setup and initialize the
+                     remote repo if it does not already exist.
+  status             Print machine-readable JSON status.
+  start              Run a backup immediately in the foreground.
+  start --background Start the root systemd backup service.
+  stop               Stop the running root systemd backup service.
+  help               Show this help text.
+
+How it works:
+  1. `chezmoi apply` renders backup settings into ~/.config/.variables plus the
+     source files under ~/.config/systemd/system and ~/.config/borg.
+  2. `backup init` copies those source files into their active root-owned
+     locations, generates /root/.ssh/id_ed25519_borg_backup if missing, enables
+     backup.timer, and initializes the remote Borg repo only when it does not
+     already exist.
+  3. After init succeeds, the timer can run unattended and `backup start` can
+     be used for an immediate manual backup.
+
+Important notes:
+  - Backup configuration is optional. If it was left disabled during
+    `chezmoi init`, this command will say so explicitly.
+  - The remote server host key must already be trusted by root in
+    /root/.ssh/known_hosts before `backup init` can finish.
+  - The remote authorized_keys setup is intentionally left manual.
+  - Re-running `backup init` is safe. It updates root-owned files when repo
+    settings change and leaves an existing remote repo alone.
+EOF
+}
+
+function run_privileged() {
+    if (( EUID == 0 )); then
+        "$@"
+    elif [[ -x "$SUDO_BIN" ]]; then
+        "$SUDO_BIN" "$@"
     else
-        true
+        echo >&2 "This operation requires root privileges, but sudo was not found at $SUDO_BIN."
+        return 1
+    fi
+}
+
+function is_backup_enabled() {
+    [[ "${BACKUP_ENABLED:-false}" == "true" ]] \
+        && [[ -n "${BORG_HOST:-}" ]] \
+        && [[ -n "${BORG_HOST_ALIAS:-}" ]] \
+        && [[ -n "${BORG_REPO_NAME:-}" ]] \
+        && [[ -n "${BORG_REPO:-}" ]]
+}
+
+function require_backup_enabled() {
+    if ! is_backup_enabled; then
+        echo >&2 "Backups are disabled for this machine. Re-run 'chezmoi init' and enable Borg backups first."
+        exit 1
+    fi
+}
+
+function require_local_sources() {
+    local missing=0
+
+    for path in "$SOURCE_SERVICE_PATH" "$SOURCE_TIMER_PATH" "$SOURCE_EXCLUDE_PATH" "$VARIABLES_PATH"; do
+        if [[ ! -f "$path" ]]; then
+            echo >&2 "Required source file is missing: $path"
+            missing=1
+        fi
+    done
+
+    if [[ ! -x "$BORG_BIN" ]]; then
+        echo >&2 "borg is not installed at $BORG_BIN."
+        missing=1
+    fi
+
+    if [[ ! -x "$SYSTEMCTL_BIN" ]]; then
+        echo >&2 "systemctl is not installed at $SYSTEMCTL_BIN."
+        missing=1
+    fi
+
+    if (( missing != 0 )); then
+        exit 1
+    fi
+}
+
+function install_if_changed() {
+    local from="$1"
+    local to="$2"
+    local mode="$3"
+    local parent_dir="${to:h}"
+
+    if [[ ! -f "$from" ]]; then
+        return 1
+    fi
+
+    if [[ ! -f "$to" ]] || ! "$CMP_BIN" --silent "$from" "$to"; then
+        run_privileged "$MKDIR_BIN" -p "$parent_dir"
+        run_privileged "$CP_BIN" "$from" "$to"
+        run_privileged "$CHMOD_BIN" "$mode" "$to"
+        return 0
+    fi
+
+    return 1
+}
+
+function ensure_state_dir() {
+    run_privileged "$MKDIR_BIN" -p "$STATE_DIR"
+    run_privileged "$CHMOD_BIN" 755 "$STATE_DIR"
+}
+
+function ensure_root_ssh_key() {
+    run_privileged "$MKDIR_BIN" -p "$ROOT_SSH_DIR"
+    run_privileged "$CHMOD_BIN" 700 "$ROOT_SSH_DIR"
+
+    if run_privileged "$TEST_BIN" -f "$ROOT_SSH_KEY_PATH"; then
+        return
+    fi
+
+    echo >&2 "Generating dedicated Borg SSH key at $ROOT_SSH_KEY_PATH ..."
+    run_privileged "$SSH_KEYGEN_BIN" -q -t ed25519 -N "" -f "$ROOT_SSH_KEY_PATH"
+    run_privileged "$CHMOD_BIN" 600 "$ROOT_SSH_KEY_PATH"
+    run_privileged "$CHMOD_BIN" 644 "$ROOT_SSH_KEY_PATH.pub"
+
+    echo >&2 "Install this public key on the backup server before retrying init:"
+    echo >&2 "  $ROOT_SSH_KEY_PATH.pub"
+}
+
+function install_ssh_config() {
+    local temp_file
+    run_privileged "$MKDIR_BIN" -p "$ACTIVE_BORG_DIR"
+    temp_file=$("$MKTEMP_BIN")
+
+    {
+        print -r -- "Host $BORG_HOST_ALIAS"
+        print -r -- "  HostName $BORG_HOST"
+        print -r -- "  Port $BORG_PORT"
+        print -r -- "  User borg"
+        print -r -- "  IdentityFile $ROOT_SSH_KEY_PATH"
+        print -r -- "  IdentitiesOnly yes"
+        print -r -- "  StrictHostKeyChecking yes"
+        print -r -- "  UserKnownHostsFile $ROOT_KNOWN_HOSTS_PATH"
+        print -r -- "  ServerAliveInterval 60"
+    } > "$temp_file"
+
+    if install_if_changed "$temp_file" "$ACTIVE_SSH_CONFIG_PATH" 600; then
+        "$RM_BIN" -f "$temp_file"
+        return 0
+    fi
+
+    "$RM_BIN" -f "$temp_file"
+    return 1
+}
+
+function load_runtime_environment() {
+    require_backup_enabled
+
+    if [[ -f "$ACTIVE_SSH_CONFIG_PATH" ]]; then
+        export BORG_RSH="$SSH_BIN -F $ACTIVE_SSH_CONFIG_PATH"
+    fi
+}
+
+function run_borg_privileged() {
+    if (( EUID == 0 )); then
+        "$BORG_BIN" "$@"
+    else
+        "$SUDO_BIN" env "BORG_RSH=$BORG_RSH" "$BORG_BIN" "$@"
     fi
 }
 
 function is_timer_active() {
-    if systemctl is-active --quiet backup.timer; then
-        true
-    else
-        false
-    fi
+    "$SYSTEMCTL_BIN" is-active --quiet backup.timer
 }
 
 function is_service_active() {
-    if systemctl is-active --quiet backup.service; then
-        true
-    else
-        false
-    fi
+    "$SYSTEMCTL_BIN" is-active --quiet backup.service
 }
 
 function is_service_failed() {
-    if systemctl is-failed --quiet backup.service; then
-        true
-    else
-        false
-    fi
+    "$SYSTEMCTL_BIN" is-failed --quiet backup.service
 }
 
-function is_timer_waiting() {
-    timer_status=$(systemctl status --quiet backup.timer)
-    if [[ $timer_status == *"Active: active (waiting)"* ]]; then
-        true
-    else
-        false
-    fi
+function next_timer_run() {
+    "$SYSTEMCTL_BIN" show --property=NextElapseUSecRealtime --value backup.timer 2>/dev/null || true
 }
 
-function start_backup() {
-    echo "Creating backup..."
-    /usr/bin/borg create \
-        ::'{hostname}-{now:%Y-%m-%dT%H:%M:%S}' \
-        "$HOME" \
+function mark_success() {
+    local temp_file
+
+    ensure_state_dir
+    temp_file=$("$MKTEMP_BIN")
+    "$DATE_BIN" -Is > "$temp_file"
+    run_privileged "$CP_BIN" "$temp_file" "$LAST_SUCCESS_PATH"
+    run_privileged "$CHMOD_BIN" 644 "$LAST_SUCCESS_PATH"
+    run_privileged "$RM_BIN" -f "$LAST_FAILURE_PATH" "$LAST_FAILURE_SUMMARY_PATH"
+    "$RM_BIN" -f "$temp_file"
+}
+
+function mark_failure() {
+    local summary="$1"
+    local temp_failure_file
+    local temp_summary_file
+
+    ensure_state_dir
+    temp_failure_file=$("$MKTEMP_BIN")
+    temp_summary_file=$("$MKTEMP_BIN")
+
+    "$DATE_BIN" -Is > "$temp_failure_file"
+    print -r -- "$summary" > "$temp_summary_file"
+
+    run_privileged "$CP_BIN" "$temp_failure_file" "$LAST_FAILURE_PATH"
+    run_privileged "$CP_BIN" "$temp_summary_file" "$LAST_FAILURE_SUMMARY_PATH"
+    run_privileged "$CHMOD_BIN" 644 "$LAST_FAILURE_PATH" "$LAST_FAILURE_SUMMARY_PATH"
+    "$RM_BIN" -f "$temp_failure_file" "$temp_summary_file"
+}
+
+function archive_glob() {
+    print -r -- "$($HOSTNAME_BIN)-*"
+}
+
+function run_logged_command() {
+    local log_file="$1"
+    shift
+
+    local pipe_path
+    local tee_pid=""
+    local command_pid=""
+    local interrupted=0
+    local command_status=0
+
+    pipe_path=$("$MKTEMP_BIN" -u)
+    "$MKFIFO_BIN" "$pipe_path"
+    "$TEE_BIN" -a "$log_file" < "$pipe_path" &
+    tee_pid=$!
+
+    trap 'interrupted=1; [[ -n "$command_pid" ]] && kill -INT "$command_pid" 2>/dev/null || true' INT TERM
+
+    "$@" > "$pipe_path" 2>&1 &
+    command_pid=$!
+
+    set +o errexit
+    wait "$command_pid"
+    command_status=$?
+    set -o errexit
+    command_pid=""
+
+    set +o errexit
+    wait "$tee_pid"
+    set -o errexit
+    tee_pid=""
+    "$RM_BIN" -f "$pipe_path"
+    trap - INT TERM
+
+    if (( interrupted != 0 )); then
+        return 130
+    fi
+
+    return $command_status
+}
+
+function run_backup_job() {
+    load_runtime_environment
+    local exclude_path
+
+    if [[ ! -f "$ACTIVE_SSH_CONFIG_PATH" ]]; then
+        echo >&2 "Backup runtime files are missing. Run 'backup init' first."
+        return 1
+    fi
+
+    if [[ -f "$SOURCE_EXCLUDE_PATH" ]]; then
+        exclude_path="$SOURCE_EXCLUDE_PATH"
+    elif [[ -f "$ACTIVE_EXCLUDE_PATH" ]]; then
+        exclude_path="$ACTIVE_EXCLUDE_PATH"
+    else
+        echo >&2 "No Borg exclude file found. Run 'chezmoi apply' and 'backup init' first."
+        return 1
+    fi
+
+    local log_file
+    local archive_prefix
+    log_file=$("$MKTEMP_BIN")
+    archive_prefix="{hostname}-{now:%Y-%m-%dT%H:%M:%S}"
+    local create_status
+    local prune_status
+    local summary
+
+    print -r -- "Creating backup..." | "$TEE_BIN" "$log_file"
+    run_logged_command "$log_file" \
+        "$BORG_BIN" create \
+        ::"$archive_prefix" \
+        /home \
         /etc \
         /var \
         /usr/local \
-        --compression auto,lzma \
+        --compression auto,lz4 \
         --exclude-caches \
         --show-rc \
         --list \
         --filter AME \
         --one-file-system \
-        --debug \
         --stats \
-        --exclude-from "$HOME/.config/borg/excludefile"
+        --exclude-from "$exclude_path"
+    create_status=$?
+    if (( create_status != 0 )); then
+        summary=$("$TAIL_BIN" -n 1 "$log_file" 2>/dev/null || true)
+        [[ -z "$summary" ]] && summary="Backup failed. Check 'journalctl -u backup.service'."
+        mark_failure "$summary"
+        "$RM_BIN" -f "$log_file"
+        return $create_status
+    fi
 
-    echo "Pruning backup..."
-    /usr/bin/borg prune \
-        -v \
+    print -r -- "Pruning backup..." | "$TEE_BIN" -a "$log_file"
+    run_logged_command "$log_file" \
+        "$BORG_BIN" prune \
         --list \
-        --prefix '{hostname}-' \
+        --show-rc \
+        --glob-archives "$(archive_glob)" \
         --keep-daily=2 \
         --keep-weekly=4 \
         --keep-monthly=6
+    prune_status=$?
+    if (( prune_status != 0 )); then
+        summary=$("$TAIL_BIN" -n 1 "$log_file" 2>/dev/null || true)
+        [[ -z "$summary" ]] && summary="Prune failed. Check 'journalctl -u backup.service'."
+        mark_failure "$summary"
+        "$RM_BIN" -f "$log_file"
+        return $prune_status
+    fi
+
+    mark_success
+    "$RM_BIN" -f "$log_file"
+    return 0
+}
+
+function repo_probe() {
+    load_runtime_environment
+
+    local output
+    local exit_status
+    set +o errexit
+    output=$(run_borg_privileged info "$BORG_REPO" 2>&1)
+    exit_status=$?
+    set -o errexit
+
+    print -r -- "$output"
+    return $exit_status
+}
+
+function handle_repo_probe_failure() {
+    local output="$1"
+
+    if [[ "$output" == *"Host key verification failed"* ]] || [[ "$output" == *"No ED25519 host key is known"* ]] || [[ "$output" == *"REMOTE HOST IDENTIFICATION HAS CHANGED"* ]]; then
+        echo >&2 "Root does not trust the backup host yet. Add the host key to $ROOT_KNOWN_HOSTS_PATH and re-run 'backup init'."
+        return 1
+    fi
+
+    if [[ "$output" == *"Permission denied"* ]] || [[ "$output" == *"publickey"* ]]; then
+        echo >&2 "Remote SSH authentication failed. Install $ROOT_SSH_KEY_PATH.pub on the backup server and re-run 'backup init'."
+        return 1
+    fi
+
+    if [[ "$output" == *"does not exist"* ]] || [[ "$output" == *"not found"* ]] || [[ "$output" == *"Repository does not exist"* ]]; then
+        return 2
+    fi
+
+    echo >&2 "$output"
+    return 1
+}
+
+function install_runtime_files() {
+    require_backup_enabled
+    require_local_sources
+    ensure_state_dir
+    run_privileged "$MKDIR_BIN" -p "$ACTIVE_BORG_DIR"
+    ensure_root_ssh_key
+
+    local service_changed=false
+    local timer_changed=false
+    local exclude_changed=false
+    local ssh_config_changed=false
+
+    if install_if_changed "$SOURCE_SERVICE_PATH" "$ACTIVE_SERVICE_PATH" 644; then
+        service_changed=true
+    fi
+
+    if install_if_changed "$SOURCE_TIMER_PATH" "$ACTIVE_TIMER_PATH" 644; then
+        timer_changed=true
+    fi
+
+    if install_if_changed "$SOURCE_EXCLUDE_PATH" "$ACTIVE_EXCLUDE_PATH" 644; then
+        exclude_changed=true
+    fi
+
+    if install_ssh_config; then
+        ssh_config_changed=true
+    fi
+
+    if [[ "$service_changed" == true ]] || [[ "$timer_changed" == true ]]; then
+        run_privileged "$SYSTEMCTL_BIN" daemon-reload
+    fi
+
+    run_privileged "$SYSTEMCTL_BIN" enable --now backup.timer >/dev/null
+
+    if [[ "$timer_changed" == true ]] && "$SYSTEMCTL_BIN" is-active --quiet backup.timer; then
+        run_privileged "$SYSTEMCTL_BIN" restart backup.timer
+    fi
+
+    if [[ "$service_changed" == true ]] && "$SYSTEMCTL_BIN" is-active --quiet backup.service; then
+        run_privileged "$SYSTEMCTL_BIN" restart backup.service
+    fi
+
+    if [[ "$service_changed" == true ]] || [[ "$timer_changed" == true ]] || [[ "$exclude_changed" == true ]] || [[ "$ssh_config_changed" == true ]]; then
+        echo >&2 "Updated active backup configuration."
+    fi
+}
+
+function init_backup() {
+    install_runtime_files
+    load_runtime_environment
+
+    local output
+    local repo_probe_status
+
+    set +o errexit
+    output=$(repo_probe 2>&1)
+    repo_probe_status=$?
+    set -o errexit
+
+    if (( repo_probe_status == 0 )); then
+        echo >&2 "Backup repo already exists and is reachable."
+        return 0
+    fi
+
+    set +o errexit
+    handle_repo_probe_failure "$output"
+    local classification=$?
+    set -o errexit
+
+    if (( classification == 1 )); then
+        return 1
+    fi
+
+    echo >&2 "Initializing remote Borg repo at $BORG_REPO ..."
+    run_borg_privileged init --encryption=none "$BORG_REPO"
+    run_borg_privileged info "$BORG_REPO" >/dev/null
+    echo >&2 "Backup repo initialized successfully."
 }
 
 function status() {
-    if ! is_environment_setup; then
-        echo >&2 "Borg env vars BORG_REPO and BORG_BASE_DIR not setup."
+    if ! is_backup_enabled; then
+        json-output "󰟢" "Backups are disabled for this machine. Re-run chezmoi init to enable them." disabled ', "state": "disabled", "visible": false'
+        return 0
+    fi
+
+    if [[ ! -f "$ACTIVE_SERVICE_PATH" ]] || [[ ! -f "$ACTIVE_TIMER_PATH" ]] || [[ ! -f "$ACTIVE_SSH_CONFIG_PATH" ]]; then
+        json-output "󰟢" "Backup is configured but not initialized. Run 'backup init'." disabled ', "state": "uninitialized", "visible": true'
         return 1
     fi
 
-    if ! is_timer_active; then
-        json-output "\uf740" "Backup is disabled. Click to enable and start it." inactive
-        return 1
+    local next_run
+    local tooltip
+    local class
+    next_run=$(next_timer_run)
+
+    if is_service_active; then
+        tooltip="Backing up now."
+        [[ -n "$next_run" ]] && tooltip="$tooltip\nNext scheduled run: $next_run"
+        json-output "󰣇" "$tooltip" running ', "state": "running", "visible": true'
+        return 0
     fi
 
-    if ! is_service_active; then
-        if is_service_failed; then
-            json-output "\uf7e4" "Backup has failed, click to try again." failed
-            return 1
-        else
-            json-output "\uf0c2" "Backup timer is waiting for the next backup. Click to start now." waiting
-            return 0
+    if is_service_failed; then
+        tooltip="Backup service failed."
+        if [[ -f "$LAST_FAILURE_SUMMARY_PATH" ]]; then
+            tooltip="$tooltip\n$(<"$LAST_FAILURE_SUMMARY_PATH")"
         fi
+        json-output "󰅙" "$tooltip" failed ', "state": "failed", "visible": true'
+        return 1
     fi
 
-    json-output "\uf382" "Backing up..." running
+    if [[ -f "$LAST_SUCCESS_PATH" ]]; then
+        local last_success_epoch
+        local now_epoch
+        local stale_after_seconds
+
+        last_success_epoch=$("$STAT_BIN" -c %Y "$LAST_SUCCESS_PATH")
+        now_epoch=$("$DATE_BIN" +%s)
+        stale_after_seconds=$(( ${BORG_STALE_HOURS:-24} * 3600 ))
+
+        if (( now_epoch - last_success_epoch > stale_after_seconds )); then
+            class="stale"
+            tooltip="Last successful backup is older than ${BORG_STALE_HOURS:-24} hours."
+        else
+            class="ok"
+            tooltip="Last successful backup: $(<"$LAST_SUCCESS_PATH")"
+        fi
+
+        [[ -n "$next_run" ]] && tooltip="$tooltip\nNext scheduled run: $next_run"
+        json-output "󰸞" "$tooltip" "$class" ", \"state\": \"$class\", \"visible\": true"
+        return 0
+    fi
+
+    if is_timer_active; then
+        tooltip="Backup timer is enabled but this machine has not completed a backup yet."
+        [[ -n "$next_run" ]] && tooltip="$tooltip\nNext scheduled run: $next_run"
+        json-output "󰧚" "$tooltip" waiting ', "state": "waiting", "visible": true'
+        return 0
+    fi
+
+    json-output "󰟢" "Backup timer is not active. Run 'backup init' or enable backup.timer." disabled ', "state": "disabled", "visible": true'
+    return 1
 }
 
-function error_usage() {
-    echo "Usage: $0 {status|start|stop} [--background]"
-    exit 1
+function start_background() {
+    require_backup_enabled
+
+    if [[ ! -f "$ACTIVE_SERVICE_PATH" ]] || [[ ! -f "$ACTIVE_TIMER_PATH" ]]; then
+        echo >&2 "Backup is not initialized yet. Run 'backup init' first."
+        return 1
+    fi
+
+    run_privileged "$SYSTEMCTL_BIN" start backup.service
 }
 
-subcommand="$1"
+function stop_background() {
+    if [[ ! -f "$ACTIVE_SERVICE_PATH" ]]; then
+        echo >&2 "Backup service is not installed. Run 'backup init' first."
+        return 1
+    fi
+
+    run_privileged "$SYSTEMCTL_BIN" stop backup.service
+}
+
+subcommand="${1:-help}"
 background="no"
 
-while [ -n "$2" ]; do
+while [[ $# -gt 1 ]]; do
     case "$2" in
     --background)
-        if [[ "$subcommand" == "start" ]]; then
-            background="yes"
-        else
-            echo "$subcommand does not support --background."
-            error_usage
-        fi
+        background="yes"
         ;;
-
+    --help|-h)
+        usage
+        exit 0
+        ;;
     *)
-        echo "$subcommand passed but not recognised."
+        echo >&2 "Unknown option: $2"
+        usage
+        exit 1
         ;;
-
     esac
 
     shift
-
 done
 
 case "$subcommand" in
+init)
+    init_backup
+    ;;
 status)
     status
     ;;
 start)
     if [[ "$background" == "yes" ]]; then
-        if ! is_timer_active; then
-            sudo systemctl enable backup.timer
-            sudo systemctl start backup.timer
-        fi
-        sudo systemctl start backup.service
+        start_background
     else
-        start_backup
+        if (( EUID == 0 )); then
+            run_backup_job
+        else
+            "$SUDO_BIN" "$0" __service-run
+        fi
     fi
     ;;
 stop)
-    sudo systemctl stop backup.service
+    stop_background
+    ;;
+help|--help|-h)
+    usage
+    ;;
+__service-run)
+    run_backup_job
     ;;
 *)
-    error_usage
+    echo >&2 "Unknown subcommand: $subcommand"
+    usage
+    exit 1
     ;;
 esac

@@ -1,0 +1,46 @@
+.backup-disabled,
+.backup-uninitialized,
+.backup-failed,
+.backup-ok,
+.backup-running,
+.backup-stale,
+.backup-waiting {
+  min-width: 18px;
+  padding: 0 4px;
+}
+
+.bar-item.backup-waiting image {
+  color: #7a7a7a;
+}
+
+.bar-item.backup-disabled image,
+.bar-item.backup-uninitialized image,
+.bar-item.backup-failed image,
+.bar-item.backup-stale image {
+  color: @ags-danger;
+}
+
+.bar-item.backup-running image,
+.bar-item.backup-ok image {
+  color: #cecece;
+}
+
+.panel.backup-panel button:hover,
+.panel.backup-panel button:focus,
+.panel.backup-panel button:active {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.panel.backup-panel button:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.backup-running {
+  color: @ags-fg;
+}
+
+.backup-ok {
+  color: #cecece;
+}

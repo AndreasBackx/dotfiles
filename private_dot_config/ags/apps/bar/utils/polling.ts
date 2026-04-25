@@ -67,6 +67,7 @@ export function createAdaptivePollState<T>(initial: T, options: AdaptivePollOpti
     }
 
     timeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, interval, () => {
+      timeoutId = 0
       void refresh()
       return GLib.SOURCE_REMOVE
     })

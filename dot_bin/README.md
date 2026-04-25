@@ -11,7 +11,7 @@
 - `hypr-profile-refresh`: re-render `windows.conf` and `workspaces.conf` for the active monitor profile, then remap windows.
 - `power-options selection`: opens the logout, suspend, reboot, and shutdown menu.
 - `updates`: checks or runs package updates.
-- `backup`: shows Borg backup status or starts a backup.
+- `backup`: initializes, checks, and runs the Borg backup flow. Use `backup init` once per machine after server-side SSH access is ready.
 - `lock`: locks the screen, pauses Spotify, mutes audio, and enables notification DND until unlock.
 
 ## Desktop Helper Scripts
@@ -36,3 +36,4 @@ These are called by AGS rather than directly by me most of the time:
 - Most scripts assume `~/.config/.variables` exists and is sourced by the shell.
 - Desktop-oriented scripts usually assume a Wayland session.
 - A few older utilities are still here because other scripts depend on them, even if they are not part of the main daily workflow.
+- `backup` is split into two phases: `chezmoi apply` renders the local source files and settings, then `backup init` installs the active root-owned runtime files, generates the root SSH key if needed, enables the timer, and initializes the remote repo only when missing.

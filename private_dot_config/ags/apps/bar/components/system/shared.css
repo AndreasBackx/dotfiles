@@ -17,10 +17,6 @@
   box-shadow: none;
 }
 
-.panel button:hover {
-  background: rgba(255, 255, 255, 0.08);
-}
-
 .bar-item {
   background: transparent;
   border-radius: 0;
@@ -39,6 +35,10 @@
   min-height: 56px;
 }
 
+.system-button-content.with-text > .item-text {
+  margin-left: 6px;
+}
+
 .bar-item,
 .bar-menu-button > button > box,
 menubutton > button > box,
@@ -46,8 +46,13 @@ menubutton > button > box,
 }
 
 .item-icon {
-  font-size: 15px;
+  min-width: 16px;
+  font-size: 16px;
   font-family: "MesloLGM Nerd Font Mono", "Symbols Nerd Font Mono", monospace;
+}
+
+.item-icon-only {
+  min-width: 16px;
 }
 
 .panel {
@@ -102,10 +107,15 @@ menubutton > button > box,
 }
 
 .panel button:hover,
-.panel button:focus,
 .panel button:active {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.16);
+}
+
+.panel button:focus,
+.panel button:focus-visible {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
 .panel .occupied {

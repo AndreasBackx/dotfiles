@@ -1,4 +1,4 @@
-import { Gtk } from "ags/gtk4"
+import { Gdk, Gtk } from "ags/gtk4"
 
 import { setInstancePopoverOpen } from "../../utils/activity"
 import { attachPopoverHandlers } from "../../utils/widget-helpers"
@@ -33,6 +33,17 @@ export default function SystemMenuButton({
 
     wired = true
     menuButton.set_popover(popover)
+    const clickController = new Gtk.GestureClick()
+    clickController.set_button(Gdk.BUTTON_PRIMARY)
+    clickController.connect("pressed", (controller) => {
+      if (!popover?.get_visible()) {
+        return
+      }
+
+      controller.set_state(Gtk.EventSequenceState.CLAIMED)
+      popover.popdown()
+    })
+    menuButton.add_controller(clickController)
     attachPopoverHandlers(popover, popoverId)
   }
 

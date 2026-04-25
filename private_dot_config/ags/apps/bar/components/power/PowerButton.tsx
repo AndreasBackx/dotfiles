@@ -24,8 +24,8 @@ export default function PowerButton({ instanceId }: PowerButtonProps) {
       tooltipText="Power options"
       button={
         <box class="bar-item icon-only" halign={Gtk.Align.CENTER}>
-          <label class="item-icon item-icon-only" label="⏻" xalign={0.5} yalign={0.5} />
-        </box>
+          <label class="item-icon item-icon-only" label="⏻" xalign={0.5} yalign={0.5} widthRequest={16} />
+          </box>
       }
     >
       <box class="panel" orientation={Gtk.Orientation.VERTICAL} spacing={8}>

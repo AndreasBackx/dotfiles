@@ -110,12 +110,12 @@ function readBatteryDetails(): BatteryDetails {
   const cycleCount = readSysfsNumber(`${BATTERY_SYSFS_PATH}/cycle_count`)
   const [timeEstimate, setTimeEstimate] = createState<BatteryTimeEstimate>(readBatteryTimeEstimate())
 
-  const estimate = timeEstimate.get() 
+  const estimate = timeEstimate.get()
 
   return {
     status,
     estimate: estimate ? `${estimate.text} ${estimate.suffix}` : "",
-    health: healthPercent !== null ? `${formatPercent(healthPercent)} of design capacity` : "Unavailable",
+    health: healthPercent !== null ? `${formatPercent(healthPercent)}` : "Unavailable",
     cycles: cycleCount !== null ? `${cycleCount}` : "Unavailable",
   }
 }

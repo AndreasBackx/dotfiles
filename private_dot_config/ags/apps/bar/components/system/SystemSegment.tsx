@@ -1,5 +1,6 @@
 import AudioButton from "../audio/AudioButton"
 import BluetoothButton from "../bluetooth/BluetoothButton"
+import BackupButton from "../backup/BackupButton"
 import BatteryButton from "../battery/BatteryButton"
 import ClockButton from "../clock/ClockButton"
 import DisplaysButton from "../displays/DisplaysButton"
@@ -26,6 +27,7 @@ export default function SystemSegment({ instanceId, monitor }: SystemSegmentProp
       <DisplaysButton instanceId={instanceId} monitor={monitor} />
       <AudioButton instanceId={instanceId} />
       <WarningItems instanceId={instanceId} />
+      <BackupButton instanceId={instanceId} />
       <BatteryButton instanceId={instanceId} />
       <PowerButton instanceId={instanceId} />
       <ClockButton instanceId={instanceId} />

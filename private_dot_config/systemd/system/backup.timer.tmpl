@@ -1,0 +1,10 @@
+[Unit]
+Description=Schedule Borg backups
+
+[Timer]
+OnCalendar={{ .backup.on_calendar }}
+Persistent=true
+RandomizedDelaySec=30m
+
+[Install]
+WantedBy=timers.target

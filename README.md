@@ -20,10 +20,11 @@ dot-doctor
 
 ## Configuration Model
 
-- `.chezmoi.toml.tmpl` prompts for `environment`, `gpu`, `headless`, monitor location, and default monitor profile.
+- `.chezmoi.toml.tmpl` prompts for `environment`, `gpu`, `headless`, monitor location, default monitor profile, and optional Borg backup settings.
 - `.chezmoidata.toml` is the main source of truth for monitor metadata, workspace ranges, profile labels, lock and screen timeouts, and theme values.
 - `private_dot_config/dot_variables.tmpl` renders `~/.config/.variables` so shell scripts can read the selected chezmoi data.
 - `private_dot_config/dot_secrets.tmpl` renders `~/.config/.secrets` from 1Password on non-headless machines.
+- `private_dot_config/systemd/system/backup.*` are source templates for the root Borg backup units; `backup init` installs their active copies into `/etc/systemd/system`.
 - `dot_zprofile.tmpl` and `dot_zshenv` source those generated files on shell startup.
 
 ## Repo Layout
@@ -55,7 +56,7 @@ These run automatically after apply:
 - `hypr-profile-refresh`: re-render profile-sensitive Hyprland config and remap windows.
 - `power-options selection`: rofi power menu.
 - `updates check` or `updates update`: package update helper.
-- `backup status` or `backup start`: Borg backup helper.
+- `backup init`, `backup status`, or `backup start`: Borg backup helper.
 
 ## Desktop Packages
 
@@ -93,6 +94,7 @@ Common things to check:
 
 - Missing wrappers: run `chezmoi apply` again after installing required desktop tools.
 - Missing secrets: check `~/.config/.secrets` and your 1Password CLI setup.
+- Backups: `chezmoi apply` renders backup settings, but `backup init` is the explicit activation step that installs the root-owned files, generates the root SSH key, enables the timer, and initializes the remote repo when needed.
 - Headless mode: desktop checks are skipped and secrets are not loaded.
 - AGS reloads: logs go to `~/.local/state/bar-reload.log`.
 - Hyprland and UWSM logs:

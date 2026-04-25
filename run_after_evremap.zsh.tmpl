@@ -20,6 +20,11 @@ copy_if_changed() {
         return 1
     fi
 
+    if [[ -e "$to" ]] && [[ "$from" -ef "$to" ]]; then
+        >&2 echo "$from == $to"
+        return 1
+    fi
+
     if [[ -L "$to" ]] || [[ ! -f "$to" ]] || ! cmp --silent "$from" "$to"; then
         >&2 echo "Copying $from to $to..."
         sudo mkdir -p "$(dirname "$to")"
@@ -53,7 +58,9 @@ if [[ ! -f "$service_to" ]] || [[ ! -f "$config_to" ]]; then
     exit 0
 fi
 
-sudo systemctl enable evremap.service >/dev/null
+if ! systemctl is-enabled --quiet evremap.service; then
+    sudo systemctl enable evremap.service >/dev/null
+fi
 
 if systemctl is-active --quiet evremap.service; then
     if [[ "$service_changed" == true ]] || [[ "$config_changed" == true ]]; then

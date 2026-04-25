@@ -18,6 +18,8 @@
 */.rbenv
 */.npm-global
 */Downloads
+*/Videos
+/home/andreas/Videos
 */.npm/_cacache
 */node_modules
 */__pycache__
