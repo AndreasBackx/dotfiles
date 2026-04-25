@@ -1,0 +1,66 @@
+#!/usr/bin/env zsh
+
+set -o errexit -o nounset -o pipefail
+
+service_from="$HOME/.config/systemd/system/evremap.service"
+service_to="/etc/systemd/system/evremap.service"
+config_from="$HOME/.config/evremap/config.toml"
+config_to="/etc/evremap/config.toml"
+
+service_changed=false
+config_changed=false
+
+copy_if_changed() {
+    local from="$1"
+    local to="$2"
+    local mode="$3"
+
+    if [[ ! -f "$from" ]]; then
+        >&2 echo "$from does not exist, skipping."
+        return 1
+    fi
+
+    if [[ -L "$to" ]] || [[ ! -f "$to" ]] || ! cmp --silent "$from" "$to"; then
+        >&2 echo "Copying $from to $to..."
+        sudo mkdir -p "$(dirname "$to")"
+        sudo cp "$from" "$to"
+        sudo chmod "$mode" "$to"
+        return 0
+    fi
+
+    >&2 echo "$from == $to"
+    return 1
+}
+
+if copy_if_changed "$service_from" "$service_to" 644; then
+    service_changed=true
+fi
+
+if copy_if_changed "$config_from" "$config_to" 644; then
+    config_changed=true
+fi
+
+if ! command -v systemctl >/dev/null 2>&1; then
+    exit 0
+fi
+
+if [[ "$service_changed" == true ]]; then
+    >&2 echo "Reloading systemd manager configuration..."
+    sudo systemctl daemon-reload
+fi
+
+if [[ ! -f "$service_to" ]] || [[ ! -f "$config_to" ]]; then
+    exit 0
+fi
+
+sudo systemctl enable evremap.service >/dev/null
+
+if systemctl is-active --quiet evremap.service; then
+    if [[ "$service_changed" == true ]] || [[ "$config_changed" == true ]]; then
+        >&2 echo "Restarting evremap.service..."
+        sudo systemctl restart evremap.service
+    fi
+else
+    >&2 echo "Starting evremap.service..."
+    sudo systemctl start evremap.service
+fi
