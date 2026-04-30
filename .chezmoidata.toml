@@ -114,10 +114,11 @@ workspaces = "center"
 shikane_search = ["m=AW3225QF", "s=GZ00YZ3", "v=Dell Inc."]
 serial_number = "GZ00YZ3"
 bar_position = "bottom"
-mode = "3840x2160@120Hz"
+mode = "3840x2160@240Hz"
 position = "1728x865"
 scale = "1.25"
 transform = 0
+vrr = 0
 color = "#000000"
 profiles = ["desk", "desk_living_room"]
 
