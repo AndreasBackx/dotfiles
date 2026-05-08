@@ -2,6 +2,7 @@
 
 set -o errexit -o nounset -o pipefail
 
+evremap_enabled="{{ .evremap.enabled }}"
 service_from="$HOME/.config/systemd/system/evremap.service"
 service_to="/etc/systemd/system/evremap.service"
 config_from="$HOME/.config/evremap/config.toml"
@@ -9,6 +10,8 @@ config_to="/etc/evremap/config.toml"
 
 service_changed=false
 config_changed=false
+service_removed=false
+config_removed=false
 
 copy_if_changed() {
     local from="$1"
@@ -34,6 +37,49 @@ copy_if_changed() {
     >&2 echo "$from == $to"
     return 1
 }
+
+remove_if_exists() {
+    local path="$1"
+
+    if [[ -L "$path" ]] || [[ -e "$path" ]]; then
+        >&2 echo "Removing $path..."
+        sudo rm -f "$path"
+        return 0
+    fi
+
+    return 1
+}
+
+if [[ "$evremap_enabled" != "true" ]]; then
+    if command -v systemctl >/dev/null 2>&1; then
+        if systemctl is-active --quiet evremap.service; then
+            >&2 echo "Stopping evremap.service..."
+            sudo systemctl stop evremap.service
+        fi
+
+        if systemctl is-enabled --quiet evremap.service; then
+            >&2 echo "Disabling evremap.service..."
+            sudo systemctl disable evremap.service >/dev/null
+        fi
+    fi
+
+    if remove_if_exists "$service_to"; then
+        service_removed=true
+    fi
+
+    if remove_if_exists "$config_to"; then
+        config_removed=true
+    fi
+
+    if command -v systemctl >/dev/null 2>&1; then
+        if [[ "$service_removed" == true ]] || [[ "$config_removed" == true ]]; then
+            >&2 echo "Reloading systemd manager configuration..."
+            sudo systemctl daemon-reload
+        fi
+    fi
+
+    exit 0
+fi
 
 if copy_if_changed "$service_from" "$service_to" 644; then
     service_changed=true

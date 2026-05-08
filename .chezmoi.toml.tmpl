@@ -46,6 +46,10 @@ on_calendar = "daily"
 stale_hours = "24"
 {{- end }}
 
+[data.evremap]
+{{- $evremapEnabled := promptBoolOnce . "evremap.enabled" "Enable evremap for this machine? [y/n]" false }}
+enabled = {{ $evremapEnabled }}
+
 [edit]
 command = "code"
 args = ["--wait"]

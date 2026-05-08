@@ -9,6 +9,7 @@ export BORG_HOST_ALIAS="{{ .backup.host_alias }}"
 export BORG_REPO_NAME="{{ .backup.repo_name }}"
 export BORG_ON_CALENDAR="{{ .backup.on_calendar }}"
 export BORG_STALE_HOURS="{{ .backup.stale_hours }}"
+export EVREMAP_ENABLED="{{ .evremap.enabled }}"
 {{- if .backup.enabled }}
 export BORG_REPO="ssh://borg@{{ .backup.host_alias }}/./backups/{{ .backup.repo_name }}"
 {{- else }}
