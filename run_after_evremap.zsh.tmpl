@@ -20,14 +20,12 @@ copy_if_changed() {
         return 1
     fi
 
-    if [[ -e "$to" ]] && [[ "$from" -ef "$to" ]]; then
-        >&2 echo "$from == $to"
-        return 1
-    fi
-
     if [[ -L "$to" ]] || [[ ! -f "$to" ]] || ! cmp --silent "$from" "$to"; then
         >&2 echo "Copying $from to $to..."
         sudo mkdir -p "$(dirname "$to")"
+        if [[ -L "$to" ]]; then
+            sudo rm "$to"
+        fi
         sudo cp "$from" "$to"
         sudo chmod "$mode" "$to"
         return 0
