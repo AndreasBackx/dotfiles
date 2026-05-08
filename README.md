@@ -31,6 +31,7 @@ dot-doctor
 
 - `dot_bin/`: user-facing scripts and helpers. See [`dot_bin/README.md`](dot_bin/README.md).
 - `private_dot_config/hypr/`: Hyprland config, monitor templates, workspace routing, session helpers. See [`private_dot_config/hypr/README.md`](private_dot_config/hypr/README.md).
+- `private_dot_config/niri/`: Niri config and session wrapper using native named workspaces on top of the shared monitor/profile data.
 - `private_dot_config/ags/`: AGS bar implementation. See [`private_dot_config/ags/README.md`](private_dot_config/ags/README.md).
 - `private_dot_config/nvim/`: LazyVim-based Neovim config. See [`private_dot_config/nvim/README.md`](private_dot_config/nvim/README.md).
 - `run_after_*.zsh*`: post-apply hooks that set up generated state after `chezmoi apply`.
@@ -40,7 +41,7 @@ dot-doctor
 These run automatically after apply:
 
 - `run_after_wayland_wrappers.zsh.tmpl`: creates `~/.bin/wrappers` for desktop apps that should be forced onto Wayland.
-- `run_after_hyprland.zsh.tmpl`: syncs Hyprland desktop session entries, creates the Hyprland log directory, reloads user systemd units, and enables Hyprland log rotation.
+- `run_after_hyprland.zsh.tmpl`: syncs Hyprland and Niri desktop session entries, creates the Hyprland log directory, reloads user systemd units, and enables Hyprland log rotation.
 - `run_after_firefox_userchrome.zsh`: installs a default Firefox `userChrome.css` into the active profile when one is missing and enables Firefox stylesheet loading in `user.js`.
 - `run_after_hypr_workspace_remap.zsh.tmpl`: remaps windows when apply happens inside a live Hyprland session.
 - `run_after_gnome_monitors.zsh.tmpl`: copies `~/.config/monitors.xml` into GDM so the login screen uses the same layout.
@@ -52,15 +53,17 @@ These run automatically after apply:
 - `dot-doctor`: check required base and desktop tools.
 - `bar-reload`: restart the AGS bar and write logs to `~/.local/state/bar-reload.log`.
 - `hyprland-logs`: show the Hyprland file log, recent UWSM journal entries, crash reports, and logrotate config path.
+- `niri-logs`: show the recent Niri session journal and session environment hints.
 - `monitor-profiles selection`: switch monitor profiles through `shikanectl` and update default audio devices for that profile.
 - `hypr-profile-refresh`: re-render profile-sensitive Hyprland config and remap windows.
+- `wayland-profile-refresh`: runtime compositor-aware profile refresh entrypoint used by `shikane`.
 - `power-options selection`: rofi power menu.
 - `updates check` or `updates update`: package update helper.
 - `backup init`, `backup status`, or `backup start`: Borg backup helper.
 
 ## Desktop Packages
 
-These are the tools the current Hyprland and AGS setup expects:
+These are the tools the current Wayland desktop setup expects:
 
 - `minos`
 - `ags`
@@ -69,7 +72,9 @@ These are the tools the current Hyprland and AGS setup expects:
 - `kitty`
 - `rofi` or `rofi-wayland`
 - `hyprland`
+- `niri`
 - `uwsm`
+- `xwayland-satellite`
 - `shikane`
 
 Current Fedora or Terra limitation:
@@ -102,12 +107,16 @@ Common things to check:
   session journal `journalctl --user -u wayland-wm@hyprland.desktop.service`
   crash reports `~/.cache/hyprland/hyprlandCrashReport*.txt`
   helper `hyprland-logs`
+- Niri logs:
+  session journal `journalctl --user -u niri.service`
+  helper `niri-logs`
 
 ## Nested Docs
 
 - [`dot_bin/README.md`](dot_bin/README.md)
 - [`private_dot_config/ags/README.md`](private_dot_config/ags/README.md)
 - [`private_dot_config/hypr/README.md`](private_dot_config/hypr/README.md)
+- [`private_dot_config/niri/README.md`](private_dot_config/niri/README.md)
 - [`private_dot_config/nvim/README.md`](private_dot_config/nvim/README.md)
 
 ## ddcutil Access

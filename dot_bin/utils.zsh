@@ -8,6 +8,49 @@ function is_wayland() {
     fi
 }
 
+function current_compositor() {
+    if [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]]; then
+        echo "hyprland"
+        return 0
+    fi
+
+    if [[ -n "${NIRI_SOCKET:-}" ]]; then
+        echo "niri"
+        return 0
+    fi
+
+    case "${XDG_CURRENT_DESKTOP:-}${XDG_SESSION_DESKTOP:+:${XDG_SESSION_DESKTOP}}" in
+    *Hyprland* | *hyprland*)
+        echo "hyprland"
+        return 0
+        ;;
+    *niri* | *Niri*)
+        echo "niri"
+        return 0
+        ;;
+    esac
+
+    if command -v hyprctl >/dev/null 2>&1 && hyprctl -j version >/dev/null 2>&1; then
+        echo "hyprland"
+        return 0
+    fi
+
+    if command -v niri >/dev/null 2>&1 && niri msg --json outputs >/dev/null 2>&1; then
+        echo "niri"
+        return 0
+    fi
+
+    echo "unknown"
+}
+
+function is_hyprland() {
+    [[ "$(current_compositor)" == "hyprland" ]]
+}
+
+function is_niri() {
+    [[ "$(current_compositor)" == "niri" ]]
+}
+
 function json-output() {
     text="${1-}"
     tooltip="${2-}"
@@ -73,7 +116,18 @@ function get-output-name() {
     fi
 
     if [[ -z "$outputs" ]]; then
-        outputs=$(hyprctl monitors -j || swaymsg -t get_outputs)
+        if is_hyprland; then
+            outputs=$(hyprctl monitors -j)
+        elif is_niri; then
+            outputs=$(niri msg --json outputs)
+        else
+            outputs=$(swaymsg -t get_outputs)
+        fi
+    fi
+
+    if is_niri; then
+        echo "$outputs" | jq -r ".[] | . + {description: ([.make, .model, (.serial // \"\")] | map(select(length > 0)) | join(\" \"))} | select(.description == \"$description\") | .name"
+        return
     fi
 
     echo "$outputs" | jq -r ".[] | . + {description: \"\(.make) \(.model) \(.serial)\"} | select(.description == \"$description\") | .name"

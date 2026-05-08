@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+set -eu
+
+printf 'Current compositor: niri\n'
+printf 'Session journal:\n'
+journalctl --user -u niri.service -n 40 --no-pager
+
+printf '\nSession environment hints:\n'
+printf 'NIRI_SOCKET=%s\n' "${NIRI_SOCKET:-unset}"
+printf 'XDG_CURRENT_DESKTOP=%s\n' "${XDG_CURRENT_DESKTOP:-unset}"

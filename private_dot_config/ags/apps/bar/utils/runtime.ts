@@ -10,6 +10,8 @@ export const CENTER_HIDE_DELAY_MS = 320
 export const INITIAL_AUTOHIDE_DELAY_MS = 1200
 export const WORKSPACE_STRIP_HIDE_DELAY_MS = 300
 
+export type CompositorName = "hyprland" | "niri" | "unknown"
+
 /**
  * Builds an absolute command path inside `~/.bin`.
  *
@@ -26,6 +28,38 @@ export function command(name: string, ...args: string[]) {
  */
 export function shell(cmd: string) {
   return ["bash", "-lc", cmd]
+}
+
+export function currentCompositor(): CompositorName {
+  const env = GLib.get_environ()
+  const lookup = (name: string) => env.find((entry) => entry.startsWith(`${name}=`))?.slice(name.length + 1) ?? ""
+
+  if (lookup("HYPRLAND_INSTANCE_SIGNATURE")) {
+    return "hyprland"
+  }
+
+  if (lookup("NIRI_SOCKET")) {
+    return "niri"
+  }
+
+  const desktop = `${lookup("XDG_CURRENT_DESKTOP")}:${lookup("XDG_SESSION_DESKTOP")}`.toLowerCase()
+  if (desktop.includes("hyprland")) {
+    return "hyprland"
+  }
+
+  if (desktop.includes("niri")) {
+    return "niri"
+  }
+
+  if (readCommandOutput(["sh", "-lc", "command -v hyprctl >/dev/null 2>&1 && hyprctl -j version >/dev/null 2>&1 && printf hyprland"], "") === "hyprland") {
+    return "hyprland"
+  }
+
+  if (readCommandOutput(["sh", "-lc", "command -v niri >/dev/null 2>&1 && niri msg --json outputs >/dev/null 2>&1 && printf niri"], "") === "niri") {
+    return "niri"
+  }
+
+  return "unknown"
 }
 
 /**

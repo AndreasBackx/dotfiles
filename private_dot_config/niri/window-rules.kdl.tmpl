@@ -1,0 +1,124 @@
+window-rule {
+    match app-id=r#"^(1password|com\.adamcake\.Bolt)$"#
+    open-floating true
+}
+
+window-rule {
+    match title=r#"^(Quick Access .+ 1Password|1Password)$"#
+    open-floating true
+    open-focused true
+}
+
+window-rule {
+    match title=r#"^(RuneLite\sLauncher|HDOS)$"#
+    open-floating true
+    default-floating-position x=0 y=0 relative-to="top"
+}
+
+window-rule {
+    match app-id=r#"^(hdos-Main)$"#
+    open-floating false
+}
+
+window-rule {
+    match app-id=r#"^Zoom.*$"#
+    open-floating true
+}
+
+window-rule {
+    match app-id=r#"^Zoom.*$"# title=r#"^(menu window)$"#
+    default-column-width { fixed 300; }
+    default-window-height { fixed 201; }
+}
+
+window-rule {
+    match app-id=r#"^(Gtk_prompt\.py|updates)$"#
+    open-floating true
+}
+
+window-rule {
+    match app-id=r#"^(kitty-dropterm)$"#
+    open-floating true
+    default-column-width { proportion 1.0; }
+    default-window-height { fixed 350; }
+    default-floating-position x=0 y=0 relative-to="top"
+}
+
+window-rule {
+    match app-id="firefox$" title="^Picture-in-Picture$"
+    open-floating true
+    default-column-width { fixed 800; }
+    default-window-height { fixed 450; }
+    default-floating-position x=32 y=32 relative-to="bottom-left"
+}
+
+window-rule {
+    match app-id=r#"^(thunderbird)$"#
+    open-on-workspace "mail"
+}
+
+window-rule {
+    match app-id=r#"^(Spotify(\sPremium)?)$"#
+    open-on-workspace "media"
+}
+
+window-rule {
+    match title=r#"^(Spotify(\sPremium)?)$"#
+    open-on-workspace "media"
+}
+
+{{ if eq .environment "work" -}}
+window-rule {
+    match app-id=r#"^(Mattermost)$"#
+    match app-id=r#"^(google-chat-linux|Google-chat-linux|googlechat)$"#
+    match title=r#"^(Workchat|Google Chat)$"#
+    open-on-workspace "messages"
+}
+
+window-rule {
+    match app-id=r#"^([dD]iscord|com\.discordapp\.Discord)$"#
+    match title=r#"^(Signal.*|WhatsApp.*|ZapZap)$"#
+    open-on-workspace "chats"
+}
+
+window-rule {
+    match app-id=r#"^(Hexchat|Zulip|Slack)$"#
+    match title=r#"^(Tuba)$"#
+    open-on-workspace "work-comm"
+}
+{{ else -}}
+window-rule {
+    match app-id=r#"^([dD]iscord|com\.discordapp\.Discord)$"#
+    open-on-workspace "messages"
+}
+
+window-rule {
+    match title=r#"^(Signal.*|WhatsApp.*|ZapZap)$"#
+    open-on-workspace "messages"
+}
+
+window-rule {
+    match app-id=r#"^(Hexchat|Zulip|Slack)$"#
+    open-on-workspace "chats"
+}
+
+window-rule {
+    match title=r#"^(Tuba)$"#
+    open-on-workspace "chats"
+}
+
+window-rule {
+    match app-id=r#"^(google-chat-linux|Google-chat-linux|googlechat)$"#
+    open-on-workspace "work-comm"
+}
+{{ end -}}
+
+window-rule {
+    match app-id=r#"^(firefox|zen|google-chrome|Google-chrome|chromium|Chromium|brave-browser|Brave-browser)$"#
+    open-on-workspace "browser"
+}
+
+window-rule {
+    match app-id=r#"^code(.*)?(-url-handler)?$"#
+    open-on-output {{ index .monitors .monitors.selected "center" "name" | toJson }}
+}

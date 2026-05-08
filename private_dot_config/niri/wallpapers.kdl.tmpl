@@ -1,0 +1,13 @@
+{{- $selectedMonitors := index .monitors .monitors.selected -}}
+{{- $wallpaperArgs := list -}}
+{{- range $role := list "left" "center" "right" "laptop" "tv" -}}
+  {{- if hasKey $selectedMonitors $role -}}
+    {{- $monitor := index $selectedMonitors $role -}}
+    {{- if and (kindIs "map" $monitor) (hasKey $monitor "name") (hasKey $monitor "background") -}}
+      {{- $wallpaperArgs = append $wallpaperArgs (printf "--output %q --image %s --mode fill" (index $monitor "name") (index $monitor "background")) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if gt (len $wallpaperArgs) 0 }}
+spawn-sh-at-startup {{ printf "swaybg %s" (join " " $wallpaperArgs) | toJson }}
+{{- end }}

@@ -9,7 +9,11 @@ if [[ ! -f "$config_file" ]]; then
 fi
 
 # TODO: replace this placeholder with the real shikane active-profile query once it is available.
-active_profile="$(sh -lc 'printf %s "$ACTIVE_PROFILE"')"
+active_profile="${1:-}"
+
+if [[ -z "$active_profile" ]]; then
+    active_profile="$(sh -lc 'printf %s "$ACTIVE_PROFILE"')"
+fi
 
 if [[ -z "$active_profile" ]]; then
     active_profile="$(jq -r '.defaultProfile' "$config_file")"

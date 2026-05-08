@@ -17,6 +17,7 @@ type BarWindowProps = {
   hyprState: HyprStateAccessor
   visible: BooleanAccessor
   exclusive: BooleanAccessor
+  showWorkspaceStrip: boolean
   onHoverEnter?: () => void
   onHoverLeave?: () => void
 }
@@ -30,6 +31,7 @@ export default function BarWindow({
   hyprState,
   visible,
   exclusive,
+  showWorkspaceStrip,
   onHoverEnter,
   onHoverLeave,
 }: BarWindowProps) {
@@ -75,7 +77,13 @@ export default function BarWindow({
         halign={Gtk.Align.FILL}
         $={(self) => attachHoverHandlers(self, hoverId, onHoverEnter, onHoverLeave)}
       >
-        <BarRoot base={baseForRole(role)} hyprState={hyprState} instanceId={instanceId} position={position} />
+        <BarRoot
+          base={baseForRole(role)}
+          hyprState={hyprState}
+          instanceId={instanceId}
+          position={position}
+          showWorkspaceStrip={showWorkspaceStrip}
+        />
       </box>
     </OverlayWindow>
   )

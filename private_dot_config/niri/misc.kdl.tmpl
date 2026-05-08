@@ -1,0 +1,47 @@
+prefer-no-csd
+
+screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+
+environment {
+    GDK_SCALE "2"
+    XCURSOR_SIZE "20"
+    QT_QPA_PLATFORM "wayland"
+    MOZ_ENABLE_WAYLAND "1"
+    ELECTRON_OZONE_PLATFORM_HINT "auto"
+}
+
+xwayland-satellite {
+    path "xwayland-satellite"
+}
+
+clipboard {
+    disable-primary
+}
+
+hotkey-overlay {
+    hide-not-bound
+}
+
+config-notification {
+    disable-failed
+}
+
+spawn-sh-at-startup "env GI_TYPELIB_PATH=/usr/local/lib64/girepository-1.0 LD_LIBRARY_PATH=/usr/local/lib64 ags run $HOME/.config/ags/apps/bar/app.tsx"
+spawn-sh-at-startup "pgrep -x waycorner >/dev/null || waycorner"
+spawn-sh-at-startup "pgrep -x swayidle >/dev/null || swayidle -w timeout 300 'loginctl lock-session' timeout 3600 'niri msg action power-off-monitors' before-sleep 'lock'"
+spawn-sh-at-startup "pkill shikane; shikane >/tmp/shikane.log 2>&1 &"
+spawn-at-startup "gnome-keyring-daemon" "--start" "--components=secrets"
+spawn-sh-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 || /usr/libexec/polkit-gnome-authentication-agent-1"
+spawn-sh-at-startup "pgrep -x redshift-gtk >/dev/null || redshift-gtk"
+spawn-sh-at-startup "pgrep -x gammastep-indicator >/dev/null || gammastep-indicator"
+spawn-at-startup "nm-applet" "--indicator"
+spawn-at-startup "blueman-applet"
+spawn-at-startup "signal-desktop"
+spawn-at-startup "spotify"
+spawn-at-startup "discord"
+{{ if eq .environment "work" -}}
+spawn-at-startup "googlechat"
+{{ end -}}
+spawn-sh-at-startup "trayscale --hide-window || dev.deedles.Trayscale --hide-window"
+spawn-at-startup "1password" "--silent"
+spawn-sh-at-startup "[ -n \"$BROWSER\" ] && exec $BROWSER"

@@ -1,0 +1,88 @@
+binds {
+    Super+Return repeat=false { spawn-sh "ghostty || kitty-cwd || kitty"; }
+    Super+Shift+Return repeat=false { spawn-sh "kitty --class kitty-dropterm"; }
+    Super+D repeat=false { spawn-sh "pkill rofi; rofi -show run"; }
+    Super+Space repeat=false { spawn-sh "pkill rofi; rofi -show run"; }
+    Super+Control+Space repeat=false { spawn "emoji"; }
+    Super+A repeat=false { spawn "rofai"; }
+    Super+C repeat=false { spawn-sh "rofi -show calc -modi calc -no-show-match -no-sort"; }
+    Super+O repeat=false { spawn "ottolangy"; }
+    Super+Shift+E repeat=false { spawn "power-options" "selection"; }
+    Super+Shift+O repeat=false { spawn "monitor-profiles" "selection"; }
+    Super+Shift+S repeat=false { screenshot; }
+    Super+Control+Shift+S repeat=false { spawn-sh "grim - | wl-copy"; }
+    Control+Space repeat=false { spawn "makoctl" "dismiss"; }
+    Control+Grave repeat=false { spawn "makoctl" "restore"; }
+    Control+Shift+Space repeat=false { spawn "1password" "--quick-access"; }
+    Super+L repeat=false allow-inhibiting=false { spawn "loginctl" "lock-session"; }
+    Super+Shift+C repeat=false { spawn "upload"; }
+    Super+Q repeat=false { close-window; }
+    Super+M repeat=false { quit; }
+
+    XF86AudioRaiseVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%+"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-"; }
+    XF86AudioMute allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
+    XF86AudioPlay allow-when-locked=true { spawn "playerctl" "play-pause"; }
+    XF86AudioPause allow-when-locked=true { spawn "playerctl" "play-pause"; }
+    XF86AudioStop allow-when-locked=true { spawn-sh "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Stop"; }
+    XF86AudioPrev allow-when-locked=true { spawn-sh "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous"; }
+    XF86AudioNext allow-when-locked=true { spawn-sh "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next"; }
+    XF86MonBrightnessUp { spawn "brightnessctl" "set" "5%+"; }
+    XF86MonBrightnessDown { spawn "brightnessctl" "set" "5%-"; }
+
+    Super+Left { focus-column-left; }
+    Super+Right { focus-column-right; }
+    Super+Down { focus-window-down; }
+    Super+Up { focus-window-up; }
+    Super+H { focus-column-left; }
+    Super+J { focus-window-down; }
+    Super+K { focus-window-up; }
+    Super+Control+H { move-column-left; }
+    Super+Control+L { move-column-right; }
+    Super+Control+J { move-window-down; }
+    Super+Control+K { move-window-up; }
+    Super+Shift+H { focus-monitor-left; }
+    Super+Shift+L { focus-monitor-right; }
+    Super+Shift+J { focus-monitor-down; }
+    Super+Shift+K { focus-monitor-up; }
+    Super+Control+Shift+H { move-column-to-monitor-left; }
+    Super+Control+Shift+L { move-column-to-monitor-right; }
+    Super+Control+Shift+J { move-column-to-monitor-down; }
+    Super+Control+Shift+K { move-column-to-monitor-up; }
+    Super+U { focus-workspace-down; }
+    Super+I { focus-workspace-up; }
+    Super+Page_Down { focus-workspace-down; }
+    Super+Page_Up { focus-workspace-up; }
+    Super+Control+U { move-column-to-workspace-down; }
+    Super+Control+I { move-column-to-workspace-up; }
+    Super+Shift+U { move-workspace-down; }
+    Super+Shift+I { move-workspace-up; }
+    Super+WheelScrollDown cooldown-ms=150 { focus-workspace-down; }
+    Super+WheelScrollUp cooldown-ms=150 { focus-workspace-up; }
+    Super+BracketLeft { consume-or-expel-window-left; }
+    Super+BracketRight { consume-or-expel-window-right; }
+    Super+R { switch-preset-column-width; }
+    Super+Shift+R { switch-preset-column-width-back; }
+    Super+F { toggle-window-floating; }
+    Super+V { toggle-window-floating; }
+    Super+Shift+V { switch-focus-between-floating-and-tiling; }
+    Super+Shift+F { fullscreen-window; }
+    Super+Minus { set-column-width "-10%"; }
+    Super+Equal { set-column-width "+10%"; }
+    Super+Shift+Minus { set-window-height "-10%"; }
+    Super+Shift+Equal { set-window-height "+10%"; }
+    Super+Control+R { reset-window-height; }
+
+    Super+1 repeat=false { focus-workspace "browser"; }
+    Super+2 repeat=false { focus-workspace "mail"; }
+    Super+3 repeat=false { focus-workspace "messages"; }
+    Super+4 repeat=false { focus-workspace "chats"; }
+    Super+5 repeat=false { focus-workspace "work-comm"; }
+    Super+6 repeat=false { focus-workspace "media"; }
+    Super+Shift+1 repeat=false { move-column-to-workspace "browser"; }
+    Super+Shift+2 repeat=false { move-column-to-workspace "mail"; }
+    Super+Shift+3 repeat=false { move-column-to-workspace "messages"; }
+    Super+Shift+4 repeat=false { move-column-to-workspace "chats"; }
+    Super+Shift+5 repeat=false { move-column-to-workspace "work-comm"; }
+    Super+Shift+6 repeat=false { move-column-to-workspace "media"; }
+}

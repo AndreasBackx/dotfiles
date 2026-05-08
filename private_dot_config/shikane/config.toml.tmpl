@@ -20,7 +20,7 @@ transform = "{{ template "shikane_transform" .monitor }}"
 {{- range $profileId, $_ := $profiles }}
 [[profile]]
 name = "{{ $profileId }}"
-exec = ["sh", "-lc", "ACTIVE_PROFILE=\"$SHIKANE_PROFILE_NAME\" \"$HOME/.bin/hypr-profile-refresh\""]
+exec = ["sh", "-lc", "ACTIVE_PROFILE=\"$SHIKANE_PROFILE_NAME\" \"$HOME/.bin/wayland-profile-refresh\""]
 
 {{- range $monitorId, $monitor := $monitors }}
 {{- if not (kindIs "map" $monitor) -}}

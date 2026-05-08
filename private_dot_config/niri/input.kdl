@@ -1,0 +1,10 @@
+input {
+    touchpad {
+        natural-scroll
+        accel-speed 0.25
+        accel-profile "adaptive"
+        scroll-factor 0.5
+    }
+
+    focus-follows-mouse
+}

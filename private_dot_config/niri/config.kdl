@@ -1,0 +1,8 @@
+include "outputs.kdl"
+include "workspaces.kdl"
+include "layout.kdl"
+include "window-rules.kdl"
+include "binds.kdl"
+include "input.kdl"
+include "wallpapers.kdl"
+include "misc.kdl"

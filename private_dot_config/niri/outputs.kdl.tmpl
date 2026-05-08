@@ -1,0 +1,47 @@
+{{- $location := .monitors.selected -}}
+{{- $selectedMonitors := index .monitors $location -}}
+{{- $defaultProfile := .monitors.default_profile | default (index $selectedMonitors "default_profile") -}}
+{{- $activeProfile := $defaultProfile -}}
+{{- $profileFromEnv := trim (output "sh" "-lc" "printf '%s' \"$ACTIVE_PROFILE\"") -}}
+{{- if ne $profileFromEnv "" -}}
+  {{- $activeProfile = $profileFromEnv -}}
+{{- end -}}
+{{- if hasKey . "runtime" -}}
+  {{- $runtime := index . "runtime" -}}
+  {{- if and $runtime (hasKey $runtime "active_profile") -}}
+    {{- $runtimeProfile := trim (index $runtime "active_profile") -}}
+    {{- if ne $runtimeProfile "" -}}
+      {{- $activeProfile = $runtimeProfile -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- range $role := list "left" "center" "right" "laptop" "tv" -}}
+  {{- if hasKey $selectedMonitors $role -}}
+    {{- $monitor := index $selectedMonitors $role -}}
+    {{- if and (kindIs "map" $monitor) (hasKey $monitor "name") }}
+output {{ index $monitor "name" | toJson }} {
+      {{- if not (has $activeProfile (index $monitor "profiles" | default (list))) }}
+    off
+      {{- else }}
+    mode {{ index $monitor "mode" | toJson }}
+        {{- if index $monitor "scale" }}
+    scale {{ index $monitor "scale" }}
+        {{- end }}
+        {{- if hasKey $monitor "transform" }}
+    transform {{ (printf "%v" (index $monitor "transform") | replace "0" "normal" | replace "1" "90" | replace "2" "180" | replace "3" "270") | toJson }}
+        {{- end }}
+    position x={{ index $monitor "position" | splitList "x" | first }} y={{ index $monitor "position" | splitList "x" | last }}
+        {{- if eq $role "center" }}
+    focus-at-startup
+        {{- end }}
+        {{- if index $monitor "vrr" }}
+    variable-refresh-rate
+        {{- end }}
+    background-color "#000000"
+    backdrop-color "#000000"
+      {{- end }}
+}
+
+    {{ end -}}
+  {{- end -}}
+{{- end }}

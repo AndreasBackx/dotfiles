@@ -7,8 +7,10 @@
 - `dot-doctor`: checks whether the machine has the base and desktop tools these dotfiles expect.
 - `bar-reload`: restarts the AGS bar and writes logs to `~/.local/state/bar-reload.log`.
 - `hyprland-logs`: quick Hyprland and UWSM log summary.
+- `niri-logs`: quick Niri session journal summary.
 - `monitor-profiles selection`: switch shikane monitor profiles from a rofi menu and apply per-profile audio defaults.
 - `hypr-profile-refresh`: re-render `windows.conf` and `workspaces.conf` for the active monitor profile, then remap windows.
+- `wayland-profile-refresh`: refresh the active compositor's profile-sensitive Wayland config.
 - `power-options selection`: opens the logout, suspend, reboot, and shutdown menu.
 - `updates`: checks or runs package updates.
 - `backup`: initializes, checks, and runs the Borg backup flow. Use `backup init` once per machine after server-side SSH access is ready.
@@ -30,6 +32,7 @@ These are called by AGS rather than directly by me most of the time:
 
 - `hyprland-uwsm`: starts the Hyprland desktop through UWSM.
 - `hyprland-shell`: legacy direct launcher that still appends to the Hyprland log file.
+- `niri-shell`: starts Niri through `niri-session` when available, otherwise `niri --session`.
 
 ## Other Notes
 

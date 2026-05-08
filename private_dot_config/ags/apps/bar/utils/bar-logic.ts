@@ -1,7 +1,7 @@
 import { Astal } from "ags/gtk4"
 
 import config from "./config"
-import { run } from "./runtime"
+import { currentCompositor, run } from "./runtime"
 import type { HyprMonitor, HyprState, Role } from "./types"
 
 /**
@@ -183,6 +183,10 @@ export function workspaceClass(base: number, id: number, state: HyprState) {
  * only active display.
  */
 export function assignCenterWorkspacesToLaptop() {
+  if (currentCompositor() !== "hyprland") {
+    return
+  }
+
   if (!config.monitorRoles.laptop) {
     return
   }

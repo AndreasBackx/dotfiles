@@ -1,5 +1,6 @@
 import Hyprland from "gi://AstalHyprland"
 import Adw from "gi://Adw"
+import GLib from "gi://GLib?version=2.0"
 
 import app from "ags/gtk4/app"
 import { Gdk, Gtk } from "ags/gtk4"
@@ -36,6 +37,8 @@ import {
   INITIAL_AUTOHIDE_DELAY_MS,
   WORKSPACE_STRIP_HIDE_DELAY_MS,
   readCommandOutput,
+  currentCompositor,
+  parseJson,
 } from "./utils/runtime"
 import { closeTrackedPopovers, setHoverReporter, setPopoverVisibilityReporter } from "./utils/widget-helpers"
 import type { HyprState, Role } from "./utils/types"
@@ -178,6 +181,33 @@ function buildHyprState(hyprland: Hyprland.Hyprland | null): HyprState {
   }
 }
 
+type NiriOutput = {
+  name?: string
+  make?: string
+  model?: string
+  serial?: string | null
+  logical?: object | null
+}
+
+function buildNiriState(): HyprState {
+  const outputs = parseJson<NiriOutput[]>(readCommandOutput(["niri", "msg", "--json", "outputs"], "[]"), [])
+
+  return {
+    activeWorkspaceId: 1,
+    visibleWorkspaceIds: [],
+    populatedWorkspaceIds: [],
+    monitors: outputs
+      .filter((output) => output.logical !== null)
+      .map((output) => ({
+        connector: output.name ?? "",
+        description: [output.make ?? "", output.model ?? "", output.serial ?? ""].filter(Boolean).join(" "),
+        serial: output.serial ?? "",
+        activeWorkspaceId: 0,
+      })),
+    windowTitle: "Desktop",
+  }
+}
+
 const css = [
   commonBaseCss,
   themeCss,
@@ -240,8 +270,10 @@ app.start({
   main() {
     Adw.StyleManager.get_default()?.set_color_scheme(Adw.ColorScheme.FORCE_DARK)
 
+    const compositor = currentCompositor()
+    const showWorkspaceStrip = compositor === "hyprland"
     const monitors = createBinding(app, "monitors")
-    const hyprland = Hyprland.get_default()
+    const hyprland = compositor === "hyprland" ? Hyprland.get_default() : null
     const [hyprState, setHyprState] = createState<HyprState>({
       activeWorkspaceId: 1,
       visibleWorkspaceIds: [],
@@ -297,21 +329,33 @@ app.start({
     requestSetProfile = (profile) => {
       const nextRoles = enabledRolesForProfile(profile)
       setEnabledRoles(nextRoles)
-      syncBarLayout(hyprState.get(), nextRoles)
+      if (compositor === "hyprland") {
+        syncBarLayout(hyprState.get(), nextRoles)
+      }
     }
 
     const syncHyprState = () => {
-      const nextState = buildHyprState(hyprland)
+      const nextState = compositor === "niri" ? buildNiriState() : buildHyprState(hyprland)
       setHyprState(nextState)
-      syncBarLayout(nextState)
+      if (compositor === "hyprland") {
+        syncBarLayout(nextState)
+      }
     }
 
     const hyprlandEventId = hyprland?.connect("event", syncHyprState) ?? 0
+    const niriPollId = compositor === "niri" ? GLib.timeout_add(GLib.PRIORITY_DEFAULT, 2000, () => {
+      syncHyprState()
+      return GLib.SOURCE_CONTINUE
+    }) : 0
     syncHyprState()
 
     onCleanup(() => {
       if (hyprland && hyprlandEventId) {
         hyprland.disconnect(hyprlandEventId)
+      }
+
+      if (niriPollId) {
+        GLib.source_remove(niriPollId)
       }
 
       visibility.cleanup()
@@ -333,6 +377,7 @@ app.start({
                 hyprState={hyprState}
                 visible={barVisibleForRole(spec.role, item.monitor.connector, hyprState, centerVisible)}
                 exclusive={barExclusiveForRole(spec.role, item.monitor.connector, hyprState)}
+                showWorkspaceStrip={showWorkspaceStrip}
                 onHoverEnter={spec.role === "center" || spec.role === "laptop" ? visibility.showCenter : undefined}
                 onHoverLeave={spec.role === "center" || spec.role === "laptop" ? visibility.handleCenterLeave : undefined}
               />

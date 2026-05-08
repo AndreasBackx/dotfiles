@@ -54,6 +54,12 @@ function hint_for() {
     hyprctl)
         echo "Install package: hyprland"
         ;;
+    niri)
+        echo "Install package: niri"
+        ;;
+    xwayland-satellite)
+        echo "Install package: xwayland-satellite"
+        ;;
     op)
         echo "Install 1Password CLI: https://developer.1password.com/docs/cli/get-started/"
         ;;
@@ -104,6 +110,8 @@ else
 
     print_result info "Checking optional desktop tools"
     check_optional hyprctl
+    check_optional niri
+    check_optional xwayland-satellite
     check_optional kitty
     check_optional ghostty
     check_optional rofi

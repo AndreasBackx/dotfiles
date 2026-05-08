@@ -1,0 +1,72 @@
+{{- $location := .monitors.selected -}}
+{{- $selectedMonitors := index .monitors $location -}}
+{{- $defaultProfile := .monitors.default_profile | default (index $selectedMonitors "default_profile") -}}
+{{- $activeProfile := $defaultProfile -}}
+{{- $profileFromEnv := trim (output "sh" "-lc" "printf '%s' \"$ACTIVE_PROFILE\"") -}}
+{{- if ne $profileFromEnv "" -}}
+  {{- $activeProfile = $profileFromEnv -}}
+{{- end -}}
+{{- if hasKey . "runtime" -}}
+  {{- $runtime := index . "runtime" -}}
+  {{- if and $runtime (hasKey $runtime "active_profile") -}}
+    {{- $runtimeProfile := trim (index $runtime "active_profile") -}}
+    {{- if ne $runtimeProfile "" -}}
+      {{- $activeProfile = $runtimeProfile -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $visibleRoles := dict -}}
+{{- range $role := list "left" "center" "right" "laptop" "tv" -}}
+  {{- if hasKey $selectedMonitors $role -}}
+    {{- $monitor := index $selectedMonitors $role -}}
+    {{- if and (kindIs "map" $monitor) (hasKey $monitor "workspaces") (hasKey $monitor "profiles") (has $activeProfile (index $monitor "profiles")) -}}
+      {{- $_ := set $visibleRoles $role true -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $visibleSetToOutput := dict -}}
+{{- range $role := list "left" "center" "right" "laptop" "tv" -}}
+  {{- if hasKey $visibleRoles $role -}}
+    {{- $monitor := index $selectedMonitors $role -}}
+    {{- $setName := index $monitor "workspaces" -}}
+    {{- if and (eq $role "laptop") (eq (len $visibleRoles) 1) -}}
+      {{- $setName = "center" -}}
+    {{- end -}}
+    {{- if not (hasKey $visibleSetToOutput $setName) -}}
+      {{- $_ := set $visibleSetToOutput $setName (index $monitor "name") -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $workspaceToSet := dict -}}
+{{- range $setName, $members := .workspaces -}}
+  {{- if and (ne $setName "associations") (kindIs "slice" $members) -}}
+    {{- range $workspace := $members -}}
+      {{- $_ := set $workspaceToSet (printf "%v" $workspace) $setName -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $associationTargets := dict -}}
+{{- $associationResolvedVisible := dict -}}
+{{- range $associationName, $members := index .workspaces "associations" -}}
+  {{- if gt (len $members) 0 -}}
+    {{- $_ := set $associationTargets $associationName (index $members 0) -}}
+  {{- end -}}
+  {{- range $workspace := $members -}}
+    {{- $workspaceKey := printf "%v" $workspace -}}
+    {{- $setName := index $workspaceToSet $workspaceKey | default "" -}}
+    {{- if and (not (hasKey $associationResolvedVisible $associationName)) (hasKey $visibleSetToOutput $setName) -}}
+      {{- $_ := set $associationTargets $associationName $workspace -}}
+      {{- $_ := set $associationResolvedVisible $associationName true -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $workspaceNames := dict "browser" "browser" "mail" "mail" "media" "media" "messages" "messages" "chats" "chats" "work_comm" "work-comm" -}}
+{{- range $associationName, $workspaceName := $workspaceNames -}}
+  {{- $targetWorkspace := index $associationTargets $associationName | default nil -}}
+  {{- $setName := index $workspaceToSet (printf "%v" $targetWorkspace) | default "center" -}}
+  {{- $outputName := index $visibleSetToOutput $setName | default (index $selectedMonitors "center" "name") -}}
+workspace {{ $workspaceName | toJson }} {
+  open-on-output {{ $outputName | toJson }}
+}
+
+{{ end -}}

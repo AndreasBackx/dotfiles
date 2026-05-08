@@ -22,7 +22,8 @@ The bar still runs with instance name `dotfiles-bar` and still accepts the same 
 - `show-center`
 - `show-workspaces`
 
-Monitor role and workspace behavior still live in `apps/bar/utils/bar-logic.ts`.
+Monitor role behavior still lives in `apps/bar/utils/bar-logic.ts`.
+Workspace-strip behavior remains Hyprland-only for now and is disabled automatically when AGS is running inside Niri.
 Center auto-hide policy still lives in `apps/bar/utils/center-visibility.ts`.
 
 ## Ottolangy

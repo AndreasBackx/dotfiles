@@ -1,0 +1,35 @@
+#!/usr/bin/env zsh
+
+set -euo pipefail
+
+source "$HOME/.bin/utils.zsh"
+
+active_profile="${1:-}"
+if [[ -z "$active_profile" ]]; then
+    active_profile="$(sh -lc 'printf %s "$ACTIVE_PROFILE"')"
+fi
+
+case "$(current_compositor)" in
+hyprland)
+    exec "$HOME/.bin/hypr-profile-refresh" "$active_profile"
+    ;;
+niri)
+    config_file="$HOME/.config/hypr/workspace-routing.json"
+    if [[ ! -f "$config_file" ]]; then
+        exit 0
+    fi
+
+    if [[ -z "$active_profile" ]]; then
+        active_profile="$(jq -r '.defaultProfile' "$config_file")"
+    fi
+
+    chezmoi apply \
+        --force \
+        --override-data "{\"runtime\":{\"active_profile\":\"$active_profile\"}}" \
+        "$HOME/.config/niri/outputs.kdl" \
+        "$HOME/.config/niri/workspaces.kdl" \
+        "$HOME/.config/niri/window-rules.kdl"
+
+    ags request --instance dotfiles-bar set-profile "$active_profile" >/dev/null 2>&1 || true
+    ;;
+esac

@@ -3,3 +3,4 @@
 -- Add any additional options here
 
 vim.opt.wrap = true
+vim.opt.colorcolumn = "80,100"

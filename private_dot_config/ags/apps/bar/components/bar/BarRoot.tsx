@@ -11,12 +11,13 @@ type BarRootProps = {
   hyprState: HyprStateAccessor
   instanceId: string
   position: "top" | "bottom"
+  showWorkspaceStrip: boolean
 }
 
 /**
  * Lays out the left, center, and right content segments inside a bar window.
  */
-export default function BarRoot({ base, hyprState, instanceId, position }: BarRootProps) {
+export default function BarRoot({ base, hyprState, instanceId, position, showWorkspaceStrip }: BarRootProps) {
   const connector = instanceId.slice(instanceId.indexOf("-") + 1)
   const monitor = hyprState((state) => {
     const current = state.monitors.find((item) => item.connector === connector)
@@ -33,11 +34,13 @@ export default function BarRoot({ base, hyprState, instanceId, position }: BarRo
       orientation={Gtk.Orientation.HORIZONTAL}
       hexpand
       halign={Gtk.Align.FILL}
-    >
-      <box $type="start" class="left-side" spacing={6} hexpand>
-        <box class="workspace-strip-slot">
-          <WorkspaceStrip base={base} hyprState={hyprState} />
-        </box>
+      >
+        <box $type="start" class="left-side" spacing={6} hexpand>
+        {showWorkspaceStrip ? (
+          <box class="workspace-strip-slot">
+            <WorkspaceStrip base={base} hyprState={hyprState} />
+          </box>
+        ) : null}
         <box class="title-slot" hexpand>
           <TitleSegment hyprState={hyprState} />
         </box>

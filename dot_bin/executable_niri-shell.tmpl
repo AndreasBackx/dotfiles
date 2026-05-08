@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+
+exec /bin/zsh -lc '
+export XDG_CURRENT_DESKTOP="${XDG_CURRENT_DESKTOP:-niri}"
+export XDG_SESSION_DESKTOP="${XDG_SESSION_DESKTOP:-niri}"
+export XDG_SESSION_TYPE="${XDG_SESSION_TYPE:-wayland}"
+
+desktop_vars="DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE NIRI_SOCKET XCURSOR_SIZE XCURSOR_THEME GDK_SCALE QT_QPA_PLATFORM QT_QPA_PLATFORMTHEME MOZ_ENABLE_WAYLAND ELECTRON_OZONE_PLATFORM_HINT SDL_VIDEODRIVER CLUTTER_BACKEND"
+
+if command -v systemctl >/dev/null 2>&1; then
+  systemctl --user import-environment $desktop_vars >/dev/null 2>&1 || true
+fi
+
+if command -v dbus-update-activation-environment >/dev/null 2>&1; then
+  dbus-update-activation-environment --systemd $desktop_vars >/dev/null 2>&1 || true
+fi
+
+if command -v niri-session >/dev/null 2>&1; then
+  exec niri-session
+fi
+
+exec niri --session
+'
