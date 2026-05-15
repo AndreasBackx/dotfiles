@@ -39,11 +39,11 @@ copy_if_changed() {
 }
 
 remove_if_exists() {
-    local path="$1"
+    local file="$1"
 
-    if [[ -L "$path" ]] || [[ -e "$path" ]]; then
-        >&2 echo "Removing $path..."
-        sudo rm -f "$path"
+    if [[ -L "$file" ]] || [[ -e "$file" ]]; then
+        >&2 echo "Removing $file..."
+        sudo rm -f "$file"
         return 0
     fi
 
