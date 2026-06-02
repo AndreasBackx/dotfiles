@@ -33,16 +33,6 @@ recent = "!f() { git checkout $(git branch -v --sort=-committerdate | fzf | sed 
 # Allow for `git git push`.
 git = !exec git
 
-[include]
-# Only exists on Linux.
-path = /home/andreas/.config/git/linux
-path = /home/andreasbackx/.config/git/linux
-# Only exists on MacOS
-path = /Users/Andreas/.config/git/macos
-path = /Users/andreasbackx/.config/git/macos
-# Includes private settings (e.g.: work).
-path = ~/.config/git/private
-
 [filter "lfs"]
 clean = git-lfs clean -- %f
 smudge = git-lfs smudge --skip -- %f
@@ -80,3 +70,14 @@ defaultBranch = main
 name = "Andreas Backx"
 email = "andreas@backx.org"
 signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIxRpuUyWKbNo4dopWoovkq5i9mqM9zSrbIMx+n/zuBz
+
+[include]
+# Only exists on Linux.
+path = /home/andreas/.config/git/linux
+path = /home/andreasbackx/.config/git/linux
+# Only exists on MacOS
+path = /Users/Andreas/.config/git/macos
+path = /Users/andreasbackx/.config/git/macos
+# Includes private settings (e.g.: work).
+path = ~/.config/git/private
+

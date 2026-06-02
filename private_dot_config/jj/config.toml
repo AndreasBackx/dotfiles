@@ -22,3 +22,7 @@ default-command = "log"
 
 [revset-aliases]
 "trunk()" = "main@origin"
+
+[aliases]
+pr-push = ["util", "exec", "--", "sh", "-c", "ORIG=$(jj log -r \"first_parent($1)\" --no-graph -T 'change_id'); jj rebase -r \"$1\" -d \"$2\" && jj git push --bookmark \"$1\"; jj rebase -r \"$1\" -d \"$ORIG\"", "_"]
+

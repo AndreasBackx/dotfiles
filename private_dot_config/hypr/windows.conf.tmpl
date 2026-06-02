@@ -60,11 +60,9 @@
     {{- end -}}
   {{- end -}}
 {{- end -}}
-{{- $mailWorkspace := index $associationTargets "mail" -}}
 {{- $mediaWorkspace := index $associationTargets "media" -}}
-{{- $messagesWorkspace := index $associationTargets "messages" -}}
-{{- $chatsWorkspace := index $associationTargets "chats" -}}
-{{- $workCommWorkspace := index $associationTargets "work_comm" -}}
+{{- $commsPersonalWorkspace := index $associationTargets "comms_personal" -}}
+{{- $commsWorkWorkspace := index $associationTargets "comms_work" -}}
 
 # Disable kitty/terminal shadow.
 windowrule {
@@ -209,99 +207,57 @@ windowrule {
 }
 
 # Left
-# Workspace 1
 windowrule {
-	name = workspace-1-thunderbird
-	match:class = ^(thunderbird)$
-
-	workspace = {{ $mailWorkspace }} silent
-}
-
-# Workspace 2
-windowrule {
-	name = workspace-2-spotify
+	name = workspace-spotify
 	match:class = ^(Spotify(\sPremium)?)$
 
 	workspace = {{ $mediaWorkspace }} silent
 }
 # On Wayland Spotify opens without a class.
 windowrule {
-	name = workspace-2-spotify-initialtitle
+	name = workspace-spotify-initialtitle
 	match:initial_title = ^(Spotify(\sPremium)?)$
 
 	workspace = {{ $mediaWorkspace }} silent
 }
 
-{{ if eq .environment "home" }}
-# Workspace 3
 windowrule {
-	name = workspace-3-discord
+	name = workspace-discord
 	match:class = ^([dD]iscord)|(com\.discordapp\.Discord)$
 
-	workspace = {{ $messagesWorkspace }} silent
+	workspace = {{ $commsPersonalWorkspace }} silent
 }
 windowrule {
-	name = workspace-3-msgs
+	name = workspace-msgs
 	match:title = ^(Signal.*)|(WhatsApp.*)|(ZapZap)$
 
-	workspace = {{ $messagesWorkspace }} silent
+	workspace = {{ $commsPersonalWorkspace }} silent
 }
 
-# Workspace 4
 windowrule {
-	name = workspace-4-comm
-	match:class = ^(Hexchat)|(Zulip)|(Slack)$
+	name = workspace-comm
+	match:class = ^(Hexchat)|(Zulip)|(Slack)|(com.slack.Slack)$
 
-	workspace = {{ $chatsWorkspace }} silent
+	workspace = {{ $commsWorkWorkspace }} silent
 }
 windowrule {
-	name = workspace-4-tuba
+	name = workspace-tuba
 	match:title = ^(Tuba)$
 
-	workspace = {{ $chatsWorkspace }} silent
+	workspace = {{ $commsPersonalWorkspace }} silent
 }
-{{ else }}
-# Workspace 3
 windowrule {
-	name = workspace-3-mattermost
+	name = workspace-mattermost
 	match:class = ^(Mattermost)$
 
-	workspace = {{ $messagesWorkspace }} silent
+	workspace = {{ $commsWorkWorkspace }} silent
 }
 windowrule {
-	name = workspace-3-initialmsgs
+	name = workspace-workchat
 	match:initial_title = ^(Workchat)|(Google Chat)$
 
-	workspace = {{ $messagesWorkspace }} silent
+	workspace = {{ $commsWorkWorkspace }} silent
 }
-
-# Workspace 4
-windowrule {
-	name = workspace-4-discord
-	match:class = ^([dD]iscord)|(com\.discordapp\.Discord)$
-
-	workspace = {{ $chatsWorkspace }} silent
-}
-windowrule {
-	name = workspace-4-msgs
-	match:title = ^(Signal.*)|(WhatsApp.*)|(ZapZap)$
-
-	workspace = {{ $chatsWorkspace }} silent
-}
-
-windowrule {
-	name = workspace-5-comm
-	match:class = ^(Hexchat)|(Zulip)|(Slack)$
-
-	workspace = {{ $workCommWorkspace }} silent
-}
-windowrule {
-	name = workspace-5-tuba
-	match:title = ^(Tuba)$
-
-	workspace = {{ $workCommWorkspace }} silent
-}
-{{ end }}
 
 # Center
 windowrule {

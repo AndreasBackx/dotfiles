@@ -4,3 +4,6 @@
 
 vim.opt.wrap = true
 vim.opt.colorcolumn = "80,100"
+vim.opt.autochdir = false
+
+vim.g.root_spec = { "cwd" }
