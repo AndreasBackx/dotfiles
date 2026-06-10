@@ -18,7 +18,7 @@ sign-on-push = true
 [ui]
 diff-formatter = ["difft", "--color=always", "$left", "$right"]
 paginate = "never"
-default-command = "log"
+default-command = ["log", "--reversed"]
 
 [revset-aliases]
 "trunk()" = "main@origin"
