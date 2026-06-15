@@ -6,7 +6,6 @@ if [[ "${CHEZMOI_DATA_HEADLESS:-false}" != "true" ]] && [[ -f ~/.config/.secrets
 fi
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-[ -f /usr/share/nvm/init-nvm.sh ] && source /usr/share/nvm/init-nvm.sh
 
 # Do not warn if glob has no matches.
 setopt no_nomatch
@@ -40,7 +39,6 @@ export GNUPGHOME="$XDG_DATA_HOME"/gnupg
 export GRADLE_USER_HOME="$XDG_DATA_HOME"/gradle
 export GTK2_RC_FILES="$XDG_CONFIG_HOME"/gtk-2.0/gtkrc
 export NPM_CONFIG_USERCONFIG=$XDG_CONFIG_HOME/npm/npmrc/.npmrc
-export NVM_DIR="$XDG_DATA_HOME"/nvm
 export _JAVA_OPTIONS=-Djava.util.prefs.userRoot="$XDG_CONFIG_HOME"/java
 export PARALLEL_HOME="$XDG_CONFIG_HOME"/parallel
 export RUSTUP_HOME="$XDG_DATA_HOME"/rustup
@@ -50,6 +48,7 @@ export LESSHISTFILE="$XDG_CACHE_HOME"/less/history
 export PNPM_HOME="$XDG_CACHE_HOME"/pnpm
 export RIPGREP_CONFIG_PATH="$XDG_CONFIG_HOME/ripgrep/config"
 export PNPM_HOME="/home/andreas/.cache/pnpm"
+export NVM_DIR="$XDG_CONFIG_HOME/nvm"
 
 export PYENV_ROOT="$XDG_DATA_HOME/pyenv"
 PATH="$PYENV_ROOT/shims:$PATH"
@@ -59,10 +58,6 @@ if [[ "$CHEZMOI_DATA_ENVIRONMENT" != "devserver" ]] && type "pyenv" >/dev/null; 
   eval "$(pyenv init -)"
   eval "$(pyenv virtualenv-init -)"
 fi
-
-export NVM_DIR="$XDG_CONFIG_HOME/nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 if type "zoxide" >/dev/null; then
   eval "$(zoxide init zsh)"
@@ -151,6 +146,10 @@ PATH="$PATH:$PNPM_HOME"
 PATH="$PATH:$HOME/.kilo/bin"
 PATH="$PATH:$HOME/.opencode/bin"
 PATH="$PATH:$PNPM_HOME/bin"
+
+# NVM, needs to be after PATH mutations.
+[ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 # Wayland
 # Firefox new touchpad input support.
