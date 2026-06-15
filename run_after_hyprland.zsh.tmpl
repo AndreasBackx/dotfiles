@@ -7,30 +7,6 @@ exit 0
 
 set -o errexit -o nounset -o pipefail
 
-to_directory="/usr/share/wayland-sessions"
-
-[ ! -d "$to_directory" ] && exit 0
-
-copy_desktop_entry() {
-    local relative_path="$1"
-    local from="$HOME/.config/$relative_path"
-    local file_name="${relative_path:t}"
-    local to="$to_directory/$file_name"
-
-    if [[ ! -f "$from" ]]; then
-        return
-    fi
-
-    cmp --silent "$from" "$to" || (
-        >&2 echo "$from changed, copying to $to..."
-        sudo cp "$from" "$to"
-    )
-}
-
-copy_desktop_entry "hypr/hyprland-shell.desktop"
-copy_desktop_entry "hypr/hyprland-uwsm.desktop"
-copy_desktop_entry "niri/niri-shell.desktop"
-
 hyprland_log_dir="${XDG_STATE_HOME:-$HOME/.local/state}/hyprland"
 mkdir -p "$hyprland_log_dir"
 

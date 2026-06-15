@@ -54,4 +54,4 @@ Crash reports, when present, are stored under `~/.cache/hyprland/`.
 
 - `~/.config/systemd/user/wayland-wm@hyprland.desktop.service.d/logging.conf`: appends Hyprland stdout and stderr into `hyprland.log`.
 - `~/.config/systemd/user/logrotate-hyprland.*`: rotates that file daily.
-- `run_after_hyprland.zsh.tmpl`: syncs session desktop files and enables the logrotate timer.
+- `run_after_hyprland.zsh.tmpl`: creates the log directory and enables the logrotate timer.
