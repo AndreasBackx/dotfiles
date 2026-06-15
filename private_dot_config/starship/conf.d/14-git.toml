@@ -1,0 +1,40 @@
+[custom.git_branch]
+when = 'command -v git >/dev/null 2>&1 && git rev-parse --is-inside-work-tree >/dev/null 2>&1 && ! jj --ignore-working-copy root >/dev/null 2>&1'
+command = '''
+branch=$(git symbolic-ref --quiet --short HEAD 2>/dev/null)
+if [ -z "$branch" ]; then
+  branch=$(git rev-parse --short HEAD 2>/dev/null) || exit 1
+fi
+printf ' %s' "$branch"
+'''
+style = 'bold purple'
+format = '[$output]($style) '
+description = 'Git branch outside jj repos'
+
+[custom.git_status]
+when = 'command -v git >/dev/null 2>&1 && git rev-parse --is-inside-work-tree >/dev/null 2>&1 && ! jj --ignore-working-copy root >/dev/null 2>&1'
+command = '''
+porcelain=$(git status --porcelain=v1 --branch 2>/dev/null) || exit 1
+body=$(printf '%s\n' "$porcelain" | sed '1d')
+branch=$(printf '%s\n' "$porcelain" | sed -n '1p')
+status=
+
+printf '%s\n' "$body" | grep -Eq '^\?\?' && status="?$status"
+printf '%s\n' "$body" | grep -Eq '^.[MD]' && status="!$status"
+printf '%s\n' "$body" | grep -Eq '^[MARCD]' && status="+$status"
+printf '%s\n' "$body" | grep -Eq '^D|^.[D]' && status="✘$status"
+
+case "$branch" in
+  *ahead\ *behind*) status="$status⇕" ;;
+  *ahead*) status="$status⇡" ;;
+  *behind*) status="$status⇣" ;;
+esac
+
+if [ -z "$status" ]; then
+  exit 1
+fi
+printf '[%s]' "$status"
+'''
+style = 'bold red'
+format = '[$output]($style) '
+description = 'Git status outside jj repos'

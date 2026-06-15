@@ -1,0 +1,24 @@
+[custom.taste_tester]
+when = 'test -e /etc/chef/test_timestamp'
+command = '''
+current_time=$(date -u +%s)
+file_mod_time=$(date -u -r /etc/chef/test_timestamp +%s)
+time_difference=$((file_mod_time - current_time))
+
+if [ "$time_difference" -le 0 ]; then
+  exit 1
+fi
+
+hours=$((time_difference / 3600))
+minutes=$(((time_difference % 3600) / 60))
+
+if [ "$hours" -eq 0 ]; then
+  printf '%sm' "$minutes"
+else
+  printf '%sh %sm' "$hours" "$minutes"
+fi
+'''
+symbol = '👅 '
+style = 'bold red'
+format = 'on [$symbol$output]($style) '
+description = 'Taste tester remaining time'

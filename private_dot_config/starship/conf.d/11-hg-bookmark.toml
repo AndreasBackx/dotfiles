@@ -1,0 +1,13 @@
+[custom.hg_bookmark]
+when = 'command -v hg >/dev/null 2>&1 && hg root >/dev/null 2>&1'
+command = '''
+bookmark=$(hg log -r 'max(::. & public() & remotebookmark())' -T '{remotebookmarks}\n' 2>/dev/null)
+bookmark=${bookmark#remote/}
+if [ -z "$bookmark" ]; then
+  bookmark=master
+fi
+printf '%s' "$bookmark"
+'''
+style = 'bold purple'
+format = '[$output]($style) '
+description = 'Mercurial remote bookmark'

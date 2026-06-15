@@ -1,13 +1,3 @@
-source ~/.bin/hg_bookmark.zsh
-source ~/.bin/hg_commit.zsh
-source ~/.bin/taste_tester.zsh
-
-SPACESHIP_VCS_SECTION="git"
-if type "jj-starship" >/dev/null; then
-  source ~/.bin/vcs.zsh
-  SPACESHIP_VCS_SECTION="vcs"
-fi
-
 MASTER_ZSHRC="/usr/facebook/ops/rc/master.zshrc"
 if [[ -f "$MASTER_ZSHRC" ]]; then
   source "$MASTER_ZSHRC"
@@ -21,49 +11,9 @@ plugins=(
   cont
 )
 
-ZSH_THEME="spaceship"
+ZSH_THEME=""
 
 export LS_COLORS="di=34:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43"
-
-## SPACESHIP PROMPT ##
-SPACESHIP_TIME_SHOW="true"
-SPACESHIP_TIME_FORMAT="[%T]"
-SPACESHIP_PROMPT_ORDER=(
-  dir # Current directory section
-  $SPACESHIP_VCS_SECTION # VCS section (jj with git fallback)
-  hg_bookmark
-  hg_commit
-  golang # Go section
-  rust   # Rust section
-  node   # Node.js section
-)
-
-if [[ "$ENV_LOCATION" != "devserver" ]]; then
-  SPACESHIP_PROMPT_ORDER+=(
-    python # Python section
-  )
-fi
-
-SPACESHIP_PROMPT_ORDER+=(
-  exec_time # Execution time
-  line_sep  # Line break
-  jobs      # Background jobs indicator
-  exit_code # Exit code section
-  char      # Prompt character
-)
-SPACESHIP_RPROMPT_ORDER=(
-  taste_tester
-  cont
-)
-
-if [[ -z "$TMUX" ]]; then
-  # Only show host if not running in tmux.
-  SPACESHIP_RPROMPT_ORDER+=(host)
-fi
-
-SPACESHIP_RPROMPT_ORDER+=(
-  time # Time stamps section
-)
 
 source $HOME/.oh-my-zsh/oh-my-zsh.sh
 autoload -Uz compinit
@@ -71,6 +21,7 @@ for dump in ~/.zcompdump(N.mh+24); do
   compinit
 done
 compinit -C
+eval "$(starship init zsh)"
 
 if type "fnm" >/dev/null; then
   eval "$(fnm env --use-on-cd --shell zsh)"

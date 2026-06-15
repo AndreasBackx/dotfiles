@@ -30,6 +30,12 @@ function hint_for() {
     jq)
         echo "Install package: jq"
         ;;
+    starship)
+        echo "Install package: starship"
+        ;;
+    jj-starship)
+        echo "Install jj-starship and ensure it is in PATH"
+        ;;
     kitty)
         echo "Install package: kitty"
         ;;
@@ -100,6 +106,10 @@ check_required chezmoi
 check_required git
 check_required zsh
 check_required jq
+check_required starship
+
+print_result info "Checking optional shell tools"
+check_optional jj-starship
 
 if [[ "$headless" == "true" ]]; then
     print_result info "Headless mode detected, skipping desktop checks"

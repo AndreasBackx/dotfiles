@@ -1,0 +1,35 @@
+add_newline = false
+command_timeout = 1000
+
+format = '''
+$directory${custom.jj}${custom.jj_description}${custom.git_branch}${custom.git_status}${custom.hg_bookmark}${custom.hg_commit}$hg_state$golang$rust$nodejs$python$cmd_duration
+$jobs$status$character'''
+
+right_format = '''${custom.taste_tester}${custom.cont}$hostname$time'''
+
+[directory]
+truncation_symbol = '.../'
+
+[hg_state]
+disabled = false
+
+[cmd_duration]
+format = 'took [$duration]($style) '
+
+[status]
+disabled = false
+format = '[$status]($style) '
+
+[character]
+success_symbol = '[➜](bold green)'
+error_symbol = '[➜](bold red)'
+
+[time]
+disabled = false
+format = '[$time]($style)'
+time_format = '[%T]'
+
+[hostname]
+ssh_only = true
+format = '[$hostname]($style) '
+style = 'bold green'

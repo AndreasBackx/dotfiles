@@ -1,0 +1,24 @@
+[custom.hg_commit]
+when = 'command -v hg >/dev/null 2>&1 && hg root >/dev/null 2>&1'
+command = '''
+description=$(hg log -l1 -T '{desc|firstline}\n' 2>/dev/null)
+if [ -z "$description" ]; then
+  exit 1
+fi
+description=$(printf '%s' "$description" | awk -v len=60 '{ if (length($0) > len) print substr($0, 1, len-3) "..."; else print; }')
+
+index=$(hg status 2>/dev/null)
+status=
+printf '%s\n' "$index" | grep -Eq '^\? ' && status="?$status"
+printf '%s\n' "$index" | grep -Eq '^A ' && status="+$status"
+printf '%s\n' "$index" | grep -Eq '^M ' && status="!$status"
+printf '%s\n' "$index" | grep -Eq '^(R|!)' && status="✘$status"
+
+printf 'on ☿ %s' "$description"
+if [ -n "$status" ]; then
+  printf ' [%s]' "$status"
+fi
+'''
+style = 'bold purple'
+format = '[$output]($style) '
+description = 'Mercurial commit message and status'

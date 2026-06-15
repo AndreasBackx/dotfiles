@@ -24,6 +24,7 @@ dot-doctor
 - `.chezmoidata.toml` is the main source of truth for monitor metadata, workspace ranges, profile labels, lock and screen timeouts, and theme values.
 - `private_dot_config/dot_variables.tmpl` renders `~/.config/.variables` so shell scripts can read the selected chezmoi data.
 - `private_dot_config/dot_secrets.tmpl` renders `~/.config/.secrets` from 1Password on non-headless machines.
+- `private_dot_config/starship/` configures the shell prompt; `conf.d/*.toml` snippets are loaded by Starship after the base `starship.toml`.
 - `private_dot_config/systemd/system/backup.*` are source templates for the root Borg backup units; `backup init` installs their active copies into `/etc/systemd/system`.
 - `run_after_evremap.zsh.tmpl` installs or removes the root `evremap` service based on `evremap.enabled`.
 - `dot_zprofile.tmpl` and `dot_zshenv` source those generated files on shell startup.
@@ -35,6 +36,7 @@ dot-doctor
 - `private_dot_config/niri/`: Niri config and session wrapper using native named workspaces on top of the shared monitor/profile data.
 - `private_dot_config/ags/`: AGS bar implementation. See [`private_dot_config/ags/README.md`](private_dot_config/ags/README.md).
 - `private_dot_config/nvim/`: LazyVim-based Neovim config. See [`private_dot_config/nvim/README.md`](private_dot_config/nvim/README.md).
+- `private_dot_config/starship/`: Starship prompt config, including jj, Mercurial, and custom right-prompt modules.
 - `run_after_*.zsh*`: post-apply hooks that set up generated state after `chezmoi apply`.
 
 ## Post-Apply Hooks
@@ -46,7 +48,7 @@ These run automatically after apply:
 - `run_after_firefox_userchrome.zsh`: installs a default Firefox `userChrome.css` into the active profile when one is missing and enables Firefox stylesheet loading in `user.js`.
 - `run_after_hypr_workspace_remap.zsh.tmpl`: remaps windows when apply happens inside a live Hyprland session.
 - `run_after_gnome_monitors.zsh.tmpl`: copies `~/.config/monitors.xml` into GDM so the login screen uses the same layout.
-- `run_after_zsh.zsh`: creates symlinks for Spaceship and tmux.
+- `run_after_zsh.zsh`: creates the tmux config symlink.
 - `run_after_macos_xdg.zsh`: makes macOS XDG-compatible symlinks under `~/.local`.
 
 ## Core Commands
@@ -63,6 +65,14 @@ These run automatically after apply:
 - `backup init`, `backup status`, or `backup start`: Borg backup helper.
 
 ## Desktop Packages
+
+Required base shell tooling:
+
+- `starship`
+
+Optional prompt integrations:
+
+- `jj-starship` for Jujutsu prompt details
 
 These are the tools the current Wayland desktop setup expects:
 

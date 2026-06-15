@@ -1,0 +1,7 @@
+[custom.jj]
+when = 'command -v jj >/dev/null 2>&1 && command -v jj-starship >/dev/null 2>&1 && jj --ignore-working-copy root >/dev/null 2>&1'
+command = 'jj-starship prompt --no-symbol 2>/dev/null'
+symbol = ' '
+style = 'bold purple'
+format = '[$symbol$output]($style) '
+description = 'Jujutsu status'
