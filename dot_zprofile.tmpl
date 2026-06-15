@@ -60,6 +60,10 @@ if [[ "$CHEZMOI_DATA_ENVIRONMENT" != "devserver" ]] && type "pyenv" >/dev/null; 
   eval "$(pyenv virtualenv-init -)"
 fi
 
+export NVM_DIR="$XDG_CONFIG_HOME/nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
 if type "zoxide" >/dev/null; then
   eval "$(zoxide init zsh)"
 fi
