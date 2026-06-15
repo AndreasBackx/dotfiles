@@ -48,7 +48,6 @@ export LESSHISTFILE="$XDG_CACHE_HOME"/less/history
 export PNPM_HOME="$XDG_CACHE_HOME"/pnpm
 export RIPGREP_CONFIG_PATH="$XDG_CONFIG_HOME/ripgrep/config"
 export PNPM_HOME="/home/andreas/.cache/pnpm"
-export NVM_DIR="$XDG_CONFIG_HOME/nvm"
 
 export PYENV_ROOT="$XDG_DATA_HOME/pyenv"
 PATH="$PYENV_ROOT/shims:$PATH"
@@ -146,10 +145,6 @@ PATH="$PATH:$PNPM_HOME"
 PATH="$PATH:$HOME/.kilo/bin"
 PATH="$PATH:$HOME/.opencode/bin"
 PATH="$PATH:$PNPM_HOME/bin"
-
-# NVM, needs to be after PATH mutations.
-[ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 # Wayland
 # Firefox new touchpad input support.

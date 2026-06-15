@@ -35,6 +35,7 @@ SPACESHIP_PROMPT_ORDER=(
   hg_commit
   golang # Go section
   rust   # Rust section
+  node   # Node.js section
 )
 
 if [[ "$ENV_LOCATION" != "devserver" ]]; then
@@ -70,6 +71,11 @@ for dump in ~/.zcompdump(N.mh+24); do
   compinit
 done
 compinit -C
+
+if type "fnm" >/dev/null; then
+  eval "$(fnm env --use-on-cd --shell zsh)"
+  fnm use --silent-if-unchanged >/dev/null 2>&1 || true
+fi
 
 if type "eza" >/dev/null; then
   alias ls="eza"
@@ -115,4 +121,3 @@ fi
 alias irssi=irssi --config="$XDG_CONFIG_HOME"/irssi/config --home="$XDG_DATA_HOME"/irssi
 alias svn="svn --config-dir $XDG_CONFIG_HOME/subversion"
 alias wget=wget --hsts-file="$XDG_DATA_HOME/wget-hsts"
-
