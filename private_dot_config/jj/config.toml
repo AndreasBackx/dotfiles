@@ -35,4 +35,7 @@ push-bookmark = ["util", "exec", "--", "sh", "-c", "for bookmark in $(jj log -r 
 
 # Move the closest bookmark forward, then push only that bookmark.
 pump = ["util", "exec", "--", "sh", "-c", "jj bump && jj push-bookmark"]
+
+# Set a bookmark on a revision, defaulting to the previous commit, then push it.
+publish-bookmark = ["util", "exec", "--", "sh", "-c", "bookmark=$1; rev=${2:-@-}; jj bookmark set -r \"$rev\" \"$bookmark\" && jj git push --bookmark \"$bookmark\"", "_"]
 pr-push = ["util", "exec", "--", "sh", "-c", "ORIG=$(jj log -r \"first_parent($1)\" --no-graph -T 'change_id'); jj rebase -r \"$1\" -d \"$2\" && jj git push --bookmark \"$1\"; jj rebase -r \"$1\" -d \"$ORIG\"", "_"]
