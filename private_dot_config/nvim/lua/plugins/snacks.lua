@@ -29,6 +29,13 @@ return {
         explorer = {
           hidden = true,
           ignored = true,
+          layout = {
+            preview = true,
+            layout = {
+              position = "right",
+              width = 0.35,
+            },
+          },
         },
       },
     },

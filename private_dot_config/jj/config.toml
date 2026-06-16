@@ -14,6 +14,7 @@ key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIxRpuUyWKbNo4dopWoovkq5i9mqM9zSrbIMx
 
 [git]
 sign-on-push = true
+push = "fork"
 
 [ui]
 diff-formatter = ["difft", "--color=always", "$left", "$right"]
@@ -24,5 +25,14 @@ default-command = ["log", "--reversed"]
 "trunk()" = "main@origin"
 
 [aliases]
-pr-push = ["util", "exec", "--", "sh", "-c", "ORIG=$(jj log -r \"first_parent($1)\" --no-graph -T 'change_id'); jj rebase -r \"$1\" -d \"$2\" && jj git push --bookmark \"$1\"; jj rebase -r \"$1\" -d \"$ORIG\"", "_"]
+# Move the closest ancestor bookmark to the current commit, unless the working-copy
+# commit is empty; in that case move it to the parent.
+bump = ["util", "exec", "--", "sh", "-c", "target=@; backwards=; if jj log -r '@ & empty()' --no-graph -T change_id | grep -q .; then target=@-; backwards=--allow-backwards; fi; jj bookmark move $backwards --from 'heads(::@ & bookmarks())' --to \"$target\""]
 
+# Push the closest bookmark on the current stack. Prefer a bookmark on the current
+# commit, otherwise use the nearest ancestor bookmark.
+push-bookmark = ["util", "exec", "--", "sh", "-c", "for bookmark in $(jj log -r 'heads(::@ & bookmarks())' --no-graph -T 'local_bookmarks.map(|b| b.name()).join(\" \")'); do jj git push --bookmark \"$bookmark\" || exit $?; done"]
+
+# Move the closest bookmark forward, then push only that bookmark.
+pump = ["util", "exec", "--", "sh", "-c", "jj bump && jj push-bookmark"]
+pr-push = ["util", "exec", "--", "sh", "-c", "ORIG=$(jj log -r \"first_parent($1)\" --no-graph -T 'change_id'); jj rebase -r \"$1\" -d \"$2\" && jj git push --bookmark \"$1\"; jj rebase -r \"$1\" -d \"$ORIG\"", "_"]

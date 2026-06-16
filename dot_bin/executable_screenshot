@@ -4,6 +4,8 @@ set -eo pipefail
 
 if type "wayshot" >/dev/null; then
     wayshot -g --clipboard
+elif type "hyprshot" >/dev/null; then
+  hyprshot --freeze --clipboard-only --silent  --mode region
 else
     grim -g "$(slurp)" - | wl-copy
 fi
