@@ -45,7 +45,8 @@ These run automatically after apply:
 
 - `run_after_wayland_wrappers.zsh.tmpl`: creates `~/.bin/wrappers` for desktop apps that should be forced onto Wayland.
 - `run_after_hyprland.zsh.tmpl`: creates the Hyprland log directory, reloads user systemd units, and enables Hyprland log rotation.
-- `run_after_firefox_userchrome.zsh`: installs a default Firefox `userChrome.css` into the active profile when one is missing and enables Firefox stylesheet loading in `user.js`.
+- `run_after_firefox_userchrome.zsh`: installs a default Firefox `userChrome.css` into the active profile and enables Firefox stylesheet loading in `user.js`.
+- `run_after_firefox_autoconfig.zsh`: installs the synced Firefox AutoConfig files that focus the URL bar for new blank Firefox windows; it only asks for `sudo` when the installed files differ.
 - `run_after_hypr_workspace_remap.zsh.tmpl`: remaps windows when apply happens inside a live Hyprland session.
 - `run_after_gnome_monitors.zsh.tmpl`: copies `~/.config/monitors.xml` into GDM so the login screen uses the same layout.
 - `run_after_zsh.zsh`: creates the tmux config symlink.
