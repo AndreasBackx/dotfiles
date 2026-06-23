@@ -2,10 +2,13 @@ add_newline = false
 command_timeout = 1000
 
 format = '''
-$directory${custom.jj}${custom.jj_description}${custom.git_branch}${custom.git_status}${custom.hg_bookmark}${custom.hg_commit}$hg_state$golang$rust$nodejs$python$ondemand$cmd_duration
+$directory${custom.jj}${custom.jj_description}${custom.git_branch}${custom.git_status}${custom.hg_bookmark}${custom.hg_commit}$hg_state$golang$rust$nodejs$python$ondemand$cmd_duration$fill${custom.taste_tester}${custom.cont}$hostname$time
 $jobs$status$character'''
 
-right_format = '''${custom.taste_tester}${custom.cont}$hostname$time'''
+right_format = ''
+
+[fill]
+symbol = ' '
 
 [directory]
 truncation_symbol = '.../'
