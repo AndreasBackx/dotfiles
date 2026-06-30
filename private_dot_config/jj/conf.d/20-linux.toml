@@ -1,4 +1,4 @@
 --when.platforms = ["linux"]
 
 [signing.backends.ssh]
-program = "/opt/1Password/op-ssh-sign"
+program = "/usr/share/1password/op-ssh-sign"

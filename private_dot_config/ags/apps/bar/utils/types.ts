@@ -6,6 +6,7 @@ export type HyprMonitor = {
   connector: string
   description: string
   serial: string
+  active: boolean
   activeWorkspaceId: number
 }
 

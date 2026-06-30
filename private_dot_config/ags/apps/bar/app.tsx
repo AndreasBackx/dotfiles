@@ -1,6 +1,7 @@
 import Hyprland from "gi://AstalHyprland"
 import Adw from "gi://Adw"
 import GLib from "gi://GLib?version=2.0"
+import { Accessor } from "gnim"
 
 import app from "ags/gtk4/app"
 import { Gdk, Gtk } from "ags/gtk4"
@@ -63,6 +64,11 @@ type WindowSpec = {
   kind: WindowKind
 }
 
+type SubscribableAccessor<T> = {
+  get(): T
+  subscribe?: (callback: () => void) => () => void
+}
+
 const WINDOW_SPECS = [
   { role: "left", kind: "bar" },
   { role: "right", kind: "bar" },
@@ -87,7 +93,7 @@ function centerRoleEnabled(state: HyprState, enabledRoles: Role[]) {
 }
 
 function shouldRenderRole(state: HyprState, enabledRoles: Role[], role: Role, connector: string) {
-  if (!enabledRoles.includes(role) || connectorForRole(state, role) !== connector) {
+  if (!connector || !enabledRoles.includes(role) || connectorForRole(state, role) !== connector) {
     return false
   }
 
@@ -100,16 +106,39 @@ function shouldRenderRole(state: HyprState, enabledRoles: Role[], role: Role, co
 
 function monitorItemsForRole(state: HyprState, enabledRoles: Role[], role: Role, monitors: Gdk.Monitor[]) {
   const items: WindowItem[] = []
+  const activeConnectors = new Set(state.monitors.filter((monitor) => monitor.active).map((monitor) => monitor.connector))
 
   for (const monitor of monitors) {
     const connector = monitor.connector
 
-    if (shouldRenderRole(state, enabledRoles, role, connector)) {
+    if (activeConnectors.has(connector) && shouldRenderRole(state, enabledRoles, role, connector)) {
       items.push({ key: `${role}-${connector}`, role, monitor })
     }
   }
 
   return items
+}
+
+function createWindowItemsAccessor(
+  spec: WindowSpec,
+  monitors: SubscribableAccessor<Gdk.Monitor[]>,
+  hyprState: SubscribableAccessor<HyprState>,
+  enabledRoles: SubscribableAccessor<Role[]>,
+) {
+  return new Accessor(
+    () => monitorItemsForRole(hyprState.get(), enabledRoles.get(), spec.role, monitors.get()),
+    (callback) => {
+      const unsubscribeMonitors = monitors.subscribe?.(callback) ?? (() => {})
+      const unsubscribeHyprState = hyprState.subscribe?.(callback) ?? (() => {})
+      const unsubscribeEnabledRoles = enabledRoles.subscribe?.(callback) ?? (() => {})
+
+      return () => {
+        unsubscribeMonitors()
+        unsubscribeHyprState()
+        unsubscribeEnabledRoles()
+      }
+    },
+  )
 }
 
 function barVisibleForRole(role: Role, connector: string, hyprState: ReturnType<typeof createState<HyprState>>[0], centerVisible: ReturnType<typeof createState<boolean>>[0]) {
@@ -167,6 +196,12 @@ function buildHyprState(hyprland: Hyprland.Hyprland | null): HyprState {
     }
   }
 
+  const monitorStatus = new Map(
+    parseJson<HyprctlMonitor[]>(readCommandOutput(["hyprctl", "-j", "monitors"], "[]"), [])
+      .filter((monitor) => monitor.name)
+      .map((monitor) => [monitor.name, monitor]),
+  )
+
   return {
     activeWorkspaceId: hyprland.focusedWorkspace?.id ?? 1,
     visibleWorkspaceIds: hyprland.monitors.map((monitor) => monitor.activeWorkspace?.id ?? 0).filter(Boolean),
@@ -175,6 +210,7 @@ function buildHyprState(hyprland: Hyprland.Hyprland | null): HyprState {
       connector: monitor.name,
       description: monitor.description,
       serial: monitor.serial,
+      active: (monitorStatus.get(monitor.name)?.dpmsStatus ?? monitor.dpmsStatus) && !(monitorStatus.get(monitor.name)?.disabled ?? monitor.disabled),
       activeWorkspaceId: monitor.activeWorkspace?.id ?? 0,
     })),
     windowTitle: hyprland.focusedClient?.title || "Desktop",
@@ -187,6 +223,12 @@ type NiriOutput = {
   model?: string
   serial?: string | null
   logical?: object | null
+}
+
+type HyprctlMonitor = {
+  name?: string
+  dpmsStatus?: boolean
+  disabled?: boolean
 }
 
 function buildNiriState(): HyprState {
@@ -202,6 +244,7 @@ function buildNiriState(): HyprState {
         connector: output.name ?? "",
         description: [output.make ?? "", output.model ?? "", output.serial ?? ""].filter(Boolean).join(" "),
         serial: output.serial ?? "",
+        active: true,
         activeWorkspaceId: 0,
       })),
     windowTitle: "Desktop",
@@ -305,7 +348,7 @@ app.start({
     setPopoverVisibilityReporter(visibility.handlePopoverVisibilityChange)
     const windowItemAccessors = WINDOW_SPECS.map((spec) => ({
       spec,
-      items: monitors((value) => monitorItemsForRole(hyprState(), enabledRoles(), spec.role, value)),
+      items: createWindowItemsAccessor(spec, monitors, hyprState as SubscribableAccessor<HyprState>, enabledRoles as SubscribableAccessor<Role[]>),
     }))
 
     const syncBarLayout = (nextState: HyprState, roles = enabledRoles()) => {
@@ -343,6 +386,10 @@ app.start({
     }
 
     const hyprlandEventId = hyprland?.connect("event", syncHyprState) ?? 0
+    const hyprlandPollId = compositor === "hyprland" ? GLib.timeout_add(GLib.PRIORITY_DEFAULT, 2000, () => {
+      syncHyprState()
+      return GLib.SOURCE_CONTINUE
+    }) : 0
     const niriPollId = compositor === "niri" ? GLib.timeout_add(GLib.PRIORITY_DEFAULT, 2000, () => {
       syncHyprState()
       return GLib.SOURCE_CONTINUE
@@ -352,6 +399,10 @@ app.start({
     onCleanup(() => {
       if (hyprland && hyprlandEventId) {
         hyprland.disconnect(hyprlandEventId)
+      }
+
+      if (hyprlandPollId) {
+        GLib.source_remove(hyprlandPollId)
       }
 
       if (niriPollId) {

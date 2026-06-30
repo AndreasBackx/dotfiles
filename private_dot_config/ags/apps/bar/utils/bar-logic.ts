@@ -28,7 +28,7 @@ export function monitorMatches(monitor: HyprMonitor, role: Role) {
  * Example: `connectorForRole(state, "left")`
  */
 export function connectorForRole(state: HyprState, role: Role) {
-  return state.monitors.find((monitor) => monitorMatches(monitor, role))?.connector ?? null
+  return state.monitors.find((monitor) => monitor.active && monitorMatches(monitor, role))?.connector ?? null
 }
 
 /**
