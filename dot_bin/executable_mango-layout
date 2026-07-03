@@ -1,0 +1,22 @@
+#!/usr/bin/env sh
+
+set -eu
+
+layout="${1:-dwindle}"
+
+if ! command -v mmsg >/dev/null 2>&1 || ! command -v jq >/dev/null 2>&1; then
+  exit 1
+fi
+
+monitors_json="$(mmsg get all-monitors)"
+active_monitor="$(printf '%s' "$monitors_json" | jq -r '.monitors[] | select(.active == true) | .name' | head -n 1)"
+
+printf '%s' "$monitors_json" | jq -r '.monitors[].name' | while IFS= read -r monitor; do
+  [ -n "$monitor" ] || continue
+  mmsg dispatch "focusmon,$monitor" >/dev/null || true
+  mmsg dispatch "setlayout,$layout" >/dev/null || true
+done
+
+if [ -n "$active_monitor" ]; then
+  mmsg dispatch "focusmon,$active_monitor" >/dev/null || true
+fi

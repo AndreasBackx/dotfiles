@@ -159,9 +159,57 @@ profiles = ["laptop"]
 
 [themes.rubecula]
 name = "rubecula"
+type = "dark"
+
+black = "#141414"
+blackGray = "#1C1C1C"
+darkerGray = "#242424"
+darkGray = "#404040"
+gray = "#6E6E6E"
+lightGray = "#CECECE"
+lighterGray = "#D6D6D6"
+whiteGray = "#DEDEDE"
+white = "#E5E5E5"
+realwhite = "#FFFFFF"
+
+blue = "#5caeef"
+lightBlue = "#ABB2C0"
+
+yellow = "#CCC47A"
+
+pink = "#E52E71"
+lightPink = "#DB6165"
+
+green = "#9CCC3D"
+lightGreen = "#97C26C"
+
+cyan = "#6CC7D9"
+lightCyan = "#4FB1BC"
+
+orange = "#D9882B"
+lightOrange = "#DFB976"
+
+purple = "#A082D9"
+lightPurple = "#C172D9"
+
+transparent = "#FFFFFF00"
+
+darkBackground = "#141414"
 background = "#1c1c1c"
+lightBackground = "#242424"
+highlightBackground = "#E5E5E51C"
+activeBackground = "#3C3C3C"
+selectionBackground = "#625F42"
+inactiveSelectionBackground = "#3F3E2F"
+inactiveBackground = "#323232"
+
+border = "#404040"
+
+brightForeground = "#E5E5E5"
 transparency = 0.8
 foreground = "#e5e5e5"
+inactiveForeground = "#6E6E6E"
+
 cursor = "#F8F8F0"
 cursor_text_color = "#E5E5E5"
 url_color = "#e5e5e5"

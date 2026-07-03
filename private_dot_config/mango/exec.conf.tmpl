@@ -1,0 +1,24 @@
+exec=sh -lc "justloggedin || notify-send 'Mango config reloaded' --expire-time 2500 -u normal"
+
+# Export the compositor environment before starting the Mango session target.
+# In UWSM sessions, finalize marks readiness and exports compositor vars.
+# In legacy sessions, fall back to direct import.
+exec-once=sh -lc 'uwsm finalize MANGO_INSTANCE_SIGNATURE WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE GDK_SCALE || dbus-update-activation-environment --systemd --all'
+exec-once=systemctl --user start mango-session.target
+
+# Required for unlocking the login keyring on login.
+exec-once=gnome-keyring-daemon --start --components=secrets
+
+# Clipboard history used by DMS clipboard integration.
+exec-once=wl-paste --type text --watch cliphist store
+
+# Applications.
+exec-once=signal-desktop
+exec-once=spotify
+exec-once=discord
+{{ if eq .environment "work" }}
+exec-once=googlechat
+{{ end }}
+exec-once=sh -lc 'trayscale --hide-window || dev.deedles.Trayscale --hide-window'
+exec-once=1password --silent
+exec-once=sh -lc 'exec "$BROWSER"'

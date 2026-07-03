@@ -1,0 +1,46 @@
+{{- $t := .themes.rubecula -}}
+{{- $bg := printf "%sff" (replace "#" "0x" $t.background) -}}
+{{- $fg := printf "%sff" (replace "#" "0x" $t.foreground) -}}
+{{- $muted := printf "%sff" (replace "#" "0x" $t.color0) -}}
+{{- $danger := printf "%sff" (replace "#" "0x" $t.color1) -}}
+{{- $accent := printf "%sff" (replace "#" "0x" $t.color3) -}}
+{{- $blue := printf "%sff" (replace "#" "0x" $t.color4) -}}
+{{- $purple := printf "%sff" (replace "#" "0x" $t.color5) -}}
+{{- $cyan := printf "%sff" (replace "#" "0x" $t.color6) -}}
+{{- $accentDrop := printf "%s55" (replace "#" "0x" $t.color3) -}}
+# Rubecula-derived Mango styling.
+
+rootcolor={{ $bg }}
+bordercolor={{ $muted }}
+focuscolor={{ $accent }}
+urgentcolor={{ $danger }}
+scratchpadcolor={{ $blue }}
+globalcolor={{ $purple }}
+overlaycolor={{ $cyan }}
+dropcolor={{ $accentDrop }}
+splitcolor={{ $danger }}
+
+borderpx=0
+gappih=5
+gappiv=5
+gappoh=5
+gappov=5
+
+border_radius=12
+focused_opacity=1.0
+unfocused_opacity=0.94
+
+shadows=1
+shadow_only_floating=1
+shadows_size=10
+shadows_blur=15
+shadowscolor=0x00000099
+
+blur=0
+blur_layer=0
+blur_optimized=1
+
+cursor_size=20
+
+# Keep layout switching intentionally small while learning Mango's tag model.
+circle_layout=scroller,tile,dwindle,monocle

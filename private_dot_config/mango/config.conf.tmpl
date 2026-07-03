@@ -1,0 +1,17 @@
+# Main MangoWC configuration entry point.
+# DMS generated fragments are sourced early so this chezmoi config remains the
+# final authority for monitor profiles, rubecula colors, and tag behavior.
+
+source=~/.config/mango/env.conf
+
+source-optional=~/.config/mango/dms/colors.conf
+source-optional=~/.config/mango/dms/layout.conf
+source-optional=~/.config/mango/dms/outputs.conf
+
+source=~/.config/mango/monitors.conf
+source=~/.config/mango/input.conf
+source=~/.config/mango/appearance.conf
+source=~/.config/mango/tags.conf
+source=~/.config/mango/rules.conf
+source=~/.config/mango/binds.conf
+source=~/.config/mango/exec.conf

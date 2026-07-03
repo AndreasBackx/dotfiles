@@ -61,14 +61,16 @@ wait_for_targets_on() {
 case "$action" in
 off)
   stop_bar
-  wlopm --off "${targets[@]}"
+  #wlopm --off "${targets[@]}"
+  hyprctl dispatch dpms off "${targets[@]}"
   sleep 0.3
   if any_output_on; then
     start_bar
   fi
   ;;
 on)
-  wlopm --on "${targets[@]}"
+  #wlopm --on "${targets[@]}"
+  hyprctl dispatch dpms on "${targets[@]}"
   wait_for_targets_on || true
   start_bar
   ;;

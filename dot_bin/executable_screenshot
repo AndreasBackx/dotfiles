@@ -2,7 +2,10 @@
 
 set -eo pipefail
 
-if type "wayshot" >/dev/null; then
+if type "dms" >/dev/null; then
+    dms screenshot --no-file
+    exit 0
+elif type "wayshot" >/dev/null; then
     wayshot -g --clipboard
 elif type "hyprshot" >/dev/null; then
   hyprshot --freeze --clipboard-only --silent  --mode region
@@ -10,4 +13,4 @@ else
     grim -g "$(slurp)" - | wl-copy
 fi
 
-notify-send "📸 Screenshot saved to clipboard!" "Press Super+Shift+C to upload." --category transfer.complete
+notify-send "Screenshot saved to clipboard" "Press Super+Shift+C to upload." --category transfer.complete

@@ -1,0 +1,65 @@
+{{- $location := .monitors.selected -}}
+{{- $selectedMonitors := index .monitors $location -}}
+{{- $defaultProfile := .monitors.default_profile | default (index $selectedMonitors "default_profile") -}}
+{{- $activeProfile := $defaultProfile -}}
+{{- $profileFromEnv := trim (output "sh" "-lc" "printf '%s' \"$ACTIVE_PROFILE\"") -}}
+{{- if ne $profileFromEnv "" -}}
+  {{- $activeProfile = $profileFromEnv -}}
+{{- end -}}
+{{- if hasKey . "runtime" -}}
+  {{- $runtime := index . "runtime" -}}
+  {{- if and $runtime (hasKey $runtime "active_profile") -}}
+    {{- $runtimeProfile := trim (index $runtime "active_profile") -}}
+    {{- if ne $runtimeProfile "" -}}
+      {{- $activeProfile = $runtimeProfile -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $roles := list "left" "center" "right" "laptop" "tv" -}}
+{{- $activeRoles := list -}}
+{{- $minX := 0 -}}
+{{- $minY := 0 -}}
+{{- range $role := $roles -}}
+  {{- if hasKey $selectedMonitors $role -}}
+    {{- $monitor := index $selectedMonitors $role -}}
+    {{- if and (kindIs "map" $monitor) (hasKey $monitor "profiles") (has $activeProfile (index $monitor "profiles")) -}}
+      {{- $activeRoles = append $activeRoles $role -}}
+      {{- $parts := splitList "x" (index $monitor "position") -}}
+      {{- $x := atoi (first $parts) -}}
+      {{- $y := atoi (last $parts) -}}
+      {{- if lt $x $minX -}}{{- $minX = $x -}}{{- end -}}
+      {{- if lt $y $minY -}}{{- $minY = $y -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+# Monitor rules rendered from .chezmoidata.toml.
+# Active location: {{ $location }}
+# Active profile: {{ $activeProfile }}
+# Coordinates are normalized to avoid negative XWayland positions.
+
+{{ range $role := $activeRoles -}}
+  {{- $monitor := index $selectedMonitors $role -}}
+  {{- $modeParts := splitList "@" (index $monitor "mode") -}}
+  {{- $sizeParts := splitList "x" (first $modeParts) -}}
+  {{- $refresh := trimSuffix "Hz" (last $modeParts) -}}
+  {{- $positionParts := splitList "x" (index $monitor "position") -}}
+  {{- $x := sub (atoi (first $positionParts)) $minX -}}
+  {{- $y := sub (atoi (last $positionParts)) $minY -}}
+  {{- $make := "" -}}
+  {{- $model := "" -}}
+  {{- $serial := index $monitor "serial_number" | default "" -}}
+  {{- range $part := index $monitor "shikane_search" | default (list) -}}
+    {{- if hasPrefix "v=" $part -}}{{- $make = trimPrefix "v=" $part -}}{{- end -}}
+    {{- if hasPrefix "m=" $part -}}{{- $model = trimPrefix "m=" $part -}}{{- end -}}
+    {{- if and (eq $serial "") (hasPrefix "s=" $part) -}}{{- $serial = trimPrefix "s=" $part -}}{{- end -}}
+  {{- end -}}
+# {{ $role }}: {{ index $monitor "name" }}
+monitorrule={{ if ne $make "" }}make:{{ $make }},{{ end }}{{ if ne $model "" }}model:{{ $model }},{{ end }}{{ if ne $serial "" }}serial:{{ $serial }},{{ end }}width:{{ first $sizeParts }},height:{{ last $sizeParts }},refresh:{{ $refresh }},x:{{ $x }},y:{{ $y }}{{ if index $monitor "scale" }},scale:{{ index $monitor "scale" }}{{ end }}{{ if hasKey $monitor "transform" }},rr:{{ index $monitor "transform" }}{{ end }}{{ if hasKey $monitor "vrr" }},vrr:{{ index $monitor "vrr" }}{{ end }}
+{{ if index $monitor "background" -}}
+# wallpaper={{ index $monitor "background" }}
+{{ end -}}
+{{ if index $monitor "has_lid" -}}
+switchbind=fold,disable_monitor,{{ if ne $make "" }}make:{{ $make }}{{ if ne $model "" }}&&{{ end }}{{ end }}{{ if ne $model "" }}model:{{ $model }}{{ if ne $serial "" }}&&{{ end }}{{ end }}{{ if ne $serial "" }}serial:{{ $serial }}{{ end }}
+switchbind=unfold,enable_monitor,{{ if ne $make "" }}make:{{ $make }}{{ if ne $model "" }}&&{{ end }}{{ end }}{{ if ne $model "" }}model:{{ $model }}{{ if ne $serial "" }}&&{{ end }}{{ end }}{{ if ne $serial "" }}serial:{{ $serial }}{{ end }}
+{{ end }}
+{{ end -}}

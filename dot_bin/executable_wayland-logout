@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+
+set -eu
+
+if command -v uwsm >/dev/null 2>&1 && uwsm check is-active >/dev/null 2>&1; then
+  exec uwsm stop
+fi
+
+if [ -n "${XDG_SESSION_ID:-}" ] && command -v loginctl >/dev/null 2>&1; then
+  exec loginctl terminate-session "$XDG_SESSION_ID"
+fi
+
+if command -v mmsg >/dev/null 2>&1; then
+  exec mmsg dispatch quit
+fi
+
+exit 1
