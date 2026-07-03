@@ -20,7 +20,7 @@ dot-doctor
 
 ## Configuration Model
 
-- `.chezmoi.toml.tmpl` prompts for `environment`, `gpu`, `headless`, monitor location, default monitor profile, optional Borg backup settings, and whether `evremap` should be enabled on this machine.
+- `.chezmoi.toml.tmpl` prompts for `environment`, `gpu`, `headless`, the default 1Password account, monitor location, default monitor profile, optional Borg backup settings, and whether `evremap` should be enabled on this machine.
 - `.chezmoidata.toml` is the main source of truth for monitor metadata, workspace ranges, profile labels, lock and screen timeouts, and theme values.
 - `private_dot_config/dot_variables.tmpl` renders `~/.config/.variables` so shell scripts can read the selected chezmoi data.
 - `private_dot_config/dot_secrets.tmpl` renders `~/.config/.secrets` from 1Password on non-headless machines.
@@ -110,7 +110,7 @@ bar-reload
 Common things to check:
 
 - Missing wrappers: run `chezmoi apply` again after installing required desktop tools.
-- Missing secrets: check `~/.config/.secrets` and your 1Password CLI setup.
+- Missing secrets: check `~/.config/.secrets`, your 1Password CLI setup, and that `OP_ACCOUNT` matches an account from `op account list`.
 - Backups: `chezmoi apply` renders backup settings, but `backup init` is the explicit activation step that installs the root-owned files, generates the root SSH key, enables the timer, and initializes the remote repo when needed.
 - Evremap: `evremap.enabled` defaults to `false`; `chezmoi apply` installs the root-owned service only when enabled and removes it when disabled.
 - Headless mode: desktop checks are skipped and secrets are not loaded.
