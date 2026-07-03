@@ -7,6 +7,21 @@ exit 0
 
 set -o errexit -o nounset -o pipefail
 
+from="$HOME/.local/share/wayland-sessions/mango-uwsm.desktop"
+to="/usr/share/wayland-sessions/mango-uwsm.desktop"
+
+if [[ -f "$from" ]]; then
+  if [[ -e "$to" || -L "$to" ]]; then
+    >&2 echo "$to already exists, skipping."
+  else
+    >&2 echo "Symlinking $from to $to..."
+    sudo mkdir -p "$(dirname "$to")"
+    sudo ln -s "$from" "$to"
+  fi
+else
+  >&2 echo "$from does not exist, skipping Mango UWSM session symlink."
+fi
+
 if command -v systemctl >/dev/null 2>&1; then
   systemctl --user daemon-reload
   systemctl --user add-wants mango-session.target dms.service >/dev/null 2>&1 || true
