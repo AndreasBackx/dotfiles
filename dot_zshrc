@@ -28,6 +28,9 @@ if type "fnm" >/dev/null; then
   fnm use --silent-if-unchanged >/dev/null 2>&1 || true
 fi
 
+if type "mise" >/dev/null; then
+  eval "$(mise activate zsh)"
+fi
 if type "eza" >/dev/null; then
   alias ls="eza"
 elif type "exa" >/dev/null; then
