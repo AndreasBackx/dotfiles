@@ -3,13 +3,13 @@ layerrule=noanim:1,layer_name:^dms
 windowrule=isfloating:1,appid:^org\.quickshell$
 
 # Terminals.
-windowrule=isnoborder:1,isterm:1,appid:^com\.mitchellh\.ghostty$
-windowrule=isnoborder:1,isterm:1,appid:^kitty$
-windowrule=isnoborder:1,isterm:1,appid:^Alacritty$
+#windowrule=isnoborder:1,isterm:1,appid:^com\.mitchellh\.ghostty$
+#windowrule=isnoborder:1,isterm:1,appid:^kitty$
+#windowrule=isnoborder:1,isterm:1,appid:^Alacritty$
 
 # Browsers and editors.
-windowrule=tags:2,appid:^(firefox|zen|google-chrome|Google-chrome|chromium|Chromium|brave-browser|Brave-browser)$
-windowrule=tags:3,appid:^code(.*)?(-url-handler)?$
+#windowrule=tags:2,appid:^(firefox|zen|google-chrome|Google-chrome|chromium|Chromium|brave-browser|Brave-browser)$
+#windowrule=tags:3,appid:^code(.*)?(-url-handler)?$
 
 # Chat and communication.
 windowrule=tags:4,appid:^([dD]iscord|com\.discordapp\.Discord)$
@@ -28,7 +28,8 @@ windowrule=tags:6,appid:^(Hexchat|Zulip|Slack|com\.slack\.Slack)$
 # Media and games.
 windowrule=tags:5,appid:^(Spotify(\sPremium)?)$
 windowrule=tags:5,title:^(Spotify(\sPremium)?)$
-windowrule=tags:7,force_tearing:1,title:^(Counter-Strike 2|gamescope|RuneLite|HDOS)$
+# windowrule=tags:7,force_tearing:1,title:^(Counter-Strike 2|gamescope|HDOS)$
+# windowrule=tags:7,force_tearing:1,isnosizehint:1,force_tiled_state:1,appid:^net-runelite-client-RuneLite$
 
 # Utility floats.
 windowrule=isfloating:1,appid:^(1password|com\.adamcake\.Bolt)$

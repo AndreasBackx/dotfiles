@@ -26,9 +26,6 @@ default-command = [
     "reachable(@, mutable()) | heads(mutable()) | roots(mutable()) | fork_point(mutable())",
 ]
 
-[revset-aliases]
-"trunk()" = "main@origin"
-
 [aliases]
 # Move the closest ancestor bookmark to the current commit, unless the working-copy
 # commit is empty; in that case move it to the parent.

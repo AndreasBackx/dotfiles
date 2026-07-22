@@ -7,7 +7,7 @@
 {{- $blue := printf "%sff" (replace "#" "0x" $t.color4) -}}
 {{- $purple := printf "%sff" (replace "#" "0x" $t.color5) -}}
 {{- $cyan := printf "%sff" (replace "#" "0x" $t.color6) -}}
-{{- $accentDrop := printf "%s55" (replace "#" "0x" $t.color3) -}}
+{{- $accentDrop := printf "%s20" (replace "#" "0x" $t.selectionBackground) -}}
 # Rubecula-derived Mango styling.
 
 rootcolor={{ $bg }}
@@ -26,7 +26,7 @@ gappiv=2
 gappoh=0
 gappov=0
 
-border_radius=4
+border_radius=8
 focused_opacity=1.0
 unfocused_opacity=0.94
 
@@ -40,7 +40,7 @@ blur=0
 blur_layer=0
 blur_optimized=1
 
-cursor_size=20
+cursor_size=24
 
 # Keep layout switching intentionally small while learning Mango's tag model.
 circle_layout=scroller,tile,dwindle,monocle

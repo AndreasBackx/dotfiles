@@ -5,6 +5,7 @@ keybind = ctrl++=increase_font_size:0.5
 keybind = ctrl+-=decrease_font_size:0.5
 
 confirm-close-surface = false
+gtk-single-instance = true
 cursor-style = bar
 
 theme = dark:rubecula,light:rubecula-dawn
