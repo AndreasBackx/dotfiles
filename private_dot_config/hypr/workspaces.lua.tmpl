@@ -5,7 +5,7 @@
     {{- if and (kindIs "map" $monitor) (hasKey $monitor "workspaces") -}}
     {{- $setName := index $monitor "workspaces" -}}
     {{- range $index, $workspace := index $.workspaces $setName }}
-hl.workspace_rule({ workspace = "{{ $workspace }}", monitor = {{ printf "desc:%s" (index $monitor "name") | quote }}{{ if eq $index 0 }}, default = true{{ end }} })
+hl.workspace_rule({ workspace = "{{ $workspace }}", default_name = "{{ add $index 1 }}", monitor = {{ printf "desc:%s" (index $monitor "name") | quote }}{{ if eq $index 0 }}, default = true{{ end }} })
     {{- end }}
     {{- end -}}
   {{- end -}}
@@ -13,6 +13,27 @@ hl.workspace_rule({ workspace = "{{ $workspace }}", monitor = {{ printf "desc:%s
 
 local bind = require("bind")
 local keys = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "Minus", "Equal" }
+local workspaceLabels = {
+{{- range $setName, $workspaces := .workspaces }}
+{{- if and (ne $setName "associations") (kindIs "slice" $workspaces) }}
+{{- range $index, $workspace := $workspaces }}
+    [{{ $workspace }}] = "{{ add $index 1 }}",
+{{- end }}
+{{- end }}
+{{- end }}
+}
+
+local function renameWorkspaces()
+    for _, workspace in ipairs(hl.get_workspaces()) do
+        local label = workspaceLabels[workspace.id]
+        if label and workspace.name ~= label then
+            hl.dispatch(hl.dsp.workspace.rename({ workspace = workspace.id, name = label }))
+        end
+    end
+end
+
+hl.on("hyprland.start", renameWorkspaces)
+hl.on("workspace.created", renameWorkspaces)
 
 local function bindWorkspaceSet(modifiers, firstWorkspace)
     for index, key in ipairs(keys) do
