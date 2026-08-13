@@ -48,8 +48,8 @@ wait_for_profile_monitors
 chezmoi apply \
     --force \
     --override-data "{\"runtime\":{\"active_profile\":\"$active_profile\"}}" \
-    "$HOME/.config/hypr/windows.conf" \
-    "$HOME/.config/hypr/workspaces.conf"
+    "$HOME/.config/hypr/windows.lua" \
+    "$HOME/.config/hypr/workspaces.lua"
 
 "$HOME/.bin/hypr-workspace-remap" "$active_profile"
 

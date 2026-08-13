@@ -1,0 +1,38 @@
+local reloadCommands = {
+    "justloggedin || notify-send 'Hyprland reloaded!' --expire-time 2500 -u normal",
+    'pgrep -x "redshift-gtk" >/dev/null || redshift-gtk',
+    'pgrep -x "gammastep" >/dev/null || gammastep-indicator',
+}
+
+for _, command in ipairs(reloadCommands) do
+    hl.exec_cmd(command)
+end
+
+hl.on("hyprland.start", function()
+    local commands = {
+        'env GI_TYPELIB_PATH=/usr/local/lib64/girepository-1.0 LD_LIBRARY_PATH=/usr/local/lib64 ags run "$HOME/.config/ags/apps/bar/app.tsx"',
+        "pgrep -x waycorner >/dev/null || waycorner",
+        "hypridle",
+        "pypr",
+        "sh -lc 'pkill shikane; shikane >/tmp/shikane.log 2>&1 &'",
+        "sh -lc 'uwsm finalize || dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP _JAVA_AWT_WM_NONREPARENTING'",
+        "gnome-keyring-daemon --start --components=secrets",
+        "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 || /usr/libexec/polkit-gnome-authentication-agent-1",
+        "nm-applet --indicator",
+        "blueman-applet",
+        "signal-desktop",
+        "spotify",
+        "discord",
+{{ if eq .environment "work" -}}
+        "googlechat",
+{{ end -}}
+        "trayscale --hide-window || dev.deedles.Trayscale --hide-window",
+        "1password --silent",
+    }
+
+    for _, command in ipairs(commands) do
+        hl.exec_cmd(command)
+    end
+
+    hl.exec_cmd("$BROWSER", { workspace = "101 silent" })
+end)

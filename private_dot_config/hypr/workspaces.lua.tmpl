@@ -1,0 +1,53 @@
+{{- $location := .monitors.selected -}}
+{{- $selectedMonitors := index .monitors $location -}}
+{{- $defaultProfile := .monitors.default_profile | default (index $selectedMonitors "default_profile") -}}
+{{- $activeProfile := $defaultProfile -}}
+{{- $profileFromEnv := trim (output "sh" "-lc" "printf '%s' \"$ACTIVE_PROFILE\"") -}}
+{{- if ne $profileFromEnv "" -}}{{- $activeProfile = $profileFromEnv -}}{{- end -}}
+{{- if hasKey . "runtime" -}}
+  {{- $runtime := index . "runtime" -}}
+  {{- if and $runtime (hasKey $runtime "active_profile") -}}
+    {{- $runtimeProfile := trim (index $runtime "active_profile") -}}
+    {{- if ne $runtimeProfile "" -}}{{- $activeProfile = $runtimeProfile -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $visibleRoles := dict -}}
+{{- range $role := list "left" "center" "right" "laptop" "tv" -}}
+  {{- if hasKey $selectedMonitors $role -}}
+    {{- $monitor := index $selectedMonitors $role -}}
+    {{- if and (kindIs "map" $monitor) (hasKey $monitor "workspaces") (hasKey $monitor "profiles") (has $activeProfile (index $monitor "profiles")) -}}
+      {{- $_ := set $visibleRoles $role true -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- range $role := list "left" "center" "right" "laptop" "tv" -}}
+  {{- if hasKey $visibleRoles $role -}}
+    {{- $monitor := index $selectedMonitors $role -}}
+    {{- $setName := index $monitor "workspaces" -}}
+    {{- if and (eq $role "laptop") (eq (len $visibleRoles) 1) -}}{{- $setName = "center" -}}{{- end -}}
+    {{- range $index, $workspace := index $.workspaces $setName }}
+hl.workspace_rule({ workspace = "{{ $workspace }}", monitor = {{ printf "desc:%s" (index $monitor "name") | quote }}{{ if eq $index 0 }}, default = true{{ end }} })
+    {{- end }}
+  {{- end -}}
+{{- end }}
+
+local bind = require("bind")
+local keys = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "Minus", "Equal" }
+
+local function bindWorkspaceSet(modifiers, firstWorkspace)
+    for index, key in ipairs(keys) do
+        local workspace = firstWorkspace + index - 1
+        bind.workspace(modifiers .. " + " .. key, workspace)
+    end
+    for index, key in ipairs(keys) do
+        local workspace = firstWorkspace + index - 1
+        bind.move_silent(modifiers .. " + SHIFT + " .. key, workspace)
+    end
+end
+
+bindWorkspaceSet("SUPER + CTRL", 1)
+bindWorkspaceSet("SUPER", 101)
+bindWorkspaceSet("SUPER + ALT", 201)
+{{- if hasKey (index .monitors .monitors.selected) "laptop" }}
+bindWorkspaceSet("SUPER + MOD2", 301)
+{{- end }}

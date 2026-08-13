@@ -1,0 +1,116 @@
+{{- $location := .monitors.selected -}}
+{{- $selectedMonitors := index .monitors $location -}}
+{{- $defaultProfile := .monitors.default_profile | default (index $selectedMonitors "default_profile") -}}
+{{- $activeProfile := $defaultProfile -}}
+{{- $profileFromEnv := trim (output "sh" "-lc" "printf '%s' \"$ACTIVE_PROFILE\"") -}}
+{{- if ne $profileFromEnv "" -}}{{- $activeProfile = $profileFromEnv -}}{{- end -}}
+{{- if hasKey . "runtime" -}}
+  {{- $runtime := index . "runtime" -}}
+  {{- if and $runtime (hasKey $runtime "active_profile") -}}
+    {{- $runtimeProfile := trim (index $runtime "active_profile") -}}
+    {{- if ne $runtimeProfile "" -}}{{- $activeProfile = $runtimeProfile -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $workspaceSets := .workspaces -}}
+{{- $visibleRoles := dict -}}
+{{- range $role := list "left" "center" "right" "laptop" "tv" -}}
+  {{- if hasKey $selectedMonitors $role -}}
+    {{- $monitor := index $selectedMonitors $role -}}
+    {{- if and (kindIs "map" $monitor) (hasKey $monitor "workspaces") (hasKey $monitor "profiles") (has $activeProfile (index $monitor "profiles")) -}}
+      {{- $_ := set $visibleRoles $role true -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $visibleSets := dict -}}
+{{- range $role := list "left" "center" "right" "laptop" "tv" -}}
+  {{- if hasKey $visibleRoles $role -}}
+    {{- $monitor := index $selectedMonitors $role -}}
+    {{- $setName := index $monitor "workspaces" -}}
+    {{- if and (eq $role "laptop") (eq (len $visibleRoles) 1) -}}{{- $setName = "center" -}}{{- end -}}
+    {{- $_ := set $visibleSets $setName true -}}
+  {{- end -}}
+{{- end -}}
+{{- $workspaceToSet := dict -}}
+{{- range $setName, $members := $workspaceSets -}}
+  {{- if and (ne $setName "associations") (kindIs "slice" $members) -}}
+    {{- range $workspace := $members -}}{{- $_ := set $workspaceToSet (printf "%v" $workspace) $setName -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $associationTargets := dict -}}
+{{- $associationResolvedVisible := dict -}}
+{{- range $associationName, $members := index $workspaceSets "associations" -}}
+  {{- if gt (len $members) 0 -}}{{- $_ := set $associationTargets $associationName (index $members 0) -}}{{- end -}}
+  {{- range $workspace := $members -}}
+    {{- $workspaceKey := printf "%v" $workspace -}}
+    {{- $setName := index $workspaceToSet $workspaceKey | default "" -}}
+    {{- if and (not (hasKey $associationResolvedVisible $associationName)) (hasKey $visibleSets $setName) -}}
+      {{- $_ := set $associationTargets $associationName $workspace -}}
+      {{- $_ := set $associationResolvedVisible $associationName true -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $mediaWorkspace := index $associationTargets "media" -}}
+{{- $commsPersonalWorkspace := index $associationTargets "comms_personal" -}}
+{{- $commsWorkWorkspace := index $associationTargets "comms_work" -}}
+
+hl.window_rule({ name = "noshadow-kitty", match = { class = [[^(kitty)$]] }, no_shadow = true })
+hl.window_rule({ name = "noshadow-ghostty", match = { class = [[^(com\.mitchellh\.ghostty)$]] }, no_shadow = true })
+hl.window_rule({ name = "Float", match = { class = [[^(1password)|(com.adamcake.Bolt)$]] }, float = true })
+hl.window_rule({
+    name = "1password-quickaccess",
+    match = { title = [[^(Quick Access — 1Password)$]] },
+    stay_focused = true,
+    dim_around = true,
+})
+hl.window_rule({ name = "kitty-noshadow", match = { class = [[^(kitty)$]] }, no_shadow = true })
+hl.window_rule({ name = "ghostty-noshadow", match = { class = [[^(com\.mitchellh\.ghostty)$]] }, no_shadow = true })
+hl.window_rule({
+    name = "rs-launcher",
+    match = { title = [[^(RuneLite\sLauncher)|(HDOS)$]] },
+    float = true,
+    center = true,
+    pin = true,
+})
+hl.window_rule({ name = "noshadow-kitty", match = { class = [[^(kitty)$]] }, no_shadow = true })
+hl.window_rule({ name = "noshadow-ghostty-dup", match = { class = [[^(com\.mitchellh\.ghostty)$]] }, no_shadow = true })
+hl.window_rule({ name = "float-1password-bolt", match = { class = [[^(1password)|(com.adamcake.Bolt)$]] }, float = true })
+hl.window_rule({
+    name = "1password-quickaccess",
+    match = { title = [[^(Quick Access — 1Password)|(1Password)$]] },
+    stay_focused = true,
+    dim_around = true,
+})
+hl.window_rule({
+    name = "runelite-launcher",
+    match = { title = [[^(RuneLite\sLauncher)|(HDOS)$]] },
+    float = true,
+    center = true,
+    pin = true,
+})
+hl.window_rule({ name = "hdos-main-tile", match = { class = [[^(hdos-Main)$]] }, tile = true })
+hl.window_rule({ name = "zoom", match = { class = [[^(Zoom.*)$]] }, float = true, move = "(cursor_x-10) (cursor_y-10)" })
+hl.window_rule({ name = "zoom-menu-size", match = { class = [[^(Zoom.*)$]], title = [[^(menu window)$]] }, size = "300 201" })
+hl.window_rule({ name = "floats-others", match = { class = [[^(Gtk_prompt\.py)|(updates)$]] }, float = true })
+hl.window_rule({
+    name = "picture-in-picture",
+    match = { title = [[^(Picture-in-Picture)$]] },
+    float = true,
+    keep_aspect_ratio = true,
+    size = "800 450",
+})
+hl.window_rule({ name = "picture-in-picture-opacity", match = { pin = true }, opacity = "0.10 1.0" })
+
+hl.window_rule({ name = "workspace-spotify", match = { class = [[^(Spotify(\sPremium)?)$]] }, workspace = "{{ $mediaWorkspace }} silent" })
+hl.window_rule({ name = "workspace-spotify-initialtitle", match = { initial_title = [[^(Spotify(\sPremium)?)$]] }, workspace = "{{ $mediaWorkspace }} silent" })
+hl.window_rule({ name = "workspace-discord", match = { class = [[^([dD]iscord)|(com\.discordapp\.Discord)$]] }, workspace = "{{ $commsPersonalWorkspace }} silent" })
+hl.window_rule({ name = "workspace-msgs", match = { title = [[^(Signal.*)|(WhatsApp.*)|(ZapZap)$]] }, workspace = "{{ $commsPersonalWorkspace }} silent" })
+hl.window_rule({ name = "workspace-comm", match = { class = [[^(Hexchat)|(Zulip)|(Slack)|(com.slack.Slack)$]] }, workspace = "{{ $commsWorkWorkspace }} silent" })
+hl.window_rule({ name = "workspace-tuba", match = { title = [[^(Tuba)$]] }, workspace = "{{ $commsPersonalWorkspace }} silent" })
+hl.window_rule({ name = "workspace-mattermost", match = { class = [[^(Mattermost)$]] }, workspace = "{{ $commsWorkWorkspace }} silent" })
+hl.window_rule({ name = "workspace-workchat", match = { initial_title = [[^(Workchat)|(Google Chat)$]] }, workspace = "{{ $commsWorkWorkspace }} silent" })
+
+hl.window_rule({
+    name = "monitor-center-code",
+    match = { class = [[^code(.*)?(-url-handler)?$]] },
+    monitor = {{ printf "desc:%s" (index .monitors .monitors.selected "center" "name") | quote }},
+})

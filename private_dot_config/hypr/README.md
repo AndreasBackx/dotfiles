@@ -4,14 +4,14 @@ This folder is the rendered Hyprland session configuration plus the data that dr
 
 ## Entry Point
 
-- `hyprland.conf.tmpl` is the main include file.
+- `hyprland.lua.tmpl` is the main Lua entry point.
 - It pulls in environment, styling, monitor layout, input, window rules, workspace rules, layout settings, startup commands, and keybindings.
-- On Nvidia hosts it also includes `nvidia.conf`.
+- On Nvidia hosts it also includes `nvidia.lua`.
 
 ## Monitor And Workspace Model
 
 - Monitor metadata comes from `.chezmoidata.toml`.
-- `monitors.conf.tmpl` renders monitor layout from the selected location and profile.
+- `monitors.lua.tmpl` renders monitor layout from the selected location and profile.
 - `workspace-routing.json.tmpl` renders the workspace-to-monitor mapping that helper scripts consume.
 - Workspace ranges are split by role:
   left `1-12`
@@ -22,12 +22,12 @@ This folder is the rendered Hyprland session configuration plus the data that dr
 ## Profile Switching
 
 - `monitor-profiles selection` uses `shikanectl switch <profile>` and applies profile-specific audio defaults when configured.
-- `hypr-profile-refresh` waits for the expected monitors, re-renders `windows.conf` and `workspaces.conf`, and then runs `hypr-workspace-remap`.
+- `hypr-profile-refresh` waits for the expected monitors, re-renders `windows.lua` and `workspaces.lua`, and then runs `hypr-workspace-remap`.
 - `hypr-workspace-remap` moves windows from associated workspaces onto the currently visible target workspace for the active profile.
 
 ## Session Startup
 
-`exec.conf.tmpl` is the main startup behavior. It currently starts:
+`exec.lua.tmpl` is the main startup behavior. It currently starts:
 
 - AGS
 - `waycorner`

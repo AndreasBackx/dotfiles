@@ -1,0 +1,29 @@
+require("env")
+require("styling")
+{{ if eq .gpu "nvidia" -}}
+require("nvidia")
+{{- end }}
+
+require("monitors")
+require("input")
+require("windows")
+require("workspaces")
+require("layout")
+require("exec")
+
+require("keybindings.apps")
+require("keybindings.layout")
+require("keybindings.media")
+require("keybindings.resize")
+
+hl.config({
+    ecosystem = {
+        no_update_news = true,
+        no_donation_nag = true,
+    },
+    misc = {
+        vrr = 1,
+        key_press_enables_dpms = true,
+        mouse_move_enables_dpms = true,
+    },
+})
