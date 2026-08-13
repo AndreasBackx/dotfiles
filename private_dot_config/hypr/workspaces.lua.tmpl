@@ -1,33 +1,13 @@
-{{- $location := .monitors.selected -}}
-{{- $selectedMonitors := index .monitors $location -}}
-{{- $defaultProfile := .monitors.default_profile | default (index $selectedMonitors "default_profile") -}}
-{{- $activeProfile := $defaultProfile -}}
-{{- $profileFromEnv := trim (output "sh" "-lc" "printf '%s' \"$ACTIVE_PROFILE\"") -}}
-{{- if ne $profileFromEnv "" -}}{{- $activeProfile = $profileFromEnv -}}{{- end -}}
-{{- if hasKey . "runtime" -}}
-  {{- $runtime := index . "runtime" -}}
-  {{- if and $runtime (hasKey $runtime "active_profile") -}}
-    {{- $runtimeProfile := trim (index $runtime "active_profile") -}}
-    {{- if ne $runtimeProfile "" -}}{{- $activeProfile = $runtimeProfile -}}{{- end -}}
-  {{- end -}}
-{{- end -}}
-{{- $visibleRoles := dict -}}
-{{- range $role := list "left" "center" "right" "laptop" "tv" -}}
+{{- $selectedMonitors := index .monitors .monitors.selected -}}
+{{- range $role := list "left" "center" "right" "laptop" -}}
   {{- if hasKey $selectedMonitors $role -}}
     {{- $monitor := index $selectedMonitors $role -}}
-    {{- if and (kindIs "map" $monitor) (hasKey $monitor "workspaces") (hasKey $monitor "profiles") (has $activeProfile (index $monitor "profiles")) -}}
-      {{- $_ := set $visibleRoles $role true -}}
-    {{- end -}}
-  {{- end -}}
-{{- end -}}
-{{- range $role := list "left" "center" "right" "laptop" "tv" -}}
-  {{- if hasKey $visibleRoles $role -}}
-    {{- $monitor := index $selectedMonitors $role -}}
+    {{- if and (kindIs "map" $monitor) (hasKey $monitor "workspaces") -}}
     {{- $setName := index $monitor "workspaces" -}}
-    {{- if and (eq $role "laptop") (eq (len $visibleRoles) 1) -}}{{- $setName = "center" -}}{{- end -}}
     {{- range $index, $workspace := index $.workspaces $setName }}
 hl.workspace_rule({ workspace = "{{ $workspace }}", monitor = {{ printf "desc:%s" (index $monitor "name") | quote }}{{ if eq $index 0 }}, default = true{{ end }} })
     {{- end }}
+    {{- end -}}
   {{- end -}}
 {{- end }}
 
