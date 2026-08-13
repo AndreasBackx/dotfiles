@@ -4,6 +4,7 @@ bind.exec("SUPER + Return", "ghostty || kitty-cwd || kitty")
 bind.exec("SUPER + SHIFT + Return", "pypr toggle dropterm")
 
 bind.exec("SUPER + Space", "dms ipc call spotlight toggle")
+bind.exec("SUPER + D", "dms ipc call spotlight toggle")
 bind.exec("SUPER + V", "dms ipc call clipboard toggle")
 bind.exec("SUPER + M", "dms ipc call processlist focusOrToggle")
 bind.exec("SUPER + Comma", "dms ipc call settings focusOrToggle")
