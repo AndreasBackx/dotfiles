@@ -29,15 +29,18 @@ This folder is the rendered Hyprland session configuration plus the data that dr
 
 `exec.lua.tmpl` is the main startup behavior. It currently starts:
 
-- AGS
-- `waycorner`
-- `hypridle`
 - `pypr`
-- `shikane`
 - `gnome-keyring-daemon`
-- tray and desktop applications
+- `hyprland-session.target`, which starts DMS
+- clipboard history when `cliphist` is installed
+- desktop applications
 
 In UWSM sessions it runs `uwsm finalize` so the compositor marks itself ready and exports the Wayland session environment into systemd.
+
+DMS owns the bar, notifications, polkit prompts, lock screen, idle handling,
+wallpaper, and shell UI. Configure both AC and battery idle policies in DMS with
+a 300-second lock timeout, a 3300-second post-lock monitor timeout, and automatic
+suspend disabled.
 
 ## Logging
 
