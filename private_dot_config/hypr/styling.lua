@@ -44,10 +44,8 @@ hl.animation({ leaf = "fadeLayersOut", enabled = true, speed = 2, bezier = "smoo
 hl.animation({ leaf = "fadeDim", enabled = true, speed = 2, bezier = "smoothIn" })
 hl.animation({ leaf = "workspaces", enabled = true, speed = 5, bezier = "macos_ws", style = "slide" })
 
-hl.layer_rule({ name = "notifications", match = { namespace = "notifications" }, animation = "slide right" })
+hl.layer_rule({ name = "dms", match = { namespace = "^dms:.*" }, no_anim = true })
 hl.layer_rule({ name = "wayshot", match = { namespace = "wayshot" }, no_anim = true })
 hl.layer_rule({ name = "wayshot-selection", match = { namespace = "osk" }, no_anim = true })
 hl.layer_rule({ name = "grim-selection", match = { namespace = "selection" }, no_anim = true })
 hl.layer_rule({ name = "hyprpicker-hyprshot", match = { namespace = "hyprpicker" }, no_anim = true })
-hl.layer_rule({ name = "bar-top", match = { namespace = "^ags-bar-top.*" }, animation = "slide top" })
-hl.layer_rule({ name = "bar-bottom", match = { namespace = "^ags-bar-bottom.*" }, animation = "slide bottom" })
