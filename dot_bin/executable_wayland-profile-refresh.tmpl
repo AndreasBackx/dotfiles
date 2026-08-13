@@ -10,9 +10,6 @@ if [[ -z "$active_profile" ]]; then
 fi
 
 case "$(current_compositor)" in
-hyprland)
-    exec "$HOME/.bin/hypr-profile-refresh" "$active_profile"
-    ;;
 niri)
     config_file="$HOME/.config/hypr/workspace-routing.json"
     if [[ ! -f "$config_file" ]]; then

@@ -9,8 +9,7 @@
 - `hyprland-logs`: quick Hyprland and UWSM log summary.
 - `niri-logs`: quick Niri session journal summary.
 - `monitor-profiles selection`: switch shikane monitor profiles from a rofi menu and apply per-profile audio defaults.
-- `hypr-profile-refresh`: re-render `windows.lua` and `workspaces.lua` for the active monitor profile, then remap windows.
-- `wayland-profile-refresh`: refresh the active compositor's profile-sensitive Wayland config.
+- `wayland-profile-refresh`: refresh niri's profile-sensitive config when `shikane` changes profiles.
 - `power-options selection`: opens the logout, suspend, reboot, and shutdown menu.
 - `updates`: checks or runs package updates.
 - `backup`: initializes, checks, and runs the Borg backup flow. Use `backup init` once per machine after server-side SSH access is ready.

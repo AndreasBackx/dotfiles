@@ -47,7 +47,6 @@ These run automatically after apply:
 - `run_after_hyprland.zsh.tmpl`: creates the Hyprland log directory, reloads user systemd units, and enables Hyprland log rotation.
 - `run_after_firefox_userchrome.zsh`: installs a default Firefox `userChrome.css` into the active profile and enables Firefox stylesheet loading in `user.js`.
 - `run_after_firefox_autoconfig.zsh`: installs the synced Firefox AutoConfig files that focus the URL bar for new blank Firefox windows; it only asks for `sudo` when the installed files differ.
-- `run_after_hypr_workspace_remap.zsh.tmpl`: remaps windows when apply happens inside a live Hyprland session.
 - `run_after_gnome_monitors.zsh.tmpl`: copies `~/.config/monitors.xml` into GDM so the login screen uses the same layout.
 - `run_after_zsh.zsh`: creates the tmux config symlink.
 - `run_after_macos_xdg.zsh`: makes macOS XDG-compatible symlinks under `~/.local`.
@@ -59,8 +58,7 @@ These run automatically after apply:
 - `hyprland-logs`: show the Hyprland file log, recent UWSM journal entries, crash reports, and logrotate config path.
 - `niri-logs`: show the recent Niri session journal and session environment hints.
 - `monitor-profiles selection`: switch monitor profiles through `shikanectl` and update default audio devices for that profile.
-- `hypr-profile-refresh`: re-render profile-sensitive Hyprland config and remap windows.
-- `wayland-profile-refresh`: runtime compositor-aware profile refresh entrypoint used by `shikane`.
+- `wayland-profile-refresh`: refresh niri's profile-sensitive config when `shikane` changes profiles.
 - `power-options selection`: rofi power menu.
 - `updates check` or `updates update`: package update helper.
 - `backup init`, `backup status`, or `backup start`: Borg backup helper.

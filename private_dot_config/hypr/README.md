@@ -12,7 +12,7 @@ This folder is the rendered Hyprland session configuration plus the data that dr
 
 - Monitor metadata comes from `.chezmoidata.toml`.
 - `monitors.lua.tmpl` renders monitor layout from the selected location and profile.
-- `workspace-routing.json.tmpl` renders the workspace-to-monitor mapping that helper scripts consume.
+- `workspace-routing.json.tmpl` remains available to the shared niri profile tooling.
 - Workspace ranges are split by role:
   left `1-12`
   center `101-112`
@@ -21,9 +21,8 @@ This folder is the rendered Hyprland session configuration plus the data that dr
 
 ## Profile Switching
 
-- `monitor-profiles selection` uses `shikanectl switch <profile>` and applies profile-specific audio defaults when configured.
-- `hypr-profile-refresh` waits for the expected monitors, re-renders `windows.lua` and `workspaces.lua`, and then runs `hypr-workspace-remap`.
-- `hypr-workspace-remap` moves windows from associated workspaces onto the currently visible target workspace for the active profile.
+DMS owns Hyprland output profiles. Workspace ranges remain statically assigned
+to physical monitor descriptions and do not change when an output profile does.
 
 ## Session Startup
 
