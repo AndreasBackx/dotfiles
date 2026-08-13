@@ -1,5 +1,4 @@
 hl.bind("SUPER + Q", hl.dsp.window.close())
-hl.bind("SUPER + M", hl.dsp.exit())
 hl.bind("SUPER + F", hl.dsp.window.float())
 hl.bind("SUPER + P", hl.dsp.window.pin())
 
