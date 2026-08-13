@@ -12,6 +12,7 @@ bindswitch --locked lid:on output {{ index .monitors .monitors.selected "laptop"
 {{- end }}
 
 ### Idle configuration
+exec_always --no-startup-id pgrep -x mako >/dev/null || /usr/bin/mako
 exec_always --no-startup-id swayidle -d \
     timeout 10 'if pgrep swaylock; then swaymsg "output * dpms off"; fi'\
         resume 'if pgrep swaylock; then swaymsg "output * dpms on"; fi' \

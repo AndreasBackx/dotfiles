@@ -27,6 +27,7 @@ config-notification {
 }
 
 spawn-sh-at-startup "env GI_TYPELIB_PATH=/usr/local/lib64/girepository-1.0 LD_LIBRARY_PATH=/usr/local/lib64 ags run $HOME/.config/ags/apps/bar/app.tsx"
+spawn-sh-at-startup "pgrep -x mako >/dev/null || /usr/bin/mako"
 spawn-sh-at-startup "pgrep -x waycorner >/dev/null || waycorner"
 spawn-sh-at-startup "pgrep -x swayidle >/dev/null || swayidle -w timeout 300 'loginctl lock-session' timeout 3600 'niri msg action power-off-monitors' before-sleep 'lock'"
 spawn-sh-at-startup "pkill shikane; shikane >/tmp/shikane.log 2>&1 &"
