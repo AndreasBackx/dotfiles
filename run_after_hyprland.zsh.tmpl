@@ -13,4 +13,7 @@ mkdir -p "$hyprland_log_dir"
 if command -v systemctl >/dev/null 2>&1; then
     systemctl --user daemon-reload
     systemctl --user enable --now logrotate-hyprland.timer >/dev/null
+    systemctl --user disable dms.service >/dev/null 2>&1 || true
+    systemctl --user add-wants mango-session.target dms.service >/dev/null 2>&1 || true
+    systemctl --user add-wants hyprland-session.target dms.service >/dev/null 2>&1 || true
 fi
