@@ -83,3 +83,7 @@ When planning, make sure to structure plans like so they can:
 ## 7. Fixing Bugs
 
 Bugs need to first one or more new test created with the desired outcome. This test should fail as the bug highlights the outcome is not as desired. This should be committed as proof of the bug. The next commit(s) should tackle the bug and make the test succeed.
+
+## 8. Plan Creation
+
+Plans for code projects using jj or git should consist of a summary of the plan at the top followed by a step-by-step plan that can be worked on one at a time. Each should be able to be validated and have documentation updated before committing and moving on to the next item.
