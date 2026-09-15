@@ -101,6 +101,7 @@ unset GOROOT
 PATH="$GOPATH/bin:$PATH"
 
 # PREPEND
+PATH="$PNPM_HOME/bin:$PATH"
 PATH="$CARGO_HOME/bin:$PATH"
 PATH="/usr/local/sbin:$PATH"
 PATH="/usr/local/bin:$PATH"
@@ -121,7 +122,7 @@ elif [[ $machine == "Darwin" ]]; then
   # Use GNU man.
   MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
 
-  # `code` Pin ATH
+  # `code` Pin PATH
   PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
 
   # Homebrew
