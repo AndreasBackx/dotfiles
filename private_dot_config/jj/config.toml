@@ -26,6 +26,7 @@ default-command = [
     "-r",
     "reachable(@, mutable()) | heads(mutable()) | roots(mutable()) | fork_point(mutable() | trunk())",
 ]
+merge-editor = "mergiraf"
 
 [aliases]
 # Move the closest ancestor bookmark to the current commit, unless the working-copy
