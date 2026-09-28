@@ -28,17 +28,26 @@ default-command = [
 ]
 merge-editor = "mergiraf"
 
+[revsets]
+bookmark-advance-to = "closest_pushable(@)"
+
+[revset-aliases]
+'closest_pushable(to)' = '''
+  heads(::to & mutable() & ~description(exact:"") & (~empty() | merges()))
+'''
+
 [aliases]
+# Use `jj bookmark advance`
 # Move the closest ancestor bookmark to the current commit, unless the working-copy
 # commit is empty; in that case move it to the parent.
-bump = [
-    "util",
-    "exec",
-    "--",
-    "sh",
-    "-c",
-    "target=@; backwards=; if jj log -r '@ & empty()' --no-graph -T change_id | grep -q .; then target=@-; backwards=--allow-backwards; fi; jj bookmark move $backwards --from 'heads(::@ & bookmarks())' --to \"$target\"",
-]
+# bump = [
+#     "util",
+#     "exec",
+#     "--",
+#     "sh",
+#     "-c",
+#     "target=@; backwards=; if jj log -r '@ & empty()' --no-graph -T change_id | grep -q .; then target=@-; backwards=--allow-backwards; fi; jj bookmark move $backwards --from 'heads(::@ & bookmarks())' --to \"$target\"",
+# ]
 
 # Push the closest bookmark on the current stack. Prefer a bookmark on the current
 # commit, otherwise use the nearest ancestor bookmark.
