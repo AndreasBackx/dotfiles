@@ -36,6 +36,9 @@ bookmark-advance-to = "closest_pushable(@)"
   heads(::to & mutable() & ~description(exact:"") & (~empty() | merges()))
 '''
 
+[remotes.origin]
+auto-track-bookmarks = "andreasbackx/*"
+
 [aliases]
 # Use `jj bookmark advance`
 # Move the closest ancestor bookmark to the current commit, unless the working-copy
