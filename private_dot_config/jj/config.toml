@@ -20,18 +20,30 @@ abandon-unreachable-commits = false
 [ui]
 diff-formatter = ["difft", "--color=always", "$left", "$right"]
 paginate = "never"
-default-command = [
-    "log",
-    "--reversed",
-    "-r",
-    "reachable(@, mutable()) | heads(mutable()) | roots(mutable()) | fork_point(mutable() | trunk())",
-]
+default-command = ["log", "--reversed"]
 merge-editor = "mergiraf"
 
 [revsets]
 bookmark-advance-to = "closest_pushable(@)"
+log = '''
+  stack() | stack()- | working_copies() | trunk() |
+  (
+    (
+      descendants(roots(other_stacks()), 2) |
+      ancestors(heads(other_stacks()) | working_copies(), 3)
+    ) & other_stacks()
+  )
+'''
 
 [revset-aliases]
+'my_work()' = 'mutable() & mine()'
+'stack()' = 'reachable(@, my_work()) | @'
+'other_stacks()' = '''
+  reachable(
+    ((bookmarks() | tracked_remote_bookmarks()) & visible()) | working_copies(),
+    my_work()
+  ) ~ stack()
+'''
 'closest_pushable(to)' = '''
   heads(::to & mutable() & ~description(exact:"") & (~empty() | merges()))
 '''
@@ -40,6 +52,11 @@ bookmark-advance-to = "closest_pushable(@)"
 auto-track-bookmarks = "andreasbackx/*"
 
 [aliases]
+cleanup-merged = [
+    "--ignore-working-copy", "util", "exec", "--",
+    "python3", "/home/andreas/.config/jj/cleanup-merged.py",
+]
+
 # Use `jj bookmark advance`
 # Move the closest ancestor bookmark to the current commit, unless the working-copy
 # commit is empty; in that case move it to the parent.
