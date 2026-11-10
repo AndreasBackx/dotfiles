@@ -13,7 +13,6 @@ backend = "ssh"
 key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIxRpuUyWKbNo4dopWoovkq5i9mqM9zSrbIMx+n/zuBz"
 
 [git]
-sign-on-push = true
 push = "origin"
 abandon-unreachable-commits = false
 
@@ -24,6 +23,7 @@ default-command = ["log", "--reversed"]
 merge-editor = "mergiraf"
 
 [revsets]
+git-sign-on-push = "~signed() & mine()"
 bookmark-advance-to = "closest_pushable(@)"
 log = '''
   stack() | stack()- | working_copies() | trunk() |

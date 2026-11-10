@@ -10,7 +10,6 @@ hl.on("hyprland.start", function()
     local commands = {
         "pypr",
         "sh -lc 'uwsm finalize || dbus-update-activation-environment --systemd --all; systemctl --user start hyprland-session.target'",
-        "gnome-keyring-daemon --start --components=secrets",
         "sh -lc 'command -v cliphist >/dev/null && exec wl-paste --type text --watch cliphist store'",
         "signal-desktop",
         "spotify",

@@ -31,12 +31,15 @@ physical output combination in DMS Settings before enabling automatic selection.
 `exec.lua.tmpl` is the main startup behavior. It currently starts:
 
 - `pypr`
-- `gnome-keyring-daemon`
 - `hyprland-session.target`, which starts DMS
 - clipboard history when `cliphist` is installed
 - desktop applications
 
 In UWSM sessions it runs `uwsm finalize` so the compositor marks itself ready and exports the Wayland session environment into systemd.
+
+On hosts with oo7 installed, `run_after_hyprland.zsh.tmpl` enables its user service
+for the next login. GDM supplies the unlock secret through PAM; Hyprland must not
+start the legacy GNOME Keyring daemon alongside oo7.
 
 DMS owns the bar, notifications, polkit prompts, lock screen, idle handling,
 wallpaper, and shell UI. Configure both AC and battery idle policies in DMS with
