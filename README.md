@@ -44,6 +44,7 @@ dot-doctor
 These run automatically after apply:
 
 - `run_after_wayland_wrappers.zsh.tmpl`: creates `~/.bin/wrappers` for desktop apps that should be forced onto Wayland.
+- `run_onchange_after_steam_extest.zsh.tmpl`: generates a user-level Steam launcher using Fedora's 64-bit Extest library. It runs when the hook or packaged launcher's contents change, picking up package updates on the next `chezmoi apply`, and only writes when the result differs. It needs no sudo and refuses to overwrite an unrelated user launcher.
 - `run_after_hyprland.zsh.tmpl`: creates the Hyprland log directory, reloads user systemd units, and enables Hyprland log rotation.
 - `run_after_firefox_userchrome.zsh`: installs a default Firefox `userChrome.css` into the active profile and enables Firefox stylesheet loading in `user.js`.
 - `run_after_firefox_autoconfig.zsh`: installs the synced Firefox AutoConfig files that focus the URL bar for new blank Firefox windows; it only asks for `sudo` when the installed files differ.
