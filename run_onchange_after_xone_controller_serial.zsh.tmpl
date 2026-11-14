@@ -1,0 +1,17 @@
+#!/usr/bin/env zsh
+
+set -o errexit -o nounset -o pipefail
+
+{{ if and (eq .chezmoi.os "linux") (not .headless) }}
+# Rule checksum: {{ include (joinPath .chezmoi.sourceDir "private_dot_config/udev/rules.d/99-xone-controller-serial.rules") | sha256sum }}
+from="$HOME/.config/udev/rules.d/99-xone-controller-serial.rules"
+to="/etc/udev/rules.d/99-xone-controller-serial.rules"
+
+if [[ ! -f "$to" ]] || ! cmp --silent "$from" "$to"; then
+  udevadm verify "$from"
+  print -r -- "Installing xone controller serial rule: $to"
+  sudo install -D -m 0644 "$from" "$to"
+  sudo udevadm control --reload-rules
+  print -r -- "Reconnect Xbox controllers and restart applications to use their individual serials."
+fi
+{{ end }}

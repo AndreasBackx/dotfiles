@@ -1,0 +1,5 @@
+# SDL's evdev backend reads ID_SERIAL_SHORT, which otherwise identifies the
+# shared USB receiver. Use the individual xone gamepad's nonempty uniq instead.
+# Match driver and uniq separately: they belong to different parent devices.
+ACTION=="add|change", SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT_JOYSTICK}=="1", DRIVERS=="xone-gip-gamepad", ENV{.XONE_GAMEPAD}="1"
+ENV{.XONE_GAMEPAD}=="1", ATTRS{uniq}=="?*", ENV{ID_SERIAL_SHORT}="$attr{uniq}"
